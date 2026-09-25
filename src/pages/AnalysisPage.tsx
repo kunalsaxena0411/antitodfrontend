@@ -530,13 +530,13 @@ export default function AnalysisPage({
                                         </td>
                                     </tr>
                                 ) : (
-                                    filteredHosts.map((host) => {
+                                    filteredHosts.map((host, index) => {
                                         const active =
                                             selectedHost?.ip === host.ip;
 
                                         return (
                                             <tr
-                                                key={`${host.ip}-${host.firstSeen}`}
+                                                key={`${host.ip}-${host.firstSeen}-${index}`}
                                                 className={
                                                     active ? 'active' : ''
                                                 }
@@ -805,8 +805,7 @@ export default function AnalysisPage({
                     <Network size={12} />
                   </div>
 
-                  {selectedHost.ports.length ===
-                  0 ? (
+                  {!selectedHost.ports || selectedHost.ports.length === 0 ? (
                     <div className="at-analysis-no-signatures">
                       No observed ports
                     </div>
@@ -833,17 +832,16 @@ export default function AnalysisPage({
                     <Hash size={12} />
                   </div>
 
-                  {selectedHost.signatures.length ===
-                  0 ? (
+                  {!selectedHost.signatures || selectedHost.signatures.length === 0 ? (
                     <div className="at-analysis-no-signatures">
                       No recorded signatures
                     </div>
                   ) : (
                     <div className="at-analysis-signature-list">
                       {selectedHost.signatures.map(
-                        (signature) => (
-                          <span key={signature}>
-                            {signature}
+                        (signature, index) => (
+                          <span key={signature.name || index}>
+                            {signature.name}
                           </span>
                         ),
                       )}

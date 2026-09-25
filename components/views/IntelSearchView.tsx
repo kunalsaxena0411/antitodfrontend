@@ -246,35 +246,35 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
     };
 
     return (
-        <div className="h-full min-h-[calc(100vh-140px)] w-full flex bg-cyber-grid relative overflow-hidden">
-            <div className={`bg-[#020617]/95 border-r border-gray-800/50 backdrop-blur-2xl transition-all duration-500 flex flex-col z-20 shadow-2xl ${isSidebarOpen ? 'w-80' : 'w-0 opacity-0 invisible'}`}>
-                <div className="p-5 border-b border-gray-800 flex items-center justify-between shrink-0">
-                    <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-[0.2em] flex items-center gap-3">
-                        <History size={14} className="text-cyber-cyan"/> INTEL HISTORY
+        <div className="h-full flex relative overflow-hidden bg-[#0d1013] text-[#cfd2d6]">
+            <div className={`bg-[#090a0c] border-r border-[#22262c] transition-all duration-300 flex flex-col z-20 ${isSidebarOpen ? 'w-72' : 'w-0 opacity-0 invisible'}`}>
+                <div className="p-4 border-b border-[#22262c] flex items-center justify-between shrink-0">
+                    <h3 className="text-[10px] font-bold text-[#8b929b] uppercase tracking-widest flex items-center gap-2">
+                        <History size={14} className="text-[#8b929b]"/> INTEL HISTORY
                     </h3>
-                    <button onClick={() => setHistory([])} className="text-gray-600 hover:text-red-400 transition-colors">
+                    <button onClick={() => setHistory([])} className="text-[#5e666f] hover:text-[#d62828] transition-colors">
                         <Trash2 size={14}/>
                     </button>
                 </div>
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
                     {history.map((item, idx) => (
                         <div 
                             key={idx}
                             onClick={() => handleSearch(undefined, item.query)}
-                            className={`group p-4 rounded-xl border cursor-pointer transition-all duration-300 relative overflow-hidden ${result?.query === item.query ? 'bg-cyber-cyan/10 border-cyber-cyan/40 shadow-[0_0_15px_rgba(67,97,238,0.05)]' : 'bg-gray-900/40 border-gray-800/60 hover:border-gray-600 hover:bg-gray-800/40'}`}
+                            className={`group p-4 border-b border-[#22262c] cursor-pointer transition-colors relative overflow-hidden ${result?.query === item.query ? 'bg-[#151920]' : 'hover:bg-[#111418]'}`}
                         >
                             <div className="flex justify-between items-start relative z-10">
-                                <span className="text-xs font-bold text-gray-200 truncate pr-4 uppercase tracking-wide">{item.query}</span>
-                                <button onClick={(e) => deleteHistoryItem(e, item.query)} className="opacity-0 group-hover:opacity-100 text-gray-600 hover:text-red-400 transition-all"><X size={12}/></button>
+                                <span className="text-xs font-bold text-[#f0f1f2] truncate pr-4 uppercase tracking-wide">{item.query}</span>
+                                <button onClick={(e) => deleteHistoryItem(e, item.query)} className="opacity-0 group-hover:opacity-100 text-[#5e666f] hover:text-[#d62828] transition-all"><X size={12}/></button>
                             </div>
-                            <div className="flex justify-between items-center text-[9px] text-gray-500 font-mono mt-2 relative z-10">
+                            <div className="flex justify-between items-center text-[10px] text-[#5e666f] font-mono mt-2 relative z-10">
                                 <span className="flex items-center gap-1"><Clock size={10}/> {new Date(item.timestamp).toLocaleDateString()}</span>
-                                <span className="text-cyber-cyan/60 opacity-0 group-hover:opacity-100 transition-opacity">RECALL &rarr;</span>
+                                <span className="text-[#d62828] opacity-0 group-hover:opacity-100 transition-opacity font-bold">RECALL &rarr;</span>
                             </div>
                         </div>
                     ))}
                     {history.length === 0 && (
-                        <div className="text-center py-20 text-gray-700 italic text-[11px] font-mono">Archive Empty.</div>
+                        <div className="text-center py-20 text-[#5e666f] text-[11px] font-mono">Archive Empty.</div>
                     )}
                 </div>
             </div>
@@ -282,32 +282,31 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
                 <button 
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-30 p-2 bg-gray-900 border border-l-0 border-gray-700 rounded-r text-gray-500 hover:text-cyber-cyan transition-all"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 z-30 p-2 bg-[#090a0c] border border-l-0 border-[#22262c] rounded-r text-[#8b929b] hover:text-white transition-all shadow-md"
                 >
                     {isSidebarOpen ? <ChevronLeft size={16}/> : <ChevronRight size={16}/>}
                 </button>
 
-                <div className="p-10 border-b border-gray-800/30 bg-black/20 backdrop-blur-sm shrink-0">
-                    <div className="max-w-4xl mx-auto space-y-8">
+                <div className="px-10 py-12 border-b border-[#22262c] bg-[#0d1013] shrink-0">
+                    <div className="max-w-4xl mx-auto space-y-6">
                         <div className="flex flex-col items-center text-center space-y-3">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyber-cyan/10 border border-cyber-cyan/30 text-cyber-cyan text-[10px] font-mono font-bold tracking-widest uppercase mb-2">
+                            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[#d62828]/10 border border-[#d62828]/30 text-[#d62828] text-[10px] font-bold tracking-widest uppercase mb-4">
                                 <Zap size={12} className="animate-pulse"/>
                                 Grounding Engine Active
                             </div>
-                            <h1 className="text-4xl md:text-5xl font-cyber font-bold text-white tracking-tight leading-none">
-                                INTEL <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan to-purple-500">BRIEFING</span>
+                            <h1 className="text-3xl font-sans font-bold text-white tracking-tight leading-none">
+                                INTEL BRIEFING
                             </h1>
                         </div>
 
-                        <form onSubmit={handleSearch} className="relative max-w-3xl mx-auto group">
-                            <div className="absolute inset-0 bg-gradient-to-r from-cyber-cyan to-purple-600 rounded-2xl blur opacity-10 group-hover:opacity-20 transition-opacity"></div>
-                            <div className="relative flex items-center bg-black/60 border border-gray-700/50 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/5">
-                                <div className="pl-6 text-gray-500">
-                                    <Search size={22}/>
+                        <form onSubmit={handleSearch} className="relative max-w-3xl mx-auto group mt-4">
+                            <div className="relative flex items-center bg-[#090a0c] border border-[#22262c] rounded shadow-lg overflow-hidden">
+                                <div className="pl-5 text-[#5e666f]">
+                                    <Search size={18}/>
                                 </div>
                                 <input 
                                     type="text" 
-                                    className="flex-1 bg-transparent border-none text-white px-5 py-5 focus:ring-0 placeholder-gray-600 font-mono text-base"
+                                    className="flex-1 bg-transparent border-none text-[#f0f1f2] px-4 py-4 focus:ring-0 placeholder-[#5e666f] font-mono text-sm"
                                     placeholder="Execute research query (e.g. Lazarus TTPs, CVE-2025 details)..."
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
@@ -315,9 +314,9 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
                                 <button 
                                     type="submit"
                                     disabled={isSearching || !query.trim()}
-                                    className="bg-cyber-cyan text-white px-10 py-5 font-bold text-sm tracking-[0.1em] hover:bg-red-800 transition-all border-l border-white/10 disabled:opacity-50 flex items-center gap-3 uppercase shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]"
+                                    className="bg-[#d62828] text-white px-8 py-4 font-bold text-xs tracking-wider hover:bg-[#b01e1e] transition-colors border-l border-[#22262c] disabled:opacity-50 flex items-center gap-3 uppercase"
                                 >
-                                    {isSearching ? <Loader2 className="animate-spin" size={18}/> : <Terminal size={18}/>}
+                                    {isSearching ? <Loader2 className="animate-spin" size={16}/> : <Terminal size={16}/>}
                                     Process
                                 </button>
                             </div>
@@ -325,7 +324,7 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-10 bg-[#020617]/50">
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-10 bg-[#0d1013]">
                     <div className="max-w-5xl mx-auto">
                         
                         {isSearching && !result && (
@@ -438,10 +437,10 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
                 </div>
 
                 {!result && !isSearching && (
-                    <div className="p-8 border-t border-gray-800/30 flex justify-center gap-16 text-gray-700 text-[10px] font-mono uppercase tracking-[0.3em]">
-                        <div className="flex items-center gap-3"><Globe size={14} className="text-gray-800"/> Global OSINT</div>
-                        <div className="flex items-center gap-3"><Database size={14} className="text-gray-800"/> Cross-Feed Logic</div>
-                        <div className="flex items-center gap-3"><Layout size={14} className="text-gray-800"/> Structured Intel</div>
+                    <div className="p-8 border-t border-[#22262c] flex justify-center gap-16 text-[#5e666f] text-[10px] font-mono uppercase tracking-widest">
+                        <div className="flex items-center gap-2"><Globe size={12} className="text-[#3c424a]"/> GLOBAL OSINT</div>
+                        <div className="flex items-center gap-2"><Database size={12} className="text-[#3c424a]"/> CROSS-FEED LOGIC</div>
+                        <div className="flex items-center gap-2"><Layout size={12} className="text-[#3c424a]"/> STRUCTURED INTEL</div>
                     </div>
                 )}
             </div>

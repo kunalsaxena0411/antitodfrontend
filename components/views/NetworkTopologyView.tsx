@@ -65,73 +65,87 @@ const STENCIL_ICONS: Record<string, any> = {
 
 // --- CUSTOM NODES ---
 
-const NetworkNode = ({ data, selected, icon: DefaultIcon, colorClass, typeLabel }: any) => {
-    const Icon = data.iconName && STENCIL_ICONS[data.iconName] ? STENCIL_ICONS[data.iconName] : DefaultIcon;
-    const isCompromised = data.status === 'COMPROMISED';
-    const isReachable = data.isReachable;
-    const dynamicColor = data.colorClass || colorClass;
-    const hasIntel = (data.vulnerabilities?.length > 0) || (data.iocs?.length > 0);
-    
+const NetworkNode = ({
+    data,
+    selected,
+    icon: DefaultIcon,
+    colorClass,
+    typeLabel,
+}: any) => {
+    const Icon =
+        data.iconName &&
+        STENCIL_ICONS[data.iconName]
+            ? STENCIL_ICONS[data.iconName]
+            : DefaultIcon;
+
+    const isCompromised =
+        data.status === 'COMPROMISED';
+
+    const isReachable =
+        data.isReachable;
+
     return (
-        <div className={`
-            p-3 rounded-lg border-2 shadow-xl transition-all duration-300 min-w-[200px] relative
-            ${selected ? 'border-cyber-cyan ring-4 ring-cyber-cyan/20 scale-[1.02]' : 'border-gray-700'}
-            ${isCompromised ? 'border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)] animate-pulse' : ''}
-            ${isReachable && !isCompromised ? 'border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.3)]' : ''}
-            ${hasIntel && !isCompromised && !isReachable ? 'border-yellow-600 shadow-[0_0_10px_rgba(202,138,4,0.2)]' : ''}
-            bg-[#0a1120] cursor-grab active:cursor-grabbing
-        `}>
-            <Handle type="target" position={Position.Left} className="!bg-cyber-cyan !w-2 !h-2" />
-            <Handle type="target" position={Position.Top} className="!bg-cyber-cyan !w-2 !h-2" />
-            
-            <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${isCompromised ? 'bg-red-500/20 text-red-500' : `${dynamicColor} bg-opacity-20 ${dynamicColor.replace('bg-', 'text-')}`}`}>
-                    <Icon size={18} />
-                </div>
-                <div className="flex-1 overflow-hidden">
-                    <div className="text-[8px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-0.5 opacity-70">{typeLabel}</div>
-                    <div className="text-xs font-bold text-white font-mono truncate">{data.label}</div>
-                    {data.interface && (
-                        <div className="text-[9px] font-mono text-cyber-cyan mt-1 px-1.5 py-0.5 bg-black/40 rounded border border-cyber-cyan/20 truncate">
-                            IF: {data.interface}
-                        </div>
-                    )}
-                </div>
-            </div>
+        <div
+            className={`
+                at-topology-node
+                ${selected ? 'is-selected' : ''}
+                ${isCompromised ? 'is-compromised' : ''}
+            `}
+        >
+            <Handle
+                type="target"
+                position={Position.Left}
+                className="!w-1.5 !h-1.5 !bg-[#69727d] !border-0"
+            />
 
-            <div className="mt-2 flex items-center justify-between">
-                <div className="flex flex-col gap-0.5">
-                    <div className="flex gap-1 items-center">
-                        <span className={`text-[7px] px-1.5 py-0.5 rounded font-bold uppercase border w-fit ${data.isInternetFacing ? 'bg-red-900/30 text-red-400 border-red-500/30' : 'bg-green-900/30 text-green-400 border-green-500/30'}`}>
-                            {data.isInternetFacing ? 'Internet' : 'LAN'}
-                        </span>
-                        {data.vlan && (
-                            <span className="text-[7px] px-1.5 py-0.5 rounded font-bold uppercase bg-purple-900/30 text-purple-400 border border-purple-500/30">
-                                VLAN: {data.vlan}
-                            </span>
-                        )}
+            <Handle
+                type="target"
+                position={Position.Top}
+                className="!w-1.5 !h-1.5 !bg-[#69727d] !border-0"
+            />
+
+            <div className="flex items-center gap-8">
+                <span className="at-topology-node-icon">
+                    <Icon size={15} />
+                </span>
+
+                <div className="min-w-0 flex-1">
+                    <div className="at-topology-node-type">
+                        {typeLabel}
                     </div>
-                    {data.ipAddress && (
-                        <span className="text-[8px] font-mono text-gray-400 mt-1">
-                            IP: {data.ipAddress}
-                        </span>
-                    )}
+
+                    <div
+                        className="at-topology-node-name"
+                        title={data.label}
+                    >
+                        {data.label}
+                    </div>
                 </div>
-                {data.vulnerabilities?.length > 0 && (
-                    <span className="text-[7px] text-orange-400 flex items-center gap-1 font-bold">
-                        <Flame size={8}/> {data.vulnerabilities.length} CVEs
-                    </span>
-                )}
             </div>
 
-            {isCompromised && (
-                <div className="absolute -top-2 -left-2 p-1 bg-red-500 rounded-full text-white shadow-lg z-10">
-                    <Skull size={10} />
-                </div>
-            )}
+            <div className="at-topology-node-meta">
+                {data.ipAddress ||
+                    data.interface ||
+                    (data.isInternetFacing
+                        ? 'Internet facing'
+                        : 'Internal asset')}
+            </div>
 
-            <Handle type="source" position={Position.Right} className="!bg-cyber-cyan !w-2 !h-2" />
-            <Handle type="source" position={Position.Bottom} className="!bg-cyber-cyan !w-2 !h-2" />
+            <Handle
+                type="source"
+                position={Position.Right}
+                className="!w-1.5 !h-1.5 !bg-[#69727d] !border-0"
+            />
+
+            <Handle
+                type="source"
+                position={Position.Bottom}
+                className="!w-1.5 !h-1.5 !bg-[#69727d] !border-0"
+            />
+
+            {isReachable && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-400" />
+            )}
         </div>
     );
 };
@@ -748,19 +762,19 @@ export const NetworkTopologyView: React.FC = () => {
     }, [paletteSearch, customStencils]);
 
     return (
-        <div className="h-full min-h-[calc(100vh-140px)] flex bg-[#020617] overflow-hidden w-full">
+        <div className="at-topology-page">
             {/* Sidebar: Palette & Library */}
-            <div className="w-72 border-r border-gray-800 bg-[#050b1a] flex flex-col shrink-0 relative z-20 shadow-2xl">
+            <div className="at-topology-sidebar">
                 <div className="flex bg-gray-900 border-b border-gray-800">
-                    <button onClick={() => setSidebarMode('STENCILS')} className={`flex-1 py-3 text-[10px] font-bold uppercase transition-colors border-b-2 ${sidebarMode === 'STENCILS' ? 'border-cyber-cyan text-white bg-white/5' : 'border-transparent text-gray-500 hover:text-gray-300'}`}>Stencils</button>
-                    <button onClick={() => setSidebarMode('LIBRARY')} className={`flex-1 py-3 text-[10px] font-bold uppercase transition-colors border-b-2 ${sidebarMode === 'LIBRARY' ? 'border-purple-500 text-white bg-white/5' : 'border-transparent text-gray-500 hover:text-gray-300'}`}>Library</button>
+                    <button onClick={() => setSidebarMode('STENCILS')} className={`flex-1 py-3 text-[10px] font-bold uppercase transition-colors border-b-2 ${sidebarMode === 'STENCILS' ? 'border-[#d62828] text-[#f0f1f2] bg-white/5' : 'border-transparent text-gray-500 hover:text-gray-300'}`}>Stencils</button>
+                    <button onClick={() => setSidebarMode('LIBRARY')} className={`flex-1 py-3 text-[10px] font-bold uppercase transition-colors border-b-2 ${sidebarMode === 'LIBRARY' ? 'border-[#4a5059] text-[#9aa1a9] bg-white/5' : 'border-transparent text-gray-500 hover:text-gray-300'}`}>Library</button>
                 </div>
 
                 {sidebarMode === 'STENCILS' ? (
                     <>
                         <div className="p-4 border-b border-gray-800 bg-gray-900/20">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-xs font-bold text-cyber-cyan uppercase tracking-[0.2em] flex items-center gap-2">
+                                <h3 className="text-[10px] font-bold text-[#c7ccd2] uppercase tracking-[0.10em] flex items-center gap-2">
                                     <Layers size={14}/> STENCILS
                                 </h3>
                                 <button onClick={() => setShowStencilCreator(true)} className="p-1.5 hover:bg-white/10 rounded text-gray-400 hover:text-white" title="New Stencil">
@@ -855,7 +869,7 @@ export const NetworkTopologyView: React.FC = () => {
             </div>
 
             {/* Canvas */}
-            <div className="flex-1 relative bg-cyber-grid overflow-hidden">
+            <div className="at-topology-canvas">
                 <ReactFlow 
                     nodes={nodes} 
                     edges={edges} 
@@ -870,11 +884,12 @@ export const NetworkTopologyView: React.FC = () => {
                     onEdgeClick={(_, e) => { setSelectedEdge(e); setSelectedNode(null); setNodeIntel(null); }}
                     onPaneClick={() => { setSelectedNode(null); setSelectedEdge(null); setNodeIntel(null); }}
                     fitView
-                    className="bg-[#020617]"
+                    proOptions={{ hideAttribution: true }}
                 >
-                    <Background color="#1e293b" gap={20} size={1} />
+                    <Background color="#39404a" gap={28} size={1} />
                     <Controls />
-                    <Panel position="top-right" className="bg-black/60 backdrop-blur border border-gray-800 p-2 rounded-lg flex gap-2">
+                    <Panel position="top-left" className="!m-0 !left-0 !top-0">
+                        <div className="at-topology-toolbar">
                         {isConfigParsing && (
                             <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-900/40 text-indigo-400 border border-indigo-500/30 rounded text-[10px] font-bold animate-pulse">
                                 <Loader2 className="animate-spin" size={12}/> {parsingStatus}
@@ -893,8 +908,8 @@ export const NetworkTopologyView: React.FC = () => {
                         
                         <div className="h-6 w-px bg-gray-700 mx-1"></div>
                         
-                        <div className="flex gap-2">
-                            <label className="p-1.5 hover:bg-gray-800 rounded text-cyber-cyan flex items-center gap-2 text-xs font-bold cursor-pointer transition-colors" title="Build Topology from Multiple Configs">
+                        <div className="at-topology-toolbar-group">
+                            <label title="Build Topology from Multiple Configs">
                                 <FileUp size={16}/> LOAD CONFIGS
                                 <input type="file" className="hidden" accept=".txt,.cfg,.conf" multiple onChange={handleConfigUpload} ref={configInputRef} />
                             </label>
@@ -902,7 +917,6 @@ export const NetworkTopologyView: React.FC = () => {
                             <div className="relative">
                                 <button 
                                     onClick={() => { setShowLayoutMenu(!showLayoutMenu); setShowExportMenu(false); }}
-                                    className="p-1.5 hover:bg-gray-800 rounded text-cyber-cyan flex items-center gap-2 text-xs font-bold"
                                     title="Automatic Layout"
                                 >
                                     <Layout size={16}/> LAYOUT
@@ -927,7 +941,6 @@ export const NetworkTopologyView: React.FC = () => {
                             <div className="relative">
                                 <button 
                                     onClick={() => { setShowExportMenu(!showExportMenu); setShowLayoutMenu(false); }}
-                                    className="p-1.5 hover:bg-gray-800 rounded text-cyber-cyan flex items-center gap-2 text-xs font-bold"
                                     title="Export Diagram"
                                 >
                                     <Download size={16}/> EXPORT
@@ -956,52 +969,55 @@ export const NetworkTopologyView: React.FC = () => {
                                 )}
                             </div>
 
-                            <button onClick={() => { setNodes([]); setEdges([]); setSimulation(null); }} className="p-1.5 hover:bg-gray-800 rounded text-gray-400" title="Reset Canvas">
-                                <Trash2 size={16}/>
+                            <button onClick={() => { setNodes([]); setEdges([]); setSimulation(null); }} className="danger" title="Reset Canvas">
+                                <Trash2 size={16}/> RESET
                             </button>
+                        </div>
                         </div>
                     </Panel>
 
                     {/* HUD / Risk Meter */}
-                    <Panel position="bottom-left" className="bg-black/80 backdrop-blur border border-gray-800 p-4 rounded-xl shadow-2xl w-64 animate-fade-in">
-                        <div className="flex justify-between items-start mb-3">
-                            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Topology Risk Profile</div>
-                            <Activity size={14} className="text-cyber-cyan"/>
+                    <Panel position="bottom-left" className="!m-0 !left-0 !bottom-0">
+                        <div className="at-topology-risk-widget">
+                            <div className="at-topology-risk-title">
+                                <span>Topology Risk Profile</span>
+                                <Activity size={14} />
+                            </div>
+                            {simulation ? (
+                                <div className="space-y-4 mt-3">
+                                    <div>
+                                        <div className="flex justify-between text-xs mb-1">
+                                            <span className="text-red-400 font-bold">BLAST RADIUS</span>
+                                            <span className="text-white font-mono">{simulation.blastRadiusScore}%</span>
+                                        </div>
+                                        <div className="h-2 w-full bg-gray-800 rounded-full overflow-hidden">
+                                            <div className="h-full bg-red-500 animate-pulse" style={{ width: `${simulation.blastRadiusScore}%` }}></div>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 text-[10px]">
+                                        <div className="p-2 bg-gray-900 rounded border border-gray-800">
+                                            <div className="text-gray-500 uppercase">Reached</div>
+                                            <div className="text-white font-bold">{simulation.reachableNodes.length} Units</div>
+                                        </div>
+                                        <div className="p-2 bg-gray-900 rounded border border-gray-800">
+                                            <div className="text-gray-500 uppercase">Crit Paths</div>
+                                            <div className="text-white font-bold">{simulation.criticalPaths.length} Active</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="at-topology-risk-empty">
+                                    <Shield size={24} className="mx-auto mb-2"/>
+                                    <p>Network analysis engine standing by...</p>
+                                </div>
+                            )}
                         </div>
-                        {simulation ? (
-                            <div className="space-y-4">
-                                <div>
-                                    <div className="flex justify-between text-xs mb-1">
-                                        <span className="text-red-400 font-bold">BLAST RADIUS</span>
-                                        <span className="text-white font-mono">{simulation.blastRadiusScore}%</span>
-                                    </div>
-                                    <div className="h-2 w-full bg-gray-800 rounded-full overflow-hidden">
-                                        <div className="h-full bg-red-500 animate-pulse" style={{ width: `${simulation.blastRadiusScore}%` }}></div>
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-2 text-[10px]">
-                                    <div className="p-2 bg-gray-900 rounded border border-gray-800">
-                                        <div className="text-gray-500 uppercase">Reached</div>
-                                        <div className="text-white font-bold">{simulation.reachableNodes.length} Units</div>
-                                    </div>
-                                    <div className="p-2 bg-gray-900 rounded border border-gray-800">
-                                        <div className="text-gray-500 uppercase">Crit Paths</div>
-                                        <div className="text-white font-bold">{simulation.criticalPaths.length} Active</div>
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="py-4 text-center">
-                                <Shield size={24} className="mx-auto text-gray-700 mb-2"/>
-                                <p className="text-[10px] text-gray-500">Network analysis engine standing by...</p>
-                            </div>
-                        )}
                     </Panel>
                 </ReactFlow>
             </div>
 
             {/* Right Panel: Context & Simulation Output */}
-            <div className="w-96 border-l border-gray-800 bg-[#050b1a] flex flex-col shrink-0 z-20 shadow-2xl">
+            <div className={`at-topology-inspector ${selectedNode || selectedEdge ? 'has-selection' : ''}`}>
                 <div className="p-4 border-b border-gray-800 bg-gray-900/20 flex items-center justify-between">
                     <h3 className="text-xs font-bold text-cyber-cyan uppercase tracking-[0.2em] flex items-center gap-2">
                         <Terminal size={14}/> {selectedNode ? 'ASSET INTEL' : selectedEdge ? 'FLOW' : 'ANALYTICS'}
@@ -1273,19 +1289,29 @@ export const NetworkTopologyView: React.FC = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-center opacity-20 p-10 gap-4">
-                            <Network size={64} className="text-gray-600"/>
-                            <p className="text-xs font-mono uppercase tracking-[0.2em]">Architecture Logic Standby</p>
+                        <div className="at-topology-empty-state">
+                            <Network size={28} />
+
+                            <strong>
+                                Select an asset to inspect
+                            </strong>
+
+                            <span>
+                                Choose a node or connection on the topology
+                                canvas to view configuration, security posture,
+                                relationships and available actions.
+                            </span>
                         </div>
                     )}
                 </div>
 
-                <div className="p-4 border-t border-gray-800 bg-gray-900/40">
-                    <button 
+                <div className="at-topology-inspector-footer">
+                    <button
                         onClick={handleSaveDiagram}
-                        className="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-bold text-xs flex items-center justify-center gap-2 shadow-xl transition-all active:scale-95"
+                        className="w-full h-9 flex items-center justify-center gap-2 rounded-md border border-[#343a43] bg-[#171a1f] text-[#c8ccd1] text-[10px] font-semibold hover:bg-[#1d2026] hover:text-white transition-colors"
                     >
-                        <Save size={14}/> SAVE TO LIBRARY
+                        <Save size={13} />
+                        Save to library
                     </button>
                 </div>
             </div>

@@ -148,11 +148,19 @@ function SidebarGroup({
 }
 
 export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, onOpenSearch }: SidebarProps) {
+  const [hoverPeek, setHoverPeek] = useState(false);
+  const [autoPeek, setAutoPeek] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth > 900;
+  });
   const [menuSearch, setMenuSearch] = useState('');
   const [collapsedGroups, setCollapsedGroups] = useState<string[]>(() => readStored(STORAGE_KEY, []));
   const [favorites, setFavorites] = useState<string[]>(() => readStored(FAVORITES_KEY, []));
   const searchRef = useRef<HTMLInputElement>(null);
+  const hoverCloseTimer = useRef<number | null>(null);
   const activeCanonical = canonicalViewId(activeView);
+
+  const visuallyExpanded = !autoPeek ? !collapsed : hoverPeek;
 
   const filteredGroups = useMemo(() => {
     const value = menuSearch.trim().toLowerCase();
@@ -180,6 +188,26 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
   }, [favorites]);
 
   useEffect(() => {
+    if (!autoPeek) {
+      setHoverPeek(false);
+    }
+  }, [autoPeek, collapsed]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const desktop = window.innerWidth > 900;
+      setAutoPeek(desktop);
+      if (!desktop) {
+        setHoverPeek(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
     const handler = (event: KeyboardEvent) => {
       const modifier = event.metaKey || event.ctrlKey;
       if (modifier && event.key.toLowerCase() === 'k') {
@@ -193,13 +221,13 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
       }
       if (event.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
         event.preventDefault();
-        if (!collapsed) searchRef.current?.focus();
+        if (visuallyExpanded) searchRef.current?.focus();
         else onOpenSearch();
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [onOpenSearch, onToggle, collapsed]);
+  }, [onOpenSearch, onToggle, visuallyExpanded]);
 
   const toggleGroup = (title: string) => {
     setCollapsedGroups((current) => current.includes(title)
@@ -215,13 +243,37 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
     });
   };
 
+  const handleSidebarEnter = () => {
+    if (!autoPeek) return;
+    if (hoverCloseTimer.current !== null) {
+      window.clearTimeout(hoverCloseTimer.current);
+      hoverCloseTimer.current = null;
+    }
+    setHoverPeek(true);
+  };
+
+  const handleSidebarLeave = () => {
+    if (!autoPeek) return;
+    if (hoverCloseTimer.current !== null) {
+      window.clearTimeout(hoverCloseTimer.current);
+    }
+    hoverCloseTimer.current = window.setTimeout(() => {
+      setHoverPeek(false);
+      hoverCloseTimer.current = null;
+    }, 90);
+  };
+
   return (
-    <aside className={`at-sidebar ${collapsed ? 'is-collapsed' : ''}`}>
+    <aside
+      className={`at-sidebar ${!visuallyExpanded ? 'is-collapsed' : ''} ${hoverPeek ? 'is-peeked' : ''} ${autoPeek ? 'is-auto-peek' : ''}`}
+      onMouseEnter={handleSidebarEnter}
+      onMouseLeave={handleSidebarLeave}
+    >
       <div className="at-sidebar-top">
         <div className="at-sidebar-brand-row">
           <button type="button" className="at-sidebar-brand" onClick={() => onNavigate('dashboard')} title="Open dashboard">
             <span className="at-sidebar-brand-mark">A</span>
-            {!collapsed && (
+            {visuallyExpanded && (
               <span className="at-sidebar-brand-copy">
                 <strong>ANTITODE</strong>
                 <small>THREAT PROCESSOR</small>
@@ -232,7 +284,11 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
           <button
             type="button"
             className="at-sidebar-collapse-button"
-            onClick={onToggle}
+            onClick={() => {
+              setAutoPeek(false);
+              setHoverPeek(false);
+              onToggle();
+            }}
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
@@ -240,7 +296,7 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
           </button>
         </div>
 
-        {!collapsed ? (
+        {visuallyExpanded ? (
           <button type="button" className="at-sidebar-workspace" onClick={() => onNavigate('dashboard')}>
             <span className="at-sidebar-workspace-mark">G</span>
             <span className="at-sidebar-workspace-copy">
@@ -260,7 +316,7 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
           </button>
         )}
 
-        {!collapsed ? (
+        {visuallyExpanded ? (
           <div className="at-sidebar-search-row">
             <Search size={14} />
             <input
@@ -289,7 +345,7 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
         {favoriteItems.length > 0 && !menuSearch && (
           <section className="at-sidebar-group at-sidebar-favorites">
             <div className="at-sidebar-group-title static-title">
-              {!collapsed ? <span>Favorites</span> : <Star size={12} fill="currentColor" />}
+              {visuallyExpanded ? <span>Favorites</span> : <Star size={12} fill="currentColor" />}
             </div>
             <div className="at-sidebar-group-items">
               {favoriteItems.map((item) => (
@@ -297,7 +353,7 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
                   key={item.id}
                   item={item}
                   active={item.id === activeCanonical}
-                  collapsed={collapsed}
+                  collapsed={!visuallyExpanded}
                   favorite
                   onNavigate={onNavigate}
                   onToggleFavorite={toggleFavorite}
@@ -311,7 +367,7 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
           <SidebarGroup
             key={group.title}
             group={group}
-            collapsed={collapsed}
+            collapsed={!visuallyExpanded}
             groupCollapsed={collapsedGroups.includes(group.title)}
             activeView={activeView}
             favorites={favorites}
@@ -328,14 +384,14 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
             key={item.id}
             item={item}
             active={activeCanonical === item.id}
-            collapsed={collapsed}
+            collapsed={!visuallyExpanded}
             favorite={favorites.includes(item.id)}
             onNavigate={onNavigate}
             onToggleFavorite={toggleFavorite}
           />
         ))}
 
-        {!collapsed && (
+        {visuallyExpanded && (
           <div className="at-sidebar-status-card">
             <div className="at-sidebar-status-head">
               <span className="at-sidebar-status-dot" />

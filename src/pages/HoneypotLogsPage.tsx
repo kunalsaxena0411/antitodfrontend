@@ -24,30 +24,14 @@ import {
 } from 'lucide-react';
 
 import type { LogEventV2 } from '../../api/services';
-
-import {
-  useHoneypotData,
-} from '../../hooks/useHoneypotData';
-
+import { useHoneypotData } from '../../hooks/useHoneypotData';
 import PageHeader from '../components/layout/PageHeader';
-
-/* -------------------------------------------------------------------------- */
-/*                                   Types                                    */
-/* -------------------------------------------------------------------------- */
 
 interface HoneypotLogsProps {
   onNavigate: (id: string) => void;
 }
 
-type Severity =
-  | 'critical'
-  | 'high'
-  | 'medium'
-  | 'low';
-
-/* -------------------------------------------------------------------------- */
-/*                                  Constants                                 */
-/* -------------------------------------------------------------------------- */
+type Severity = 'critical' | 'high' | 'medium' | 'low';
 
 const SEVERITY_CONFIG: Record<
   Severity,
@@ -74,36 +58,21 @@ const SEVERITY_CONFIG: Record<
   },
 };
 
-/* -------------------------------------------------------------------------- */
-/*                                  Helpers                                   */
-/* -------------------------------------------------------------------------- */
-
 function getSeverity(
   threatScore: number | null | undefined,
 ): Severity {
   const score = threatScore ?? 0;
 
-  if (score >= 80) {
-    return 'critical';
-  }
-
-  if (score >= 60) {
-    return 'high';
-  }
-
-  if (score >= 40) {
-    return 'medium';
-  }
-
+  if (score >= 80) return 'critical';
+  if (score >= 60) return 'high';
+  if (score >= 40) return 'medium';
   return 'low';
 }
 
 function formatTimestamp(
   timestamp: string | undefined,
 ): string {
-  if (!timestamp) {
-    return 'Unknown';
-  }
+  if (!timestamp) return 'Unknown';
 
   const date = new Date(timestamp);
 
@@ -125,9 +94,7 @@ function formatTimestamp(
 function formatTime(
   timestamp: string | undefined,
 ): string {
-  if (!timestamp) {
-    return '—';
-  }
+  if (!timestamp) return '—';
 
   const date = new Date(timestamp);
 
@@ -146,9 +113,7 @@ function formatTime(
 function prettyEventType(
   value: string | undefined,
 ): string {
-  if (!value) {
-    return 'Unknown event';
-  }
+  if (!value) return 'Unknown event';
 
   return value
     .replace(/_/g, ' ')
@@ -177,8 +142,7 @@ function downloadFile(
   });
 
   const url = URL.createObjectURL(blob);
-  const anchor =
-    document.createElement('a');
+  const anchor = document.createElement('a');
 
   anchor.href = url;
   anchor.download = filename;
@@ -211,13 +175,6 @@ function exportEventsToCsv(
   ];
 
   const rows = events.map((event) => {
-    const eventWithOptionalData =
-      event as LogEventV2 & {
-        country?: string;
-        countryCode?: string;
-        asn?: string;
-      };
-
     const severity = getSeverity(
       event.threat_score,
     );
@@ -229,9 +186,9 @@ function exportEventsToCsv(
       event.dst_port,
       event.event_type,
       event.honeypot,
-      eventWithOptionalData.country,
-      eventWithOptionalData.countryCode,
-      eventWithOptionalData.asn,
+      event.country,
+      event.geo_country,
+      event.asn,
       event.username,
       event.threat_score,
       severity,
@@ -255,10 +212,6 @@ function exportEventsToCsv(
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/*                              Page component                                */
-/* -------------------------------------------------------------------------- */
-
 export default function HoneypotLogsPage({
   onNavigate,
 }: HoneypotLogsProps) {
@@ -277,10 +230,6 @@ export default function HoneypotLogsPage({
 
   const events = rawEvents ?? [];
 
-  /* ------------------------------------------------------------------------ */
-  /*                                  State                                   */
-  /* ------------------------------------------------------------------------ */
-
   const [search, setSearch] = useState('');
   const [sevFilter, setSevFilter] =
     useState<'ALL' | Severity>('ALL');
@@ -288,16 +237,10 @@ export default function HoneypotLogsPage({
     useState('ALL');
 
   const [selectedEventId, setSelectedEventId] =
-    useState<string | null>(
-      events[0]?.event_id ?? null,
-    );
+    useState<string | null>(null);
 
   const [isRefreshing, setIsRefreshing] =
     useState(false);
-
-  /* ------------------------------------------------------------------------ */
-  /*                         Synchronize selection                            */
-  /* ------------------------------------------------------------------------ */
 
   useEffect(() => {
     if (events.length === 0) {
@@ -305,23 +248,19 @@ export default function HoneypotLogsPage({
       return;
     }
 
-    const selectedStillExists =
+    const exists =
       selectedEventId !== null &&
       events.some(
         (event) =>
           event.event_id === selectedEventId,
       );
 
-    if (!selectedStillExists) {
+    if (!exists) {
       setSelectedEventId(
         events[0].event_id,
       );
     }
   }, [events, selectedEventId]);
-
-  /* ------------------------------------------------------------------------ */
-  /*                             Selected event                               */
-  /* ------------------------------------------------------------------------ */
 
   const selectedEvent = useMemo(
     () =>
@@ -333,17 +272,11 @@ export default function HoneypotLogsPage({
     [events, selectedEventId],
   );
 
-  /* ------------------------------------------------------------------------ */
-  /*                          Filter options                                  */
-  /* ------------------------------------------------------------------------ */
-
   const uniqueHoneypots = useMemo(() => {
     return Array.from(
       new Set(
         events
-          .map(
-            (event) => event.honeypot,
-          )
+          .map((event) => event.honeypot)
           .filter(Boolean),
       ),
     ).sort((a, b) =>
@@ -351,44 +284,29 @@ export default function HoneypotLogsPage({
     );
   }, [events]);
 
-  /* ------------------------------------------------------------------------ */
-  /*                           Filtered events                                */
-  /* ------------------------------------------------------------------------ */
-
   const filtered = useMemo(() => {
-    const normalizedSearch =
+    const normalized =
       search.trim().toLowerCase();
 
     return events.filter((event) => {
-      const eventWithOptionalData =
-        event as LogEventV2 & {
-          country?: string;
-          countryCode?: string;
-          asn?: string;
-        };
-
-      const searchableValues = [
+      const searchable = [
         event.src_ip,
         event.event_type,
         event.command,
         event.honeypot,
         event.username,
-        eventWithOptionalData.country,
-        eventWithOptionalData.countryCode,
-        eventWithOptionalData.asn,
+        event.country,
+        event.geo_country,
+        event.asn,
         String(event.dst_port ?? ''),
       ];
 
       const matchesSearch =
-        !normalizedSearch ||
-        searchableValues.some((value) =>
+        !normalized ||
+        searchable.some((value) =>
           value
-            ? value
-              .toLowerCase()
-              .includes(
-                normalizedSearch,
-              )
-            : false,
+            ?.toLowerCase()
+            .includes(normalized),
         );
 
       const severity = getSeverity(
@@ -401,8 +319,7 @@ export default function HoneypotLogsPage({
 
       const matchesHoneypot =
         honeypotFilter === 'ALL' ||
-        event.honeypot ===
-        honeypotFilter;
+        event.honeypot === honeypotFilter;
 
       return (
         matchesSearch &&
@@ -417,39 +334,60 @@ export default function HoneypotLogsPage({
     honeypotFilter,
   ]);
 
-  /* ------------------------------------------------------------------------ */
-  /*                               Statistics                                 */
-  /* ------------------------------------------------------------------------ */
-
   const stats = useMemo(() => {
     const critical = filtered.filter(
       (event) =>
-        getSeverity(event.threat_score) ===
-        'critical',
+        getSeverity(
+          event.threat_score,
+        ) === 'critical',
     ).length;
 
     const high = filtered.filter(
       (event) =>
-        getSeverity(event.threat_score) ===
-        'high',
+        getSeverity(
+          event.threat_score,
+        ) === 'high',
     ).length;
 
     const medium = filtered.filter(
       (event) =>
-        getSeverity(event.threat_score) ===
-        'medium',
+        getSeverity(
+          event.threat_score,
+        ) === 'medium',
     ).length;
 
     const low = filtered.filter(
       (event) =>
-        getSeverity(event.threat_score) ===
-        'low',
+        getSeverity(
+          event.threat_score,
+        ) === 'low',
     ).length;
 
     const uniqueSources =
       new Set(
         filtered
           .map((event) => event.src_ip)
+          .filter(Boolean),
+      ).size;
+
+    const uniqueCountries =
+      new Set(
+        filtered
+          .map(
+            (event) =>
+              event.country ||
+              event.geo_country,
+          )
+          .filter(Boolean),
+      ).size;
+
+    const uniqueTypes =
+      new Set(
+        filtered
+          .map(
+            (event) =>
+              event.event_type,
+          )
           .filter(Boolean),
       ).size;
 
@@ -460,12 +398,10 @@ export default function HoneypotLogsPage({
       medium,
       low,
       uniqueSources,
+      uniqueCountries,
+      uniqueTypes,
     };
   }, [filtered]);
-
-  /* ------------------------------------------------------------------------ */
-  /*                            Pagination                                    */
-  /* ------------------------------------------------------------------------ */
 
   const currentPage =
     Math.floor(offset / limit) + 1;
@@ -475,28 +411,10 @@ export default function HoneypotLogsPage({
     Math.ceil(total / limit),
   );
 
-  const canGoPrevious =
-    currentPage > 1;
-
-  const canGoNext =
-    currentPage < totalPages;
-
-  const goToPage = (
-    page: number,
-  ) => {
-    const nextPage = Math.min(
-      totalPages,
-      Math.max(1, page),
-    );
-
-    setPage(
-      (nextPage - 1) * limit,
-    );
-  };
-
-  /* ------------------------------------------------------------------------ */
-  /*                               Filters                                    */
-  /* ------------------------------------------------------------------------ */
+  const hasFilters =
+    Boolean(search.trim()) ||
+    sevFilter !== 'ALL' ||
+    honeypotFilter !== 'ALL';
 
   const clearFilters = () => {
     setSearch('');
@@ -504,19 +422,8 @@ export default function HoneypotLogsPage({
     setHoneypotFilter('ALL');
   };
 
-  const hasFilters =
-    Boolean(search.trim()) ||
-    sevFilter !== 'ALL' ||
-    honeypotFilter !== 'ALL';
-
-  /* ------------------------------------------------------------------------ */
-  /*                                Refresh                                   */
-  /* ------------------------------------------------------------------------ */
-
   const handleRefresh = async () => {
-    if (isRefreshing) {
-      return;
-    }
+    if (isRefreshing) return;
 
     setIsRefreshing(true);
 
@@ -527,51 +434,45 @@ export default function HoneypotLogsPage({
     }
   };
 
-  /* ------------------------------------------------------------------------ */
-  /*                                 Export                                   */
-  /* ------------------------------------------------------------------------ */
-
-  const handleExport = () => {
-    exportEventsToCsv(filtered);
-  };
-
-  /* ------------------------------------------------------------------------ */
-  /*                            Keyboard access                               */
-  /* ------------------------------------------------------------------------ */
-
   const handleEventRowKeyDown = (
-    event: KeyboardEvent<HTMLTableRowElement>,
+    keyboardEvent: KeyboardEvent<HTMLTableRowElement>,
     eventId: string,
   ) => {
     if (
-      event.key === 'Enter' ||
-      event.key === ' '
+      keyboardEvent.key === 'Enter' ||
+      keyboardEvent.key === ' '
     ) {
-      event.preventDefault();
+      keyboardEvent.preventDefault();
       setSelectedEventId(eventId);
     }
   };
 
-  /* ------------------------------------------------------------------------ */
-  /*                                  Render                                  */
-  /* ------------------------------------------------------------------------ */
+  const goToPage = (page: number) => {
+    const nextPage = Math.min(
+      totalPages,
+      Math.max(1, page),
+    );
+
+    setPage(
+      (nextPage - 1) * limit,
+    );
+  };
+
+  const selectedSeverity = selectedEvent
+    ? getSeverity(
+      selectedEvent.threat_score,
+    )
+    : null;
 
   return (
-    <div className="at-honeypot-page">
-      {/* ================================================================== */
-      /* PAGE HEADER                                                         */
-      /* ================================================================== */}
-
+    <div className="at-honeypot-page-v2">
       <PageHeader
         breadcrumbs={[
           { label: 'Operations' },
           { label: 'Honeypot Logs' },
         ]}
         title="Honeypot Logs"
-        description={`${stats.total.toLocaleString()} visible ${stats.total === 1
-            ? 'event'
-            : 'events'
-          } · ${stats.uniqueSources.toLocaleString()} unique sources`}
+        description="Analyze incoming honeypot telemetry, pivot on source indicators, and inspect individual attack events."
         actions={
           <>
             <button
@@ -591,6 +492,7 @@ export default function HoneypotLogsPage({
                     : ''
                 }
               />
+
               {isRefreshing
                 ? 'Refreshing'
                 : 'Refresh'}
@@ -599,22 +501,21 @@ export default function HoneypotLogsPage({
             <button
               type="button"
               className="at-btn at-btn-secondary at-btn-sm"
-              onClick={handleExport}
               disabled={
                 filtered.length === 0
               }
-              title={`Export ${filtered.length} visible events`}
+              onClick={() =>
+                exportEventsToCsv(filtered)
+              }
             >
               <Download size={13} />
-              Export
+              Export CSV
             </button>
           </>
         }
         filters={
-          <div className="at-honeypot-filterbar">
-            {/* Search */}
-
-            <div className="at-honeypot-search">
+          <div className="at-hp-toolbar">
+            <div className="at-hp-search">
               <Search size={14} />
 
               <input
@@ -625,7 +526,7 @@ export default function HoneypotLogsPage({
                     event.target.value,
                   )
                 }
-                placeholder="Search IPs, commands, event types..."
+                placeholder="Search IPs, commands, event types, honeypots..."
                 aria-label="Search honeypot events"
                 spellCheck={false}
               />
@@ -643,9 +544,7 @@ export default function HoneypotLogsPage({
               )}
             </div>
 
-            {/* Severity */}
-
-            <label className="at-honeypot-select-wrap">
+            <label className="at-hp-filter">
               <span>SEVERITY</span>
 
               <select
@@ -658,34 +557,26 @@ export default function HoneypotLogsPage({
                     | Severity,
                   )
                 }
-                className="at-honeypot-select"
-                aria-label="Filter by severity"
               >
                 <option value="ALL">
-                  All
+                  All severities
                 </option>
-
                 <option value="critical">
                   Critical
                 </option>
-
                 <option value="high">
                   High
                 </option>
-
                 <option value="medium">
                   Medium
                 </option>
-
                 <option value="low">
                   Low
                 </option>
               </select>
             </label>
 
-            {/* Honeypot */}
-
-            <label className="at-honeypot-select-wrap">
+            <label className="at-hp-filter">
               <span>HONEYPOT</span>
 
               <select
@@ -695,11 +586,9 @@ export default function HoneypotLogsPage({
                     event.target.value,
                   )
                 }
-                className="at-honeypot-select"
-                aria-label="Filter by honeypot"
               >
                 <option value="ALL">
-                  All
+                  All honeypots
                 </option>
 
                 {uniqueHoneypots.map(
@@ -718,470 +607,560 @@ export default function HoneypotLogsPage({
             {hasFilters && (
               <button
                 type="button"
-                className="at-honeypot-clear"
+                className="at-hp-clear"
                 onClick={clearFilters}
               >
                 <CircleX size={13} />
                 Clear
               </button>
             )}
-
-            <div className="at-honeypot-filter-spacer" />
-
-            {/* Severity telemetry */}
-
-            <div className="at-honeypot-telemetry">
-              <span>
-                <i className="critical" />
-                {stats.critical}
-                <small>critical</small>
-              </span>
-
-              <span>
-                <i className="high" />
-                {stats.high}
-                <small>high</small>
-              </span>
-            </div>
           </div>
         }
       />
 
-      {/* ================================================================== */
-      /* WORKSPACE                                                           */
-      /* ================================================================== */}
+      <div className="at-honeypot-page-scroll custom-scrollbar">
+        <div className="at-honeypot-page-content">
 
-      <div className="at-honeypot-workspace">
-        {/* ================================================================ */
-        /* EVENT STREAM                                                      */
-        /* ================================================================ */}
+          {/* ===============================================================
+              Analytics strip
+             =============================================================== */}
 
-        <section className="at-honeypot-stream">
-          <div className="at-honeypot-stream-header">
-            <div>
-              <span className="at-v2-kicker">
-                EVENT STREAM
-              </span>
-
-              <h2>
-                Incoming honeypot activity
-              </h2>
-            </div>
-
-            <div
-              className={`at-honeypot-live ${isLoadingEvents
-                  ? 'loading'
-                  : events.length > 0
-                    ? 'active'
-                    : 'idle'
-                }`}
-            >
-              <span />
-
-              {isLoadingEvents
-                ? 'SYNCING'
-                : events.length > 0
-                  ? 'LIVE'
-                  : 'STANDBY'}
-            </div>
-          </div>
-
-          <div className="at-honeypot-table-wrap">
-            <table className="at-honeypot-table">
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Source</th>
-                  <th>Port</th>
-                  <th>Event</th>
-                  <th>Honeypot</th>
-                  <th>Country</th>
-                  <th>User</th>
-                  <th>Severity</th>
-                  <th />
-                </tr>
-              </thead>
-
-              <tbody>
-                {isLoadingEvents &&
-                  events.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={9}
-                      className="at-honeypot-empty"
-                    >
-                      <RefreshCw
-                        size={20}
-                        className="at-spin"
-                      />
-
-                      <strong>
-                        Loading honeypot
-                        telemetry
-                      </strong>
-
-                      <span>
-                        Fetching the latest
-                        event stream.
-                      </span>
-                    </td>
-                  </tr>
-                ) : filtered.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={9}
-                      className="at-honeypot-empty"
-                    >
-                      <ShieldAlert
-                        size={20}
-                      />
-
-                      <strong>
-                        No events match the
-                        current filters
-                      </strong>
-
-                      <span>
-                        Adjust the search or
-                        severity filters to
-                        continue.
-                      </span>
-
-                      <button
-                        type="button"
-                        onClick={
-                          clearFilters
-                        }
-                      >
-                        Clear filters
-                      </button>
-                    </td>
-                  </tr>
-                ) : (
-                  filtered.map((event) => {
-                    const severity =
-                      getSeverity(
-                        event.threat_score,
-                      );
-
-                    const active =
-                      selectedEventId ===
-                      event.event_id;
-
-                    const eventWithOptionalData =
-                      event as LogEventV2 & {
-                        country?: string;
-                        countryCode?: string;
-                      };
-
-                    return (
-                      <tr
-                        key={
-                          event.event_id
-                        }
-                        className={
-                          active
-                            ? 'active'
-                            : ''
-                        }
-                        tabIndex={0}
-                        aria-selected={
-                          active
-                        }
-                        onClick={() =>
-                          setSelectedEventId(
-                            event.event_id,
-                          )
-                        }
-                        onKeyDown={(keyboardEvent) =>
-                          handleEventRowKeyDown(
-                            keyboardEvent,
-                            event.event_id,
-                          )
-                        }
-                      >
-                        <td>
-                          <span className="at-honeypot-time">
-                            {formatTime(
-                              event.timestamp,
-                            )}
-                          </span>
-                        </td>
-
-                        <td>
-                          <button
-                            type="button"
-                            className="at-honeypot-ip"
-                            onClick={(
-                              clickEvent,
-                            ) => {
-                              clickEvent.stopPropagation();
-
-                              setSearch(
-                                event.src_ip,
-                              );
-                            }}
-                          >
-                            {event.src_ip}
-                          </button>
-                        </td>
-
-                        <td>
-                          <code className="at-honeypot-port">
-                            {event.dst_port ??
-                              '—'}
-                          </code>
-                        </td>
-
-                        <td>
-                          <span className="at-honeypot-event-type">
-                            {prettyEventType(
-                              event.event_type,
-                            )}
-                          </span>
-                        </td>
-
-                        <td>
-                          <span className="at-honeypot-honeypot">
-                            {event.honeypot ||
-                              '—'}
-                          </span>
-                        </td>
-
-                        <td>
-                          <span className="at-honeypot-country">
-                            {eventWithOptionalData.country ||
-                              '—'}
-                          </span>
-                        </td>
-
-                        <td>
-                          <code className="at-honeypot-user">
-                            {event.username ||
-                              '—'}
-                          </code>
-                        </td>
-
-                        <td>
-                          <span
-                            className={`at-honeypot-severity ${severity}`}
-                          >
-                            <i />
-
-                            {
-                              SEVERITY_CONFIG[
-                                severity
-                              ].short
-                            }
-                          </span>
-                        </td>
-
-                        <td>
-                          <ChevronRight
-                            size={13}
-                            className="at-honeypot-row-arrow"
-                            aria-hidden="true"
-                          />
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          <footer className="at-honeypot-stream-footer">
-            <span>
-              Showing{' '}
-              <strong>
-                {filtered.length}
-              </strong>{' '}
-              visible events
-            </span>
-
-            <span>
-              {total.toLocaleString()} total
-              records
-            </span>
-
-            <div className="at-honeypot-pagination">
-              <button
-                type="button"
-                className="at-btn at-btn-ghost at-btn-sm"
-                onClick={() =>
-                  goToPage(
-                    currentPage - 1,
-                  )
-                }
-                disabled={
-                  !canGoPrevious
-                }
-                aria-label="Previous page"
-              >
-                <ChevronLeft size={13} />
-              </button>
-
-              <span>
-                Page{' '}
-                <strong>
-                  {currentPage}
-                </strong>{' '}
-                of{' '}
-                <strong>
-                  {totalPages}
-                </strong>
-              </span>
-
-              <button
-                type="button"
-                className="at-btn at-btn-ghost at-btn-sm"
-                onClick={() =>
-                  goToPage(
-                    currentPage + 1,
-                  )
-                }
-                disabled={!canGoNext}
-                aria-label="Next page"
-              >
-                <ChevronRight size={13} />
-              </button>
-            </div>
-          </footer>
-        </section>
-
-        {/* ================================================================ */
-        /* DETAIL INSPECTOR                                                  */
-        /* ================================================================ */}
-
-        <aside className="at-honeypot-inspector">
-          {!selectedEvent ? (
-            <div className="at-honeypot-inspector-empty">
-              <Server size={24} />
-
-              <strong>
-                Select an event
-              </strong>
-
-              <span>
-                Event details and available
-                actions will appear here.
-              </span>
-            </div>
-          ) : (
-            <>
-              <div className="at-honeypot-inspector-header">
-                <div>
-                  <span className="at-v2-kicker">
-                    EVENT DETAIL
-                  </span>
-
-                  <h2>
-                    {prettyEventType(
-                      selectedEvent.event_type,
-                    )}
-                  </h2>
-                </div>
-
-                <button
-                  type="button"
-                  className="at-honeypot-close"
-                  onClick={() =>
-                    setSelectedEventId(
-                      null,
-                    )
-                  }
-                  aria-label="Close event detail"
-                >
-                  <X size={15} />
-                </button>
+          <section className="at-hp-summary">
+            <div className="at-hp-summary-card">
+              <div>
+                <span>VISIBLE EVENTS</span>
+                <Activity size={15} />
               </div>
 
-              <div className="at-honeypot-inspector-body">
-                {/* ======================================================== */
-                /* Threat identity                                             */
-                /* ======================================================== */}
+              <strong>
+                {stats.total.toLocaleString()}
+              </strong>
 
-                <div className="at-honeypot-identity">
-                  <div className="at-honeypot-identity-top">
+              <small>
+                Current filtered result set
+              </small>
+            </div>
+
+            <div className="at-hp-summary-card danger">
+              <div>
+                <span>CRITICAL</span>
+                <ShieldAlert size={15} />
+              </div>
+
+              <strong>
+                {stats.critical.toLocaleString()}
+              </strong>
+
+              <small>
+                Immediate review priority
+              </small>
+            </div>
+
+            <div className="at-hp-summary-card">
+              <div>
+                <span>UNIQUE SOURCES</span>
+                <Globe2 size={15} />
+              </div>
+
+              <strong>
+                {stats.uniqueSources.toLocaleString()}
+              </strong>
+
+              <small>
+                Distinct source IPs
+              </small>
+            </div>
+
+            <div className="at-hp-summary-card">
+              <div>
+                <span>COUNTRIES</span>
+                <Globe2 size={15} />
+              </div>
+
+              <strong>
+                {stats.uniqueCountries.toLocaleString()}
+              </strong>
+
+              <small>
+                Enriched source origins
+              </small>
+            </div>
+
+            <div className="at-hp-summary-card">
+              <div>
+                <span>EVENT TYPES</span>
+                <Command size={15} />
+              </div>
+
+              <strong>
+                {stats.uniqueTypes.toLocaleString()}
+              </strong>
+
+              <small>
+                Distinct attack signatures
+              </small>
+            </div>
+          </section>
+
+          {/* ===============================================================
+              Workspace
+             =============================================================== */}
+
+          <section className="at-hp-workspace">
+
+            {/* Event stream */}
+
+            <div className="at-hp-stream-panel">
+              <div className="at-hp-stream-header">
+                <div>
+                  <span className="at-eyebrow">
+                    EVENT STREAM
+                  </span>
+
+                  <div className="at-hp-stream-title-row">
+                    <h2>
+                      Incoming honeypot activity
+                    </h2>
+
                     <span
-                      className={`at-honeypot-severity large ${getSeverity(
-                        selectedEvent.threat_score,
-                      )}`}
+                      className={`at-hp-live-state ${isLoadingEvents
+                          ? 'loading'
+                          : events.length > 0
+                            ? 'active'
+                            : 'idle'
+                        }`}
                     >
                       <i />
 
-                      {
-                        SEVERITY_CONFIG[
-                          getSeverity(
-                            selectedEvent.threat_score,
-                          )
-                        ].label
-                      }
-                    </span>
-
-                    <span className="at-honeypot-event-time">
-                      <Clock3 size={11} />
-
-                      {formatTimestamp(
-                        selectedEvent.timestamp,
-                      )}
+                      {isLoadingEvents
+                        ? 'SYNCING'
+                        : events.length > 0
+                          ? 'LIVE'
+                          : 'STANDBY'}
                     </span>
                   </div>
+                </div>
 
-                  <span className="at-honeypot-identity-label">
-                    SOURCE IP
+                <span className="at-hp-record-count">
+                  {total.toLocaleString()} records
+                </span>
+              </div>
+
+              <div className="at-hp-table-wrap">
+                <table className="at-hp-table">
+                  <thead>
+                    <tr>
+                      <th>TIME</th>
+                      <th>SOURCE</th>
+                      <th>EVENT</th>
+                      <th>HONEYPOT</th>
+                      <th>ORIGIN</th>
+                      <th>SCORE</th>
+                      <th>SEVERITY</th>
+                      <th />
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {isLoadingEvents &&
+                      events.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={8}
+                          className="at-hp-empty"
+                        >
+                          <RefreshCw
+                            size={20}
+                            className="at-spin"
+                          />
+
+                          <strong>
+                            Loading telemetry
+                          </strong>
+
+                          <span>
+                            Fetching the latest
+                            honeypot event stream.
+                          </span>
+                        </td>
+                      </tr>
+                    ) : filtered.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={8}
+                          className="at-hp-empty"
+                        >
+                          <ShieldAlert size={20} />
+
+                          <strong>
+                            No events match the
+                            current filters
+                          </strong>
+
+                          <span>
+                            Try changing the
+                            search or severity
+                            filters.
+                          </span>
+
+                          {hasFilters && (
+                            <button
+                              type="button"
+                              onClick={clearFilters}
+                            >
+                              Clear all filters
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ) : (
+                      filtered.map((event) => {
+                        const severity =
+                          getSeverity(
+                            event.threat_score,
+                          );
+
+                        const active =
+                          selectedEventId ===
+                          event.event_id;
+
+                        return (
+                          <tr
+                            key={event.event_id}
+                            className={
+                              active
+                                ? 'active'
+                                : ''
+                            }
+                            tabIndex={0}
+                            aria-selected={active}
+                            onClick={() =>
+                              setSelectedEventId(
+                                event.event_id,
+                              )
+                            }
+                            onKeyDown={(
+                              keyboardEvent,
+                            ) =>
+                              handleEventRowKeyDown(
+                                keyboardEvent,
+                                event.event_id,
+                              )
+                            }
+                          >
+                            <td>
+                              <div className="at-hp-time-cell">
+                                <strong>
+                                  {formatTime(
+                                    event.timestamp,
+                                  )}
+                                </strong>
+
+                                <span>
+                                  {new Date(
+                                    event.timestamp,
+                                  ).toLocaleDateString(
+                                    'en-US',
+                                    {
+                                      month: 'short',
+                                      day: 'numeric',
+                                    },
+                                  )}
+                                </span>
+                              </div>
+                            </td>
+
+                            <td>
+                              <button
+                                type="button"
+                                className="at-hp-source"
+                                onClick={(clickEvent) => {
+                                  clickEvent.stopPropagation();
+
+                                  setSearch(
+                                    event.src_ip,
+                                  );
+                                }}
+                              >
+                                {event.src_ip}
+                              </button>
+
+                              {event.src_port && (
+                                <span className="at-hp-subvalue">
+                                  Source port {event.src_port}
+                                </span>
+                              )}
+                            </td>
+
+                            <td>
+                              <div className="at-hp-event-cell">
+                                <strong>
+                                  {prettyEventType(
+                                    event.event_type,
+                                  )}
+                                </strong>
+
+                                <span>
+                                  {event.dst_port
+                                    ? `Destination ${event.dst_port}`
+                                    : event.protocol ||
+                                    'Telemetry event'}
+                                </span>
+                              </div>
+                            </td>
+
+                            <td>
+                              <span className="at-hp-honeypot-pill">
+                                {event.honeypot ||
+                                  'Unknown'}
+                              </span>
+                            </td>
+
+                            <td>
+                              <div className="at-hp-origin-cell">
+                                <strong>
+                                  {event.country ||
+                                    event.geo_country ||
+                                    'Unknown'}
+                                </strong>
+
+                                {event.asn && (
+                                  <span>
+                                    {event.asn}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+
+                            <td>
+                              <div className="at-hp-score">
+                                <strong>
+                                  {event.threat_score ??
+                                    '—'}
+                                </strong>
+
+                                {event.threat_score !==
+                                  undefined && (
+                                    <span>
+                                      <i
+                                        className={
+                                          severity
+                                        }
+                                        style={{
+                                          width: `${Math.min(
+                                            100,
+                                            Math.max(
+                                              0,
+                                              event.threat_score,
+                                            ),
+                                          )}%`,
+                                        }}
+                                      />
+                                    </span>
+                                  )}
+                              </div>
+                            </td>
+
+                            <td>
+                              <span
+                                className={`at-hp-severity ${severity}`}
+                              >
+                                <i />
+                                {
+                                  SEVERITY_CONFIG[
+                                    severity
+                                  ].short
+                                }
+                              </span>
+                            </td>
+
+                            <td>
+                              <ChevronRight
+                                size={14}
+                                className="at-hp-row-arrow"
+                              />
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              <footer className="at-hp-table-footer">
+                <div>
+                  Showing{' '}
+                  <strong>
+                    {filtered.length}
+                  </strong>{' '}
+                  visible events
+                </div>
+
+                <div className="at-hp-pagination">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      goToPage(
+                        currentPage - 1,
+                      )
+                    }
+                    disabled={
+                      currentPage <= 1
+                    }
+                    aria-label="Previous page"
+                  >
+                    <ChevronLeft size={13} />
+                  </button>
+
+                  <span>
+                    Page{' '}
+                    <strong>
+                      {currentPage}
+                    </strong>{' '}
+                    of{' '}
+                    <strong>
+                      {totalPages}
+                    </strong>
                   </span>
 
                   <button
                     type="button"
-                    className="at-honeypot-source-ip"
                     onClick={() =>
-                      setSearch(
-                        selectedEvent.src_ip,
+                      goToPage(
+                        currentPage + 1,
                       )
                     }
+                    disabled={
+                      currentPage >=
+                      totalPages
+                    }
+                    aria-label="Next page"
                   >
-                    {selectedEvent.src_ip}
+                    <ChevronRight size={13} />
                   </button>
+                </div>
+              </footer>
+            </div>
 
-                  <span className="at-honeypot-threat-score">
-                    Threat score:{' '}
-                    <strong>
-                      {selectedEvent.threat_score ??
-                        0}
-                    </strong>
+            {/* Inspector */}
+
+            <aside className="at-hp-inspector">
+              {!selectedEvent ? (
+                <div className="at-hp-inspector-empty">
+                  <Server size={24} />
+
+                  <strong>
+                    Select an event
+                  </strong>
+
+                  <span>
+                    Event details and
+                    investigation actions will
+                    appear here.
                   </span>
                 </div>
+              ) : (
+                <>
+                  <div className="at-hp-inspector-header">
+                    <div>
+                      <span className="at-eyebrow">
+                        EVENT DETAIL
+                      </span>
 
-                {/* ======================================================== */
-                /* Connection                                                 */
-                /* ======================================================== */}
+                      <h2>
+                        {prettyEventType(
+                          selectedEvent.event_type,
+                        )}
+                      </h2>
+                    </div>
 
-                <div className="at-honeypot-section">
-                  <div className="at-honeypot-section-title">
-                    <span>
-                      CONNECTION
-                    </span>
-
-                    <Command size={12} />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSelectedEventId(null)
+                      }
+                      aria-label="Close event detail"
+                    >
+                      <X size={15} />
+                    </button>
                   </div>
 
-                  {(() => {
-                    const eventWithOptionalData =
-                      selectedEvent as LogEventV2 & {
-                        country?: string;
-                        countryCode?: string;
-                        asn?: string;
-                      };
+                  <div className="at-hp-inspector-body">
 
-                    return (
-                      <div className="at-honeypot-detail-grid">
+                    <section className="at-hp-identity">
+                      <div className="at-hp-identity-top">
+                        <span
+                          className={`at-hp-severity large ${selectedSeverity
+                            }`}
+                        >
+                          <i />
+                          {
+                            SEVERITY_CONFIG[
+                              selectedSeverity!
+                            ].label
+                          }
+                        </span>
+
+                        <span className="at-hp-event-time">
+                          <Clock3 size={11} />
+                          {formatTimestamp(
+                            selectedEvent.timestamp,
+                          )}
+                        </span>
+                      </div>
+
+                      <span className="at-hp-label">
+                        SOURCE IP
+                      </span>
+
+                      <button
+                        type="button"
+                        className="at-hp-source-ip"
+                        onClick={() =>
+                          setSearch(
+                            selectedEvent.src_ip,
+                          )
+                        }
+                      >
+                        {selectedEvent.src_ip}
+                      </button>
+
+                      <div className="at-hp-score-large">
+                        <span>
+                          Threat score
+                        </span>
+
+                        <strong>
+                          {selectedEvent.threat_score ??
+                            0}
+                        </strong>
+                      </div>
+                    </section>
+
+                    <section className="at-hp-detail-section">
+                      <div className="at-hp-section-heading">
+                        <span>
+                          CONNECTION
+                        </span>
+                        <Command size={12} />
+                      </div>
+
+                      <div className="at-hp-detail-grid">
+                        <div>
+                          <span>
+                            Honeypot
+                          </span>
+                          <strong>
+                            {selectedEvent.honeypot ||
+                              '—'}
+                          </strong>
+                        </div>
+
                         <div>
                           <span>
                             Destination port
                           </span>
-
                           <code>
                             {selectedEvent.dst_port ??
                               '—'}
@@ -1190,13 +1169,12 @@ export default function HoneypotLogsPage({
 
                         <div>
                           <span>
-                            Honeypot
+                            Protocol
                           </span>
-
                           <strong>
-                            {
-                              selectedEvent.honeypot
-                            }
+                            {selectedEvent.protocol ||
+                              selectedEvent.transport ||
+                              '—'}
                           </strong>
                         </div>
 
@@ -1204,29 +1182,20 @@ export default function HoneypotLogsPage({
                           <span>
                             Country
                           </span>
-
                           <strong>
-                            {eventWithOptionalData.country ||
+                            {selectedEvent.country ||
+                              selectedEvent.geo_country ||
                               '—'}
                           </strong>
                         </div>
 
                         <div>
                           <span>
-                            Country code
+                            ASN
                           </span>
-
                           <code>
-                            {eventWithOptionalData.countryCode ||
-                              '—'}
-                          </code>
-                        </div>
-
-                        <div>
-                          <span>ASN</span>
-
-                          <code>
-                            {eventWithOptionalData.asn ||
+                            {selectedEvent.asn ||
+                              selectedEvent.asn_org ||
                               '—'}
                           </code>
                         </div>
@@ -1235,179 +1204,148 @@ export default function HoneypotLogsPage({
                           <span>
                             Username
                           </span>
-
                           <code>
                             {selectedEvent.username ||
                               '—'}
                           </code>
                         </div>
                       </div>
-                    );
-                  })()}
-                </div>
+                    </section>
 
-                {/* ======================================================== */
-                  /* Command                                                    */
-                  /* ======================================================== */}
-
-                  {
-                    selectedEvent.command && (
-                      <div className="at-honeypot-section">
-                        <div className="at-honeypot-section-title">
+                    {selectedEvent.command && (
+                      <section className="at-hp-detail-section">
+                        <div className="at-hp-section-heading">
                           <span>
-                            COMMAND EXECUTED
+                            COMMAND CAPTURED
                           </span>
-
-                          <TerminalSquare
-                            size={12}
-                          />
+                          <TerminalSquare size={12} />
                         </div>
 
-                        <div className="at-honeypot-command">
-                          <div className="at-honeypot-command-header">
+                        <div className="at-hp-command">
+                          <div>
                             <span>
                               shell
                             </span>
-
                             <span>
                               captured
                             </span>
                           </div>
 
                           <code>
-                            {
-                              selectedEvent.command
-                            }
+                            {selectedEvent.command}
+                          </code>
+                        </div>
+                      </section>
+                    )}
+
+                    <section className="at-hp-detail-section">
+                      <div className="at-hp-section-heading">
+                        <span>
+                          EVENT CONTEXT
+                        </span>
+                        <Activity size={12} />
+                      </div>
+
+                      <div className="at-hp-context">
+                        <div>
+                          <span>
+                            Event ID
+                          </span>
+                          <code>
+                            {selectedEvent.event_id}
+                          </code>
+                        </div>
+
+                        <div>
+                          <span>
+                            Event type
+                          </span>
+                          <strong>
+                            {selectedEvent.event_type}
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span>
+                            Observed
+                          </span>
+                          <code>
+                            {formatTimestamp(
+                              selectedEvent.timestamp,
+                            )}
                           </code>
                         </div>
                       </div>
-                    )
-                  }
+                    </section>
 
-                {/* ======================================================== */
-                  /* Event context                                             */
-                  /* ======================================================== */}
+                    <section className="at-hp-actions">
+                      <button
+                        type="button"
+                        className="at-btn at-btn-primary"
+                        onClick={() =>
+                          onNavigate(
+                            'investigate',
+                          )
+                        }
+                      >
+                        <ShieldAlert
+                          size={14}
+                        />
+                        Investigate
+                        <ArrowUpRight
+                          size={13}
+                        />
+                      </button>
 
-                  <div className="at-honeypot-section">
-                    <div className="at-honeypot-section-title">
-                      <span>
-                        EVENT CONTEXT
-                      </span>
+                      <button
+                        type="button"
+                        className="at-btn at-btn-secondary"
+                        onClick={() =>
+                          onNavigate('iocs')
+                        }
+                      >
+                        Add to IOC
+                      </button>
+                    </section>
 
-                      <Activity size={12} />
-                    </div>
-
-                    <div className="at-honeypot-event-context">
-                      <div>
-                        <span>Event ID</span>
-
-                        <code>
-                          {
-                            selectedEvent.event_id
-                          }
-                        </code>
-                      </div>
-
-                      <div>
-                        <span>
-                          Event type
-                        </span>
-
-                        <strong>
-                          {
-                            selectedEvent.event_type
-                          }
-                        </strong>
-                      </div>
-
-                      <div>
-                        <span>
-                          Observed
-                        </span>
-
-                        <code>
-                          {formatTimestamp(
-                            selectedEvent.timestamp,
-                          )}
-                        </code>
-                      </div>
-                    </div>
-                  </div>
-
-                {/* ======================================================== */
-                  /* Actions                                                    */
-                  /* ======================================================== */}
-
-                  <div className="at-honeypot-actions">
                     <button
                       type="button"
-                      className="at-btn at-btn-primary"
+                      className="at-hp-pivot"
+                      onClick={() =>
+                        setSearch(
+                          selectedEvent.src_ip,
+                        )
+                      }
+                    >
+                      <Globe2 size={13} />
+
+                      Search this source across
+                      telemetry
+
+                      <ChevronRight size={13} />
+                    </button>
+
+                    <button
+                      type="button"
+                      className="at-hp-pivot"
                       onClick={() =>
                         onNavigate(
                           'investigate',
                         )
                       }
                     >
-                      <ShieldAlert
-                        size={14}
-                      />
-                      Investigate
-                      <ArrowUpRight
-                        size={13}
-                      />
-                    </button>
+                      <Server size={13} />
 
-                    <button
-                      type="button"
-                      className="at-btn at-btn-secondary"
-                      onClick={() =>
-                        onNavigate('iocs')
-                      }
-                    >
-                      Add to IOC
+                      Open investigation workspace
+
+                      <ChevronRight size={13} />
                     </button>
                   </div>
-
-                {/* ======================================================== */
-                /* Investigation pivots                                      */
-                /* ======================================================== */}
-
-                <button
-                  type="button"
-                  className="at-honeypot-pivot"
-                  onClick={() =>
-                    setSearch(
-                      selectedEvent.src_ip,
-                    )
-                  }
-                >
-                  <Globe2 size={13} />
-
-                  Search this source across
-                  the event stream
-
-                  <ChevronRight size={13} />
-                </button>
-
-                <button
-                  type="button"
-                  className="at-honeypot-pivot"
-                  onClick={() =>
-                    onNavigate(
-                      'investigate',
-                    )
-                  }
-                >
-                  <Server size={13} />
-
-                  Open investigation workspace
-
-                  <ChevronRight size={13} />
-                </button>
-              </div>
-            </>
-          )}
-        </aside>
+                </>
+              )}
+            </aside>
+          </section>
+        </div>
       </div>
     </div>
   );

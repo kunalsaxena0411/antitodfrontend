@@ -1,13 +1,14 @@
 import {
+  useEffect,
   useMemo,
   useState,
-  type ElementType,
 } from 'react';
 
 import {
   Activity,
-  ChevronDown,
+  ChevronRight,
   Download,
+  ExternalLink,
   Filter,
   Info,
   Layers,
@@ -18,180 +19,25 @@ import {
 } from 'lucide-react';
 
 import PageHeader from '../components/layout/PageHeader';
-
-/* -------------------------------------------------------------------------- */
-/*                                   Types                                    */
-/* -------------------------------------------------------------------------- */
-
-type Coverage =
-  | 'high'
-  | 'medium'
-  | 'low';
-
-interface Technique {
-  id: string;
-  name: string;
-  tactic: string;
-  coverage: Coverage;
-  ruleCount: number;
-}
+import {
+  getMitreMatrix,
+  type MitreMatrix,
+  type MitreTechnique,
+} from '../../services/mitre';
 
 interface MitreNavigatorPageProps {
   onNavigate?: (id: string) => void;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                Constants                                   */
-/* -------------------------------------------------------------------------- */
+type CoverageFilter = 'ALL' | 'SUBTECHNIQUES' | 'TECHNIQUES';
 
-const TACTICS = [
-  'Initial Access',
-  'Execution',
-  'Persistence',
-  'Privilege Escalation',
-  'Defense Evasion',
-  'Credential Access',
-  'Discovery',
-  'Lateral Movement',
-  'Collection',
-  'Command and Control',
-  'Exfiltration',
-  'Impact',
-] as const;
+interface TacticSummary {
+  slug: string;
+  name: string;
+  count: number;
+}
 
-/**
- * The current application does not expose a MITRE technique dataset through
- * AppDataContext. Keep the matrix deterministic and local rather than using
- * Math.random() or pretending these values come from an intelligence API.
- *
- * The data contract can be replaced by the real ATT&CK dataset later without
- * changing the UI architecture.
- */
-const TECHNIQUE_NAMES = [
-  'Technique 01',
-  'Technique 02',
-  'Technique 03',
-  'Technique 04',
-  'Technique 05',
-  'Technique 06',
-  'Technique 07',
-  'Technique 08',
-  'Technique 09',
-  'Technique 10',
-  'Technique 11',
-  'Technique 12',
-  'Technique 13',
-  'Technique 14',
-  'Technique 15',
-  'Technique 16',
-  'Technique 17',
-  'Technique 18',
-  'Technique 19',
-  'Technique 20',
-  'Technique 21',
-  'Technique 22',
-  'Technique 23',
-  'Technique 24',
-  'Technique 25',
-  'Technique 26',
-  'Technique 27',
-  'Technique 28',
-  'Technique 29',
-  'Technique 30',
-  'Technique 31',
-  'Technique 32',
-  'Technique 33',
-  'Technique 34',
-  'Technique 35',
-  'Technique 36',
-  'Technique 37',
-  'Technique 38',
-  'Technique 39',
-  'Technique 40',
-  'Technique 41',
-  'Technique 42',
-  'Technique 43',
-  'Technique 44',
-  'Technique 45',
-  'Technique 46',
-  'Technique 47',
-  'Technique 48',
-  'Technique 49',
-  'Technique 50',
-  'Technique 51',
-  'Technique 52',
-  'Technique 53',
-  'Technique 54',
-  'Technique 55',
-  'Technique 56',
-  'Technique 57',
-  'Technique 58',
-  'Technique 59',
-  'Technique 60',
-];
-
-const COVERAGE_ORDER: Record<
-  Coverage,
-  number
-> = {
-  high: 3,
-  medium: 2,
-  low: 1,
-};
-
-const TYPE_ICONS: Record<
-  Coverage,
-  ElementType
-> = {
-  high: Shield,
-  medium: Activity,
-  low: Info,
-};
-
-/* -------------------------------------------------------------------------- */
-/*                               Dataset                                      */
-/* -------------------------------------------------------------------------- */
-
-const TECHNIQUES: Technique[] =
-  TECHNIQUE_NAMES.map(
-    (name, index) => {
-      const coveragePattern =
-        (index * 7 + 3) % 10;
-
-      const coverage: Coverage =
-        coveragePattern >= 7
-          ? 'high'
-          : coveragePattern >= 4
-            ? 'medium'
-            : 'low';
-
-      return {
-        id: `T${String(
-          index + 1,
-        ).padStart(4, '0')}`,
-        name,
-        tactic:
-          TACTICS[
-          index % TACTICS.length
-          ],
-        coverage,
-        ruleCount:
-          coverage === 'high'
-            ? 5 + (index % 4)
-            : coverage === 'medium'
-              ? 2 + (index % 3)
-              : index % 2,
-      };
-    },
-  );
-
-/* -------------------------------------------------------------------------- */
-/*                                  Helpers                                   */
-/* -------------------------------------------------------------------------- */
-
-function escapeCsvValue(
-  value: unknown,
-): string {
+function escapeCsv(value: unknown): string {
   return `"${String(value ?? '').replace(
     /"/g,
     '""',
@@ -207,11 +53,9 @@ function downloadFile(
     type: mimeType,
   });
 
-  const url =
-    URL.createObjectURL(blob);
+  const url = URL.createObjectURL(blob);
 
-  const anchor =
-    document.createElement('a');
+  const anchor = document.createElement('a');
 
   anchor.href = url;
   anchor.download = filename;
@@ -219,23 +63,52 @@ function downloadFile(
 
   document.body.appendChild(anchor);
   anchor.click();
-  document.body.removeChild(anchor);
 
+  document.body.removeChild(anchor);
   URL.revokeObjectURL(url);
 }
 
-/* -------------------------------------------------------------------------- */
-/*                              Page component                                */
-/* -------------------------------------------------------------------------- */
+function shortPlatformList(
+  platforms: string[],
+): string {
+  if (!platforms.length) {
+    return 'Platform data unavailable';
+  }
+
+  if (platforms.length <= 3) {
+    return platforms.join(' · ');
+  }
+
+  return `${platforms.slice(0, 3).join(' · ')} +${platforms.length - 3
+    }`;
+}
+
+function techniqueType(
+  technique: MitreTechnique,
+): string {
+  return technique.isSubTechnique
+    ? 'Sub-technique'
+    : 'Technique';
+}
+
+function normalizeDescription(
+  description: string,
+): string {
+  return description
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 export default function MitreNavigatorPage({
   onNavigate,
 }: MitreNavigatorPageProps) {
-  /* ------------------------------------------------------------------------ */
-  /*                                  State                                   */
-  /* ------------------------------------------------------------------------ */
+  const [matrix, setMatrix] =
+    useState<MitreMatrix | null>(null);
 
-  const [selectedTechId, setSelectedTechId] =
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
     useState<string | null>(null);
 
   const [search, setSearch] =
@@ -244,52 +117,116 @@ export default function MitreNavigatorPage({
   const [selectedTactic, setSelectedTactic] =
     useState('ALL');
 
-  const [selectedCoverage, setSelectedCoverage] =
-    useState<Coverage | 'ALL'>('ALL');
+  const [typeFilter, setTypeFilter] =
+    useState<CoverageFilter>('ALL');
+
+  const [selectedTechniqueId, setSelectedTechniqueId] =
+    useState<string | null>(null);
 
   const [showFilters, setShowFilters] =
     useState(false);
 
-  /* ------------------------------------------------------------------------ */
-  /*                             Selected technique                            */
-  /* ------------------------------------------------------------------------ */
+  useEffect(() => {
+    let mounted = true;
 
-  const selectedTechnique =
-    useMemo(
-      () =>
-        TECHNIQUES.find(
-          (technique) =>
-            technique.id ===
-            selectedTechId,
-        ) ?? null,
-      [selectedTechId],
+    const load = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const data =
+          await getMitreMatrix();
+
+        if (!mounted) {
+          return;
+        }
+
+        setMatrix(data);
+      } catch (loadError) {
+        console.error(
+          'MITRE matrix load failed',
+          loadError,
+        );
+
+        if (!mounted) {
+          return;
+        }
+
+        setError(
+          'Unable to load the MITRE ATT&CK dataset.',
+        );
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void load();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const allTechniques = useMemo(() => {
+    if (!matrix) {
+      return [];
+    }
+
+    const unique = new Map<
+      string,
+      MitreTechnique
+    >();
+
+    for (const tactic of matrix.tactics) {
+      for (const technique of
+        matrix.techniques[tactic.slug] ?? []) {
+        if (!unique.has(technique.id)) {
+          unique.set(
+            technique.id,
+            technique,
+          );
+        }
+      }
+    }
+
+    return Array.from(unique.values()).sort(
+      (a, b) =>
+        a.name.localeCompare(
+          b.name,
+        ),
     );
-
-  /* ------------------------------------------------------------------------ */
-  /*                                Filtering                                 */
-  /* ------------------------------------------------------------------------ */
+  }, [matrix]);
 
   const filteredTechniques =
     useMemo(() => {
       const query =
         search.trim().toLowerCase();
 
-      return TECHNIQUES.filter(
+      return allTechniques.filter(
         (technique) => {
           if (
-            selectedTactic !==
-            'ALL' &&
-            technique.tactic !==
-            selectedTactic
+            selectedTactic !== 'ALL' &&
+            !technique.tactics.includes(
+              selectedTactic,
+            )
           ) {
             return false;
           }
 
           if (
-            selectedCoverage !==
-            'ALL' &&
-            technique.coverage !==
-            selectedCoverage
+            typeFilter ===
+            'SUBTECHNIQUES' &&
+            !technique.isSubTechnique
+          ) {
+            return false;
+          }
+
+          if (
+            typeFilter ===
+            'TECHNIQUES' &&
+            technique.isSubTechnique
           ) {
             return false;
           }
@@ -305,128 +242,176 @@ export default function MitreNavigatorPage({
             technique.name
               .toLowerCase()
               .includes(query) ||
-            technique.tactic
-              .toLowerCase()
-              .includes(query)
+            technique.tactics.some(
+              (tactic) =>
+                tactic
+                  .toLowerCase()
+                  .includes(query),
+            ) ||
+            technique.platforms.some(
+              (platform) =>
+                platform
+                  .toLowerCase()
+                  .includes(query),
+            )
           );
         },
       );
     }, [
+      allTechniques,
       search,
       selectedTactic,
-      selectedCoverage,
+      typeFilter,
     ]);
 
-  const techniquesByTactic =
+  const filteredByTactic =
     useMemo(() => {
-      const result =
-        new Map<
+      if (!matrix) {
+        return new Map<
           string,
-          Technique[]
+          MitreTechnique[]
         >();
+      }
 
-      for (const tactic of TACTICS) {
+      const result = new Map<
+        string,
+        MitreTechnique[]
+      >();
+
+      for (const tactic of matrix.tactics) {
         result.set(
-          tactic,
+          tactic.slug,
           filteredTechniques.filter(
             (technique) =>
-              technique.tactic ===
-              tactic,
+              technique.tactics.includes(
+                tactic.slug,
+              ),
           ),
         );
       }
 
       return result;
-    }, [filteredTechniques]);
+    }, [matrix, filteredTechniques]);
 
-  /* ------------------------------------------------------------------------ */
-  /*                                Statistics                                */
-  /* ------------------------------------------------------------------------ */
+  const tacticSummary =
+    useMemo<TacticSummary[]>(() => {
+      if (!matrix) {
+        return [];
+      }
 
-  const coverageCounts =
-    useMemo(
-      () => ({
-        high: TECHNIQUES.filter(
+      return matrix.tactics.map(
+        (tactic) => ({
+          slug: tactic.slug,
+          name: tactic.name,
+          count:
+            filteredByTactic.get(
+              tactic.slug,
+            )?.length ?? 0,
+        }),
+      );
+    }, [
+      matrix,
+      filteredByTactic,
+    ]);
+
+  const selectedTechnique =
+    useMemo(() => {
+      if (
+        !selectedTechniqueId
+      ) {
+        return null;
+      }
+
+      return (
+        allTechniques.find(
           (technique) =>
-            technique.coverage ===
-            'high',
-        ).length,
+            technique.id ===
+            selectedTechniqueId,
+        ) ?? null
+      );
+    }, [
+      allTechniques,
+      selectedTechniqueId,
+    ]);
 
-        medium: TECHNIQUES.filter(
-          (technique) =>
-            technique.coverage ===
-            'medium',
-        ).length,
+  const totalSubTechniques =
+    allTechniques.filter(
+      (technique) =>
+        technique.isSubTechnique,
+    ).length;
 
-        low: TECHNIQUES.filter(
-          (technique) =>
-            technique.coverage ===
-            'low',
-        ).length,
-      }),
-      [],
-    );
+  const totalTechniques =
+    allTechniques.length -
+    totalSubTechniques;
 
-  const matchedCoverageCounts =
-    useMemo(
-      () => ({
-        high: filteredTechniques.filter(
-          (technique) =>
-            technique.coverage ===
-            'high',
-        ).length,
-
-        medium:
-          filteredTechniques.filter(
-            (technique) =>
-              technique.coverage ===
-              'medium',
-          ).length,
-
-        low: filteredTechniques.filter(
-          (technique) =>
-            technique.coverage ===
-            'low',
-        ).length,
-      }),
-      [filteredTechniques],
-    );
-
-  const totalRules =
-    TECHNIQUES.reduce(
-      (sum, technique) =>
-        sum + technique.ruleCount,
-      0,
-    );
-
-  /* ------------------------------------------------------------------------ */
-  /*                                 Actions                                  */
-  /* ------------------------------------------------------------------------ */
+  const tacticCount =
+    matrix?.tactics.length ?? 0;
 
   const clearFilters = () => {
     setSearch('');
     setSelectedTactic('ALL');
-    setSelectedCoverage('ALL');
+    setTypeFilter('ALL');
   };
 
-  const handleExport = () => {
+  const exportCsv = () => {
+    const header = [
+      'Technique ID',
+      'Technique',
+      'Type',
+      'Tactics',
+      'Platforms',
+      'ATT&CK URL',
+    ];
+
+    const rows =
+      filteredTechniques.map(
+        (technique) => [
+          technique.id,
+          technique.name,
+          techniqueType(
+            technique,
+          ),
+          technique.tactics.join('; '),
+          technique.platforms.join('; '),
+          technique.url ?? '',
+        ],
+      );
+
+    const csv = [
+      header
+        .map(escapeCsv)
+        .join(','),
+      ...rows.map((row) =>
+        row.map(escapeCsv).join(','),
+      ),
+    ].join('\n');
+
+    downloadFile(
+      `antitode-attack-matrix-${new Date()
+        .toISOString()
+        .slice(0, 10)}.csv`,
+      csv,
+      'text/csv;charset=utf-8',
+    );
+  };
+
+  const exportJson = () => {
     const payload = {
       product: 'ANTITODE',
-      view: 'MITRE Navigator',
+      dataset: 'MITRE ATT&CK Enterprise',
       exportedAt:
         new Date().toISOString(),
       filters: {
         search,
         tactic: selectedTactic,
-        coverage:
-          selectedCoverage,
+        type: typeFilter,
       },
       techniques:
         filteredTechniques,
     };
 
     downloadFile(
-      `antitode-mitre-matrix-${new Date()
+      `antitode-attack-matrix-${new Date()
         .toISOString()
         .slice(0, 10)}.json`,
       JSON.stringify(
@@ -438,646 +423,623 @@ export default function MitreNavigatorPage({
     );
   };
 
-  const handleExportCsv = () => {
-    const headers = [
-      'Technique ID',
-      'Technique',
-      'Tactic',
-      'Coverage',
-      'Mapped Rules',
-    ];
-
-    const rows =
-      filteredTechniques.map(
-        (technique) => [
-          technique.id,
-          technique.name,
-          technique.tactic,
-          technique.coverage,
-          technique.ruleCount,
-        ],
-      );
-
-    const csv = [
-      headers
-        .map(escapeCsvValue)
-        .join(','),
-      ...rows.map((row) =>
-        row
-          .map(escapeCsvValue)
-          .join(','),
-      ),
-    ].join('\n');
-
-    downloadFile(
-      `antitode-mitre-matrix-${new Date()
-        .toISOString()
-        .slice(0, 10)}.csv`,
-      csv,
-      'text/csv;charset=utf-8',
-    );
-  };
-
-  const openRules =
-    () => {
-      if (onNavigate) {
-        onNavigate('rules');
-        return;
-      }
-
-      /*
-       * The current router does not yet pass onNavigate into this page.
-       * Avoid hard-coding a browser navigation that could break SPA state.
-       */
-      const notice =
-        document.querySelector(
-          '[data-mitre-rules-notice]',
-        ) as
-        | HTMLElement
-        | null;
-
-      if (notice) {
-        notice.textContent =
-          'Connect the Rules workspace through the page navigation contract.';
-      }
-    };
-
-  /* ------------------------------------------------------------------------ */
-  /*                                Render                                    */
-  /* ------------------------------------------------------------------------ */
-
   return (
-    <div className="at-mitre-page">
+    <div className="at-mitre-page-v2">
       <PageHeader
         breadcrumbs={[
           {
-            label:
-              'Detection & Response',
+            label: 'Detection & Response',
           },
           {
-            label:
-              'MITRE Navigator',
+            label: 'MITRE Navigator',
           },
         ]}
         title="ATT&CK Navigator"
-        description="Visualize technique coverage across the detection surface."
+        description="Map enterprise ATT&CK techniques by tactic, platform and sub-technique."
         actions={
-          <div className="flex gap-2">
+          <div className="at-mitre-header-actions">
             <button
               type="button"
-              className={`at-btn at-btn-ghost at-btn-sm ${showFilters
-                  ? 'active'
+              className={`at-btn at-btn-secondary at-btn-sm ${showFilters
+                  ? 'is-active'
                   : ''
                 }`}
               onClick={() =>
                 setShowFilters(
-                  (value) =>
-                    !value,
+                  (value) => !value,
                 )
               }
             >
               <Filter size={13} />
-              Filter View
+              Filters
             </button>
 
             <button
               type="button"
               className="at-btn at-btn-secondary at-btn-sm"
-              onClick={
-                handleExport
-              }
+              onClick={exportCsv}
               disabled={
+                loading ||
                 filteredTechniques.length ===
                 0
               }
             >
               <Download size={13} />
-              Export Matrix
+              CSV
+            </button>
+
+            <button
+              type="button"
+              className="at-btn at-btn-secondary at-btn-sm"
+              onClick={exportJson}
+              disabled={
+                loading ||
+                filteredTechniques.length ===
+                0
+              }
+            >
+              Export JSON
             </button>
           </div>
         }
       />
 
-      {/* ================================================================
-   
-   ================================================================ */}
-
-      <div className="at-mitre-querybar">
-        <div className="at-mitre-search">
-          <Search size={14} />
-
-          <input
-            type="search"
-            value={search}
-            onChange={(event) =>
-              setSearch(
-                event.target.value,
-              )
-            }
-            placeholder="Search technique, tactic, or ID..."
-            aria-label="Search MITRE techniques"
-            spellCheck={false}
-          />
-
-          {search && (
-            <button
-              type="button"
-              onClick={() =>
-                setSearch('')
-              }
-              aria-label="Clear technique search"
-            >
-              <X size={12} />
-            </button>
-          )}
-        </div>
-
-        <span className="at-mitre-result-count">
-          {filteredTechniques.length}{' '}
-          of {TECHNIQUES.length}{' '}
-          techniques
-        </span>
-
-        <div className="at-mitre-query-actions">
-          <span>
-            High{' '}
-            <strong>
-              {coverageCounts.high}
-            </strong>
-          </span>
-
-          <span>
-            Medium{' '}
-            <strong>
-              {coverageCounts.medium}
-            </strong>
-          </span>
-
-          <span>
-            Low{' '}
-            <strong>
-              {coverageCounts.low}
-            </strong>
-          </span>
-        </div>
-      </div>
-
-      {showFilters && (
-        <div className="at-mitre-filter-panel">
-          <label>
-            <span>
-              TACTIC
-            </span>
-
-            <select
-              value={selectedTactic}
-              onChange={(event) =>
-                setSelectedTactic(
-                  event.target.value,
-                )
-              }
-            >
-              <option value="ALL">
-                All tactics
-              </option>
-
-              {TACTICS.map(
-                (tactic) => (
-                  <option
-                    key={tactic}
-                    value={tactic}
-                  >
-                    {tactic}
-                  </option>
-                ),
-              )}
-            </select>
-          </label>
-
-          <label>
-            <span>
-              COVERAGE
-            </span>
-
-            <select
-              value={
-                selectedCoverage
-              }
-              onChange={(event) =>
-                setSelectedCoverage(
-                  event.target
-                    .value as
-                  | Coverage
-                  | 'ALL',
-                )
-              }
-            >
-              <option value="ALL">
-                All coverage
-              </option>
-
-              <option value="high">
-                High
-              </option>
-
-              <option value="medium">
-                Medium
-              </option>
-
-              <option value="low">
-                Low
-              </option>
-            </select>
-          </label>
-
-          <button
-            type="button"
-            className="at-btn at-btn-ghost at-btn-sm"
-            onClick={clearFilters}
-          >
-            Clear filters
-          </button>
-
-          <button
-            type="button"
-            className="at-btn at-btn-secondary at-btn-sm"
-            onClick={
-              handleExportCsv
-            }
-          >
-            <Download size={12} />
-            CSV
-          </button>
-        </div>
-      )}
-
-      {/* ================================================================
-   
-   ================================================================ */}
-
-      <div className="at-mitre-workspace">
+      <div className="at-mitre-v2-content">
         {/* ================================================================
-   
-   ================================================================ */}
+            Overview
+           ================================================================ */}
 
-        <div className="at-mitre-matrix-wrap custom-scrollbar">
-          <div className="at-mitre-matrix">
-            {TACTICS.map((tactic) => {
-              const tacticsTechs =
-                techniquesByTactic.get(
-                  tactic,
-                ) ?? [];
+        <div className="at-mitre-overview">
+          <div className="at-mitre-overview-card">
+            <span>TACTICS</span>
+            <strong>{tacticCount}</strong>
+            <small>
+              Enterprise attack lifecycle
+            </small>
+          </div>
 
-              return (
-                <div
-                  key={tactic}
-                  className="at-mitre-tactic-column"
-                >
-                  <div
-                    className="at-mitre-tactic-header"
-                    title={tactic}
-                  >
-                    <span>
-                      {tactic}
-                    </span>
+          <div className="at-mitre-overview-card">
+            <span>TECHNIQUES</span>
+            <strong>
+              {totalTechniques}
+            </strong>
+            <small>
+              Primary ATT&amp;CK techniques
+            </small>
+          </div>
 
-                    <small>
-                      {
-                        tacticsTechs.length
-                      }{' '}
-                      techniques
-                    </small>
-                  </div>
+          <div className="at-mitre-overview-card">
+            <span>SUB-TECHNIQUES</span>
+            <strong>
+              {totalSubTechniques}
+            </strong>
+            <small>
+              Nested technique coverage
+            </small>
+          </div>
 
-                  {tacticsTechs.length ===
-                    0 ? (
-                    <div className="at-mitre-column-empty">
-                      No matches
-                    </div>
-                  ) : (
-                    tacticsTechs.map(
-                      (technique) => {
-                        const selected =
-                          selectedTechId ===
-                          technique.id;
-
-                        const CoverageIcon =
-                          TYPE_ICONS[
-                          technique.coverage
-                          ];
-
-                        return (
-                          <button
-                            type="button"
-                            key={
-                              technique.id
-                            }
-                            className={`at-mitre-technique ${selected
-                                ? 'selected'
-                                : ''
-                              }`}
-                            onClick={() =>
-                              setSelectedTechId(
-                                technique.id,
-                              )
-                            }
-                          >
-                            <div className="at-mitre-technique-top">
-                              <span>
-                                {
-                                  technique.id
-                                }
-                              </span>
-
-                              <CoverageIcon
-                                size={11}
-                                className={`at-mitre-coverage-icon ${technique.coverage}`}
-                                aria-label={`${technique.coverage} coverage`}
-                              />
-                            </div>
-
-                            <strong
-                              title={
-                                technique.name
-                              }
-                            >
-                              {
-                                technique.name
-                              }
-                            </strong>
-
-                            <small>
-                              {
-                                technique.ruleCount
-                              }{' '}
-                              rules
-                            </small>
-                          </button>
-                        );
-                      },
-                    )
-                  )}
-                </div>
-              );
-            })}
+          <div className="at-mitre-overview-card">
+            <span>VISIBLE</span>
+            <strong>
+              {filteredTechniques.length}
+            </strong>
+            <small>
+              Current filtered dataset
+            </small>
           </div>
         </div>
 
         {/* ================================================================
-   
-   ================================================================ */}
+            Query / filtering
+           ================================================================ */}
 
-        {selectedTechnique && (
-          <aside className="at-mitre-inspector">
-            <div className="at-mitre-inspector-head">
+        <div className="at-mitre-query">
+          <div className="at-mitre-query-search">
+            <Search size={14} />
+
+            <input
+              type="search"
+              value={search}
+              onChange={(event) =>
+                setSearch(
+                  event.target.value,
+                )
+              }
+              placeholder="Search technique, tactic, ID, platform..."
+              spellCheck={false}
+              aria-label="Search ATT&CK dataset"
+            />
+
+            {search && (
+              <button
+                type="button"
+                onClick={() =>
+                  setSearch('')
+                }
+                aria-label="Clear search"
+              >
+                <X size={12} />
+              </button>
+            )}
+          </div>
+
+          <span className="at-mitre-query-count">
+            {filteredTechniques.length.toLocaleString()}{' '}
+            results
+          </span>
+
+          <button
+            type="button"
+            className="at-mitre-query-filter"
+            onClick={() =>
+              setShowFilters(
+                (value) => !value,
+              )
+            }
+          >
+            <Filter size={12} />
+            {showFilters
+              ? 'Hide filters'
+              : 'Filter view'}
+          </button>
+        </div>
+
+        {showFilters && (
+          <div className="at-mitre-filterbar">
+            <label>
+              <span>TACTIC</span>
+
+              <select
+                value={selectedTactic}
+                onChange={(event) =>
+                  setSelectedTactic(
+                    event.target.value,
+                  )
+                }
+              >
+                <option value="ALL">
+                  All tactics
+                </option>
+
+                {matrix?.tactics.map(
+                  (tactic) => (
+                    <option
+                      key={tactic.slug}
+                      value={tactic.slug}
+                    >
+                      {tactic.name}
+                    </option>
+                  ),
+                )}
+              </select>
+            </label>
+
+            <label>
+              <span>TYPE</span>
+
+              <select
+                value={typeFilter}
+                onChange={(event) =>
+                  setTypeFilter(
+                    event.target
+                      .value as CoverageFilter,
+                  )
+                }
+              >
+                <option value="ALL">
+                  All techniques
+                </option>
+
+                <option value="TECHNIQUES">
+                  Techniques only
+                </option>
+
+                <option value="SUBTECHNIQUES">
+                  Sub-techniques only
+                </option>
+              </select>
+            </label>
+
+            <button
+              type="button"
+              className="at-mitre-reset"
+              onClick={clearFilters}
+            >
+              Reset filters
+            </button>
+          </div>
+        )}
+
+        {/* ================================================================
+            Main workspace
+           ================================================================ */}
+
+        <div className="at-mitre-main">
+          <div className="at-mitre-matrix-shell">
+            <div className="at-mitre-matrix-header">
               <div>
-                <span className="at-v2-kicker">
-                  ATT&amp;CK TECHNIQUE
+                <span>
+                  ATT&amp;CK ENTERPRISE MATRIX
                 </span>
 
                 <strong>
-                  {
-                    selectedTechnique.id
-                  }
+                  Technique coverage by tactic
                 </strong>
-
-                <small>
-                  {
-                    selectedTechnique.name
-                  }
-                </small>
               </div>
 
+              <span>
+                Click a technique to inspect
+              </span>
+            </div>
+
+            {loading ? (
+              <div className="at-mitre-loading">
+                <Activity
+                  size={20}
+                  className="at-spin"
+                />
+
+                <strong>
+                  Loading ATT&amp;CK dataset
+                </strong>
+
+                <span>
+                  Retrieving the current
+                  enterprise technique matrix.
+                </span>
+              </div>
+            ) : error ? (
+              <div className="at-mitre-loading">
+                <Info size={20} />
+
+                <strong>
+                  {error}
+                </strong>
+
+                <span>
+                  Refresh the page to retry the
+                  dataset request.
+                </span>
+              </div>
+            ) : (
+              <div className="at-mitre-matrix-scroll custom-scrollbar">
+                <div className="at-mitre-matrix-v2">
+                  {matrix?.tactics.map(
+                    (tactic) => {
+                      const techniques =
+                        filteredByTactic.get(
+                          tactic.slug,
+                        ) ?? [];
+
+                      return (
+                        <section
+                          key={tactic.slug}
+                          className="at-mitre-column"
+                        >
+                          <header className="at-mitre-column-header">
+                            <div>
+                              <span>
+                                {tactic.name}
+                              </span>
+
+                              <small>
+                                {techniques.length}{' '}
+                                techniques
+                              </small>
+                            </div>
+
+                            <Target
+                              size={13}
+                            />
+                          </header>
+
+                          <div className="at-mitre-column-list">
+                            {techniques.length ===
+                              0 ? (
+                              <div className="at-mitre-column-empty">
+                                No matching techniques
+                              </div>
+                            ) : (
+                              techniques.map(
+                                (
+                                  technique,
+                                ) => {
+                                  const selected =
+                                    selectedTechniqueId ===
+                                    technique.id;
+
+                                  return (
+                                    <button
+                                      key={
+                                        technique.id
+                                      }
+                                      type="button"
+                                      className={`at-mitre-tech-card ${selected
+                                          ? 'selected'
+                                          : ''
+                                        }`}
+                                      onClick={() =>
+                                        setSelectedTechniqueId(
+                                          technique.id,
+                                        )
+                                      }
+                                    >
+                                      <div className="at-mitre-tech-top">
+                                        <code>
+                                          {
+                                            technique.id
+                                          }
+                                        </code>
+
+                                        <span
+                                          className={
+                                            technique.isSubTechnique
+                                              ? 'sub'
+                                              : ''
+                                          }
+                                        >
+                                          {
+                                            technique.isSubTechnique
+                                              ? 'SUB'
+                                              : 'T'
+                                          }
+                                        </span>
+                                      </div>
+
+                                      <strong>
+                                        {
+                                          technique.name
+                                        }
+                                      </strong>
+
+                                      <small>
+                                        {shortPlatformList(
+                                          technique.platforms,
+                                        )}
+                                      </small>
+
+                                      {selected && (
+                                        <ChevronRight
+                                          size={
+                                            12
+                                          }
+                                          className="at-mitre-card-arrow"
+                                        />
+                                      )}
+                                    </button>
+                                  );
+                                },
+                              )
+                            )}
+                          </div>
+                        </section>
+                      );
+                    },
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ================================================================
+              Inspector
+             ================================================================ */}
+
+          {selectedTechnique && (
+            <aside className="at-mitre-inspector-v2">
+              <div className="at-mitre-inspector-head-v2">
+                <div>
+                  <span>
+                    TECHNIQUE
+                  </span>
+
+                  <code>
+                    {selectedTechnique.id}
+                  </code>
+
+                  <h2>
+                    {
+                      selectedTechnique.name
+                    }
+                  </h2>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSelectedTechniqueId(
+                      null,
+                    )
+                  }
+                  aria-label="Close technique details"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+
+              <div className="at-mitre-inspector-scroll-v2 custom-scrollbar">
+
+                <section className="at-mitre-focus-card">
+                  <div>
+                    <span>
+                      TACTICS
+                    </span>
+
+                    <strong>
+                      {
+                        selectedTechnique.tactics
+                          .map(
+                            (slug) => {
+                              const tactic =
+                                matrix?.tactics.find(
+                                  (item) =>
+                                    item.slug ===
+                                    slug,
+                                );
+
+                              return (
+                                tactic?.name ??
+                                slug
+                              );
+                            },
+                          )
+                          .join(' · ')
+                      }
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>
+                      TYPE
+                    </span>
+
+                    <strong>
+                      {
+                        techniqueType(
+                          selectedTechnique,
+                        )
+                      }
+                    </strong>
+                  </div>
+                </section>
+
+                <section className="at-mitre-inspector-section">
+                  <div className="at-mitre-section-title">
+                    <span>DESCRIPTION</span>
+                    <Info size={12} />
+                  </div>
+
+                  <p>
+                    {normalizeDescription(
+                      selectedTechnique.description,
+                    ) ||
+                      'No description is available for this technique.'}
+                  </p>
+                </section>
+
+                <section className="at-mitre-inspector-section">
+                  <div className="at-mitre-section-title">
+                    <span>PLATFORMS</span>
+                    <Layers size={12} />
+                  </div>
+
+                  <div className="at-mitre-platforms">
+                    {selectedTechnique.platforms.map(
+                      (platform) => (
+                        <span
+                          key={platform}
+                        >
+                          {platform}
+                        </span>
+                      ),
+                    )}
+                  </div>
+                </section>
+
+                <section className="at-mitre-inspector-section">
+                  <div className="at-mitre-section-title">
+                    <span>DATA</span>
+                    <Shield size={12} />
+                  </div>
+
+                  <div className="at-mitre-detail-list">
+                    <div>
+                      <span>
+                        STIX Object
+                      </span>
+
+                      <code>
+                        {
+                          selectedTechnique.stixId
+                        }
+                      </code>
+                    </div>
+
+                    <div>
+                      <span>
+                        Sub-technique
+                      </span>
+
+                      <strong>
+                        {selectedTechnique.isSubTechnique
+                          ? 'Yes'
+                          : 'No'}
+                      </strong>
+                    </div>
+                  </div>
+                </section>
+
+              </div>
+
+              <div className="at-mitre-inspector-actions">
+                {selectedTechnique.url && (
+                  <a
+                    href={
+                      selectedTechnique.url
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="at-btn at-btn-secondary"
+                  >
+                    <ExternalLink
+                      size={12}
+                    />
+                    MITRE ATT&amp;CK
+                  </a>
+                )}
+
+                {onNavigate && (
+                  <button
+                    type="button"
+                    className="at-btn at-btn-primary"
+                    onClick={() =>
+                      onNavigate(
+                        'rules',
+                      )
+                    }
+                  >
+                    <Target size={12} />
+                    Detection Rules
+                  </button>
+                )}
+              </div>
+            </aside>
+          )}
+        </div>
+
+        {/* ================================================================
+            Tactic summary
+           ================================================================ */}
+
+        <div className="at-mitre-tactic-strip">
+          {tacticSummary.map(
+            (tactic) => (
               <button
                 type="button"
-                className="at-mitre-close"
+                key={tactic.slug}
                 onClick={() =>
-                  setSelectedTechId(
-                    null,
+                  setSelectedTactic(
+                    tactic.slug,
                   )
                 }
-                aria-label="Close technique inspector"
-              >
-                <X size={14} />
-              </button>
-            </div>
-
-            <div className="at-mitre-inspector-meta">
-              <span>
-                {
-                  selectedTechnique.tactic
-                }
-              </span>
-
-              <span
-                className={`at-mitre-coverage-badge ${selectedTechnique.coverage}`}
-              >
-                {
-                  selectedTechnique.coverage
-                }{' '}
-                coverage
-              </span>
-            </div>
-
-            <div className="at-mitre-inspector-scroll">
-              {/* Coverage */}
-
-              <section className="at-mitre-inspector-block">
-                <div className="at-mitre-block-title">
-                  <span>
-                    COVERAGE STATUS
-                  </span>
-
-                  <Shield size={12} />
-                </div>
-
-                <div className="at-mitre-coverage-card">
-                  <span
-                    className={`at-mitre-coverage-indicator ${selectedTechnique.coverage}`}
-                  >
-                    <Activity
-                      size={15}
-                    />
-                  </span>
-
-                  <div>
-                    <strong>
-                      {selectedTechnique.coverage ===
-                        'high'
-                        ? 'High Coverage'
-                        : selectedTechnique.coverage ===
-                          'medium'
-                          ? 'Medium Coverage'
-                          : 'Low Coverage'}
-                    </strong>
-
-                    <small>
-                      {
-                        selectedTechnique.ruleCount
-                      }{' '}
-                      mapped detection{' '}
-                      {selectedTechnique.ruleCount ===
-                        1
-                        ? 'rule'
-                        : 'rules'}
-                      .
-                    </small>
-                  </div>
-                </div>
-              </section>
-
-              {/* Technique context */}
-
-              <section className="at-mitre-inspector-block">
-                <div className="at-mitre-block-title">
-                  <span>
-                    TECHNIQUE CONTEXT
-                  </span>
-
-                  <Layers size={12} />
-                </div>
-
-                <div className="at-mitre-detail-grid">
-                  <div>
-                    <span>
-                      Technique ID
-                    </span>
-
-                    <code>
-                      {
-                        selectedTechnique.id
-                      }
-                    </code>
-                  </div>
-
-                  <div>
-                    <span>
-                      Tactic
-                    </span>
-
-                    <strong>
-                      {
-                        selectedTechnique.tactic
-                      }
-                    </strong>
-                  </div>
-
-                  <div>
-                    <span>
-                      Coverage
-                    </span>
-
-                    <strong>
-                      {
-                        selectedTechnique.coverage
-                      }
-                    </strong>
-                  </div>
-
-                  <div>
-                    <span>
-                      Rules
-                    </span>
-
-                    <strong>
-                      {
-                        selectedTechnique.ruleCount
-                      }
-                    </strong>
-                  </div>
-                </div>
-              </section>
-
-              {/* Scope note */}
-
-              <section className="at-mitre-inspector-block">
-                <div className="at-mitre-block-title">
-                  <span>
-                    DATASET STATUS
-                  </span>
-
-                  <Info size={12} />
-                </div>
-
-                <div className="at-mitre-data-note">
-                  <strong>
-                    Coverage workspace
-                  </strong>
-
-                  <span>
-                    Technique metadata and
-                    detection counts shown here are
-                    provided by the current local
-                    navigator dataset. Live ATT&amp;CK
-                    enrichment is not connected to
-                    this page yet.
-                  </span>
-                </div>
-              </section>
-            </div>
-
-            <div className="at-mitre-inspector-footer">
-              <button
-                type="button"
-                className="at-btn at-btn-secondary"
-                onClick={
-                  openRules
+                className={
+                  selectedTactic ===
+                    tactic.slug
+                    ? 'active'
+                    : ''
                 }
               >
-                <Target size={12} />
-                View Associated Rules
+                <span>
+                  {tactic.name}
+                </span>
+
+                <strong>
+                  {tactic.count}
+                </strong>
               </button>
-
-              <button
-                type="button"
-                className="at-btn at-btn-primary"
-                onClick={
-                  handleExport
-                }
-              >
-                <Download size={12} />
-                Export Technique
-              </button>
-            </div>
-
-            <span
-              data-mitre-rules-notice
-              className="sr-only"
-              aria-live="polite"
-            />
-          </aside>
-        )}
-      </div>
-
-      {/* ================================================================
-   
-   ================================================================ */}
-
-      <div className="at-mitre-statusbar">
-        <span>
-          <Activity size={11} />
-          Detection coverage
-          workspace
-        </span>
-
-        <span>
-          {
-            matchedCoverageCounts.high
-          }{' '}
-          high ·{' '}
-          {
-            matchedCoverageCounts.medium
-          }{' '}
-          medium ·{' '}
-          {
-            matchedCoverageCounts.low
-          }{' '}
-          low
-        </span>
-
-        <span>
-          {totalRules} mapped rules
-        </span>
+            ),
+          )}
+        </div>
       </div>
     </div>
   );

@@ -90,20 +90,26 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
 
     if (!savedResult) {
         return (
-            <div className="h-full min-h-[calc(100vh-140px)] flex flex-col items-center justify-center bg-[#020617] text-gray-400 p-8 w-full">
-                <div className="w-full max-w-lg border-2 border-dashed border-gray-700 rounded-xl p-12 flex flex-col items-center justify-center text-center bg-gray-900/20 hover:bg-gray-900/40 transition-colors group relative overflow-hidden">
-                    <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileUpload} accept=".pcap,.pcapng,.json"/>
-                    <div className="p-4 bg-blue-900/20 rounded-full mb-6 group-hover:scale-110 transition-transform duration-300 border border-blue-500/30">
-                        <Network size={48} className="text-blue-400"/>
+            <div className="h-full min-h-[calc(100vh-140px)] flex flex-col items-center justify-center bg-[#090a0c] text-[#8b949e] p-8 w-full">
+                <div className="w-full max-w-md border border-[#20242a] rounded-xl p-10 flex flex-col items-center justify-center text-center bg-[#0d1013] hover:border-[#2a2f36] transition-colors group relative overflow-hidden shadow-lg">
+                    <input type="file" className="absolute inset-0 opacity-0 cursor-pointer z-10" onChange={handleFileUpload} accept=".pcap,.pcapng,.json"/>
+                    
+                    <div className="w-16 h-16 flex items-center justify-center bg-[#14171c] border border-[#262b33] rounded-2xl mb-6 group-hover:scale-105 group-hover:border-[#303640] transition-all duration-300 shadow-sm">
+                        <Network size={28} className="text-[#a1a6b0] group-hover:text-[#d1d5db] transition-colors"/>
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2">Network Traffic Analysis</h3>
-                    <p className="text-sm text-gray-500 mb-6 max-w-xs">Drag & Drop PCAP, PCAPNG, or Wireshark JSON dumps to analyze traffic patterns, files, and threats.</p>
+                    
+                    <h3 className="text-sm font-semibold text-[#e5e7eb] mb-2 font-sans tracking-wide">Network Traffic Analysis</h3>
+                    <p className="text-xs text-[#737a84] mb-8 max-w-[280px] leading-relaxed">
+                        Drag & drop PCAP, PCAPNG, or Wireshark JSON dumps to extract traffic patterns, embedded files, and threats.
+                    </p>
+                    
                     {isProcessing ? (
-                        <div className="flex items-center gap-2 text-blue-400 animate-pulse">
-                            <Activity className="animate-spin" size={16}/> Processing Packets...
+                        <div className="flex items-center gap-2 text-[#d62828] text-xs font-semibold animate-pulse">
+                            <Activity className="animate-spin" size={14}/> 
+                            <span>PROCESSING PACKETS...</span>
                         </div>
                     ) : (
-                        <button className="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold text-xs transition-colors shadow-lg shadow-blue-900/20">
+                        <button className="px-5 py-2.5 bg-[#171a21] hover:bg-[#1e222b] border border-[#292e35] hover:border-[#373d47] text-[#c9ccd1] rounded-lg font-semibold text-[11px] transition-all shadow-sm">
                             SELECT CAPTURE FILE
                         </button>
                     )}
@@ -113,7 +119,7 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
     }
 
     return (
-        <div className="h-full min-h-[calc(100vh-140px)] flex flex-col bg-[#020617] overflow-hidden w-full">
+        <div className="h-full min-h-[calc(100vh-140px)] flex flex-col bg-[#090a0c] overflow-hidden w-full">
             {/* Header */}
             <div className="bg-black/40 border-b border-gray-800 p-4 flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-4">

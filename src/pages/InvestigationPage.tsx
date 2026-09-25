@@ -10,6 +10,8 @@ import {
   Activity,
   AlertTriangle,
   ChevronDown,
+  ChevronRight,
+  ArrowUpRight,
   Download,
   Eye,
   FileText,
@@ -1274,14 +1276,19 @@ export default function InvestigationPage() {
         <main className="at-investigation-canvas">
           <div className="at-investigation-canvas-grid" />
 
-          <div className="at-investigation-canvas-label top-left">
-            RELATIONSHIP GRAPH
-          </div>
+          <div className="at-investigation-graph-header">
+            <div>
+              <span>RELATIONSHIP GRAPH</span>
+              <strong>
+                {selectedNode
+                  ? selectedNode.label
+                  : 'No focus selected'}
+              </strong>
+            </div>
 
-          <div className="at-investigation-canvas-label top-right">
-            {visibleNodes.length}
-            {' '}
-            VISIBLE ENTITIES
+            <span>
+              {visibleNodes.length} entities
+            </span>
           </div>
 
           <div
@@ -1389,27 +1396,27 @@ export default function InvestigationPage() {
                         }
                       />
 
-                      <text
-                        x={`${(source.x +
-                            target.x) /
-                          2
-                          }%`}
-                        y={`${(source.y +
-                            target.y) /
-                          2
-                          }%`}
-                        dy="-3"
-                        fill={
-                          edge.critical
-                            ? '#B65656'
-                            : '#666'
-                        }
-                        fontSize="2"
-                        textAnchor="middle"
-                        fontFamily="JetBrains Mono, monospace"
-                      >
-                        {edge.label}
-                      </text>
+                      {(
+                        !selectedNodeId ||
+                        edge.source === selectedNodeId ||
+                        edge.target === selectedNodeId
+                      ) && (
+                        <text
+                          x={`${(source.x + target.x) / 2}%`}
+                          y={`${(source.y + target.y) / 2}%`}
+                          dy="-3"
+                          fill={
+                            edge.critical
+                              ? '#C86669'
+                              : '#727880'
+                          }
+                          fontSize="2"
+                          textAnchor="middle"
+                          fontFamily="JetBrains Mono, monospace"
+                        >
+                          {edge.label}
+                        </text>
+                      )}
                     </g>
                   );
                 },
@@ -1482,35 +1489,19 @@ export default function InvestigationPage() {
                       <Icon size={18} />
                     </span>
 
-                    <span
-                      className="at-investigation-node-label"
-                      title={node.label}
-                    >
-                      {node.label}
-                    </span>
-
-                    <span className="at-investigation-node-type">
-                      {TYPE_LABELS[
-                        node.type
-                      ]}
-                    </span>
+                    {(selected || connected) && (
+                      <span
+                        className="at-investigation-node-label"
+                        title={node.label}
+                      >
+                        {node.label}
+                      </span>
+                    )}
                   </button>
                 );
               },
             )}
           </div>
-
-          <button
-            type="button"
-            className="at-investigation-canvas-clear"
-            onClick={clearFocus}
-            disabled={
-              !selectedNodeId
-            }
-          >
-            <Eye size={12} />
-            Clear focus
-          </button>
 
           {/* ================================================================
    
@@ -1685,285 +1676,101 @@ export default function InvestigationPage() {
                 </span>
               </div>
 
-              {/* ---------------------------------------------------------- */
-              /* Inspector tabs                                               */
-              /* ---------------------------------------------------------- */}
+              <div className="at-investigation-inspector-scroll">
+                <div className="at-investigation-inspector-content">
+                  <div className="at-investigation-focus-card">
+                    <span>
+                      {TYPE_LABELS[selectedNode.type]}
+                    </span>
 
-              <div
-                className="at-investigation-tabs"
-                role="tablist"
-                aria-label="Entity details"
-              >
-                {(
-                  [
-                    'Overview',
-                    'Intelligence',
-                    'Evidence',
-                  ] as const
-                ).map((tab) => (
+                    <strong>
+                      {selectedNode.label}
+                    </strong>
+
+                    {selectedNode.severity && (
+                      <div>
+                        <span
+                          className={`at-investigation-risk-badge ${selectedNode.severity}`}
+                        >
+                          {selectedNode.severity}
+                        </span>
+
+                        <span className="at-investigation-relations-badge">
+                          {selectedRelations.length} relations
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="at-investigation-detail-block">
+                    <span>IDENTIFIER</span>
+
+                    <code>
+                      {selectedNode.id}
+                    </code>
+                  </div>
+
+                  <div className="at-investigation-detail-block">
+                    <span>RELATIONSHIPS</span>
+
+                    {selectedRelations.length > 0 ? (
+                      <div className="at-investigation-related-list">
+                        {selectedRelations.map((relation) => {
+                          const otherNodeId =
+                            relation.source === selectedNode.id
+                              ? relation.target
+                              : relation.source;
+
+                          const otherNode =
+                            MOCK_NODES.find(
+                              (node) => node.id === otherNodeId,
+                            );
+
+                          if (!otherNode) {
+                            return null;
+                          }
+
+                          return (
+                            <button
+                              key={relation.id}
+                              type="button"
+                              className="at-investigation-related-item"
+                              onClick={() =>
+                                setSelectedNodeId(otherNode.id)
+                              }
+                            >
+                              <span>
+                                <strong>
+                                  {otherNode.label}
+                                </strong>
+
+                                <small>
+                                  {relation.label}
+                                </small>
+                              </span>
+
+                              <ChevronRight size={11} />
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <span className="at-investigation-muted">
+                        No relationships recorded.
+                      </span>
+                    )}
+                  </div>
+
                   <button
                     type="button"
-                    key={tab}
-                    className={
-                      inspectorTab ===
-                        tab
-                        ? 'active'
-                        : ''
-                    }
-                    onClick={() =>
-                      setInspectorTab(
-                        tab,
-                      )
-                    }
-                    role="tab"
-                    aria-selected={
-                      inspectorTab ===
-                      tab
-                    }
+                    className="at-investigation-inspector-action"
+                    onClick={searchSelectedNode}
                   >
-                    {tab}
+                    <Search size={13} />
+                    Search this entity
+                    <ArrowUpRight size={12} />
                   </button>
-                ))}
-              </div>
-
-              <div className="at-investigation-inspector-scroll">
-                {inspectorTab ===
-                  'Overview' && (
-                    <div className="at-investigation-inspector-content">
-                      {/* Entity metadata */}
-
-                      <div className="at-investigation-observation-grid">
-                        <div>
-                          <span>
-                            ENTITY ID
-                          </span>
-
-                          <code>
-                            {
-                              selectedNode.id
-                            }
-                          </code>
-                        </div>
-
-                        <div>
-                          <span>
-                            TYPE
-                          </span>
-
-                          <code>
-                            {
-                              selectedNode.type
-                            }
-                          </code>
-                        </div>
-                      </div>
-
-                      {/* Label */}
-
-                      <div className="at-investigation-detail-block">
-                        <span>
-                          ENTITY LABEL
-                        </span>
-
-                        <strong>
-                          {
-                            selectedNode.label
-                          }
-                        </strong>
-                      </div>
-
-                      {/* Risk */}
-
-                      <div className="at-investigation-detail-block">
-                        <span>
-                          RISK STATE
-                        </span>
-
-                        <strong>
-                          {selectedNode.severity ? (
-                            <>
-                              <span
-                                className={`at-investigation-inline-risk ${selectedNode.severity}`}
-                              />
-
-                              {
-                                selectedNode
-                                  .severity
-                              }
-                            </>
-                          ) : (
-                            'No severity assigned'
-                          )}
-                        </strong>
-                      </div>
-
-                      {/* Relationships */}
-
-                      <div className="at-investigation-detail-block">
-                        <span>
-                          RELATIONSHIPS
-                        </span>
-
-                        {selectedRelations.length >
-                          0 ? (
-                          <div className="at-investigation-related-list">
-                            {selectedRelations.map(
-                              (
-                                relation,
-                              ) => {
-                                const otherNodeId =
-                                  relation.source ===
-                                    selectedNode.id
-                                    ? relation.target
-                                    : relation.source;
-
-                                const otherNode =
-                                  MOCK_NODES.find(
-                                    (
-                                      node,
-                                    ) =>
-                                      node.id ===
-                                      otherNodeId,
-                                  );
-
-                                if (
-                                  !otherNode
-                                ) {
-                                  return null;
-                                }
-
-                                return (
-                                  <button
-                                    type="button"
-                                    className="at-investigation-related-item"
-                                    key={
-                                      relation.id
-                                    }
-                                    onClick={() =>
-                                      setSelectedNodeId(
-                                        otherNode.id,
-                                      )
-                                    }
-                                  >
-                                    <span>
-                                      <strong>
-                                        {
-                                          otherNode.label
-                                        }
-                                      </strong>
-
-                                      <small>
-                                        {
-                                          relation.label
-                                        }
-                                      </small>
-                                    </span>
-
-                                    <ChevronDown
-                                      size={11}
-                                    />
-                                  </button>
-                                );
-                              },
-                            )}
-                          </div>
-                        ) : (
-                          <span>
-                            No recorded
-                            relationships.
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                {inspectorTab ===
-                  'Intelligence' && (
-                    <div className="at-investigation-empty-panel">
-                      <Activity size={20} />
-
-                      <strong>
-                        Intelligence enrichment
-                      </strong>
-
-                      <span>
-                        No external intelligence
-                        enrichment is attached to
-                        this graph entity in the
-                        current workspace.
-                      </span>
-
-                      <button
-                        type="button"
-                        onClick={
-                          searchSelectedNode
-                        }
-                      >
-                        <Search size={12} />
-                        Search entity in graph
-                      </button>
-                    </div>
-                  )}
-
-                {inspectorTab ===
-                  'Evidence' && (
-                    <div className="at-investigation-empty-panel">
-                      <FileText size={20} />
-
-                      <strong>
-                        No evidence attachments
-                      </strong>
-
-                      <span>
-                        Evidence records are not
-                        attached to this local
-                        graph dataset.
-                      </span>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setInspectorTab(
-                            'Overview',
-                          )
-                        }
-                      >
-                        Return to overview
-                      </button>
-                    </div>
-                  )}
-              </div>
-
-              {/* ---------------------------------------------------------- */
-              /* Inspector actions                                           */
-              /* ---------------------------------------------------------- */}
-
-              <div className="at-investigation-inspector-actions">
-                <button
-                  type="button"
-                  className="at-btn at-btn-secondary"
-                  onClick={
-                    searchSelectedNode
-                  }
-                >
-                  <Search size={12} />
-                  Pivot Search
-                </button>
-
-                <button
-                  type="button"
-                  className="at-btn at-btn-ghost at-investigation-shield-action"
-                  onClick={() =>
-                    setSeverityFilter(
-                      selectedNode
-                        .severity ??
-                      'ALL',
-                    )
-                  }
-                  title="Filter graph to this entity severity"
-                >
-                  <Shield size={14} />
-                </button>
+                </div>
               </div>
             </>
           )}

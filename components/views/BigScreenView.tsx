@@ -80,7 +80,7 @@ const NewsTicker = ({ items }: { items: ThreatNewsItem[] }) => {
     if (items.length === 0) return null;
 
     return (
-        <div className="w-full bg-[#050b1a] border-b border-gray-800/80 h-8 flex items-center overflow-hidden relative z-[60] select-none shadow-lg">
+        <div className="at-soc-news-ticker">
             <div className="absolute left-0 bg-[#050b1a] px-4 z-20 h-full flex items-center border-r border-red-500/30 shadow-[5px_0_15px_rgba(0,0,0,0.8)]">
                 <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest flex items-center gap-2 animate-pulse">
                     <Rss size={12} /> CYBER INTEL
@@ -104,21 +104,43 @@ const NewsTicker = ({ items }: { items: ThreatNewsItem[] }) => {
     );
 };
 
-const StatTile = ({ label, value, trend, trendVal, color = "text-blue-400", icon: Icon }: any) => (
-    <div className="h-full flex flex-col justify-between relative overflow-hidden group p-3">
-        <div className={`absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-40 transition-opacity ${color}`}>
-            <Icon size={48} className="sm:w-12 sm:h-12 lg:w-16 lg:h-16" />
+const StatTile = ({
+    label,
+    value,
+    trend,
+    trendVal,
+    color = 'text-[#e4e4e7]',
+    icon: Icon,
+}: any) => (
+    <div className="at-soc-stat-tile">
+        <div className="at-soc-stat-top">
+            <span>{label}</span>
+
+            <span className={`at-soc-stat-icon ${color}`}>
+                <Icon size={17} />
+            </span>
         </div>
-        <div className="relative z-10 mt-1">
-            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 truncate">{label}</div>
-            <div className={`text-2xl sm:text-3xl lg:text-4xl font-cyber font-bold text-glow ${color} leading-none truncate`}>{value}</div>
+
+        <div className="at-soc-stat-value">
+            {value}
         </div>
-        <div className="flex items-center gap-2 mt-auto pt-2 relative z-10">
-            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded bg-gray-900 border border-gray-700 ${trend === 'up' ? 'text-green-400' : 'text-red-400'}`}>
-                {trend === 'up' ? <ArrowUp size={8} className="inline mr-1"/> : <ArrowDown size={8} className="inline mr-1"/>}
+
+        <div className="at-soc-stat-trend">
+            <span
+                className={
+                    trend === 'up'
+                        ? 'positive'
+                        : 'negative'
+                }
+            >
+                {trend === 'up'
+                    ? <ArrowUp size={9} />
+                    : <ArrowDown size={9} />}
+
                 {trendVal}%
             </span>
-            <span className="text-[9px] text-gray-600 uppercase">vs 1h</span>
+
+            <span>vs previous hour</span>
         </div>
     </div>
 );
@@ -127,7 +149,7 @@ const IocStatTile = ({
     counts, 
     stats 
 }: { 
-    counts: { label: string, value: number, color: string }[],
+    counts: { label: string, value: number, tone: string }[],
     stats: { 
         types: {label: string, count: number}[], 
         malware: {label: string, count: number}[], 
@@ -150,14 +172,14 @@ const IocStatTile = ({
     }, []);
 
     return (
-        <div className="h-full flex flex-col p-4 bg-gray-900/20 relative overflow-hidden">
+        <div className="h-full flex flex-col p-3 bg-transparent relative overflow-hidden">
              <div className="flex justify-between items-start mb-4 border-b border-gray-800 pb-2">
                 <div>
                     <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Total Indicators</div>
-                    <div className="text-3xl font-cyber font-bold text-purple-400">{total.toLocaleString()}</div>
+                    <div className="text-2xl font-semibold text-[#d7d9de]">{total.toLocaleString()}</div>
                 </div>
-                <div className="p-2 bg-purple-900/20 rounded-full border border-purple-500/30">
-                    <Database size={20} className="text-purple-400"/>
+                <div className="p-2 rounded-lg bg-[#171a20] border border-[#30343d]">
+                    <Database size={17} className="text-[#9da3ac]"/>
                 </div>
              </div>
 
@@ -168,7 +190,12 @@ const IocStatTile = ({
                         {counts.map((c, i) => (
                             <div key={i} className="bg-black/40 border border-gray-800 p-2 rounded flex flex-col justify-center">
                                 <div className="text-[9px] text-gray-500 uppercase font-bold truncate" title={c.label}>{c.label}</div>
-                                <div className={`text-sm font-mono font-bold ${c.color}`}>{c.value.toLocaleString()}</div>
+                                <div className={`text-sm font-mono font-bold ${
+                                    c.tone === 'danger' ? 'text-[#e56d72]' : 
+                                    c.tone === 'warning' ? 'text-[#d49b45]' : 
+                                    c.tone === 'success' ? 'text-[#7ebc8a]' : 
+                                    'text-[#e4e4e7]'
+                                }`}>{c.value.toLocaleString()}</div>
                             </div>
                         ))}
                     </div>
@@ -222,14 +249,14 @@ const VulnAnalyticsTile = ({
     criticalCve?: { id: string, description: string } 
 }) => (
     <div className="h-full flex flex-col">
-        <div className="p-3 border-b border-gray-800 bg-gray-900/30 flex items-center justify-between flex-shrink-0">
+        <div className="p-3 border-b border-[#22262d] bg-[#0f1217] flex items-center justify-between flex-shrink-0">
             <h3 className="font-bold text-white flex items-center gap-2 font-cyber tracking-wider text-xs">
-                <Target size={14} className="text-orange-400"/> VULNERABILITY ANALYTICS
+                <Target size={14} className="text-[#9da3ac]"/> VULNERABILITY ANALYTICS
             </h3>
         </div>
         <div className="flex-1 p-4 flex flex-col gap-3 overflow-hidden">
             <div className="grid grid-cols-2 gap-3">
-                 <div className="bg-red-900/20 rounded-lg p-2 border border-red-500/30 flex flex-col justify-between relative overflow-hidden group">
+                 <div className="bg-red-950/35 rounded-lg p-2 border border-red-500/30 flex flex-col justify-between relative overflow-hidden group">
                     <div className="flex justify-between items-start z-10">
                         <div className="text-[9px] text-red-300 font-bold uppercase">CISA KEV</div>
                         <ShieldAlert size={12} className="text-red-400"/>
@@ -240,7 +267,7 @@ const VulnAnalyticsTile = ({
                     </div>
                 </div>
                 
-                <div className="bg-orange-900/20 rounded-lg p-2 border border-orange-500/30 flex flex-col justify-between relative overflow-hidden group">
+                <div className="bg-amber-950/25 rounded-lg p-2 border border-orange-500/30 flex flex-col justify-between relative overflow-hidden group">
                     <div className="flex justify-between items-start z-10">
                         <div className="text-[9px] text-orange-300 font-bold uppercase">ZDI Upcoming</div>
                         <Bug size={12} className="text-orange-400"/>
@@ -303,12 +330,12 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
     const highHosts = results.filter(h => h.riskLevel === 'HIGH').length;
     
     const iocCounts = [
-        { label: 'URLHaus', value: urlHausItems.length, color: 'text-blue-400' },
-        { label: 'Feodo C2', value: feodoItems.length, color: 'text-red-400' },
-        { label: 'ThreatFox', value: threatFoxItems.length, color: 'text-orange-400' },
-        { label: 'Bazaar', value: malwareBazaarItems.length, color: 'text-purple-400' },
-        { label: 'SSLBL', value: sslBlItems.length, color: 'text-cyan-400' },
-        { label: 'JA3', value: ja3Items.length, color: 'text-yellow-400' }
+        { label: 'URLHaus', value: urlHausItems.length, tone: 'neutral' },
+        { label: 'Feodo C2', value: feodoItems.length, tone: 'danger' },
+        { label: 'ThreatFox', value: threatFoxItems.length, tone: 'warning' },
+        { label: 'Bazaar', value: malwareBazaarItems.length, tone: 'neutral' },
+        { label: 'SSLBL', value: sslBlItems.length, tone: 'neutral' },
+        { label: 'JA3', value: ja3Items.length, tone: 'warning' }
     ];
 
     const iocStats = useMemo(() => {
@@ -354,7 +381,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
         feodoItems.slice(0, 10).forEach(i => items.push({ src: 'FEODO', val: `${i.ip_address}:${i.port}`, type: 'C2', threat: i.malware }));
         urlHausItems.slice(0, 10).forEach(i => items.push({ src: 'URLHAUS', val: i.url, type: 'URL', threat: i.threat }));
         threatFoxItems.slice(0, 10).forEach(i => items.push({ src: 'THREATFOX', val: i.ioc_value, type: i.ioc_type, threat: i.malware_printable }));
-        return items.sort(() => Math.random() - 0.5); // Shuffle for display
+        return items;
     }, [feodoItems, urlHausItems, threatFoxItems]);
 
     const globalThreats = useMemo(() => {
@@ -474,19 +501,20 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
     };
 
     return createPortal(
-        <div ref={containerRef} className="fixed inset-0 z-[100] bg-[#020617] text-white overflow-hidden flex flex-col font-sans select-none">
-            <div className="h-16 flex items-center justify-between px-6 border-b border-gray-800 bg-black/40 backdrop-blur-md relative z-20">
+        <div ref={containerRef} className="at-soc-wall fixed inset-0 z-[100] bg-[#06080b] text-white overflow-hidden flex flex-col font-sans select-none">
+            <div className="at-soc-header">
                 <div className="flex items-center gap-4">
                     {logoUrl ? (
                         <img src={logoUrl} className="h-10 w-10 object-contain"/>
                     ) : (
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyber-cyan to-purple-600 flex items-center justify-center shadow-[0_0_15px_rgba(214,40,40,0.5)]">
-                            <span className="text-white font-cyber font-bold text-xl">A</span>
+                        <div className="at-soc-brand-mark">
+                            <span>A</span>
                         </div>
                     )}
                     <div>
-                        <h1 className="text-2xl font-cyber font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan to-purple-400">
-                            {productName} <span className="text-white">SOC</span>
+                        <h1 className="text-2xl font-semibold tracking-[0.14em] text-[#e7e8ea]">
+                            {productName}
+                            <span className="ml-2 text-[#d62828]">SOC</span>
                         </h1>
                     </div>
                 </div>
@@ -502,7 +530,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                         <button
                             key={tab.id}
                             onClick={() => { setActiveTab(tab.id as SocTab); setIsAutoCarousel(false); }}
-                            className={`px-3 py-1.5 rounded flex items-center gap-2 text-xs font-bold transition-all ${activeTab === tab.id ? 'bg-cyber-cyan text-black shadow-[0_0_10px_rgba(14,165,233,0.3)]' : 'text-gray-500 hover:text-white hover:bg-gray-800'}`}
+                            className={`px-3 py-1.5 rounded flex items-center gap-2 text-xs font-bold transition-all ${activeTab === tab.id ? 'bg-[#d62828] text-white shadow-[0_6px_18px_rgba(214,40,40,.20)]' : 'text-[#777e87] hover:text-[#e5e7eb] hover:bg-[#171a20]'}`}
                         >
                             <tab.icon size={14}/> {tab.label}
                         </button>
@@ -550,7 +578,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                 </div>
             </div>
 
-            <div className="flex-1 relative overflow-hidden bg-black/20">
+            <div className="at-soc-wall-stage flex-1 relative overflow-hidden bg-[#06080b]">
                 <div className={`absolute inset-0 z-0 transition-opacity duration-1000 ${activeTab === 'OPS' ? 'opacity-100' : 'opacity-20 grayscale'}`}>
                     <AttackMapView 
                         results={results} 
@@ -560,65 +588,107 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                     />
                 </div>
                 
-                <div className="absolute inset-0 pointer-events-none z-0 bg-[radial-gradient(circle_at_center,transparent_20%,#020617_95%)]"></div>
-                <div className="absolute inset-0 pointer-events-none z-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] opacity-20"></div>
+                <div className="absolute inset-0 pointer-events-none z-[1] bg-[radial-gradient(circle_at_center,transparent_35%,rgba(3,6,10,.70)_100%)]" />
 
                 {activeTab === 'OPS' && (
                     <>
-                        <div className="absolute top-6 left-6 bottom-6 w-80 flex flex-col gap-4 z-10 animate-slide-in-left">
-                                <div className="h-32 bg-black/60 border border-gray-800 rounded-lg backdrop-blur-md pointer-events-auto">
-                                    <StatTile label="Critical Threats" value={criticalHosts} trend="up" trendVal={12} color="text-cyber-cyan" icon={Siren}/>
+                        <div className="at-soc-left-rail">
+                            <div className="at-soc-stat-card">
+                                <StatTile
+                                    label="Critical Threats"
+                                    value={criticalHosts}
+                                    trend="up"
+                                    trendVal={12}
+                                    color="text-[#e56d72]"
+                                    icon={Siren}
+                                />
+                            </div>
+
+                            <div className="at-soc-stat-card">
+                                <StatTile
+                                    label="High Risks"
+                                    value={highHosts}
+                                    trend="down"
+                                    trendVal={5}
+                                    color="text-[#d49b45]"
+                                    icon={AlertTriangle}
+                                />
+                            </div>
+
+                            <div className="at-soc-panel at-soc-ransom-panel">
+                                <div className="at-soc-panel-header">
+                                    <span>
+                                        <Lock size={13} />
+                                        Ransomware
+                                    </span>
+
+                                    <span className="at-soc-panel-meta">
+                                        Live intelligence
+                                    </span>
                                 </div>
-                                <div className="h-32 bg-black/60 border border-gray-800 rounded-lg backdrop-blur-md pointer-events-auto">
-                                    <StatTile label="High Risks" value={highHosts} trend="down" trendVal={5} color="text-cyber-purple" icon={AlertTriangle}/>
-                                </div>
-                                
-                                <div className="flex-1 bg-black/60 border border-gray-800 rounded-lg backdrop-blur-md flex flex-col overflow-hidden pointer-events-auto">
-                                    <div className="p-3 border-b border-gray-800 bg-gray-900/30 flex items-center justify-between">
-                                        <h3 className="font-bold text-white flex items-center gap-2 font-cyber tracking-wider text-xs">
-                                            <Lock size={14} className="text-red-500"/> RANSOMWARE
-                                        </h3>
+
+                                <div className="at-soc-ransom-summary">
+                                    <div>
+                                        <span>Active groups</span>
+                                        <strong>
+                                            {activeRansomGroups}
+                                        </strong>
                                     </div>
-                                    <div className="p-4 flex-1 flex flex-col gap-4">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-xs text-gray-400">Active Groups</span>
-                                            <span className="text-xl font-mono text-white font-bold">{activeRansomGroups}</span>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-xs text-gray-400">Total Victims</span>
-                                            <span className="text-xl font-mono text-red-400 font-bold">{ransomVictims}</span>
-                                        </div>
-                                        <div className="mt-auto">
-                                            <div className="text-[10px] text-gray-500 font-bold uppercase mb-2">Latest Victims</div>
-                                            <div className="space-y-2">
-                                                {ransomwarePosts.slice(0, 3).map((post, i) => (
-                                                    <div key={i} className="bg-red-900/10 border border-red-500/20 p-2 rounded text-[10px]">
-                                                        <div className="text-white font-bold truncate">{post.post_title}</div>
-                                                        <div className="flex justify-between text-red-300">
-                                                            <span>{post.group_name}</span>
-                                                            <span>{new Date(post.discovered).toLocaleDateString()}</span>
-                                                        </div>
-                                                    </div>
-                                                ))}
+
+                                    <div>
+                                        <span>Total victims</span>
+                                        <strong className="danger">
+                                            {ransomVictims}
+                                        </strong>
+                                    </div>
+                                </div>
+
+                                <div className="at-soc-ransom-list">
+                                    <span className="at-soc-section-label">
+                                        Latest victims
+                                    </span>
+
+                                    {ransomwarePosts
+                                        .slice(0, 3)
+                                        .map((post, index) => (
+                                            <div
+                                                key={index}
+                                                className="at-soc-ransom-row"
+                                            >
+                                                <div>
+                                                    <strong>
+                                                        {post.post_title}
+                                                    </strong>
+
+                                                    <span>
+                                                        {post.group_name}
+                                                    </span>
+                                                </div>
+
+                                                <time>
+                                                    {new Date(
+                                                        post.discovered,
+                                                    ).toLocaleDateString()}
+                                                </time>
                                             </div>
-                                        </div>
-                                    </div>
+                                        ))}
                                 </div>
+                            </div>
                         </div>
 
-                        <div className="absolute top-6 right-6 bottom-6 w-80 flex flex-col gap-4 z-10 animate-slide-in-right">
-                                <div className="h-64 bg-black/60 border border-gray-800 rounded-lg backdrop-blur-md overflow-hidden pointer-events-auto">
-                                    <IocStatTile counts={iocCounts} stats={iocStats} />
-                                </div>
-                                <div className="flex-1 bg-black/60 border border-gray-800 rounded-lg backdrop-blur-md overflow-hidden pointer-events-auto">
-                                    <VulnAnalyticsTile 
-                                        exploitCount={exploitData.length} 
-                                        totalCves={cveData.length} 
-                                        cisaCount={vulnStats.kev}
-                                        zdiCount={cveItems.filter(i=>i.source==='ZDI').length} 
-                                        criticalCve={cveData.find(c => c.severity === 'CRITICAL')}
-                                    />
-                                </div>
+                        <div className="at-soc-right-rail">
+                            <div className="at-soc-panel at-soc-ioc-panel">
+                                <IocStatTile counts={iocCounts} stats={iocStats} />
+                            </div>
+                            <div className="at-soc-panel at-soc-vuln-panel">
+                                <VulnAnalyticsTile 
+                                    exploitCount={exploitData.length} 
+                                    totalCves={cveData.length} 
+                                    cisaCount={vulnStats.kev}
+                                    zdiCount={cveItems.filter(i=>i.source==='ZDI').length} 
+                                    criticalCve={cveData.find(c => c.severity === 'CRITICAL')}
+                                />
+                            </div>
                         </div>
                     </>
                 )}
