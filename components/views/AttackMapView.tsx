@@ -239,13 +239,13 @@ export const AttackMapView: React.FC<AttackMapViewProps> = ({ results, globalThr
             }
 
             // --- DRAWING ---
-            ctx.fillStyle = cinematic ? '#0f172a' : '#020617';
+            ctx.fillStyle = cinematic ? '#020617' : '#020617';
             ctx.fillRect(0, 0, width, height);
 
             // 1. Globe/Atmosphere
             if (projectionType === 'ORTHO') {
                 const gradient = ctx.createRadialGradient(width/2, height/2, height/3, width/2, height/2, height/1.5);
-                gradient.addColorStop(0, '#0f172a');
+                gradient.addColorStop(0, '#1c0505');
                 gradient.addColorStop(1, '#020617');
                 ctx.fillStyle = gradient;
                 ctx.beginPath();
@@ -253,8 +253,8 @@ export const AttackMapView: React.FC<AttackMapViewProps> = ({ results, globalThr
                 ctx.fill();
                 
                 ctx.shadowBlur = cinematic ? 30 : 20;
-                ctx.shadowColor = 'rgba(14, 165, 233, 0.2)';
-                ctx.strokeStyle = 'rgba(14, 165, 233, 0.3)';
+                ctx.shadowColor = 'rgba(214, 40, 40, 0.2)';
+                ctx.strokeStyle = 'rgba(214, 40, 40, 0.3)';
                 ctx.lineWidth = 1;
                 ctx.stroke();
                 ctx.shadowBlur = 0;
@@ -264,11 +264,11 @@ export const AttackMapView: React.FC<AttackMapViewProps> = ({ results, globalThr
             ctx.beginPath();
             path(worldData);
             if (cinematic) {
-                ctx.fillStyle = 'rgba(30, 41, 59, 0.9)'; 
-                ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+                ctx.fillStyle = 'rgba(20, 5, 5, 0.9)'; 
+                ctx.strokeStyle = 'rgba(214, 40, 40, 0.4)';
             } else {
-                ctx.fillStyle = '#1e293b';
-                ctx.strokeStyle = '#334155';
+                ctx.fillStyle = '#1a0505';
+                ctx.strokeStyle = '#3a0f0f';
             }
             ctx.fill();
             ctx.lineWidth = 0.5;

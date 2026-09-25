@@ -220,8 +220,8 @@ export const fetchRemoteMalpedia = async (): Promise<MalpediaActor[]> => {
     const PROXIES = [
         (url: string) => url, // Direct
         (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`, // Vercel
-        (url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-        (url: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+        (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
+        (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`
     ];
 
     for (const proxy of PROXIES) {
@@ -264,3 +264,4 @@ const extractField = (content: string, fieldName: string): string | undefined =>
 
     return undefined;
 };
+

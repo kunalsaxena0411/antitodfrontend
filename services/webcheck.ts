@@ -11,9 +11,9 @@ import { fetchOtxIndicator } from './otx';
 const PROXIES = [
     { name: 'Direct', url: (url: string) => url, type: 'DIRECT' },
     { name: 'VercelProxy', url: (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`, type: 'DIRECT' },
-    { name: 'CORSProxy', url: (url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`, type: 'DIRECT' },
-    { name: 'ThingProxy', url: (url: string) => `https://thingproxy.freeboard.io/fetch/${url}`, type: 'DIRECT' },
-    { name: 'AllOrigins', url: (url: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`, type: 'DIRECT' }
+    { name: 'CORSProxy', url: (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`, type: 'DIRECT' },
+    { name: 'ThingProxy', url: (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`, type: 'DIRECT' },
+    { name: 'AllOrigins', url: (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`, type: 'DIRECT' }
 ];
 
 export const performWebCheck = async (input: string, onUpdate?: (result: WebCheckResult) => void): Promise<WebCheckResult> => {
@@ -398,3 +398,4 @@ const checkThreatIntelligence = async (domain: string, ip: string, result: WebCh
 
     result.blocklist = { summary, sources };
 };
+

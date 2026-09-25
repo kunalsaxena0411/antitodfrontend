@@ -10,7 +10,7 @@ export interface TaxiiConfig {
     useProxy?: boolean;
 }
 
-const CORS_PROXY = 'https://corsproxy.io/?';
+const CORS_PROXY = '/api/proxy?url=';
 
 export const pushToTaxii = async (stixBundle: string, config: TaxiiConfig): Promise<{ success: boolean; message: string }> => {
     // Normalize URL
@@ -58,3 +58,4 @@ export const pushToTaxii = async (stixBundle: string, config: TaxiiConfig): Prom
         return { success: false, message: `Network Error: ${error.message}` };
     }
 };
+

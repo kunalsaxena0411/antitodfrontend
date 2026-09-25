@@ -78,3 +78,4 @@ export const enrichVtHash = async (hash: string): Promise<VtResult | null> => {
         return null;
     }
 };
+

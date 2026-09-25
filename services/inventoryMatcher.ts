@@ -136,3 +136,4 @@ export const matchVulnerabilities = (
     // Sort by Priority
     return matches.sort((a, b) => b.priorityScore - a.priorityScore);
 };
+

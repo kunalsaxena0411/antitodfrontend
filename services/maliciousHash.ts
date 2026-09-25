@@ -25,3 +25,4 @@ export const fetchMaliciousHashes = async (): Promise<MaliciousHashEntry[]> => {
         return [];
     }
 };
+

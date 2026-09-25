@@ -480,7 +480,7 @@ export const ThreatCanvasView: React.FC = () => {
     }, [paletteSearch, customStencils]);
 
     return (
-        <div className="h-full flex bg-[#020617] text-gray-300 font-sans overflow-hidden">
+        <div className="h-full min-h-[calc(100vh-140px)] w-full flex bg-[#020617] text-gray-300 font-sans overflow-hidden">
             {/* Sidebar: Palette */}
             <div className="w-80 bg-[#050b1a] border-r border-gray-800 flex flex-col shrink-0 relative z-20 shadow-2xl">
                 <div className="p-5 border-b border-gray-800 bg-gray-900/20">
@@ -570,7 +570,7 @@ export const ThreatCanvasView: React.FC = () => {
             {/* Right Sidebar: Intel & Properties */}
             <div className="w-96 bg-[#050b1a] border-l border-gray-800 flex flex-col shrink-0 relative z-20">
                 <div className="p-5 border-b border-gray-800 bg-gray-900/20">
-                    <h2 className="text-xs font-bold text-orange-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                    <h2 className="text-xs font-bold text-cyber-cyan uppercase tracking-[0.2em] flex items-center gap-2">
                         <Gauge size={14}/> {selectedNode ? 'ASSET INTEL' : selectedEdge ? 'FLOW LOGIC' : 'THREATS'}
                     </h2>
                 </div>

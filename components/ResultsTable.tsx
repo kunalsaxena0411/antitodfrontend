@@ -57,6 +57,7 @@ import { NetworkTopologyView } from './views/NetworkTopologyView';
 import { InfrastructureView } from './views/InfrastructureView';
 import { XyberahReconView } from './views/XyberahReconView';
 import { PLAYBOOKS } from '../services/playbooks';
+import ModuleChrome from '../src/components/layout/ModuleChrome';
 
 export interface ResultsTableProps {
   results: AnalyzedHost[];
@@ -182,12 +183,41 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
   const [localView, setLocalView] = useState('dashboard');
   const [activeCase, setActiveCase] = useState<CaseFile | null>(null);
   const [initialIntelQuery, setInitialIntelQuery] = useState<string | null>(null);
+  const [favorite, setFavorite] = useState(false);
 
   const currentView = normalizeView(activeView ?? localView);
 
   useEffect(() => {
     if (activeView) setLocalView(normalizeView(activeView));
   }, [activeView]);
+
+  useEffect(() => {
+    const sync = () => {
+      try {
+        const favorites = JSON.parse(localStorage.getItem('antitode_favorites') || '[]') as string[];
+        setFavorite(favorites.includes(currentView));
+      } catch {
+        setFavorite(false);
+      }
+    };
+    sync();
+    window.addEventListener('antitode-favorites-changed', sync);
+    return () => window.removeEventListener('antitode-favorites-changed', sync);
+  }, [activeView, currentView]);
+
+  const toggleFavorite = () => {
+    try {
+      const current = JSON.parse(localStorage.getItem('antitode_favorites') || '[]') as string[];
+      const next = current.includes(currentView)
+        ? current.filter((id) => id !== currentView)
+        : [...current, currentView];
+      localStorage.setItem('antitode_favorites', JSON.stringify(next));
+      setFavorite(next.includes(currentView));
+      window.dispatchEvent(new Event('antitode-favorites-changed'));
+    } catch {
+      // Local storage is optional; module navigation remains functional without it.
+    }
+  };
 
   const navigate = (viewId: string) => {
     const next = normalizeView(viewId);
@@ -267,6 +297,8 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
   return (
     <div className="antitode-view-root h-full min-h-0 min-w-0 overflow-hidden bg-[#0A0A0A]">
       <div className="h-full min-h-0 min-w-0 overflow-auto antitode-module-scroll">
+        <ModuleChrome activeView={currentView} favorite={favorite} onToggleFavorite={toggleFavorite} />
+        <div className="at-module-view-body">
         {currentView === 'dashboard' && (
           <DashboardView
             clusters={clusters}
@@ -367,6 +399,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
         {currentView === 'topology' && <NetworkTopologyView />}
         {currentView === 'infrastructure' && <InfrastructureView />}
         {currentView === 'recon' && <XyberahReconView />}
+        </div>
       </div>
     </div>
   );

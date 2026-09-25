@@ -495,3 +495,4 @@ export const formatSandboxContext = (report: OtxSandboxReport): string => {
     - YARA Rules: ${yara}
     `;
 };
+

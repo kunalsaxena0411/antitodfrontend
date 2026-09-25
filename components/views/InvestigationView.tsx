@@ -830,7 +830,7 @@ export const InvestigationView: React.FC<InvestigationViewProps> = ({ results = 
     };
 
     return (
-        <div className="h-[calc(100vh-140px)] bg-[#020617] flex flex-col relative overflow-hidden border border-gray-800 rounded-lg w-full">
+        <div className="h-full min-h-[600px] bg-[#020617] flex flex-col relative overflow-hidden border border-gray-800 rounded-lg w-full">
             {tooltipData && (
                 <div 
                     className="absolute z-50 pointer-events-none bg-black/90 backdrop-blur-md border border-gray-700 rounded p-3 text-xs shadow-xl animate-fade-in"

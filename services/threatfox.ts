@@ -41,3 +41,4 @@ export const fetchThreatFox = async (): Promise<ThreatFoxEntry[]> => {
         return [];
     }
 };
+

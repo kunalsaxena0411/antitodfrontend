@@ -55,3 +55,4 @@ export const fetchJa3Bl = async (): Promise<Ja3FingerprintEntry[]> => {
         return entries;
     });
 };
+

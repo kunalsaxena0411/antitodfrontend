@@ -18,10 +18,7 @@ import {
   X,
 } from 'lucide-react';
 
-import {
-  MOCK_NEWS,
-  type MockNewsItem,
-} from '../data/mockData';
+import { useAppData } from '../contexts/AppDataContext';
 
 import PageHeader from '../components/layout/PageHeader';
 
@@ -66,6 +63,8 @@ function getRelevance(index: number) {
 }
 
 export default function NewsPage() {
+  const { MOCK_NEWS } = useAppData();
+
   const [search, setSearch] =
     useState('');
 

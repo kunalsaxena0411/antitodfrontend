@@ -9,8 +9,8 @@ const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 const PROXIES = [
     (url: string) => url, // Direct
     (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`, // Vercel
-    (url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-    (url: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
+    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`
 ];
 
 const FEEDS = [
@@ -160,3 +160,4 @@ export const fetchCveFeeds = async (): Promise<CveFeedItem[]> => {
 
     return results;
 };
+

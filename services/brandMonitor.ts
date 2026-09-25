@@ -53,7 +53,7 @@ export const analyzeVisualSimilarity = async (officialLogoSrc: string, targetScr
 
         // Use a proxy for the target screenshot to avoid CORS if needed
         // Assuming image.thum.io supports CORS or we use a proxy
-        const proxyUrl = (url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`;
+        const proxyUrl = (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`;
         
         const [img1, img2] = await Promise.all([
             loadImage(officialLogoSrc),
@@ -589,3 +589,4 @@ export const checkDomainStatus = async (item: TyposquatResult, officialLogo?: st
     }
     return item;
 };
+

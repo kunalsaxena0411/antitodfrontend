@@ -2,16 +2,16 @@
 import { CveEntry } from '../types';
 
 const NVD_API_URL = 'https://services.nvd.nist.gov/rest/json/cves/2.0';
-const CISA_KEV_GITHUB_MAIN = 'https://raw.githubusercontent.com/cisagov/known_exploited_vulnerabilities/main/known_exploited_vulnerabilities.json';
+const CISA_KEV_GITHUB_MAIN = 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json';
 
 // Proxy rotation to bypass CORS
 // Order: Direct -> Vercel -> Public
 const PROXIES = [
     (url: string) => url, // Try direct first
     (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`, // Vercel
-    (url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-    (url: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-    (url: string) => `https://thingproxy.freeboard.io/fetch/${url}`,
+    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
+    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
+    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
 ];
 
 // Helper to fetch with proxy rotation
@@ -215,3 +215,5 @@ export const fetchCveUpdates = async (lastUpdate?: Date): Promise<CveEntry[]> =>
 
     return cves;
 };
+
+

@@ -63,3 +63,4 @@ export const fetchUrlHaus = async (): Promise<UrlHausEntry[]> => {
     console.error("Failed to fetch URLhaus data.");
     return [];
 };
+

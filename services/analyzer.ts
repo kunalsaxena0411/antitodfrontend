@@ -722,3 +722,4 @@ export const parseJSONFile = async (file: File): Promise<LogEntry[]> => {
     reader.readAsText(file);
   });
 };
+

@@ -246,7 +246,7 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
     };
 
     return (
-        <div className="h-full flex bg-cyber-grid relative overflow-hidden">
+        <div className="h-full min-h-[calc(100vh-140px)] w-full flex bg-cyber-grid relative overflow-hidden">
             <div className={`bg-[#020617]/95 border-r border-gray-800/50 backdrop-blur-2xl transition-all duration-500 flex flex-col z-20 shadow-2xl ${isSidebarOpen ? 'w-80' : 'w-0 opacity-0 invisible'}`}>
                 <div className="p-5 border-b border-gray-800 flex items-center justify-between shrink-0">
                     <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-[0.2em] flex items-center gap-3">
@@ -315,7 +315,7 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
                                 <button 
                                     type="submit"
                                     disabled={isSearching || !query.trim()}
-                                    className="bg-cyber-cyan text-white px-10 py-5 font-bold text-sm tracking-[0.1em] hover:bg-blue-600 transition-all border-l border-white/10 disabled:opacity-50 flex items-center gap-3 uppercase shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]"
+                                    className="bg-cyber-cyan text-white px-10 py-5 font-bold text-sm tracking-[0.1em] hover:bg-red-800 transition-all border-l border-white/10 disabled:opacity-50 flex items-center gap-3 uppercase shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]"
                                 >
                                     {isSearching ? <Loader2 className="animate-spin" size={18}/> : <Terminal size={18}/>}
                                     Process

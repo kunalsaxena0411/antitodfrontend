@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, Command, Search } from 'lucide-react';
-import { NAV_GROUPS, canonicalViewId, type NavItem } from '../../data/navigation';
+import { NAV_GROUPS, canonicalViewId, findNavGroup, type NavItem } from '../../data/navigation';
+import { routeForView } from '../../data/routes';
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -18,7 +19,7 @@ export default function CommandPalette({ isOpen, onClose, onNavigate }: CommandP
 
     if (!value) return all.slice(0, 12);
 
-    return all.filter((item) => `${item.label} ${item.desc}`.toLowerCase().includes(value)).slice(0, 30);
+    return all.filter((item) => `${item.label} ${item.desc} ${routeForView(item.id)}`.toLowerCase().includes(value)).slice(0, 30);
   }, [query]);
 
   useEffect(() => {

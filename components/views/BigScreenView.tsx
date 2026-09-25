@@ -480,12 +480,12 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                     {logoUrl ? (
                         <img src={logoUrl} className="h-10 w-10 object-contain"/>
                     ) : (
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-[0_0_15px_rgba(37,99,235,0.5)]">
-                            <Activity size={24} className="text-white"/>
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyber-cyan to-purple-600 flex items-center justify-center shadow-[0_0_15px_rgba(214,40,40,0.5)]">
+                            <span className="text-white font-cyber font-bold text-xl">A</span>
                         </div>
                     )}
                     <div>
-                        <h1 className="text-2xl font-cyber font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                        <h1 className="text-2xl font-cyber font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan to-purple-400">
                             {productName} <span className="text-white">SOC</span>
                         </h1>
                     </div>
@@ -565,13 +565,12 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
 
                 {activeTab === 'OPS' && (
                     <>
-                        <div className="absolute top-6 left-6 bottom-6 w-80 flex flex-col gap-4 z-10 pointer-events-none animate-slide-in-left">
-                            <div className="pointer-events-auto contents">
+                        <div className="absolute top-6 left-6 bottom-6 w-80 flex flex-col gap-4 z-10 animate-slide-in-left">
                                 <div className="h-32 bg-black/60 border border-gray-800 rounded-lg backdrop-blur-md pointer-events-auto">
-                                    <StatTile label="Critical Threats" value={criticalHosts} trend="up" trendVal={12} color="text-red-500" icon={Siren}/>
+                                    <StatTile label="Critical Threats" value={criticalHosts} trend="up" trendVal={12} color="text-cyber-cyan" icon={Siren}/>
                                 </div>
                                 <div className="h-32 bg-black/60 border border-gray-800 rounded-lg backdrop-blur-md pointer-events-auto">
-                                    <StatTile label="High Risks" value={highHosts} trend="down" trendVal={5} color="text-orange-500" icon={AlertTriangle}/>
+                                    <StatTile label="High Risks" value={highHosts} trend="down" trendVal={5} color="text-cyber-purple" icon={AlertTriangle}/>
                                 </div>
                                 
                                 <div className="flex-1 bg-black/60 border border-gray-800 rounded-lg backdrop-blur-md flex flex-col overflow-hidden pointer-events-auto">
@@ -605,11 +604,9 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                                         </div>
                                     </div>
                                 </div>
-                            </div>
                         </div>
 
-                        <div className="absolute top-6 right-6 bottom-6 w-80 flex flex-col gap-4 z-10 pointer-events-none animate-slide-in-right">
-                            <div className="pointer-events-auto contents">
+                        <div className="absolute top-6 right-6 bottom-6 w-80 flex flex-col gap-4 z-10 animate-slide-in-right">
                                 <div className="h-64 bg-black/60 border border-gray-800 rounded-lg backdrop-blur-md overflow-hidden pointer-events-auto">
                                     <IocStatTile counts={iocCounts} stats={iocStats} />
                                 </div>
@@ -622,7 +619,6 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                                         criticalCve={cveData.find(c => c.severity === 'CRITICAL')}
                                     />
                                 </div>
-                            </div>
                         </div>
                     </>
                 )}

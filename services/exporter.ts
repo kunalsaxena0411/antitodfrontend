@@ -699,3 +699,4 @@ export const generateNetworkToolsPDF = (category: string, input: string, data: a
     }
     doc.save(`network_report_${category.toLowerCase()}_${Date.now()}.pdf`);
 };
+

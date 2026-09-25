@@ -1,63 +1,47 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ChevronDown,
-  ChevronRight,
   ChevronLeft,
+  ChevronRight,
   Command,
-  Menu,
+  MoreHorizontal,
   Search,
   Star,
   X,
 } from 'lucide-react';
-import {
-  BOTTOM_ITEMS,
-  NAV_GROUPS,
-  canonicalViewId,
-  findNavItem,
-  type NavGroup,
-  type NavItem,
-} from '../../data/navigation';
+import { BOTTOM_ITEMS, NAV_GROUPS, canonicalViewId, type NavGroup, type NavItem } from '../../data/navigation';
+import { routeForView } from '../../data/routes';
 
 interface SidebarProps {
   activeView: string;
   collapsed: boolean;
   onToggle: () => void;
-  onNavigate: (id: string) => void;
+  onNavigate: (viewId: string) => void;
   onOpenSearch: () => void;
 }
 
-const GROUP_STORAGE_KEY = 'antitode_collapsed_groups';
-const FAVORITES_STORAGE_KEY = 'antitode_favorites';
-
-function readStringArray(key: string): string[] {
-  try {
-    const raw = localStorage.getItem(key);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed.filter((value): value is string => typeof value === 'string') : [];
-  } catch {
-    return [];
-  }
-}
-
-function readCollapsedGroups(): string[] {
-  return readStringArray(GROUP_STORAGE_KEY);
-}
-
-function SidebarItem({
-  item,
-  active,
-  collapsed,
-  favorite,
-  onNavigate,
-  onToggleFavorite,
-}: {
+interface SidebarItemProps {
   item: NavItem;
   active: boolean;
   collapsed: boolean;
   favorite: boolean;
-  onNavigate: (id: string) => void;
-  onToggleFavorite: (id: string) => void;
-}) {
+  onNavigate: (viewId: string) => void;
+  onToggleFavorite: (viewId: string) => void;
+}
+
+const STORAGE_KEY = 'antitode_sidebar_groups';
+const FAVORITES_KEY = 'antitode_favorites';
+
+function readStored<T>(key: string, fallback: T): T {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) as T : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function SidebarItem({ item, active, collapsed, favorite, onNavigate, onToggleFavorite }: SidebarItemProps) {
   const Icon = item.icon;
 
   return (
@@ -66,11 +50,10 @@ function SidebarItem({
         type="button"
         className={`at-sidebar-item ${active ? 'is-active' : ''}`}
         onClick={() => onNavigate(item.id)}
-        title={collapsed ? `${item.label} — ${item.desc}` : undefined}
+        title={collapsed ? `${item.label} • ${routeForView(item.id)}` : item.label}
+        aria-current={active ? 'page' : undefined}
       >
-        <span className="at-sidebar-item-icon">
-          <Icon size={16} strokeWidth={1.8} />
-        </span>
+        <span className="at-sidebar-item-icon"><Icon size={16} strokeWidth={active ? 2.1 : 1.8} /></span>
         {!collapsed && <span className="at-sidebar-item-label">{item.label}</span>}
       </button>
 
@@ -78,11 +61,12 @@ function SidebarItem({
         <button
           type="button"
           className={`at-sidebar-favorite ${favorite ? 'is-favorite' : ''}`}
-          aria-label={favorite ? `Remove ${item.label} from favorites` : `Add ${item.label} to favorites`}
           onClick={(event) => {
             event.stopPropagation();
             onToggleFavorite(item.id);
           }}
+          title={favorite ? `Remove ${item.label} from favorites` : `Favorite ${item.label}`}
+          aria-label={favorite ? `Remove ${item.label} from favorites` : `Favorite ${item.label}`}
         >
           <Star size={12} fill={favorite ? 'currentColor' : 'none'} />
         </button>
@@ -107,39 +91,51 @@ function SidebarGroup({
   activeView: string;
   favorites: string[];
   onToggleGroup: (title: string) => void;
-  onNavigate: (id: string) => void;
-  onToggleFavorite: (id: string) => void;
+  onNavigate: (viewId: string) => void;
+  onToggleFavorite: (viewId: string) => void;
 }) {
   const activeCanonical = canonicalViewId(activeView);
   const hasActive = group.items.some((item) => item.id === activeCanonical);
-  const hidden = !collapsed && groupCollapsed && !hasActive;
 
-  return (
-    <section className={`at-sidebar-group ${hidden ? 'is-collapsed' : ''}`}>
-      <button
-        type="button"
-        className="at-sidebar-group-title"
-        onClick={() => !collapsed && onToggleGroup(group.title)}
-        aria-expanded={!groupCollapsed}
-      >
-        {!collapsed && <span>{group.title}</span>}
-        {collapsed ? (
-          <span className="at-sidebar-group-rule" />
-        ) : groupCollapsed ? (
-          <ChevronRight size={12} />
-        ) : (
-          <ChevronDown size={12} />
-        )}
-      </button>
-
-      {!hidden && (
+  if (collapsed) {
+    return (
+      <section className={`at-sidebar-group at-sidebar-group-collapsed ${hasActive ? 'has-active' : ''}`}>
         <div className="at-sidebar-group-items">
           {group.items.map((item) => (
             <SidebarItem
               key={item.id}
               item={item}
               active={item.id === activeCanonical}
-              collapsed={collapsed}
+              collapsed={true}
+              favorite={favorites.includes(item.id)}
+              onNavigate={onNavigate}
+              onToggleFavorite={onToggleFavorite}
+            />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="at-sidebar-group">
+      <button
+        type="button"
+        className={`at-sidebar-group-title ${hasActive ? 'has-active' : ''}`}
+        onClick={() => onToggleGroup(group.title)}
+      >
+        <span>{group.title}</span>
+        <ChevronDown size={13} className={groupCollapsed ? 'is-collapsed' : ''} />
+      </button>
+
+      {!groupCollapsed && (
+        <div className="at-sidebar-group-items">
+          {group.items.map((item) => (
+            <SidebarItem
+              key={item.id}
+              item={item}
+              active={item.id === activeCanonical}
+              collapsed={false}
               favorite={favorites.includes(item.id)}
               onNavigate={onNavigate}
               onToggleFavorite={onToggleFavorite}
@@ -151,84 +147,79 @@ function SidebarGroup({
   );
 }
 
-export default function Sidebar({
-  activeView,
-  collapsed,
-  onToggle,
-  onNavigate,
-  onOpenSearch,
-}: SidebarProps) {
+export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, onOpenSearch }: SidebarProps) {
   const [menuSearch, setMenuSearch] = useState('');
-  const [favorites, setFavorites] = useState<string[]>(() => readStringArray(FAVORITES_STORAGE_KEY));
-  const [collapsedGroups, setCollapsedGroups] = useState<string[]>(() => readCollapsedGroups());
+  const [collapsedGroups, setCollapsedGroups] = useState<string[]>(() => readStored(STORAGE_KEY, []));
+  const [favorites, setFavorites] = useState<string[]>(() => readStored(FAVORITES_KEY, []));
   const searchRef = useRef<HTMLInputElement>(null);
+  const activeCanonical = canonicalViewId(activeView);
 
-  useEffect(() => {
-    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
+  const filteredGroups = useMemo(() => {
+    const value = menuSearch.trim().toLowerCase();
+    if (!value) return NAV_GROUPS;
+
+    return NAV_GROUPS
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) => `${item.label} ${item.desc}`.toLowerCase().includes(value)),
+      }))
+      .filter((group) => group.items.length > 0);
+  }, [menuSearch]);
+
+  const favoriteItems = useMemo(() => {
+    const all = NAV_GROUPS.flatMap((group) => group.items);
+    return favorites.map((id) => all.find((item) => item.id === id)).filter(Boolean) as NavItem[];
   }, [favorites]);
 
   useEffect(() => {
-    localStorage.setItem(GROUP_STORAGE_KEY, JSON.stringify(collapsedGroups));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(collapsedGroups));
   }, [collapsedGroups]);
 
   useEffect(() => {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+  }, [favorites]);
+
+  useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'b') {
+      const modifier = event.metaKey || event.ctrlKey;
+      if (modifier && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        onOpenSearch();
+        return;
+      }
+      if (modifier && event.key.toLowerCase() === 'b') {
         event.preventDefault();
         onToggle();
       }
-
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
-        setTimeout(() => searchRef.current?.blur(), 0);
+      if (event.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        event.preventDefault();
+        if (!collapsed) searchRef.current?.focus();
+        else onOpenSearch();
       }
     };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onOpenSearch, onToggle, collapsed]);
 
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [onToggle]);
+  const toggleGroup = (title: string) => {
+    setCollapsedGroups((current) => current.includes(title)
+      ? current.filter((entry) => entry !== title)
+      : [...current, title]);
+  };
 
-  const activeCanonical = canonicalViewId(activeView);
-  const favoriteItems = useMemo(
-    () => favorites.map((id) => findNavItem(id)).filter((item): item is NavItem => Boolean(item)),
-    [favorites],
-  );
-
-  const filteredGroups = useMemo(() => {
-    const query = menuSearch.trim().toLowerCase();
-    if (!query) return NAV_GROUPS;
-
-    return NAV_GROUPS.map((group) => ({
-      ...group,
-      items: group.items.filter((item) =>
-        `${item.label} ${item.desc} ${group.title}`.toLowerCase().includes(query),
-      ),
-    })).filter((group) => group.items.length > 0);
-  }, [menuSearch]);
-
-  function toggleFavorite(id: string) {
-    setFavorites((current) =>
-      current.includes(id) ? current.filter((favorite) => favorite !== id) : [...current, id],
-    );
-  }
-
-  function toggleGroup(title: string) {
-    setCollapsedGroups((current) =>
-      current.includes(title)
-        ? current.filter((group) => group !== title)
-        : [...current, title],
-    );
-  }
+  const toggleFavorite = (id: string) => {
+    setFavorites((current) => {
+      const next = current.includes(id) ? current.filter((entry) => entry !== id) : [...current, id];
+      window.dispatchEvent(new Event('antitode-favorites-changed'));
+      return next;
+    });
+  };
 
   return (
     <aside className={`at-sidebar ${collapsed ? 'is-collapsed' : ''}`}>
       <div className="at-sidebar-top">
         <div className="at-sidebar-brand-row">
-          <button
-            type="button"
-            className="at-sidebar-brand"
-            onClick={() => onNavigate('dashboard')}
-            aria-label="ANTITODE dashboard"
-          >
+          <button type="button" className="at-sidebar-brand" onClick={() => onNavigate('dashboard')} title="Open dashboard">
             <span className="at-sidebar-brand-mark">A</span>
             {!collapsed && (
               <span className="at-sidebar-brand-copy">
@@ -243,8 +234,9 @@ export default function Sidebar({
             className="at-sidebar-collapse-button"
             onClick={onToggle}
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            {collapsed ? <Menu size={16} /> : <ChevronLeft size={16} />}
+            {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           </button>
         </div>
 
@@ -255,7 +247,7 @@ export default function Sidebar({
               <strong>Global Operations</strong>
               <small>Security workspace</small>
             </span>
-            <ChevronDown size={13} />
+            <ChevronDown size={14} />
           </button>
         ) : (
           <button
@@ -287,7 +279,7 @@ export default function Sidebar({
             )}
           </div>
         ) : (
-          <button type="button" className="at-sidebar-search-collapsed" onClick={onOpenSearch} aria-label="Open global search">
+          <button type="button" className="at-sidebar-search-collapsed" onClick={onOpenSearch} aria-label="Open global search" title="Search modules">
             <Search size={15} />
           </button>
         )}
@@ -297,8 +289,7 @@ export default function Sidebar({
         {favoriteItems.length > 0 && !menuSearch && (
           <section className="at-sidebar-group at-sidebar-favorites">
             <div className="at-sidebar-group-title static-title">
-              {!collapsed && <span>Favorites</span>}
-              {collapsed ? <span className="at-sidebar-group-rule" /> : <Star size={12} fill="currentColor" />}
+              {!collapsed ? <span>Favorites</span> : <Star size={12} fill="currentColor" />}
             </div>
             <div className="at-sidebar-group-items">
               {favoriteItems.map((item) => (
@@ -345,13 +336,16 @@ export default function Sidebar({
         ))}
 
         {!collapsed && (
-          <div className="at-sidebar-footnote">
-            <span className="at-sidebar-footnote-dot" />
-            <span>ANTITODE workspace</span>
+          <div className="at-sidebar-status-card">
+            <div className="at-sidebar-status-head">
+              <span className="at-sidebar-status-dot" />
+              <span>Operational</span>
+              <MoreHorizontal size={13} />
+            </div>
+            <span>Workspace services ready</span>
           </div>
         )}
       </div>
     </aside>
   );
 }
-

@@ -90,7 +90,7 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
 
     if (!savedResult) {
         return (
-            <div className="h-full flex flex-col items-center justify-center bg-[#020617] text-gray-400 p-8">
+            <div className="h-full min-h-[calc(100vh-140px)] flex flex-col items-center justify-center bg-[#020617] text-gray-400 p-8 w-full">
                 <div className="w-full max-w-lg border-2 border-dashed border-gray-700 rounded-xl p-12 flex flex-col items-center justify-center text-center bg-gray-900/20 hover:bg-gray-900/40 transition-colors group relative overflow-hidden">
                     <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileUpload} accept=".pcap,.pcapng,.json"/>
                     <div className="p-4 bg-blue-900/20 rounded-full mb-6 group-hover:scale-110 transition-transform duration-300 border border-blue-500/30">
@@ -113,7 +113,7 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
     }
 
     return (
-        <div className="h-full flex flex-col bg-[#020617] overflow-hidden">
+        <div className="h-full min-h-[calc(100vh-140px)] flex flex-col bg-[#020617] overflow-hidden w-full">
             {/* Header */}
             <div className="bg-black/40 border-b border-gray-800 p-4 flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-4">

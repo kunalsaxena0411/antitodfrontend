@@ -1,30 +1,44 @@
 import {
+    useMemo,
+    type CSSProperties,
+} from 'react';
+
+import {
     Activity,
+    ArrowUpRight,
+    ChevronRight,
     Crosshair,
     Globe2,
+    Maximize2,
     RefreshCw,
     Server,
     ShieldAlert,
     Target,
-    X,
+    Wifi,
 } from 'lucide-react';
 
-import {
-    MOCK_EVENTS,
-    type MockThreatEvent,
-} from '../data/mockData';
+import type { LogEventV2 } from '../../api/services';
 
+import { useAppData } from '../contexts/AppDataContext';
 import PageHeader from '../components/layout/PageHeader';
 
 interface AttackMapPageProps {
     onNavigate: (id: string) => void;
 }
 
-/*
- * The source dataset contains country/countryCode but no geographic
- * coordinates. These are therefore visual layout anchors only.
- * They are not treated as location data from the backend.
- */
+interface CountryPlot {
+    country: string;
+    countryCode: string;
+    count: number;
+    layout: {
+        left: number;
+        top: number;
+    };
+    severity: LogEventV2['severity'];
+}
+
+type Severity = LogEventV2['severity'];
+
 const COUNTRY_LAYOUT: Record<
     string,
     { left: number; top: number }
@@ -45,7 +59,7 @@ const COUNTRY_LAYOUT: Record<
     JP: { left: 84, top: 43 },
 };
 
-const severityWeight = {
+const SEVERITY_WEIGHT: Record<Severity, number> = {
     critical: 4,
     high: 3,
     medium: 2,
@@ -53,152 +67,298 @@ const severityWeight = {
 };
 
 function severityColor(
-    severity: MockThreatEvent['severity']
-) {
+    severity: Severity,
+): string {
     switch (severity) {
         case 'critical':
-            return '#D62828';
+            return '#e5484d';
 
         case 'high':
-            return '#E7782A';
+            return '#f59e0b';
 
         case 'medium':
-            return '#B78E2C';
+            return '#a97816';
 
+        case 'low':
         default:
-            return '#548A63';
+            return '#4d8760';
     }
 }
 
-function formatTime(
-    timestamp: string
-) {
-    return new Date(timestamp).toLocaleTimeString(
+function formatTime(timestamp: string): string {
+    const date = new Date(timestamp);
+
+    if (Number.isNaN(date.getTime())) {
+        return '—';
+    }
+
+    return date.toLocaleTimeString(
         'en-US',
         {
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
             hour12: false,
-        }
+        },
+    );
+}
+
+function formatDate(timestamp: string): string {
+    const date = new Date(timestamp);
+
+    if (Number.isNaN(date.getTime())) {
+        return '—';
+    }
+
+    return date.toLocaleDateString(
+        'en-US',
+        {
+            month: 'short',
+            day: 'numeric',
+        },
     );
 }
 
 function prettyEvent(
-    eventType: string
-) {
+    eventType: string,
+): string {
     return eventType
         .replace(/_/g, ' ')
         .toLowerCase()
         .replace(/\b\w/g, (letter) =>
-            letter.toUpperCase()
+            letter.toUpperCase(),
         );
 }
 
 export default function AttackMapPage({
     onNavigate,
 }: AttackMapPageProps) {
-    const events = [...MOCK_EVENTS].sort(
-        (a, b) =>
-            severityWeight[b.severity] -
-            severityWeight[a.severity]
+    const { MOCK_EVENTS } = useAppData();
+
+    const events = useMemo(() => {
+        return [...MOCK_EVENTS].sort(
+            (a, b) =>
+                new Date(b.timestamp).getTime() -
+                new Date(a.timestamp).getTime(),
+        );
+    }, [MOCK_EVENTS]);
+
+    const prioritizedEvents = useMemo(() => {
+        return [...MOCK_EVENTS].sort(
+            (a, b) =>
+                SEVERITY_WEIGHT[b.severity] -
+                SEVERITY_WEIGHT[a.severity],
+        );
+    }, [MOCK_EVENTS]);
+
+    const eventCount = MOCK_EVENTS.length;
+
+    const countryCounts = useMemo(() => {
+        return MOCK_EVENTS.reduce<Record<string, number>>(
+            (accumulator, event) => {
+                if (!event.country) {
+                    return accumulator;
+                }
+
+                accumulator[event.country] =
+                    (accumulator[event.country] ?? 0) + 1;
+
+                return accumulator;
+            },
+            {},
+        );
+    }, [MOCK_EVENTS]);
+
+    const rankedCountries = useMemo(() => {
+        return Object.entries(countryCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 6);
+    }, [countryCounts]);
+
+    const criticalCount = useMemo(
+        () =>
+            MOCK_EVENTS.filter(
+                (event) =>
+                    event.severity === 'critical',
+            ).length,
+        [MOCK_EVENTS],
     );
 
-    const countryCounts =
-        MOCK_EVENTS.reduce(
-            (acc, event) => {
-                acc[event.country] =
-                    (acc[event.country] || 0) + 1;
+    const highCount = useMemo(
+        () =>
+            MOCK_EVENTS.filter(
+                (event) =>
+                    event.severity === 'high',
+            ).length,
+        [MOCK_EVENTS],
+    );
 
-                return acc;
-            },
-            {} as Record<string, number>
-        );
+    const mediumCount = useMemo(
+        () =>
+            MOCK_EVENTS.filter(
+                (event) =>
+                    event.severity === 'medium',
+            ).length,
+        [MOCK_EVENTS],
+    );
 
-    const rankedCountries = Object.entries(
-        countryCounts
-    )
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 7);
+    const lowCount = useMemo(
+        () =>
+            MOCK_EVENTS.filter(
+                (event) =>
+                    event.severity === 'low',
+            ).length,
+        [MOCK_EVENTS],
+    );
 
-    const criticalCount =
-        MOCK_EVENTS.filter(
-            (event) =>
-                event.severity === 'critical'
-        ).length;
+    const uniqueSources = useMemo(
+        () =>
+            new Set(
+                MOCK_EVENTS
+                    .map(
+                        (event) =>
+                            event.src_ip,
+                    )
+                    .filter(Boolean),
+            ).size,
+        [MOCK_EVENTS],
+    );
 
-    const highCount =
-        MOCK_EVENTS.filter(
-            (event) =>
-                event.severity === 'high'
-        ).length;
-
-    const uniqueSources = new Set(
-        MOCK_EVENTS.map(
-            (event) => event.srcIp
-        )
-    ).size;
+    const uniqueEventTypes = useMemo(
+        () =>
+            new Set(
+                MOCK_EVENTS
+                    .map(
+                        (event) =>
+                            event.event_type,
+                    )
+                    .filter(Boolean),
+            ).size,
+        [MOCK_EVENTS],
+    );
 
     const plottedCountries =
-        Object.entries(countryCounts)
-            .map(([country, count]) => {
-                const event = MOCK_EVENTS.find(
-                    (item) =>
-                        item.country === country
-                );
+        useMemo<CountryPlot[]>(
+            () => {
+                return Object.entries(countryCounts)
+                    .map(
+                        (
+                            [country, count],
+                        ): CountryPlot | null => {
+                            const event =
+                                MOCK_EVENTS.find(
+                                    (item) =>
+                                        item.country ===
+                                        country,
+                                );
 
-                if (!event) {
-                    return null;
-                }
+                            if (!event) {
+                                return null;
+                            }
 
-                const layout =
-                    COUNTRY_LAYOUT[
-                    event.countryCode
-                    ];
+                            const layout =
+                                COUNTRY_LAYOUT[
+                                event
+                                    .countryCode
+                                ];
 
-                if (!layout) {
-                    return null;
-                }
+                            if (!layout) {
+                                return null;
+                            }
 
-                return {
-                    country,
-                    countryCode:
-                        event.countryCode,
-                    count,
-                    layout,
-                    severity:
-                        event.severity,
-                };
-            })
-            .filter(Boolean) as Array<{
-                country: string;
-                countryCode: string;
-                count: number;
-                layout: {
-                    left: number;
-                    top: number;
-                };
-                severity: MockThreatEvent['severity'];
-            }>;
+                            return {
+                                country,
+                                countryCode:
+                                    event.countryCode,
+                                count,
+                                layout,
+                                severity:
+                                    event.severity,
+                            };
+                        },
+                    )
+                    .filter(
+                        (
+                            item,
+                        ): item is CountryPlot =>
+                            item !== null,
+                    );
+            },
+            [
+                MOCK_EVENTS,
+                countryCounts,
+            ],
+        );
+
+    const maxCountryEvents =
+        rankedCountries[0]?.[1] ?? 1;
+
+    const telemetryAvailable =
+        eventCount > 0;
+
+    const severityTotal = Math.max(
+        eventCount,
+        1,
+    );
+
+    const criticalPct = Math.round(
+        (criticalCount /
+            severityTotal) *
+        100,
+    );
+
+    const highPct = Math.round(
+        (highCount /
+            severityTotal) *
+        100,
+    );
+
+    const mediumPct = Math.round(
+        (mediumCount /
+            severityTotal) *
+        100,
+    );
+
+    const lowPct = Math.max(
+        0,
+        100 -
+        criticalPct -
+        highPct -
+        mediumPct,
+    );
+
+    const topEvent =
+        prioritizedEvents[0] ?? null;
+
+    const latestEvent =
+        events[0] ?? null;
 
     return (
-        <div className="at-attack-map-page">
-
+        <div className="at-attack-map-page-v2">
             <PageHeader
                 breadcrumbs={[
-                    { label: 'Operations' },
-                    { label: 'Attack Map' },
+                    {
+                        label: 'Operations',
+                    },
+                    {
+                        label: 'Attack Map',
+                    },
                 ]}
                 title="Attack Map"
-                description="Global view of observed honeypot attack activity."
+                description="Investigate the geographic distribution, severity and source profile of observed honeypot activity."
                 actions={
-                    <>
+                    <div className="at-attack-map-actions">
                         <button
                             type="button"
                             className="at-btn at-btn-secondary at-btn-sm"
+                            onClick={() =>
+                                onNavigate(
+                                    'honeypot_logs',
+                                )
+                            }
                         >
-                            <RefreshCw size={13} />
-                            Refresh
+                            <Activity size={13} />
+                            Event stream
                         </button>
 
                         <button
@@ -206,418 +366,911 @@ export default function AttackMapPage({
                             className="at-btn at-btn-primary at-btn-sm"
                             onClick={() =>
                                 onNavigate(
-                                    'honeypot_logs'
+                                    'soc_wall',
                                 )
                             }
                         >
-                            <ShieldAlert size={13} />
-                            Open Logs
+                            <Wifi size={13} />
+                            Open SOC Wall
                         </button>
-                    </>
+                    </div>
                 }
             />
 
-            <div className="at-attack-map-workspace">
+            <div className="at-attack-map-v2-scroll custom-scrollbar">
+                <div className="at-attack-map-v2-content">
 
-                {/* ======================================================
-            MAP
-            ====================================================== */}
+                    {/* ==========================================================
+                        Operational summary
+                       ========================================================== */}
 
-                <section className="at-attack-map-main">
-
-                    <div className="at-attack-map-toolbar">
-                        <div className="at-attack-map-toolbar-left">
-                            <div className="at-attack-map-mode">
-                                <span className="at-attack-map-live-dot" />
-
-                                <strong>
-                                    LIVE ACTIVITY
-                                </strong>
-                            </div>
-
-                            <span className="at-attack-map-toolbar-divider" />
-
-                            <span className="at-attack-map-muted">
-                                {MOCK_EVENTS.length}{' '}
-                                observed events
+                    <div className="at-map-summary-grid">
+                        <div className="at-map-summary-card">
+                            <span>
+                                OBSERVED EVENTS
                             </span>
 
-                            <span className="at-attack-map-muted">
-                                {uniqueSources}{' '}
-                                unique sources
-                            </span>
+                            <strong>
+                                {eventCount}
+                            </strong>
+
+                            <small>
+                                Active telemetry window
+                            </small>
                         </div>
 
-                        <div className="at-attack-map-legend">
+                        <div className="at-map-summary-card danger">
                             <span>
-                                <i className="critical" />
-                                Critical
+                                CRITICAL EVENTS
                             </span>
 
-                            <span>
-                                <i className="high" />
-                                High
-                            </span>
+                            <strong>
+                                {criticalCount}
+                            </strong>
 
-                            <span>
-                                <i className="medium" />
-                                Medium
-                            </span>
-
-                            <span>
-                                <i className="low" />
-                                Low
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="at-attack-map-canvas">
-
-                        {/* restrained grid */}
-                        <div className="at-attack-map-grid" />
-
-                        {/* map-like land masses */}
-                        <div className="at-attack-map-continent north-america" />
-                        <div className="at-attack-map-continent south-america" />
-                        <div className="at-attack-map-continent europe" />
-                        <div className="at-attack-map-continent asia" />
-                        <div className="at-attack-map-continent africa" />
-                        <div className="at-attack-map-continent oceania" />
-
-                        {/* plotted countries */}
-                        {plottedCountries.map(
-                            (country) => (
-                                <button
-                                    type="button"
-                                    key={
-                                        country.countryCode
-                                    }
-                                    className="at-attack-map-node"
-                                    style={{
-                                        left: `${country.layout.left}%`,
-                                        top: `${country.layout.top}%`,
-                                    }}
-                                    title={`${country.country} · ${country.count} events`}
-                                    onClick={() =>
-                                        onNavigate(
-                                            'honeypot_logs'
-                                        )
-                                    }
-                                >
-                                    <span
-                                        className={`at-attack-map-pulse ${country.severity}`}
-                                        style={{
-                                            '--map-node-color':
-                                                severityColor(
-                                                    country.severity
-                                                ),
-                                        } as React.CSSProperties}
-                                    />
-
-                                    <span className="at-attack-map-node-core">
-                                        {country.count}
-                                    </span>
-
-                                    <span className="at-attack-map-node-label">
-                                        {country.countryCode}
-                                    </span>
-                                </button>
-                            )
-                        )}
-
-                        {/* central operations marker */}
-                        <div className="at-attack-map-center">
-                            <div className="at-attack-map-center-ring" />
-
-                            <div className="at-attack-map-center-core">
-                                <Crosshair size={16} />
-                            </div>
-
-                            <span>
-                                HONEYPOT
-                                INFRASTRUCTURE
-                            </span>
+                            <small>
+                                Highest-priority telemetry
+                            </small>
                         </div>
 
-                        {/* Scan line */}
-                        <div className="at-attack-map-scan-line" />
-
-                        {/* bottom state */}
-                        <div className="at-attack-map-canvas-meta">
+                        <div className="at-map-summary-card">
                             <span>
-                                <Activity size={11} />
-                                ATTACK TELEMETRY
+                                UNIQUE SOURCES
                             </span>
 
+                            <strong>
+                                {uniqueSources}
+                            </strong>
+
+                            <small>
+                                Distinct attacking sources
+                            </small>
+                        </div>
+
+                        <div className="at-map-summary-card">
                             <span>
-                                STATIC PROTOTYPE DATA
+                                ORIGIN COUNTRIES
                             </span>
+
+                            <strong>
+                                {rankedCountries.length}
+                            </strong>
+
+                            <small>
+                                Geographically enriched sources
+                            </small>
+                        </div>
+
+                        <div className="at-map-summary-card">
+                            <span>
+                                EVENT TYPES
+                            </span>
+
+                            <strong>
+                                {uniqueEventTypes}
+                            </strong>
+
+                            <small>
+                                Observed attack signatures
+                            </small>
                         </div>
                     </div>
-                </section>
 
-                {/* ======================================================
-            SIDE PANEL
-            ====================================================== */}
+                    {/* ==========================================================
+                        Primary workspace
+                       ========================================================== */}
 
-                <aside className="at-attack-map-sidebar">
+                    <div className="at-map-primary-grid">
 
-                    {/* Severity summary */}
-                    <section className="at-attack-map-panel">
+                        <section className="at-map-canvas-panel">
 
-                        <div className="at-attack-map-panel-header">
-                            <div>
-                                <span className="at-v2-kicker">
-                                    THREAT ACTIVITY
-                                </span>
+                            <div className="at-map-panel-toolbar">
+                                <div className="at-map-toolbar-heading">
+                                    <span className="at-map-kicker">
+                                        GLOBAL TELEMETRY
+                                    </span>
 
-                                <h2>
-                                    Current posture
-                                </h2>
-                            </div>
+                                    <div className="at-map-toolbar-title-row">
+                                        <h2>
+                                            Global attack surface
+                                        </h2>
 
-                            <Activity
-                                size={15}
-                                className="at-attack-map-panel-icon"
-                            />
-                        </div>
-
-                        <div className="at-attack-map-posture-grid">
-
-                            <div>
-                                <span>
-                                    CRITICAL
-                                </span>
-
-                                <strong className="critical">
-                                    {criticalCount}
-                                </strong>
-                            </div>
-
-                            <div>
-                                <span>
-                                    HIGH
-                                </span>
-
-                                <strong className="high">
-                                    {highCount}
-                                </strong>
-                            </div>
-
-                            <div>
-                                <span>
-                                    SOURCES
-                                </span>
-
-                                <strong>
-                                    {uniqueSources}
-                                </strong>
-                            </div>
-
-                        </div>
-                    </section>
-
-                    {/* Source ranking */}
-                    <section className="at-attack-map-panel">
-
-                        <div className="at-attack-map-panel-header">
-                            <div>
-                                <span className="at-v2-kicker">
-                                    SOURCE DISTRIBUTION
-                                </span>
-
-                                <h2>
-                                    Most active countries
-                                </h2>
-                            </div>
-
-                            <Globe2
-                                size={15}
-                                className="at-attack-map-panel-icon"
-                            />
-                        </div>
-
-                        <div className="at-attack-map-country-list">
-                            {rankedCountries.map(
-                                ([country, count], index) => {
-                                    const max =
-                                        rankedCountries[0]?.[1] ||
-                                        1;
-
-                                    return (
-                                        <div
-                                            key={country}
-                                            className="at-attack-map-country-row"
+                                        <span
+                                            className={`at-map-live-state ${telemetryAvailable
+                                                    ? 'active'
+                                                    : 'idle'
+                                                }`}
                                         >
-                                            <span className="at-attack-map-country-rank">
-                                                {String(
-                                                    index + 1
-                                                ).padStart(
-                                                    2,
-                                                    '0'
-                                                )}
-                                            </span>
+                                            <i />
 
-                                            <div className="at-attack-map-country-main">
-                                                <span>
-                                                    {country}
-                                                </span>
+                                            {telemetryAvailable
+                                                ? 'LIVE'
+                                                : 'STANDBY'}
+                                        </span>
+                                    </div>
+                                </div>
 
-                                                <div className="at-attack-map-country-track">
-                                                    <i
-                                                        style={{
-                                                            width: `${(count /
-                                                                    max) *
-                                                                100
-                                                                }%`,
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <strong>
-                                                {count}
-                                            </strong>
-                                        </div>
-                                    );
-                                }
-                            )}
-                        </div>
-                    </section>
-
-                    {/* Recent highest severity */}
-                    <section className="at-attack-map-panel at-attack-map-events-panel">
-
-                        <div className="at-attack-map-panel-header">
-                            <div>
-                                <span className="at-v2-kicker">
-                                    RECENT HIGH-VALUE EVENTS
-                                </span>
-
-                                <h2>
-                                    Highest severity
-                                </h2>
-                            </div>
-
-                            <Target
-                                size={15}
-                                className="at-attack-map-panel-icon"
-                            />
-                        </div>
-
-                        <div className="at-attack-map-event-list">
-                            {events
-                                .slice(0, 6)
-                                .map((event) => (
+                                <div className="at-map-toolbar-actions">
                                     <button
                                         type="button"
-                                        key={event.id}
-                                        className="at-attack-map-event"
+                                        title="Refresh telemetry"
                                         onClick={() =>
                                             onNavigate(
-                                                'honeypot_logs'
+                                                'honeypot_logs',
                                             )
                                         }
                                     >
-                                        <span
-                                            className={`at-attack-map-event-severity ${event.severity}`}
+                                        <RefreshCw
+                                            size={14}
                                         />
+                                    </button>
 
-                                        <span className="at-attack-map-event-copy">
+                                    <button
+                                        type="button"
+                                        title="Open full map"
+                                        onClick={() =>
+                                            onNavigate(
+                                                'soc_wall',
+                                            )
+                                        }
+                                    >
+                                        <Maximize2
+                                            size={14}
+                                        />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="at-map-canvas-v2">
+
+                                <div className="at-map-grid-lines" />
+
+                                <div className="at-map-world world-north-america" />
+                                <div className="at-map-world world-south-america" />
+                                <div className="at-map-world world-europe" />
+                                <div className="at-map-world world-africa" />
+                                <div className="at-map-world world-asia" />
+                                <div className="at-map-world world-oceania" />
+
+                                <div className="at-map-route route-one" />
+                                <div className="at-map-route route-two" />
+                                <div className="at-map-route route-three" />
+
+                                <div className="at-map-hq">
+                                    <span className="at-map-hq-ring" />
+
+                                    <span className="at-map-hq-core">
+                                        <Crosshair
+                                            size={16}
+                                        />
+                                    </span>
+
+                                    <span>
+                                        COLLECTION
+                                        <br />
+                                        INFRASTRUCTURE
+                                    </span>
+                                </div>
+
+                                {plottedCountries.map(
+                                    (country) => {
+                                        const nodeStyle = {
+                                            left: `${country.layout.left}%`,
+                                            top: `${country.layout.top}%`,
+                                            '--map-node-color':
+                                                severityColor(
+                                                    country.severity,
+                                                ),
+                                        } as CSSProperties;
+
+                                        return (
+                                            <button
+                                                key={
+                                                    country.countryCode
+                                                }
+                                                type="button"
+                                                className={`at-map-country-node ${country.severity}`}
+                                                style={
+                                                    nodeStyle
+                                                }
+                                                title={`${country.country} · ${country.count} ${country.count ===
+                                                        1
+                                                        ? 'event'
+                                                        : 'events'
+                                                    }`}
+                                                onClick={() =>
+                                                    onNavigate(
+                                                        'honeypot_logs',
+                                                    )
+                                                }
+                                            >
+                                                <span className="at-map-node-pulse" />
+
+                                                <span className="at-map-node-core">
+                                                    {country.count}
+                                                </span>
+
+                                                <span className="at-map-node-code">
+                                                    {
+                                                        country.countryCode
+                                                    }
+                                                </span>
+                                            </button>
+                                        );
+                                    },
+                                )}
+
+                                {!telemetryAvailable && (
+                                    <div className="at-map-empty-state">
+                                        <div>
+                                            <Globe2
+                                                size={24}
+                                            />
+
                                             <strong>
-                                                {event.srcIp}
+                                                No attack telemetry
                                             </strong>
 
                                             <span>
-                                                {prettyEvent(
-                                                    event.eventType
-                                                )}
-                                                {' · '}
-                                                {
-                                                    event.countryCode
-                                                }
+                                                The global view will populate
+                                                as enriched honeypot events
+                                                enter the telemetry stream.
                                             </span>
+
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    onNavigate(
+                                                        'honeypot_logs',
+                                                    )
+                                                }
+                                            >
+                                                Inspect telemetry
+                                                <ArrowUpRight
+                                                    size={13}
+                                                />
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="at-map-canvas-footer">
+                                    <span>
+                                        <Activity
+                                            size={11}
+                                        />
+                                        ATTACK TELEMETRY
+                                    </span>
+
+                                    <span>
+                                        {eventCount}{' '}
+                                        events ·{' '}
+                                        {uniqueSources}{' '}
+                                        sources
+                                    </span>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* ======================================================
+                            Right-side intelligence rail
+                           ====================================================== */}
+
+                        <aside className="at-map-intel-rail">
+
+                            <section className="at-map-side-panel">
+                                <div className="at-map-side-header">
+                                    <div>
+                                        <span>
+                                            POSTURE
                                         </span>
 
-                                        <span className="at-attack-map-event-time">
-                                            {formatTime(
-                                                event.timestamp
+                                        <h3>
+                                            Current severity
+                                        </h3>
+                                    </div>
+
+                                    <ShieldAlert
+                                        size={16}
+                                    />
+                                </div>
+
+                                <div className="at-map-severity-bar">
+                                    <i
+                                        className="critical"
+                                        style={{
+                                            width: `${criticalPct}%`,
+                                        }}
+                                    />
+
+                                    <i
+                                        className="high"
+                                        style={{
+                                            width: `${highPct}%`,
+                                        }}
+                                    />
+
+                                    <i
+                                        className="medium"
+                                        style={{
+                                            width: `${mediumPct}%`,
+                                        }}
+                                    />
+
+                                    <i
+                                        className="low"
+                                        style={{
+                                            width: `${lowPct}%`,
+                                        }}
+                                    />
+                                </div>
+
+                                <div className="at-map-severity-summary">
+                                    <div>
+                                        <span>
+                                            Critical
+                                        </span>
+
+                                        <strong>
+                                            {criticalCount}
+                                        </strong>
+                                    </div>
+
+                                    <div>
+                                        <span>
+                                            High
+                                        </span>
+
+                                        <strong>
+                                            {highCount}
+                                        </strong>
+                                    </div>
+
+                                    <div>
+                                        <span>
+                                            Medium
+                                        </span>
+
+                                        <strong>
+                                            {mediumCount}
+                                        </strong>
+                                    </div>
+
+                                    <div>
+                                        <span>
+                                            Low
+                                        </span>
+
+                                        <strong>
+                                            {lowCount}
+                                        </strong>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section className="at-map-side-panel">
+                                <div className="at-map-side-header">
+                                    <div>
+                                        <span>
+                                            ORIGIN INTELLIGENCE
+                                        </span>
+
+                                        <h3>
+                                            Most active countries
+                                        </h3>
+                                    </div>
+
+                                    <Globe2
+                                        size={16}
+                                    />
+                                </div>
+
+                                {rankedCountries.length >
+                                    0 ? (
+                                    <div className="at-map-country-list-v2">
+                                        {rankedCountries.map(
+                                            (
+                                                [
+                                                    country,
+                                                    count,
+                                                ],
+                                                index,
+                                            ) => (
+                                                <button
+                                                    type="button"
+                                                    key={
+                                                        country
+                                                    }
+                                                    onClick={() =>
+                                                        onNavigate(
+                                                            'honeypot_logs',
+                                                        )
+                                                    }
+                                                >
+                                                    <span className="rank">
+                                                        {String(
+                                                            index +
+                                                            1,
+                                                        ).padStart(
+                                                            2,
+                                                            '0',
+                                                        )}
+                                                    </span>
+
+                                                    <span className="country">
+                                                        <strong>
+                                                            {
+                                                                country
+                                                            }
+                                                        </strong>
+
+                                                        <span>
+                                                            <i
+                                                                style={{
+                                                                    width: `${Math.max(
+                                                                        7,
+                                                                        (count /
+                                                                            maxCountryEvents) *
+                                                                        100,
+                                                                    )}%`,
+                                                                }}
+                                                            />
+                                                        </span>
+                                                    </span>
+
+                                                    <b>
+                                                        {count}
+                                                    </b>
+                                                </button>
+                                            ),
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="at-map-small-empty">
+                                        <Globe2
+                                            size={17}
+                                        />
+
+                                        <span>
+                                            Geographic source
+                                            data will appear
+                                            here when telemetry
+                                            is enriched.
+                                        </span>
+                                    </div>
+                                )}
+                            </section>
+
+                            <section className="at-map-side-panel">
+                                <div className="at-map-side-header">
+                                    <div>
+                                        <span>
+                                            PRIORITY SIGNAL
+                                        </span>
+
+                                        <h3>
+                                            Highest severity
+                                        </h3>
+                                    </div>
+
+                                    <Target
+                                        size={16}
+                                    />
+                                </div>
+
+                                {prioritizedEvents.length >
+                                    0 ? (
+                                    <div className="at-map-priority-list">
+                                        {prioritizedEvents
+                                            .slice(
+                                                0,
+                                                4,
+                                            )
+                                            .map(
+                                                (
+                                                    event,
+                                                ) => (
+                                                    <button
+                                                        type="button"
+                                                        key={
+                                                            event.id
+                                                        }
+                                                        onClick={() =>
+                                                            onNavigate(
+                                                                'honeypot_logs',
+                                                            )
+                                                        }
+                                                    >
+                                                        <span
+                                                            className={`priority-dot ${event.severity}`}
+                                                        />
+
+                                                        <span>
+                                                            <strong>
+                                                                {
+                                                                    event.src_ip
+                                                                }
+                                                            </strong>
+
+                                                            <small>
+                                                                {prettyEvent(
+                                                                    event.event_type,
+                                                                )}
+                                                            </small>
+                                                        </span>
+
+                                                        <em>
+                                                            {
+                                                                event.countryCode
+                                                            }
+                                                        </em>
+                                                    </button>
+                                                ),
                                             )}
+                                    </div>
+                                ) : (
+                                    <div className="at-map-small-empty">
+                                        <Target
+                                            size={17}
+                                        />
+
+                                        <span>
+                                            No priority event
+                                            signals are
+                                            currently available.
                                         </span>
-                                    </button>
-                                ))}
-                        </div>
-                    </section>
+                                    </div>
+                                )}
+                            </section>
 
-                    {/* Infrastructure */}
-                    <section className="at-attack-map-panel">
+                            <section className="at-map-side-panel">
+                                <div className="at-map-side-header">
+                                    <div>
+                                        <span>
+                                            COLLECTION
+                                        </span>
 
-                        <div className="at-attack-map-panel-header">
-                            <div>
-                                <span className="at-v2-kicker">
-                                    HONEYPOT INFRASTRUCTURE
-                                </span>
+                                        <h3>
+                                            Honeypot infrastructure
+                                        </h3>
+                                    </div>
 
-                                <h2>
-                                    Active collection
-                                </h2>
+                                    <Server
+                                        size={16}
+                                    />
+                                </div>
+
+                                <div className="at-map-infra-grid">
+                                    <div>
+                                        <span>
+                                            EVENTS
+                                        </span>
+
+                                        <strong>
+                                            {eventCount}
+                                        </strong>
+                                    </div>
+
+                                    <div>
+                                        <span>
+                                            SOURCES
+                                        </span>
+
+                                        <strong>
+                                            {uniqueSources}
+                                        </strong>
+                                    </div>
+
+                                    <div>
+                                        <span>
+                                            TYPES
+                                        </span>
+
+                                        <strong>
+                                            {uniqueEventTypes}
+                                        </strong>
+                                    </div>
+
+                                    <div>
+                                        <span>
+                                            STATUS
+                                        </span>
+
+                                        <strong
+                                            className={
+                                                telemetryAvailable
+                                                    ? 'online'
+                                                    : 'standby'
+                                            }
+                                        >
+                                            {telemetryAvailable
+                                                ? 'ONLINE'
+                                                : 'STANDBY'}
+                                        </strong>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className="at-map-side-action"
+                                    onClick={() =>
+                                        onNavigate(
+                                            'honeypot_logs',
+                                        )
+                                    }
+                                >
+                                    Inspect event stream
+                                    <ChevronRight
+                                        size={13}
+                                    />
+                                </button>
+                            </section>
+
+                        </aside>
+                    </div>
+
+                    {/* ==========================================================
+                        Lower analytical layer
+                       ========================================================== */}
+
+                    <div className="at-map-lower-grid">
+
+                        <section className="at-map-table-panel">
+                            <div className="at-map-table-header">
+                                <div>
+                                    <span>
+                                        EVENT STREAM
+                                    </span>
+
+                                    <h3>
+                                        Recent telemetry
+                                    </h3>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        onNavigate(
+                                            'honeypot_logs',
+                                        )
+                                    }
+                                >
+                                    View all
+                                    <ArrowUpRight
+                                        size={13}
+                                    />
+                                </button>
                             </div>
 
-                            <Server
-                                size={15}
-                                className="at-attack-map-panel-icon"
-                            />
-                        </div>
+                            {events.length > 0 ? (
+                                <div className="at-map-events-table-wrap">
+                                    <table className="at-map-events-table">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    Severity
+                                                </th>
 
-                        <div className="at-attack-map-infrastructure">
-                            <div>
-                                <span>
-                                    EVENTS
-                                </span>
+                                                <th>
+                                                    Source
+                                                </th>
 
-                                <strong>
-                                    {MOCK_EVENTS.length}
-                                </strong>
+                                                <th>
+                                                    Event
+                                                </th>
+
+                                                <th>
+                                                    Country
+                                                </th>
+
+                                                <th>
+                                                    Date
+                                                </th>
+
+                                                <th>
+                                                    Time
+                                                </th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {events
+                                                .slice(
+                                                    0,
+                                                    7,
+                                                )
+                                                .map(
+                                                    (
+                                                        event,
+                                                    ) => (
+                                                        <tr
+                                                            key={
+                                                                event.id
+                                                            }
+                                                            onClick={() =>
+                                                                onNavigate(
+                                                                    'honeypot_logs',
+                                                                )
+                                                            }
+                                                        >
+                                                            <td>
+                                                                <span
+                                                                    className={`at-map-severity-pill ${event.severity}`}
+                                                                >
+                                                                    {
+                                                                        event.severity
+                                                                    }
+                                                                </span>
+                                                            </td>
+
+                                                            <td>
+                                                                <code>
+                                                                    {
+                                                                        event.src_ip
+                                                                    }
+                                                                </code>
+                                                            </td>
+
+                                                            <td>
+                                                                <span>
+                                                                    {prettyEvent(
+                                                                        event.event_type,
+                                                                    )}
+                                                                </span>
+                                                            </td>
+
+                                                            <td>
+                                                                {
+                                                                    event.countryCode
+                                                                }
+                                                            </td>
+
+                                                            <td>
+                                                                {formatDate(
+                                                                    event.timestamp,
+                                                                )}
+                                                            </td>
+
+                                                            <td>
+                                                                {formatTime(
+                                                                    event.timestamp,
+                                                                )}
+                                                            </td>
+                                                        </tr>
+                                                    ),
+                                                )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ) : (
+                                <div className="at-map-table-empty">
+                                    <Activity
+                                        size={20}
+                                    />
+
+                                    <strong>
+                                        No telemetry records
+                                    </strong>
+
+                                    <span>
+                                        Recent events will
+                                        appear here once the
+                                        honeypot stream is
+                                        active.
+                                    </span>
+                                </div>
+                            )}
+                        </section>
+
+                        <section className="at-map-signal-panel">
+                            <div className="at-map-table-header">
+                                <div>
+                                    <span>
+                                        LATEST SIGNAL
+                                    </span>
+
+                                    <h3>
+                                        Current activity
+                                    </h3>
+                                </div>
+
+                                <Crosshair
+                                    size={16}
+                                />
                             </div>
 
-                            <div>
-                                <span>
-                                    ACTIVE SOURCES
-                                </span>
+                            {latestEvent ? (
+                                <div className="at-map-latest-signal">
+                                    <div className="signal-score">
+                                        <span
+                                            className={
+                                                latestEvent.severity
+                                            }
+                                        >
+                                            {
+                                                latestEvent.severity
+                                            }
+                                        </span>
 
-                                <strong>
-                                    {uniqueSources}
-                                </strong>
-                            </div>
+                                        <strong>
+                                            {
+                                                latestEvent.src_ip
+                                            }
+                                        </strong>
+                                    </div>
 
-                            <div>
-                                <span>
-                                    COLLECTION
-                                </span>
+                                    <div className="signal-detail">
+                                        <span>
+                                            EVENT
+                                        </span>
 
-                                <strong className="online">
-                                    ONLINE
-                                </strong>
-                            </div>
-                        </div>
+                                        <strong>
+                                            {prettyEvent(
+                                                latestEvent.event_type,
+                                            )}
+                                        </strong>
+                                    </div>
 
-                        <button
-                            type="button"
-                            className="at-attack-map-open-logs"
-                            onClick={() =>
-                                onNavigate(
-                                    'honeypot_logs'
-                                )
-                            }
-                        >
-                            Inspect event stream
-                            <ChevronRight
-                                size={13}
-                            />
-                        </button>
-                    </section>
+                                    <div className="signal-detail">
+                                        <span>
+                                            ORIGIN
+                                        </span>
 
-                </aside>
+                                        <strong>
+                                            {latestEvent.country ||
+                                                latestEvent.countryCode ||
+                                                'Unknown'}
+                                        </strong>
+                                    </div>
+
+                                    <div className="signal-detail">
+                                        <span>
+                                            OBSERVED
+                                        </span>
+
+                                        <strong>
+                                            {formatTime(
+                                                latestEvent.timestamp,
+                                            )}
+                                        </strong>
+                                    </div>
+
+                                    {topEvent && (
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                onNavigate(
+                                                    'honeypot_logs',
+                                                )
+                                            }
+                                        >
+                                            Investigate signal
+                                            <ArrowUpRight
+                                                size={13}
+                                            />
+                                        </button>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="at-map-table-empty">
+                                    <Crosshair
+                                        size={20}
+                                    />
+
+                                    <strong>
+                                        No active signal
+                                    </strong>
+
+                                    <span>
+                                        The latest enriched
+                                        telemetry signal will be
+                                        shown here.
+                                    </span>
+                                </div>
+                            )}
+                        </section>
+                    </div>
+                </div>
             </div>
         </div>
     );

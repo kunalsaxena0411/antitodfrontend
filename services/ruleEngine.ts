@@ -102,3 +102,4 @@ export function parseImport(content: string, type: string): Rule[] {
     // Placeholder - would parse rule content based on type
     return [];
 }
+

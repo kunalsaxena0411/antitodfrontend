@@ -42,3 +42,4 @@ export const getCertContact = (countryCode: string): CertContact | null => {
     const code = countryCode.toUpperCase().trim();
     return CERT_CONTACTS[code] || null;
 };
+

@@ -10,10 +10,7 @@ interface ProxyConfig {
 // We prioritize proxies that support headers (x-apikey) for VT integration.
 const PROXIES: ProxyConfig[] = [
     { name: 'Direct', url: (u) => u, isWrapped: false, supportsHeaders: true },
-    { name: 'CORSProxy', url: (u) => `https://corsproxy.io/?${encodeURIComponent(u)}`, isWrapped: false, supportsHeaders: true },
-    { name: 'CodeTabs', url: (u) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`, isWrapped: false, supportsHeaders: true },
     { name: 'Vercel', url: (u) => `/api/proxy?url=${encodeURIComponent(u)}`, isWrapped: false, supportsHeaders: true },
-    { name: 'ThingProxy', url: (u) => `https://thingproxy.freeboard.io/fetch/${u}`, isWrapped: false, supportsHeaders: true },
     { name: 'AllOrigins', url: (u) => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`, isWrapped: true, supportsHeaders: false },
 ];
 
@@ -43,16 +40,6 @@ export const fetchWithCors = async (targetUrl: string, options?: { validate?: (t
             // Attach headers if provided and proxy supports them
             if (options?.headers && proxy.supportsHeaders) {
                 fetchOptions.headers = options.headers;
-            }
-            
-            // Special check for local Vercel proxy availability before full fetch to avoid 404s
-            if (proxy.name === 'Vercel') {
-                try {
-                    // Quick check if the local proxy endpoint exists
-                    const check = await fetch(proxyUrl, { method: 'HEAD' });
-                    // Vercel proxy usually adds this header, or at least shouldn't be 404
-                    if (check.status === 404 || check.status === 500) continue;
-                } catch(e) { continue; }
             }
 
             const res = await fetch(proxyUrl, fetchOptions);
@@ -105,3 +92,5 @@ export const fetchJsonWithCors = async <T>(targetUrl: string, options?: { header
         throw new Error("Invalid JSON response or all proxies failed");
     }
 };
+
+

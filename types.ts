@@ -139,6 +139,12 @@ export interface AnalyzedHost {
         multiSourceBonus: number;
     };
     isMmdbDerived?: boolean;
+    countryCode?: string;
+    asn?: string;
+    org?: string;
+    eventCount?: number;
+    isBlacklisted?: boolean;
+    ports?: any[];
 }
 
 export interface CaseFile {
@@ -268,6 +274,7 @@ export interface MalpediaActor {
     source?: 'Malpedia' | 'MITRE';
     mitreAttackId?: string;
     ttpDetails?: { id: string; name: string; tactic: string; description?: string }[];
+    ttps?: any[];
 }
 
 export interface MalpediaEntry {
@@ -303,6 +310,8 @@ export interface CveEntry {
     tags: string[];
     vector: { AV?: string; AC?: string; PR?: string; UI?: string; S?: string; C?: string; I?: string; A?: string; };
     epss?: { score: number; percentile: number };
+    exploitAvailable?: boolean;
+    cvss?: number;
 }
 
 export interface CveFeedItem {
@@ -328,6 +337,9 @@ export interface ThreatNewsItem {
     subCategory?: string; 
     isCve?: boolean; 
     cveIds?: string[];
+    id?: string;
+    published?: string;
+    url?: string;
 }
 
 export interface ExploitEntry {

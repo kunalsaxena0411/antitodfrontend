@@ -122,9 +122,9 @@ const DOMAIN_BLOCKLISTS = [
 const PROXIES = [
     (url: string) => url, // Direct DoH support
     (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`, // Vercel
-    (url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-    (url: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-    (url: string) => `https://thingproxy.freeboard.io/fetch/${url}`
+    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
+    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
+    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`
 ];
 
 export interface DetailedDnsRecord {
@@ -799,3 +799,4 @@ export const fetchExtendedSecurityInfo = async (ip: string): Promise<ExtendedSec
         domain: hostname || undefined
     };
 };
+

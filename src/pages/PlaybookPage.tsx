@@ -1,5 +1,17 @@
-import { useState } from 'react';
-import { Download, Plus, PlayCircle, CheckCircle, Clock, User, ClipboardList, ShieldAlert, ArrowRight, MessageSquare } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import {
+  Download,
+  Plus,
+  ClipboardList,
+  User,
+  ShieldAlert,
+  CircleCheck,
+  Clock3,
+  X,
+  Search,
+  Activity,
+  ExternalLink,
+} from 'lucide-react';
 import IntelLayout from '../components/layout/IntelLayout';
 
 interface MockPlaybook {
@@ -13,161 +25,407 @@ interface MockPlaybook {
 }
 
 const MOCK_PLAYBOOKS: MockPlaybook[] = [
-  { id: 'PB-1042', name: 'Ransomware Containment', incident: 'INC-9921', status: 'active', owner: 'Analyst-1', progress: 40, lastUpdated: '10 mins ago' },
-  { id: 'PB-1041', name: 'Phishing Email Triage', incident: 'INC-9920', status: 'completed', owner: 'Analyst-2', progress: 100, lastUpdated: '2 hours ago' },
-  { id: 'PB-1040', name: 'Unauthorized Access Investigation', incident: 'INC-9919', status: 'active', owner: 'Analyst-1', progress: 80, lastUpdated: '5 hours ago' },
+  {
+    id: 'PB-1042',
+    name: 'Ransomware Containment',
+    incident: 'INC-9921',
+    status: 'active',
+    owner: 'Analyst-1',
+    progress: 40,
+    lastUpdated: '10 mins ago',
+  },
+  {
+    id: 'PB-1041',
+    name: 'Phishing Email Triage',
+    incident: 'INC-9920',
+    status: 'completed',
+    owner: 'Analyst-2',
+    progress: 100,
+    lastUpdated: '2 hours ago',
+  },
+  {
+    id: 'PB-1040',
+    name: 'Unauthorized Access Investigation',
+    incident: 'INC-9919',
+    status: 'active',
+    owner: 'Analyst-1',
+    progress: 80,
+    lastUpdated: '5 hours ago',
+  },
 ];
+
+const statusMeta = (status: MockPlaybook['status']) => {
+  switch (status) {
+    case 'completed':
+      return {
+        label: 'Completed',
+        className:
+          'bg-emerald-500/10 text-emerald-500 border-emerald-500/30',
+        icon: CircleCheck,
+      };
+    case 'active':
+      return {
+        label: 'Active',
+        className:
+          'bg-amber-500/10 text-amber-500 border-amber-500/30',
+        icon: Activity,
+      };
+    default:
+      return {
+        label: 'Pending',
+        className: 'bg-at-surface text-at-muted border-at-border',
+        icon: Clock3,
+      };
+  }
+};
+
+const escapeCsv = (value: string) => {
+  if (/[",\n]/.test(value)) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+};
 
 export default function PlaybookPage() {
   const [search, setSearch] = useState('');
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<
+    'all' | MockPlaybook['status']
+  >('all');
   const [selectedPbId, setSelectedPbId] = useState<string | null>(null);
 
-  const selectedPb = MOCK_PLAYBOOKS.find(p => p.id === selectedPbId) || null;
-  const filtered = MOCK_PLAYBOOKS.filter(p => !search || p.name.toLowerCase().includes(search.toLowerCase()));
+  const filtered = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return MOCK_PLAYBOOKS.filter((playbook) => {
+      const matchesSearch =
+        !query ||
+        playbook.name.toLowerCase().includes(query) ||
+        playbook.id.toLowerCase().includes(query) ||
+        playbook.incident.toLowerCase().includes(query) ||
+        playbook.owner.toLowerCase().includes(query);
+
+      const matchesStatus =
+        statusFilter === 'all' || playbook.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [search, statusFilter]);
+
+  const selectedPb =
+    MOCK_PLAYBOOKS.find((playbook) => playbook.id === selectedPbId) ?? null;
+
+  const exportPlaybooks = () => {
+    const header = [
+      'id',
+      'name',
+      'incident',
+      'status',
+      'owner',
+      'progress',
+      'last_updated',
+    ];
+
+    const rows = filtered.map((playbook) => [
+      playbook.id,
+      playbook.name,
+      playbook.incident,
+      playbook.status,
+      playbook.owner,
+      String(playbook.progress),
+      playbook.lastUpdated,
+    ]);
+
+    const csv = [header, ...rows]
+      .map((row) => row.map(escapeCsv).join(','))
+      .join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+
+    anchor.href = url;
+    anchor.download = 'antitode-playbooks.csv';
+    anchor.click();
+
+    URL.revokeObjectURL(url);
+  };
 
   const table = (
-    <table className="w-full text-left border-collapse">
-      <thead>
-        <tr className="border-b border-at-border bg-at-surface/30 sticky top-0 z-10">
-          <th className="px-4 py-3 text-[10px] font-semibold text-at-disabled uppercase tracking-widest w-12">ID</th>
-          <th className="px-4 py-3 text-[10px] font-semibold text-at-disabled uppercase tracking-widest">Playbook Name</th>
-          <th className="px-4 py-3 text-[10px] font-semibold text-at-disabled uppercase tracking-widest">Incident</th>
-          <th className="px-4 py-3 text-[10px] font-semibold text-at-disabled uppercase tracking-widest">Status</th>
-          <th className="px-4 py-3 text-[10px] font-semibold text-at-disabled uppercase tracking-widest">Owner</th>
-          <th className="px-4 py-3 text-[10px] font-semibold text-at-disabled uppercase tracking-widest">Progress</th>
-          <th className="px-4 py-3 text-[10px] font-semibold text-at-disabled uppercase tracking-widest">Last Updated</th>
-        </tr>
-      </thead>
-      <tbody>
-        {filtered.map(pb => {
-          const isSelected = selectedPbId === pb.id;
-          return (
-            <tr
-              key={pb.id}
-              onClick={() => setSelectedPbId(pb.id)}
-              className={`border-b border-at-border/50 transition-colors cursor-pointer group ${isSelected ? 'bg-at-accent/5' : 'hover:bg-white/[0.02]'}`}
-            >
-              <td className="px-4 py-4 text-[11px] font-mono text-at-muted">{pb.id}</td>
-              <td className="px-4 py-4">
-                <div className={`text-[13px] font-medium ${isSelected ? 'text-at-text' : 'text-at-text-secondary group-hover:text-at-text'}`}>{pb.name}</div>
-              </td>
-              <td className="px-4 py-4 text-[11px] font-mono text-at-accent hover:underline">{pb.incident}</td>
-              <td className="px-4 py-4">
-                <span className={`at-badge ${pb.status === 'completed' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' : pb.status === 'active' ? 'bg-amber-500/10 text-amber-500 border-amber-500/30' : 'bg-at-surface text-at-muted border-at-border'}`}>
-                  {pb.status.toUpperCase()}
-                </span>
-              </td>
-              <td className="px-4 py-4">
-                <div className="flex items-center gap-1.5 text-[11px] text-at-text-secondary"><User size={12}/> {pb.owner}</div>
-              </td>
-              <td className="px-4 py-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-16 h-1.5 bg-at-subtle rounded-full overflow-hidden">
-                    <div className={`h-full ${pb.progress === 100 ? 'bg-emerald-500' : 'bg-at-accent'}`} style={{ width: `${pb.progress}%` }} />
+    <div className="min-w-[880px]">
+      <table className="w-full text-left border-collapse">
+        <thead>
+          <tr className="border-b border-at-border bg-at-surface/70 sticky top-0 z-10">
+            <th className="px-4 py-3 text-[10px] font-semibold text-at-disabled uppercase tracking-widest">
+              ID
+            </th>
+            <th className="px-4 py-3 text-[10px] font-semibold text-at-disabled uppercase tracking-widest">
+              Playbook
+            </th>
+            <th className="px-4 py-3 text-[10px] font-semibold text-at-disabled uppercase tracking-widest">
+              Incident
+            </th>
+            <th className="px-4 py-3 text-[10px] font-semibold text-at-disabled uppercase tracking-widest">
+              Status
+            </th>
+            <th className="px-4 py-3 text-[10px] font-semibold text-at-disabled uppercase tracking-widest">
+              Owner
+            </th>
+            <th className="px-4 py-3 text-[10px] font-semibold text-at-disabled uppercase tracking-widest">
+              Progress
+            </th>
+            <th className="px-4 py-3 text-[10px] font-semibold text-at-disabled uppercase tracking-widest">
+              Updated
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {filtered.map((playbook) => {
+            const isSelected = selectedPbId === playbook.id;
+            const meta = statusMeta(playbook.status);
+            const StatusIcon = meta.icon;
+
+            return (
+              <tr
+                key={playbook.id}
+                tabIndex={0}
+                onClick={() => setSelectedPbId(playbook.id)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    setSelectedPbId(playbook.id);
+                  }
+                }}
+                className={`border-b border-at-border/60 cursor-pointer outline-none transition-colors ${isSelected
+                    ? 'bg-at-accent/5'
+                    : 'hover:bg-white/[0.025] focus:bg-white/[0.025]'
+                  }`}
+              >
+                <td className="px-4 py-4 text-[11px] font-mono text-at-muted">
+                  {playbook.id}
+                </td>
+
+                <td className="px-4 py-4">
+                  <div className="text-[13px] font-medium text-at-text">
+                    {playbook.name}
                   </div>
-                  <span className="text-[10px] font-mono text-at-muted">{pb.progress}%</span>
-                </div>
-              </td>
-              <td className="px-4 py-4 text-[11px] font-mono text-at-muted">{pb.lastUpdated}</td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+                </td>
+
+                <td className="px-4 py-4">
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-at-accent">
+                    <ShieldAlert size={11} />
+                    {playbook.incident}
+                  </span>
+                </td>
+
+                <td className="px-4 py-4">
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md border text-[10px] font-semibold uppercase tracking-wide ${meta.className}`}
+                  >
+                    <StatusIcon size={10} />
+                    {meta.label}
+                  </span>
+                </td>
+
+                <td className="px-4 py-4">
+                  <span className="inline-flex items-center gap-1.5 text-[11px] text-at-text-secondary">
+                    <User size={12} className="text-at-muted" />
+                    {playbook.owner}
+                  </span>
+                </td>
+
+                <td className="px-4 py-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-20 h-1.5 rounded-full bg-at-subtle overflow-hidden">
+                      <div
+                        className={`h-full rounded-full ${playbook.progress === 100
+                            ? 'bg-emerald-500'
+                            : 'bg-at-accent'
+                          }`}
+                        style={{ width: `${playbook.progress}%` }}
+                      />
+                    </div>
+                    <span className="text-[10px] font-mono text-at-muted">
+                      {playbook.progress}%
+                    </span>
+                  </div>
+                </td>
+
+                <td className="px-4 py-4 text-[11px] font-mono text-at-muted">
+                  {playbook.lastUpdated}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+
+      {filtered.length === 0 && (
+        <div className="py-16 text-center">
+          <div className="mx-auto w-10 h-10 rounded-xl border border-at-border bg-at-surface flex items-center justify-center text-at-muted">
+            <Search size={17} />
+          </div>
+
+          <div className="mt-3 text-[13px] font-medium text-at-text">
+            No playbooks match the current filters
+          </div>
+
+          <div className="mt-1 text-[11px] text-at-muted">
+            Try another incident, owner, or playbook name.
+          </div>
+        </div>
+      )}
+    </div>
   );
 
   const inspector = selectedPb ? (
     <div className="flex flex-col h-full bg-at-bg">
-      <div className="p-5 border-b border-at-border bg-gradient-to-br from-at-surface to-transparent relative">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <ClipboardList size={16} className="text-at-muted" />
-            <div className="text-[10px] font-semibold text-at-disabled uppercase tracking-widest">{selectedPb.id}</div>
+      <div className="p-5 border-b border-at-border bg-at-surface/30">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl border border-at-border bg-at-bg flex items-center justify-center text-at-text shrink-0">
+              <ClipboardList size={17} />
+            </div>
+
+            <div className="min-w-0">
+              <div className="text-[10px] font-semibold text-at-disabled uppercase tracking-widest">
+                {selectedPb.id}
+              </div>
+
+              <div className="mt-1 text-[15px] font-semibold text-at-text truncate">
+                {selectedPb.name}
+              </div>
+            </div>
           </div>
-          <span className={`at-badge ${selectedPb.status === 'completed' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'}`}>{selectedPb.status.toUpperCase()}</span>
+
+          <button
+            type="button"
+            onClick={() => setSelectedPbId(null)}
+            className="w-7 h-7 rounded-md border border-transparent hover:border-at-border hover:bg-at-surface flex items-center justify-center text-at-muted hover:text-at-text"
+            aria-label="Close playbook inspector"
+          >
+            <X size={15} />
+          </button>
         </div>
-        <div className="text-[16px] font-medium text-at-text mb-2 leading-tight">{selectedPb.name}</div>
-        <div className="flex items-center gap-4 text-[11px]">
-          <span className="flex items-center gap-1 text-at-text-secondary"><ShieldAlert size={12}/> {selectedPb.incident}</span>
-          <span className="flex items-center gap-1 text-at-muted"><User size={12}/> {selectedPb.owner}</span>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <span
+            className={`at-badge ${statusMeta(selectedPb.status).className}`}
+          >
+            {statusMeta(selectedPb.status).label}
+          </span>
+
+          <span className="at-badge at-badge-neutral font-mono">
+            {selectedPb.incident}
+          </span>
         </div>
       </div>
-      
-      {/* Workflow Steps */}
-      <div className="flex-1 p-5 overflow-y-auto space-y-0 custom-scrollbar relative">
-        <div className="absolute left-8 top-5 bottom-5 w-px bg-at-border z-0" />
-        
-        {/* Step 1: Completed */}
-        <div className="relative z-10 flex gap-4 pb-6">
-          <div className="w-6 h-6 rounded-full bg-emerald-500/20 border border-emerald-500 text-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
-            <CheckCircle size={12} />
-          </div>
-          <div className="flex-1 bg-at-surface/50 border border-at-border rounded-lg p-3">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-[12px] font-semibold text-at-text">1. Isolate Infected Host</div>
-              <span className="text-[10px] font-mono text-at-muted">14:22 UTC</span>
-            </div>
-            <div className="text-[11px] text-at-muted mb-2">Containment action triggered via EDR API.</div>
-            <div className="p-2 bg-[#060606] border border-at-border/50 rounded text-[11px] font-mono text-emerald-500 mb-2">
-              Success: Host WIN-SRV-01 isolated from network.
-            </div>
-            <div className="flex items-center gap-1.5 text-[10px] text-at-text-secondary"><img src={`https://ui-avatars.com/api/?name=A+1&background=random&size=16`} className="w-4 h-4 rounded-full"/> Analyst-1</div>
-          </div>
-        </div>
 
-        {/* Step 2: Completed */}
-        <div className="relative z-10 flex gap-4 pb-6">
-          <div className="w-6 h-6 rounded-full bg-emerald-500/20 border border-emerald-500 text-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
-            <CheckCircle size={12} />
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-5">
+        <section>
+          <div className="text-[10px] font-semibold text-at-disabled uppercase tracking-widest mb-2">
+            Execution overview
           </div>
-          <div className="flex-1 bg-at-surface/50 border border-at-border rounded-lg p-3">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-[12px] font-semibold text-at-text">2. Block C2 Infrastructure</div>
-              <span className="text-[10px] font-mono text-at-muted">14:30 UTC</span>
-            </div>
-            <div className="text-[11px] text-at-muted mb-2">Add identified IPs to firewall blocklist.</div>
-            <div className="p-2 bg-[#060606] border border-at-border/50 rounded text-[11px] font-mono text-emerald-500 mb-2">
-              Success: 3 IPs added to PAN-OS external block group.
-            </div>
-          </div>
-        </div>
 
-        {/* Step 3: Active */}
-        <div className="relative z-10 flex gap-4 pb-6">
-          <div className="w-6 h-6 rounded-full bg-at-accent/20 border border-at-accent text-at-accent flex items-center justify-center shrink-0 mt-0.5">
-            <span className="text-[10px] font-bold animate-pulse">3</span>
-          </div>
-          <div className="flex-1 bg-at-surface border border-at-accent/50 rounded-lg p-3 shadow-[0_0_15px_rgba(214,40,40,0.05)]">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-[12px] font-semibold text-at-accent">3. Acquire Memory Dump</div>
-              <span className="text-[10px] font-mono text-at-muted flex items-center gap-1"><Clock size={10}/> In Progress</span>
-            </div>
-            <div className="text-[11px] text-at-text-secondary mb-3">Initiate remote memory acquisition on WIN-SRV-01 for forensic analysis.</div>
-            
-            <div className="border-l-2 border-at-border pl-2 mb-3">
-              <div className="flex items-center gap-1.5 text-[10px] text-at-muted mb-1"><MessageSquare size={10}/> Analyst Note</div>
-              <div className="text-[11px] text-at-text-secondary italic">"Acquisition taking longer than expected due to slow link to branch office. Waiting for completion." - Analyst-1</div>
+          <div className="rounded-xl border border-at-border bg-at-surface/40 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-[11px] text-at-muted">
+                  Current progress
+                </div>
+                <div className="mt-1 text-2xl font-semibold text-at-text tracking-tight">
+                  {selectedPb.progress}%
+                </div>
+              </div>
+
+              <div className="w-12 h-12 rounded-full border border-at-border bg-at-bg flex items-center justify-center text-[11px] font-mono text-at-text">
+                {selectedPb.progress}
+              </div>
             </div>
 
-            <div className="flex gap-2 mt-3">
-              <button className="at-btn at-btn-primary at-btn-sm flex-1 text-[10px] justify-center">Mark Complete</button>
-              <button className="at-btn at-btn-ghost border border-at-border at-btn-sm text-[10px] justify-center">Skip Step</button>
+            <div className="mt-4 h-2 rounded-full bg-at-subtle overflow-hidden">
+              <div
+                className={`h-full rounded-full ${selectedPb.progress === 100
+                    ? 'bg-emerald-500'
+                    : 'bg-at-accent'
+                  }`}
+                style={{ width: `${selectedPb.progress}%` }}
+              />
             </div>
-          </div>
-        </div>
 
-        {/* Step 4: Pending */}
-        <div className="relative z-10 flex gap-4">
-          <div className="w-6 h-6 rounded-full bg-at-bg border border-at-border text-at-disabled flex items-center justify-center shrink-0 mt-0.5">
-            <span className="text-[10px] font-bold">4</span>
-          </div>
-          <div className="flex-1 bg-at-bg border border-at-border rounded-lg p-3 opacity-60">
-            <div className="flex items-center justify-between mb-1">
-              <div className="text-[12px] font-semibold text-at-disabled">4. Post-Incident Review</div>
+            <div className="mt-2 flex items-center justify-between text-[10px] text-at-muted">
+              <span>Execution state</span>
+              <span className="capitalize">{selectedPb.status}</span>
             </div>
-            <div className="text-[11px] text-at-disabled">Document findings and update threat models.</div>
           </div>
+        </section>
+
+        <section>
+          <div className="text-[10px] font-semibold text-at-disabled uppercase tracking-widest mb-2">
+            Context
+          </div>
+
+          <div className="space-y-2">
+            <div className="rounded-lg border border-at-border bg-at-surface/30 p-3">
+              <div className="text-[10px] text-at-muted">Incident</div>
+              <div className="mt-1 flex items-center gap-2 text-[12px] font-mono text-at-text">
+                <ShieldAlert size={12} className="text-at-accent" />
+                {selectedPb.incident}
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-at-border bg-at-surface/30 p-3">
+              <div className="text-[10px] text-at-muted">Owner</div>
+              <div className="mt-1 flex items-center gap-2 text-[12px] text-at-text">
+                <User size={12} className="text-at-muted" />
+                {selectedPb.owner}
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-at-border bg-at-surface/30 p-3">
+              <div className="text-[10px] text-at-muted">Last updated</div>
+              <div className="mt-1 text-[12px] font-mono text-at-text">
+                {selectedPb.lastUpdated}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-[10px] font-semibold text-at-disabled uppercase tracking-widest">
+              Execution telemetry
+            </div>
+
+            <Activity size={13} className="text-at-muted" />
+          </div>
+
+          <div className="rounded-xl border border-dashed border-at-border bg-at-surface/20 p-5">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg border border-at-border bg-at-bg flex items-center justify-center text-at-muted shrink-0">
+                <Clock3 size={14} />
+              </div>
+
+              <div>
+                <div className="text-[12px] font-medium text-at-text">
+                  Live workflow steps are not connected
+                </div>
+
+                <div className="mt-1 text-[11px] leading-5 text-at-muted">
+                  The current data contract exposes playbook metadata and
+                  progress, but not the underlying step execution log,
+                  timestamps, notes, or action results.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div className="p-4 border-t border-at-border bg-at-surface/30">
+        <div className="text-[10px] leading-5 text-at-muted">
+          Workflow mutations and step execution should be handled by the
+          connected response backend.
         </div>
       </div>
     </div>
@@ -175,21 +433,71 @@ export default function PlaybookPage() {
 
   return (
     <IntelLayout
-      breadcrumbs={[{ label: 'Detection & Response' }, { label: 'Playbooks' }]}
+      breadcrumbs={[
+        { label: 'Detection & Response' },
+        { label: 'Playbooks' },
+      ]}
       title="Response Playbooks"
-      description="Standardized operating procedures and automated response workflows."
-      headerActions={<button className="at-btn at-btn-primary at-btn-sm"><Plus size={13} /> New Playbook</button>}
+      description="Review standardized response workflows and their current execution state."
+      headerActions={
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={exportPlaybooks}
+            className="at-btn at-btn-secondary at-btn-sm"
+          >
+            <Download size={13} />
+            Export
+          </button>
+
+          <button
+            type="button"
+            className="at-btn at-btn-primary at-btn-sm"
+            title="Playbook authoring requires a connected persistence workflow."
+          >
+            <Plus size={13} />
+            New Playbook
+          </button>
+        </div>
+      }
       searchValue={search}
       onSearchChange={setSearch}
-      searchPlaceholder="Search playbooks or incidents..."
-      activeFilters={activeFilters}
-      onRemoveFilter={f => setActiveFilters(prev => prev.filter(x => x !== f))}
+      searchPlaceholder="Search playbooks, incidents, IDs, or owners..."
+      activeFilters={[
+        ...(statusFilter !== 'all' ? [`status:${statusFilter}`] : []),
+      ]}
+      onRemoveFilter={(filter) => {
+        if (filter.startsWith('status:')) setStatusFilter('all');
+      }}
       resultsCount={filtered.length}
-      tableContent={table}
+      tableContent={
+        <div className="h-full flex flex-col">
+          <div className="px-4 py-3 border-b border-at-border bg-at-surface/25">
+            <select
+              value={statusFilter}
+              onChange={(event) =>
+                setStatusFilter(
+                  event.target.value as 'all' | MockPlaybook['status'],
+                )
+              }
+              className="at-input h-8 text-[11px] w-auto min-w-[110px]"
+              aria-label="Filter playbooks by status"
+            >
+              <option value="all">All statuses</option>
+              <option value="active">Active</option>
+              <option value="completed">Completed</option>
+              <option value="pending">Pending</option>
+            </select>
+          </div>
+
+          <div className="flex-1 overflow-auto custom-scrollbar">
+            {table}
+          </div>
+        </div>
+      }
       inspectorContent={inspector}
       isInspectorOpen={!!selectedPbId}
       onCloseInspector={() => setSelectedPbId(null)}
     />
   );
 }
-

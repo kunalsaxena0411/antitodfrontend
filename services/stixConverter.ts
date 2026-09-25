@@ -72,3 +72,4 @@ export const convertToStixBundle = (iocs: UnifiedIoc[]): string => {
 
     return JSON.stringify(bundle, null, 2);
 };
+

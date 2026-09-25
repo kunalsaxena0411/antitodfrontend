@@ -17,10 +17,10 @@ const CACHE_TTL = 1000 * 60 * 15; // 15 Minutes
 // --- PROXY STRATEGY ---
 // We use a racing strategy: fire requests to multiple proxies, take the first success.
 const FAST_PROXIES = [
-    (url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-    (url: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-    (url: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-    (url: string) => `https://thingproxy.freeboard.io/fetch/${url}`
+    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
+    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
+    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
+    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`
 ];
 
 // --- TOR BRIDGES ---
@@ -510,3 +510,4 @@ export const fetchDarkwebScreenshot = async (url: string): Promise<DarkwebScreen
         timestamp: new Date().toISOString()
     };
 };
+

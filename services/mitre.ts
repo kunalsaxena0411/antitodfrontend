@@ -27,7 +27,7 @@ const fetchRawMitreData = async (): Promise<any> => {
     const sources = [
         'https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json',
         'https://cdn.jsdelivr.net/gh/mitre/cti@master/enterprise-attack/enterprise-attack.json',
-        'https://corsproxy.io/?https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json'
+        '/api/proxy?url=https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json'
     ];
 
     for (const url of sources) {
@@ -416,3 +416,4 @@ export const convertStixToGraph = (input: any): GraphData => {
 
     return { nodes, links: validLinks };
 };
+

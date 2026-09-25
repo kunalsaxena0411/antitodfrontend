@@ -120,3 +120,4 @@ export const fetchShadowserverMalwareInfo = async (hash: string): Promise<Shadow
         return null;
     }
 };
+

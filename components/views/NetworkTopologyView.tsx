@@ -748,7 +748,7 @@ export const NetworkTopologyView: React.FC = () => {
     }, [paletteSearch, customStencils]);
 
     return (
-        <div className="h-full flex bg-[#020617] overflow-hidden">
+        <div className="h-full min-h-[calc(100vh-140px)] flex bg-[#020617] overflow-hidden w-full">
             {/* Sidebar: Palette & Library */}
             <div className="w-72 border-r border-gray-800 bg-[#050b1a] flex flex-col shrink-0 relative z-20 shadow-2xl">
                 <div className="flex bg-gray-900 border-b border-gray-800">
@@ -894,7 +894,7 @@ export const NetworkTopologyView: React.FC = () => {
                         <div className="h-6 w-px bg-gray-700 mx-1"></div>
                         
                         <div className="flex gap-2">
-                            <label className="p-1.5 hover:bg-gray-800 rounded text-indigo-400 flex items-center gap-2 text-xs font-bold cursor-pointer transition-colors" title="Build Topology from Multiple Configs">
+                            <label className="p-1.5 hover:bg-gray-800 rounded text-cyber-cyan flex items-center gap-2 text-xs font-bold cursor-pointer transition-colors" title="Build Topology from Multiple Configs">
                                 <FileUp size={16}/> LOAD CONFIGS
                                 <input type="file" className="hidden" accept=".txt,.cfg,.conf" multiple onChange={handleConfigUpload} ref={configInputRef} />
                             </label>
@@ -927,7 +927,7 @@ export const NetworkTopologyView: React.FC = () => {
                             <div className="relative">
                                 <button 
                                     onClick={() => { setShowExportMenu(!showExportMenu); setShowLayoutMenu(false); }}
-                                    className="p-1.5 hover:bg-gray-800 rounded text-orange-400 flex items-center gap-2 text-xs font-bold"
+                                    className="p-1.5 hover:bg-gray-800 rounded text-cyber-cyan flex items-center gap-2 text-xs font-bold"
                                     title="Export Diagram"
                                 >
                                     <Download size={16}/> EXPORT
@@ -1003,7 +1003,7 @@ export const NetworkTopologyView: React.FC = () => {
             {/* Right Panel: Context & Simulation Output */}
             <div className="w-96 border-l border-gray-800 bg-[#050b1a] flex flex-col shrink-0 z-20 shadow-2xl">
                 <div className="p-4 border-b border-gray-800 bg-gray-900/20 flex items-center justify-between">
-                    <h3 className="text-xs font-bold text-orange-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                    <h3 className="text-xs font-bold text-cyber-cyan uppercase tracking-[0.2em] flex items-center gap-2">
                         <Terminal size={14}/> {selectedNode ? 'ASSET INTEL' : selectedEdge ? 'FLOW' : 'ANALYTICS'}
                     </h3>
                 </div>

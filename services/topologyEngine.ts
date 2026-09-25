@@ -218,3 +218,4 @@ export const calculateNodeSecurityIndex = (node: Node, neighborEdges: Edge[]): n
 
     return Math.max(0, score);
 };
+

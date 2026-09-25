@@ -108,11 +108,11 @@ export const MitreNavigatorView: React.FC<MitreNavigatorViewProps> = ({ actors, 
     }
 
     return (
-        <div className="h-full flex flex-col bg-[#020617] relative overflow-hidden">
+        <div className="h-full min-h-[calc(100vh-140px)] w-full flex flex-col bg-[#020617] relative overflow-hidden">
             {/* Toolbar */}
             <div className="bg-black/40 border-b border-gray-800 p-4 flex flex-wrap gap-4 items-center justify-between backdrop-blur-sm z-20">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-orange-500/10 rounded-lg border border-orange-500/30 text-orange-500">
+                    <div className="p-2 bg-cyber-cyan/10 rounded-lg border border-cyber-cyan/30 text-cyber-cyan">
                         <Layers size={20}/>
                     </div>
                     <div>

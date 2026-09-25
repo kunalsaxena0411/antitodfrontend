@@ -45,6 +45,10 @@ export interface LogEventV2 {
     honeypot_data?: string;
     server_id?: string;
     container_name?: string;
+    id?: string;
+    country?: string | null;
+    asn?: string | null;
+    severity?: string;
     geo_country?: string | null;
     geo_city?: string | null;
     geo_lat?: number | null;

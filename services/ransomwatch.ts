@@ -3,8 +3,8 @@ import { RansomWatchPost, RansomWatchGroup } from '../types';
 import { RANSOMWARE_LIVE_API_KEY } from '../config/config';
 import { fetchJsonWithCors } from './http';
 
-const POSTS_URL = 'https://raw.githubusercontent.com/ransomwatch/ransomwatch/main/posts.json';
-const GROUPS_URL = 'https://raw.githubusercontent.com/ransomwatch/ransomwatch/main/groups.json';
+const POSTS_URL = 'https://raw.githubusercontent.com/joshhighet/ransomwatch/main/posts.json';
+const GROUPS_URL = 'https://raw.githubusercontent.com/joshhighet/ransomwatch/main/groups.json';
 
 const API_TARGET = 'https://api-pro.ransomware.live/victims/recent?order=discovered';
 
@@ -12,13 +12,10 @@ const API_TARGET = 'https://api-pro.ransomware.live/victims/recent?order=discove
 // Public proxies (CORSProxy, ThingProxy) often strip custom headers like X-API-KEY.
 // We only use Direct (if CORS allows) and Vercel Proxy (which forwards headers).
 // `/api/proxy` exists on some deployed setups; Vite dev has no such route (would 404).
-const SECURE_PROXIES =
-  import.meta.env.DEV
-    ? [(url: string) => url]
-    : [
-        (url: string) => url,
-        (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
-      ];
+const SECURE_PROXIES = [
+    (url: string) => url,
+    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
+];
 
 const mapLiveVictims = (json: any): RansomWatchPost[] => {
     const items = json.victims || (Array.isArray(json) ? json : []);
@@ -128,3 +125,5 @@ export const fetchRansomwareGroups = async (): Promise<RansomWatchGroup[]> => {
         return [];
     }
 };
+
+

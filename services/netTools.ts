@@ -320,7 +320,7 @@ export const fetchIpWhoIs = async (query: string = ''): Promise<IpWhoIsResult> =
         
         // If direct fetch fails (e.g. Mixed Content block), fallback to proxy
         if (!res || !res.ok) {
-            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+            const proxyUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
             res = await fetch(proxyUrl);
         }
 
@@ -633,9 +633,9 @@ export interface HttpHeaderResult {
 
 const HTTP_PROXIES = [
     (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
-    (url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-    (url: string) => `https://thingproxy.freeboard.io/fetch/${url}`,
-    (url: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}` // Reliable Fallback
+    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
+    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
+    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}` // Reliable Fallback
 ];
 
 export const analyzeHttpHeaders = async (target: string): Promise<HttpHeaderResult | null> => {
@@ -875,7 +875,7 @@ export const performPing = async (target: string, seq: number): Promise<PingResu
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 2000);
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+        const proxyUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
         
         await fetch(proxyUrl, { 
             method: 'HEAD', 
@@ -998,3 +998,4 @@ export const checkWaybackAvailability = async (url: string): Promise<WaybackResu
         return null;
     }
 };
+

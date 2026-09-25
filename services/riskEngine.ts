@@ -159,3 +159,4 @@ export const calculateCompositeRisk = (
 
     return { score, level, factors, verdict };
 };
+

@@ -76,3 +76,4 @@ export const fetchC2IntelFeed = async (): Promise<C2IntelFeedEntry[]> => {
         return [];
     }
 };
+

@@ -1,12 +1,16 @@
 import {
   useMemo,
   useState,
+  type KeyboardEvent,
 } from 'react';
+
+import type { CveEntry } from '../../types';
 
 import {
   AlertTriangle,
   ArrowUpRight,
   CalendarDays,
+  ChevronDown,
   ChevronRight,
   CircleX,
   Download,
@@ -15,174 +19,646 @@ import {
   Search,
   Server,
   ShieldAlert,
+  ShieldCheck,
+  SlidersHorizontal,
   Target,
   TerminalSquare,
   X,
 } from 'lucide-react';
 
-import {
-  MOCK_CVES,
-  type MockCve,
-} from '../data/mockData';
-
+import { useAppData } from '../contexts/AppDataContext';
 import PageHeader from '../components/layout/PageHeader';
 
+/* -------------------------------------------------------------------------- */
+/*                                   Types                                    */
+/* -------------------------------------------------------------------------- */
+
+type InspectorTab =
+  | 'Overview'
+  | 'Affected Systems'
+  | 'References';
+
+type SeverityFilter =
+  | 'ALL'
+  | CveEntry['severity'];
+
+interface ParsedAdvancedQuery {
+  text: string;
+  severity?: CveEntry['severity'];
+  exploit?: boolean;
+  vendor?: string;
+  product?: string;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                  Helpers                                   */
+/* -------------------------------------------------------------------------- */
+
 function formatDate(
-  value: string
-) {
-  return new Date(value).toLocaleDateString(
-    'en-US',
-    {
-      month: 'short',
-      day: '2-digit',
-      year: 'numeric',
-    }
-  );
+  value: string | undefined,
+): string {
+  if (!value) {
+    return 'Unknown';
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return 'Unknown';
+  }
+
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+  });
 }
 
 function formatDateTime(
-  value: string
-) {
-  return new Date(value).toLocaleString(
-    'en-US',
-    {
-      month: 'short',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    }
-  );
+  value: string | undefined,
+): string {
+  if (!value) {
+    return 'Unknown';
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return 'Unknown';
+  }
+
+  return date.toLocaleString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
 }
 
 function severityClass(
-  severity: MockCve['severity']
-) {
-  return severity;
+  severity: CveEntry['severity'],
+): string {
+  return String(severity).toLowerCase();
 }
 
 function severityLabel(
-  severity: MockCve['severity']
-) {
-  return severity.toUpperCase();
+  severity: CveEntry['severity'],
+): string {
+  return String(severity).toUpperCase();
 }
 
-export default function CvePage() {
-  const [search, setSearch] =
-    useState('');
+function cvssClass(score: number): string {
+  if (score >= 9) {
+    return 'critical';
+  }
 
+  if (score >= 7) {
+    return 'high';
+  }
+
+  if (score >= 4) {
+    return 'medium';
+  }
+
+  return 'low';
+}
+
+function escapeCsvValue(value: unknown): string {
+  return `"${String(value ?? '').replace(/"/g, '""')}"`;
+}
+
+function downloadTextFile(
+  filename: string,
+  content: string,
+  mimeType: string,
+): void {
+  const blob = new Blob([content], {
+    type: mimeType,
+  });
+
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.style.display = 'none';
+
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Lightweight advanced query support.
+ *
+ * Examples:
+ *
+ *   severity:critical exploit:true
+ *   vendor:microsoft
+ *   product:exchange
+ *   severity:high authentication
+ *
+ * Unknown tokens remain part of the free-text query, so normal searches
+ * continue working even when advanced mode is enabled.
+ */
+function parseAdvancedQuery(
+  input: string,
+): ParsedAdvancedQuery {
+  const tokens = input
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  let severity:
+    | CveEntry['severity']
+    | undefined;
+
+  let exploit: boolean | undefined;
+
+  let vendor: string | undefined;
+  let product: string | undefined;
+
+  const textTokens: string[] = [];
+
+  for (const token of tokens) {
+    const separatorIndex = token.indexOf(':');
+
+    if (separatorIndex <= 0) {
+      textTokens.push(token);
+      continue;
+    }
+
+    const key = token
+      .slice(0, separatorIndex)
+      .toLowerCase();
+
+    const rawValue = token
+      .slice(separatorIndex + 1)
+      .trim();
+
+    const value = rawValue.toLowerCase();
+
+    if (!rawValue) {
+      continue;
+    }
+
+    if (
+      key === 'severity' &&
+      ['critical', 'high', 'medium', 'low'].includes(
+        value,
+      )
+    ) {
+      severity =
+        value as CveEntry['severity'];
+      continue;
+    }
+
+    if (
+      key === 'exploit' &&
+      ['true', 'false'].includes(value)
+    ) {
+      exploit = value === 'true';
+      continue;
+    }
+
+    if (key === 'vendor') {
+      vendor = rawValue;
+      continue;
+    }
+
+    if (key === 'product') {
+      product = rawValue;
+      continue;
+    }
+
+    textTokens.push(token);
+  }
+
+  return {
+    text: textTokens.join(' '),
+    severity,
+    exploit,
+    vendor,
+    product,
+  };
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                CVE Page                                    */
+/* -------------------------------------------------------------------------- */
+
+export default function CvePage() {
+  const { MOCK_CVES } = useAppData();
+
+  /* ------------------------------------------------------------------------ */
+  /*                                  State                                   */
+  /* ------------------------------------------------------------------------ */
+
+  const [search, setSearch] = useState('');
   const [advancedMode, setAdvancedMode] =
     useState(false);
 
-  const [activeFilters, setActiveFilters] =
-    useState<string[]>([
-      'has_exploit:true',
-    ]);
+  const [severityFilter, setSeverityFilter] =
+    useState<SeverityFilter>('ALL');
+
+  const [exploitOnly, setExploitOnly] =
+    useState(false);
+
+  const [vendorFilter, setVendorFilter] =
+    useState('');
+
+  const [showFilters, setShowFilters] =
+    useState(false);
 
   const [selectedCveId, setSelectedCveId] =
     useState<string | null>(null);
 
   const [inspectorTab, setInspectorTab] =
-    useState<
-      'Overview' |
-      'Affected Systems' |
-      'References'
-    >('Overview');
+    useState<InspectorTab>('Overview');
 
-  const selectedCve =
-    useMemo(
-      () =>
-        MOCK_CVES.find(
-          (cve) =>
-            cve.id ===
-            selectedCveId
-        ) || null,
-      [selectedCveId]
+  /* ------------------------------------------------------------------------ */
+  /*                            Filter options                                */
+  /* ------------------------------------------------------------------------ */
+
+  const vendorOptions = useMemo(() => {
+    return Array.from(
+      new Set(
+        MOCK_CVES
+          .map((cve) => cve.vendor)
+          .filter(Boolean),
+      ),
+    ).sort((a, b) =>
+      a.localeCompare(b),
     );
+  }, [MOCK_CVES]);
+
+  /* ------------------------------------------------------------------------ */
+  /*                           Advanced query                                */
+  /* ------------------------------------------------------------------------ */
+
+  const parsedQuery = useMemo(
+    () =>
+      advancedMode
+        ? parseAdvancedQuery(search)
+        : {
+          text: search.trim(),
+        },
+    [advancedMode, search],
+  );
+
+  /* ------------------------------------------------------------------------ */
+  /*                             Selected CVE                                 */
+  /* ------------------------------------------------------------------------ */
+
+  const selectedCve = useMemo(() => {
+    if (!selectedCveId) {
+      return null;
+    }
+
+    return (
+      MOCK_CVES.find(
+        (cve) => cve.id === selectedCveId,
+      ) ?? null
+    );
+  }, [MOCK_CVES, selectedCveId]);
+
+  /* ------------------------------------------------------------------------ */
+  /*                              Filtering                                   */
+  /* ------------------------------------------------------------------------ */
 
   const filtered = useMemo(() => {
-    const query =
-      search.trim().toLowerCase();
+    const textQuery = parsedQuery.text
+      .toLowerCase()
+      .trim();
 
-    return MOCK_CVES.filter(
-      (cve) => {
-        const matchSearch =
-          !query ||
-          cve.id
-            .toLowerCase()
-            .includes(query) ||
-          cve.description
-            .toLowerCase()
-            .includes(query);
+    return [...MOCK_CVES]
+      .filter((cve) => {
+        if (!textQuery) {
+          return true;
+        }
 
-        const matchExploit =
-          activeFilters.includes(
-            'has_exploit:true'
-          )
-            ? cve.exploitAvailable
-            : true;
+        const searchableText = [
+          cve.id,
+          cve.description,
+          cve.vendor,
+          cve.product,
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+
+        return searchableText.includes(
+          textQuery,
+        );
+      })
+      .filter((cve) => {
+        if (severityFilter === 'ALL') {
+          return true;
+        }
+
+        return cve.severity === severityFilter;
+      })
+      .filter((cve) => {
+        if (!exploitOnly) {
+          return true;
+        }
+
+        return cve.exploitAvailable;
+      })
+      .filter((cve) => {
+        if (!vendorFilter) {
+          return true;
+        }
+
+        return cve.vendor === vendorFilter;
+      })
+      .filter((cve) => {
+        if (!parsedQuery.severity) {
+          return true;
+        }
 
         return (
-          matchSearch &&
-          matchExploit
+          cve.severity ===
+          parsedQuery.severity
         );
-      }
-    );
+      })
+      .filter((cve) => {
+        if (typeof parsedQuery.exploit !== 'boolean') {
+          return true;
+        }
+
+        return (
+          cve.exploitAvailable ===
+          parsedQuery.exploit
+        );
+      })
+      .filter((cve) => {
+        if (!parsedQuery.vendor) {
+          return true;
+        }
+
+        return cve.vendor
+          .toLowerCase()
+          .includes(
+            parsedQuery.vendor.toLowerCase(),
+          );
+      })
+      .filter((cve) => {
+        if (!parsedQuery.product) {
+          return true;
+        }
+
+        return cve.product
+          .toLowerCase()
+          .includes(
+            parsedQuery.product.toLowerCase(),
+          );
+      })
+      .sort((a, b) => {
+        const scoreDifference =
+          b.cvss - a.cvss;
+
+        if (scoreDifference !== 0) {
+          return scoreDifference;
+        }
+
+        return (
+          new Date(b.published).getTime() -
+          new Date(a.published).getTime()
+        );
+      });
   }, [
-    search,
-    activeFilters,
+    MOCK_CVES,
+    parsedQuery,
+    severityFilter,
+    exploitOnly,
+    vendorFilter,
   ]);
 
-  const criticalCount =
-    MOCK_CVES.filter(
-      (cve) =>
-        cve.severity ===
-        'critical'
-    ).length;
+  /* ------------------------------------------------------------------------ */
+  /*                              Statistics                                  */
+  /* ------------------------------------------------------------------------ */
 
-  const highCount =
-    MOCK_CVES.filter(
-      (cve) =>
-        cve.severity ===
-        'high'
-    ).length;
-
-  const exploitCount =
-    MOCK_CVES.filter(
-      (cve) =>
-        cve.exploitAvailable
-    ).length;
-
-  const vendorCount =
-    new Set(
-      MOCK_CVES.map(
+  const criticalCount = useMemo(
+    () =>
+      MOCK_CVES.filter(
         (cve) =>
-          cve.vendor
-      )
-    ).size;
+          cve.severity === 'critical',
+      ).length,
+    [MOCK_CVES],
+  );
 
-  const removeFilter = (
-    filter: string
-  ) => {
-    setActiveFilters((prev) =>
-      prev.filter(
-        (value) =>
-          value !== filter
-      )
+  const highCount = useMemo(
+    () =>
+      MOCK_CVES.filter(
+        (cve) =>
+          cve.severity === 'high',
+      ).length,
+    [MOCK_CVES],
+  );
+
+  const exploitCount = useMemo(
+    () =>
+      MOCK_CVES.filter(
+        (cve) => cve.exploitAvailable,
+      ).length,
+    [MOCK_CVES],
+  );
+
+  const vendorCount = useMemo(
+    () =>
+      new Set(
+        MOCK_CVES.map(
+          (cve) => cve.vendor,
+        ),
+      ).size,
+    [MOCK_CVES],
+  );
+
+  /* ------------------------------------------------------------------------ */
+  /*                          Active filter chips                             */
+  /* ------------------------------------------------------------------------ */
+
+  const activeFilters = useMemo(() => {
+    const filters: string[] = [];
+
+    if (severityFilter !== 'ALL') {
+      filters.push(
+        `severity:${String(
+          severityFilter,
+        ).toLowerCase()}`,
+      );
+    }
+
+    if (exploitOnly) {
+      filters.push('exploit:true');
+    }
+
+    if (vendorFilter) {
+      filters.push(
+        `vendor:${vendorFilter}`,
+      );
+    }
+
+    if (
+      advancedMode &&
+      parsedQuery.severity &&
+      parsedQuery.severity !== severityFilter
+    ) {
+      filters.push(
+        `severity:${String(
+          parsedQuery.severity,
+        ).toLowerCase()}`,
+      );
+    }
+
+    if (
+      advancedMode &&
+      typeof parsedQuery.exploit ===
+      'boolean' &&
+      parsedQuery.exploit !== exploitOnly
+    ) {
+      filters.push(
+        `exploit:${parsedQuery.exploit}`,
+      );
+    }
+
+    if (
+      advancedMode &&
+      parsedQuery.vendor &&
+      parsedQuery.vendor !== vendorFilter
+    ) {
+      filters.push(
+        `vendor:${parsedQuery.vendor}`,
+      );
+    }
+
+    if (
+      advancedMode &&
+      parsedQuery.product
+    ) {
+      filters.push(
+        `product:${parsedQuery.product}`,
+      );
+    }
+
+    return Array.from(
+      new Set(filters),
     );
-  };
+  }, [
+    severityFilter,
+    exploitOnly,
+    vendorFilter,
+    advancedMode,
+    parsedQuery,
+  ]);
+
+  const hasActiveFilters =
+    activeFilters.length > 0 ||
+    Boolean(search.trim());
+
+  /* ------------------------------------------------------------------------ */
+  /*                               Actions                                    */
+  /* ------------------------------------------------------------------------ */
 
   const clearAllFilters = () => {
     setSearch('');
-    setActiveFilters([]);
+    setSeverityFilter('ALL');
+    setExploitOnly(false);
+    setVendorFilter('');
+    setShowFilters(false);
   };
+
+  const removeFilter = (
+    filter: string,
+  ) => {
+    if (
+      filter.startsWith('severity:')
+    ) {
+      setSeverityFilter('ALL');
+    }
+
+    if (
+      filter === 'exploit:true'
+    ) {
+      setExploitOnly(false);
+    }
+
+    if (
+      filter.startsWith('vendor:')
+    ) {
+      setVendorFilter('');
+    }
+
+    if (
+      filter.startsWith('product:')
+    ) {
+      setSearch('');
+    }
+  };
+
+  const handleExport = () => {
+    const payload = filtered.map(
+      (cve) => ({
+        id: cve.id,
+        cvss: cve.cvss,
+        severity: cve.severity,
+        description: cve.description,
+        vendor: cve.vendor,
+        product: cve.product,
+        exploitAvailable:
+          cve.exploitAvailable,
+        published: cve.published,
+      }),
+    );
+
+    downloadTextFile(
+      `antitode-cve-export-${new Date()
+        .toISOString()
+        .slice(0, 10)}.json`,
+      JSON.stringify(payload, null, 2),
+      'application/json;charset=utf-8',
+    );
+  };
+
+  const openNvdRecord = (
+    cveId: string,
+  ) => {
+    window.open(
+      `https://nvd.nist.gov/vuln/detail/${encodeURIComponent(
+        cveId,
+      )}`,
+      '_blank',
+      'noopener,noreferrer',
+    );
+  };
+
+  const handleRowKeyDown = (
+    event: KeyboardEvent<HTMLTableRowElement>,
+    cveId: string,
+  ) => {
+    if (
+      event.key === 'Enter' ||
+      event.key === ' '
+    ) {
+      event.preventDefault();
+      setSelectedCveId(cveId);
+    }
+  };
+
+  /* ------------------------------------------------------------------------ */
+  /*                                  Render                                  */
+  /* ------------------------------------------------------------------------ */
 
   return (
     <div className="at-cve-page">
-
-      {/* ======================================================
-          HEADER
-          ====================================================== */}
+      {/* ================================================================== */
+      /* HEADER                                                               */
+      /* ================================================================== */}
 
       <PageHeader
         breadcrumbs={[
@@ -199,6 +675,8 @@ export default function CvePage() {
           <button
             type="button"
             className="at-btn at-btn-secondary at-btn-sm"
+            onClick={handleExport}
+            title={`Export ${filtered.length} visible CVEs`}
           >
             <Download size={13} />
             Export JSON
@@ -206,12 +684,11 @@ export default function CvePage() {
         }
       />
 
-      {/* ======================================================
-          VULNERABILITY SUMMARY
-          ====================================================== */}
+      {/* ================================================================== */
+      /* SUMMARY                                                              */
+      /* ================================================================== */}
 
       <section className="at-cve-summary">
-
         <div className="at-cve-summary-total">
           <span className="at-v2-kicker">
             VULNERABILITY REPOSITORY
@@ -229,12 +706,9 @@ export default function CvePage() {
         </div>
 
         <div className="at-cve-summary-stats">
-
           <div className="at-cve-summary-stat">
             <span className="at-cve-summary-icon critical">
-              <ShieldAlert
-                size={14}
-              />
+              <ShieldAlert size={14} />
             </span>
 
             <div>
@@ -242,17 +716,13 @@ export default function CvePage() {
                 {criticalCount}
               </strong>
 
-              <small>
-                critical
-              </small>
+              <small>critical</small>
             </div>
           </div>
 
           <div className="at-cve-summary-stat">
             <span className="at-cve-summary-icon high">
-              <AlertTriangle
-                size={14}
-              />
+              <AlertTriangle size={14} />
             </span>
 
             <div>
@@ -260,9 +730,7 @@ export default function CvePage() {
                 {highCount}
               </strong>
 
-              <small>
-                high severity
-              </small>
+              <small>high severity</small>
             </div>
           </div>
 
@@ -284,9 +752,7 @@ export default function CvePage() {
 
           <div className="at-cve-summary-stat">
             <span className="at-cve-summary-icon vendor">
-              <FileWarning
-                size={14}
-              />
+              <FileWarning size={14} />
             </span>
 
             <div>
@@ -294,34 +760,24 @@ export default function CvePage() {
                 {vendorCount}
               </strong>
 
-              <small>
-                vendors
-              </small>
+              <small>vendors</small>
             </div>
           </div>
-
         </div>
-
       </section>
 
-      {/* ======================================================
-          QUERY
-          ====================================================== */}
+      {/* ================================================================== */
+      /* QUERY / FILTERS                                                     */
+      /* ================================================================== */}
 
       <section className="at-cve-query">
-
         <div className="at-cve-query-main">
-
           <div
-            className={`at-cve-search ${advancedMode
-                ? 'advanced'
-                : ''
+            className={`at-cve-search ${advancedMode ? 'advanced' : ''
               }`}
           >
             {advancedMode ? (
-              <TerminalSquare
-                size={15}
-              />
+              <TerminalSquare size={15} />
             ) : (
               <Search size={15} />
             )}
@@ -330,14 +786,16 @@ export default function CvePage() {
               value={search}
               onChange={(event) =>
                 setSearch(
-                  event.target.value
+                  event.target.value,
                 )
               }
               placeholder={
                 advancedMode
-                  ? 'Use advanced CVE search syntax...'
-                  : 'Search CVE-ID or description...'
+                  ? 'severity:critical exploit:true vendor:microsoft authentication...'
+                  : 'Search CVE-ID, description, vendor, or product...'
               }
+              aria-label="Search CVE database"
+              spellCheck={false}
             />
 
             {search && (
@@ -355,63 +813,204 @@ export default function CvePage() {
 
           <button
             type="button"
-            className={`at-cve-advanced ${advancedMode
-                ? 'active'
-                : ''
+            className={`at-cve-advanced ${advancedMode ? 'active' : ''
               }`}
             onClick={() =>
               setAdvancedMode(
-                (value) =>
-                  !value
+                (current) => !current,
               )
             }
+            aria-pressed={advancedMode}
           >
-            <TerminalSquare
-              size={13}
-            />
-
+            <TerminalSquare size={13} />
             Advanced
           </button>
 
-          <span className="at-cve-query-count">
-            {filtered.length}
-            {' '}
-            results
-          </span>
+          <button
+            type="button"
+            className={`at-cve-filter-placeholder ${showFilters ? 'active' : ''
+              }`}
+            onClick={() =>
+              setShowFilters(
+                (current) => !current,
+              )
+            }
+            aria-expanded={showFilters}
+            aria-haspopup="true"
+          >
+            <SlidersHorizontal size={13} />
+            Filters
+            <ChevronDown
+              size={12}
+              className={
+                showFilters
+                  ? 'rotate-180'
+                  : ''
+              }
+            />
+          </button>
 
+          <span className="at-cve-query-count">
+            {filtered.length}{' '}
+            {filtered.length === 1
+              ? 'result'
+              : 'results'}
+          </span>
         </div>
 
-        <div className="at-cve-filter-row">
+        {showFilters && (
+          <div
+            className="at-cve-filter-panel"
+            role="region"
+            aria-label="CVE filters"
+          >
+            <div className="at-cve-filter-control">
+              <label htmlFor="cve-severity">
+                Severity
+              </label>
 
+              <select
+                id="cve-severity"
+                value={severityFilter}
+                onChange={(event) =>
+                  setSeverityFilter(
+                    event.target
+                      .value as SeverityFilter,
+                  )
+                }
+              >
+                <option value="ALL">
+                  All severities
+                </option>
+
+                <option value="critical">
+                  Critical
+                </option>
+
+                <option value="high">
+                  High
+                </option>
+
+                <option value="medium">
+                  Medium
+                </option>
+
+                <option value="low">
+                  Low
+                </option>
+              </select>
+            </div>
+
+            <div className="at-cve-filter-control">
+              <label htmlFor="cve-vendor">
+                Vendor
+              </label>
+
+              <select
+                id="cve-vendor"
+                value={vendorFilter}
+                onChange={(event) =>
+                  setVendorFilter(
+                    event.target.value,
+                  )
+                }
+              >
+                <option value="">
+                  All vendors
+                </option>
+
+                {vendorOptions.map(
+                  (vendor) => (
+                    <option
+                      key={vendor}
+                      value={vendor}
+                    >
+                      {vendor}
+                    </option>
+                  ),
+                )}
+              </select>
+            </div>
+
+            <label className="at-cve-filter-toggle">
+              <input
+                type="checkbox"
+                checked={exploitOnly}
+                onChange={(event) =>
+                  setExploitOnly(
+                    event.target.checked,
+                  )
+                }
+              />
+
+              <span>
+                Exploit available only
+              </span>
+            </label>
+
+            <button
+              type="button"
+              className="at-btn at-btn-ghost at-btn-sm"
+              onClick={
+                clearAllFilters
+              }
+            >
+              Clear filters
+            </button>
+          </div>
+        )}
+
+        <div className="at-cve-filter-row">
           <span className="at-cve-filter-label">
             ACTIVE FILTERS
           </span>
 
-          {activeFilters.map(
-            (filter) => (
-              <span
-                className="at-cve-filter-chip"
-                key={filter}
-              >
-                {filter}
+          {!hasActiveFilters ? (
+            <span className="at-cve-filter-empty">
+              No filters applied
+            </span>
+          ) : (
+            <>
+              {activeFilters.map(
+                (filter) => (
+                  <span
+                    className="at-cve-filter-chip"
+                    key={filter}
+                  >
+                    {filter}
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    removeFilter(
-                      filter
-                    )
-                  }
-                  aria-label={`Remove ${filter}`}
-                >
-                  <X size={10} />
-                </button>
-              </span>
-            )
-          )}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        removeFilter(
+                          filter,
+                        )
+                      }
+                      aria-label={`Remove ${filter}`}
+                    >
+                      <X size={10} />
+                    </button>
+                  </span>
+                ),
+              )}
 
-          {activeFilters.length >
-            0 && (
+              {search.trim() &&
+                !advancedMode && (
+                  <span className="at-cve-filter-chip search">
+                    query:{search.trim()}
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSearch('')
+                      }
+                      aria-label="Remove search query"
+                    >
+                      <X size={10} />
+                    </button>
+                  </span>
+                )}
+
               <button
                 type="button"
                 className="at-cve-clear"
@@ -422,41 +1021,28 @@ export default function CvePage() {
                 <CircleX size={12} />
                 Clear
               </button>
-            )}
-
-          <button
-            type="button"
-            className="at-cve-filter-placeholder"
-          >
-            + Filter
-          </button>
-
+            </>
+          )}
         </div>
-
       </section>
 
-      {/* ======================================================
-          WORKSPACE
-          ====================================================== */}
+      {/* ================================================================== */
+      /* WORKSPACE                                                            */
+      /* ================================================================== */}
 
       <div className="at-cve-workspace">
-
-        {/* ====================================================
-            LIST
-            ==================================================== */}
+        {/* ================================================================ */
+        /* LIST                                                               */
+        /* ================================================================ */}
 
         <section className="at-cve-list">
-
           <div className="at-cve-list-head">
-
             <div>
               <span className="at-v2-kicker">
                 VULNERABILITY FEED
               </span>
 
-              <h2>
-                Indexed CVEs
-              </h2>
+              <h2>Indexed CVEs</h2>
             </div>
 
             <span className="at-cve-list-count">
@@ -464,48 +1050,33 @@ export default function CvePage() {
               <strong>
                 {filtered.length}
               </strong>
-            </span>
 
+              {filtered.length !==
+                MOCK_CVES.length && (
+                  <>
+                    {' '}
+                    of {MOCK_CVES.length}
+                  </>
+                )}
+            </span>
           </div>
 
           <div className="at-cve-table-wrap">
-
             <table className="at-cve-table">
-
               <thead>
                 <tr>
-                  <th>
-                    CVE ID
-                  </th>
-
-                  <th>
-                    CVSS
-                  </th>
-
-                  <th>
-                    Severity
-                  </th>
-
-                  <th>
-                    Description
-                  </th>
-
-                  <th>
-                    Product
-                  </th>
-
-                  <th>
-                    Published
-                  </th>
-
+                  <th>CVE ID</th>
+                  <th>CVSS</th>
+                  <th>Severity</th>
+                  <th>Description</th>
+                  <th>Product</th>
+                  <th>Published</th>
                   <th />
                 </tr>
               </thead>
 
               <tbody>
-
-                {filtered.length ===
-                  0 ? (
+                {filtered.length === 0 ? (
                   <tr>
                     <td
                       colSpan={7}
@@ -521,9 +1092,8 @@ export default function CvePage() {
 
                       <span>
                         No vulnerabilities
-                        match the
-                        current search
-                        and filters.
+                        match the current
+                        search and filters.
                       </span>
 
                       <button
@@ -537,171 +1107,169 @@ export default function CvePage() {
                     </td>
                   </tr>
                 ) : (
-                  filtered.map(
-                    (cve) => {
-                      const selected =
-                        selectedCveId ===
-                        cve.id;
+                  filtered.map((cve) => {
+                    const selected =
+                      selectedCveId ===
+                      cve.id;
 
-                      return (
-                        <tr
-                          key={cve.id}
-                          className={
-                            selected
-                              ? 'active'
-                              : ''
-                          }
-                          onClick={() =>
-                            setSelectedCveId(
-                              cve.id
-                            )
-                          }
-                        >
-                          <td>
+                    return (
+                      <tr
+                        key={cve.id}
+                        className={
+                          selected
+                            ? 'active'
+                            : ''
+                        }
+                        tabIndex={0}
+                        aria-selected={
+                          selected
+                        }
+                        onClick={() =>
+                          setSelectedCveId(
+                            cve.id,
+                          )
+                        }
+                        onKeyDown={(
+                          event,
+                        ) =>
+                          handleRowKeyDown(
+                            event,
+                            cve.id,
+                          )
+                        }
+                      >
+                        {/* CVE ID */}
 
-                            <div className="at-cve-id-cell">
+                        <td>
+                          <div className="at-cve-id-cell">
+                            {cve.exploitAvailable && (
+                              <span className="at-cve-exploit-mark">
+                                <Target
+                                  size={11}
+                                />
+                              </span>
+                            )}
+
+                            <div>
+                              <button
+                                type="button"
+                                className="at-cve-id"
+                                onClick={(
+                                  event,
+                                ) => {
+                                  event.stopPropagation();
+
+                                  setSelectedCveId(
+                                    cve.id,
+                                  );
+                                }}
+                              >
+                                {cve.id}
+                              </button>
 
                               {cve.exploitAvailable && (
-                                <span className="at-cve-exploit-mark">
-                                  <Target
-                                    size={11}
-                                  />
+                                <span className="at-cve-id-meta">
+                                  EXPLOIT
+                                  AVAILABLE
                                 </span>
                               )}
-
-                              <div>
-                                <button
-                                  type="button"
-                                  className="at-cve-id"
-                                  onClick={(
-                                    event
-                                  ) => {
-                                    event.stopPropagation();
-
-                                    setSelectedCveId(
-                                      cve.id
-                                    );
-                                  }}
-                                >
-                                  {cve.id}
-                                </button>
-
-                                {cve.exploitAvailable && (
-                                  <span className="at-cve-id-meta">
-                                    EXPLOIT
-                                    AVAILABLE
-                                  </span>
-                                )}
-                              </div>
-
                             </div>
+                          </div>
+                        </td>
 
-                          </td>
+                        {/* CVSS */}
 
-                          <td>
+                        <td>
+                          <span
+                            className={`at-cve-score ${cvssClass(
+                              cve.cvss,
+                            )}`}
+                          >
+                            {Number(
+                              cve.cvss,
+                            ).toFixed(1)}
+                          </span>
+                        </td>
 
-                            <span
-                              className={`at-cve-score ${cve.cvss >= 9
-                                  ? 'critical'
-                                  : cve.cvss >=
-                                    7
-                                    ? 'high'
-                                    : cve.cvss >=
-                                      4
-                                      ? 'medium'
-                                      : 'low'
-                                }`}
-                            >
-                              {cve.cvss.toFixed(
-                                1
-                              )}
-                            </span>
+                        {/* Severity */}
 
-                          </td>
+                        <td>
+                          <span
+                            className={`at-cve-severity ${severityClass(
+                              cve.severity,
+                            )}`}
+                          >
+                            <i />
+                            {severityLabel(
+                              cve.severity,
+                            )}
+                          </span>
+                        </td>
 
-                          <td>
+                        {/* Description */}
 
-                            <span
-                              className={`at-cve-severity ${severityClass(
-                                cve.severity
-                              )}`}
-                            >
-                              <i />
+                        <td>
+                          <span className="at-cve-description">
+                            {cve.description}
+                          </span>
+                        </td>
 
-                              {severityLabel(
-                                cve.severity
-                              )}
-                            </span>
+                        {/* Product */}
 
-                          </td>
+                        <td>
+                          <span className="at-cve-product">
+                            {cve.vendor}{' '}
+                            {cve.product}
+                          </span>
+                        </td>
 
-                          <td>
+                        {/* Published */}
 
-                            <span className="at-cve-description">
-                              {
-                                cve.description
-                              }
-                            </span>
+                        <td>
+                          <code className="at-cve-date">
+                            {formatDate(
+                              cve.published,
+                            )}
+                          </code>
+                        </td>
 
-                          </td>
+                        {/* Open */}
 
-                          <td>
-
-                            <span className="at-cve-product">
-                              {cve.vendor}
-                              {' '}
-                              {cve.product}
-                            </span>
-
-                          </td>
-
-                          <td>
-
-                            <code className="at-cve-date">
-                              {formatDate(
-                                cve.published
-                              )}
-                            </code>
-
-                          </td>
-
-                          <td>
-                            <ChevronRight
-                              size={13}
-                              className="at-cve-row-arrow"
-                            />
-                          </td>
-
-                        </tr>
-                      );
-                    }
-                  )
+                        <td>
+                          <ChevronRight
+                            size={13}
+                            className="at-cve-row-arrow"
+                            aria-hidden="true"
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
-
               </tbody>
-
             </table>
-
           </div>
         </section>
 
-        {/* ====================================================
-            INSPECTOR
-            ==================================================== */}
+        {/* ================================================================ */
+        /* INSPECTOR                                                          */
+        /* ================================================================ */}
 
         {selectedCve && (
-          <aside className="at-cve-inspector">
+          <aside
+            className="at-cve-inspector"
+            aria-label={`Details for ${selectedCve.id}`}
+          >
+            {/* -------------------------------------------------------------- */
+            /* Header                                                           */
+            /* -------------------------------------------------------------- */}
 
             <div className="at-cve-inspector-head">
-
               <div className="at-cve-heading">
-
                 <span
                   className={`at-cve-heading-icon ${selectedCve.severity}`}
                 >
-                  <ShieldAlert
-                    size={19}
-                  />
+                  <ShieldAlert size={19} />
                 </span>
 
                 <div>
@@ -710,22 +1278,14 @@ export default function CvePage() {
                   </span>
 
                   <strong>
-                    {
-                      selectedCve.id
-                    }
+                    {selectedCve.id}
                   </strong>
 
                   <small>
-                    {
-                      selectedCve.vendor
-                    }
-                    {' '}
-                    {
-                      selectedCve.product
-                    }
+                    {selectedCve.vendor}{' '}
+                    {selectedCve.product}
                   </small>
                 </div>
-
               </div>
 
               <button
@@ -733,34 +1293,34 @@ export default function CvePage() {
                 className="at-cve-close"
                 onClick={() =>
                   setSelectedCveId(
-                    null
+                    null,
                   )
                 }
                 aria-label="Close CVE inspector"
               >
                 <X size={15} />
               </button>
-
             </div>
 
-            <div className="at-cve-inspector-meta">
+            {/* -------------------------------------------------------------- */
+            /* Metadata                                                         */
+            /* -------------------------------------------------------------- */}
 
+            <div className="at-cve-inspector-meta">
               <span
                 className={`at-cve-inspector-score ${selectedCve.severity}`}
               >
                 CVSS{' '}
-                {selectedCve.cvss.toFixed(
-                  1
-                )}
+                {Number(
+                  selectedCve.cvss,
+                ).toFixed(1)}
               </span>
 
               <span
                 className={`at-cve-inspector-severity ${selectedCve.severity}`}
               >
                 <i />
-                {
-                  selectedCve.severity
-                }
+                {selectedCve.severity}
               </span>
 
               {selectedCve.exploitAvailable && (
@@ -769,52 +1329,61 @@ export default function CvePage() {
                   EXPLOIT AVAILABLE
                 </span>
               )}
-
             </div>
 
-            {/* Tabs */}
+            {/* -------------------------------------------------------------- */
+            /* Tabs                                                             */
+            /* -------------------------------------------------------------- */}
 
-            <div className="at-cve-tabs">
+            <div
+              className="at-cve-tabs"
+              role="tablist"
+              aria-label="CVE details"
+            >
+              {(
+                [
+                  'Overview',
+                  'Affected Systems',
+                  'References',
+                ] as const
+              ).map((tab) => {
+                const active =
+                  inspectorTab === tab;
 
-              {[
-                'Overview',
-                'Affected Systems',
-                'References',
-              ].map((tab) => (
-                <button
-                  type="button"
-                  key={tab}
-                  className={
-                    inspectorTab ===
-                      tab
-                      ? 'active'
-                      : ''
-                  }
-                  onClick={() =>
-                    setInspectorTab(
-                      tab as
-                      | 'Overview'
-                      | 'Affected Systems'
-                      | 'References'
-                    )
-                  }
-                >
-                  {tab}
-                </button>
-              ))}
-
+                return (
+                  <button
+                    type="button"
+                    key={tab}
+                    className={
+                      active
+                        ? 'active'
+                        : ''
+                    }
+                    onClick={() =>
+                      setInspectorTab(tab)
+                    }
+                    role="tab"
+                    aria-selected={
+                      active
+                    }
+                  >
+                    {tab}
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Content */}
+            {/* -------------------------------------------------------------- */
+            /* Scrollable content                                              */
+            /* -------------------------------------------------------------- */}
 
             <div className="at-cve-inspector-scroll">
-
               {inspectorTab ===
                 'Overview' && (
                   <div className="at-cve-inspector-content">
+                    {/* Description */}
 
                     <section className="at-cve-inspector-block">
-
                       <div className="at-cve-block-title">
                         <span>
                           DESCRIPTION
@@ -826,11 +1395,11 @@ export default function CvePage() {
                           selectedCve.description
                         }
                       </div>
-
                     </section>
 
-                    <section className="at-cve-inspector-block">
+                    {/* Profile */}
 
+                    <section className="at-cve-inspector-block">
                       <div className="at-cve-block-title">
                         <span>
                           VULNERABILITY PROFILE
@@ -842,28 +1411,21 @@ export default function CvePage() {
                       </div>
 
                       <div className="at-cve-profile-grid">
-
                         <div>
-                          <span>
-                            CVE ID
-                          </span>
+                          <span>CVE ID</span>
 
                           <code>
-                            {
-                              selectedCve.id
-                            }
+                            {selectedCve.id}
                           </code>
                         </div>
 
                         <div>
-                          <span>
-                            CVSS
-                          </span>
+                          <span>CVSS</span>
 
                           <strong>
-                            {selectedCve.cvss.toFixed(
-                              1
-                            )}
+                            {Number(
+                              selectedCve.cvss,
+                            ).toFixed(1)}
                           </strong>
                         </div>
 
@@ -892,9 +1454,7 @@ export default function CvePage() {
                         </div>
 
                         <div>
-                          <span>
-                            VENDOR
-                          </span>
+                          <span>VENDOR</span>
 
                           <strong>
                             {
@@ -910,25 +1470,22 @@ export default function CvePage() {
 
                           <code>
                             {formatDate(
-                              selectedCve.published
+                              selectedCve.published,
                             )}
                           </code>
                         </div>
-
                       </div>
-
                     </section>
 
-                    <section className="at-cve-inspector-block">
+                    {/* Exploit status */}
 
+                    <section className="at-cve-inspector-block">
                       <div className="at-cve-block-title">
                         <span>
                           EXPLOIT STATUS
                         </span>
 
-                        <Target
-                          size={12}
-                        />
+                        <Target size={12} />
                       </div>
 
                       <div
@@ -943,7 +1500,7 @@ export default function CvePage() {
                               size={14}
                             />
                           ) : (
-                            <ShieldAlert
+                            <ShieldCheck
                               size={14}
                             />
                           )}
@@ -959,15 +1516,15 @@ export default function CvePage() {
                           <small>
                             {selectedCve.exploitAvailable
                               ? 'This vulnerability is marked as having an available exploit in the current dataset.'
-                              : 'The current prototype dataset does not mark an available exploit for this CVE.'}
+                              : 'The current dataset does not mark an available exploit for this CVE.'}
                           </small>
                         </div>
                       </div>
-
                     </section>
 
-                    <section className="at-cve-inspector-block">
+                    {/* Publication */}
 
+                    <section className="at-cve-inspector-block">
                       <div className="at-cve-block-title">
                         <span>
                           PUBLICATION
@@ -979,7 +1536,6 @@ export default function CvePage() {
                       </div>
 
                       <div className="at-cve-publication">
-
                         <div>
                           <span>
                             Published
@@ -987,100 +1543,126 @@ export default function CvePage() {
 
                           <code>
                             {formatDateTime(
-                              selectedCve.published
+                              selectedCve.published,
                             )}
                           </code>
                         </div>
-
                       </div>
-
                     </section>
-
                   </div>
                 )}
+
+              {/* ------------------------------------------------------------ */
+              /* Affected systems                                             */
+              /* ------------------------------------------------------------ */}
 
               {inspectorTab ===
                 'Affected Systems' && (
                   <div className="at-cve-empty-state">
-
-                    <Server
-                      size={23}
-                    />
+                    <Server size={23} />
 
                     <strong>
-                      No internally affected systems
+                      No affected systems
+                      recorded
                     </strong>
 
                     <span>
-                      No internally affected
-                      systems are available
-                      for this CVE in the
-                      current prototype.
+                      The current CVE data model does
+                      not include internal asset
+                      exposure for this vulnerability.
                     </span>
-
-                    <button
-                      type="button"
-                    >
-                      Run Network Scan
-                    </button>
-
                   </div>
                 )}
+
+              {/* ------------------------------------------------------------ */
+              /* References                                                    */
+              /* ------------------------------------------------------------ */}
 
               {inspectorTab ===
                 'References' && (
                   <div className="at-cve-empty-state">
-
                     <ExternalLink
                       size={22}
                     />
 
                     <strong>
-                      No references loaded
+                      External CVE record
                     </strong>
 
                     <span>
-                      Reference links are not
-                      included in the current
-                      CVE dataset.
+                      The current dataset does not
+                      include reference URLs. Open
+                      the authoritative NVD record
+                      using the action below.
                     </span>
 
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openNvdRecord(
+                          selectedCve.id,
+                        )
+                      }
+                    >
+                      Open NVD Record
+                      <ExternalLink
+                        size={12}
+                      />
+                    </button>
                   </div>
                 )}
-
             </div>
 
-            {/* Footer */}
+            {/* -------------------------------------------------------------- */
+            /* Footer                                                          */
+            /* -------------------------------------------------------------- */}
 
             <div className="at-cve-inspector-footer">
-
               <button
                 type="button"
                 className="at-btn at-btn-secondary"
+                onClick={() =>
+                  openNvdRecord(
+                    selectedCve.id,
+                  )
+                }
               >
                 View NVD Record
-                <ExternalLink
-                  size={12}
-                />
+                <ExternalLink size={12} />
               </button>
 
               <button
                 type="button"
                 className="at-btn at-btn-primary"
+                onClick={() => {
+                  setInspectorTab(
+                    'Overview',
+                  );
+
+                  /*
+                   * The current CVE page has no navigation prop and there is
+                   * no CVE-specific analysis route in its component contract.
+                   * Keeping this action local avoids inventing a broken route.
+                   */
+                  document
+                    .querySelector(
+                      '.at-cve-inspector',
+                    )
+                    ?.scrollTo({
+                      top: 0,
+                      behavior: 'smooth',
+                    });
+                }}
               >
                 <ArrowUpRight
                   size={12}
                 />
                 Open Analysis
               </button>
-
             </div>
-
           </aside>
         )}
-
       </div>
-
     </div>
   );
 }
