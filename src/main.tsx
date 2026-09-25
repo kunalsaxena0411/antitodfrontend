@@ -1,11 +1,16 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
+import { AuthProvider } from '../contexts/AuthContext';
+import AppRouter from './AppRouter';
 
-createRoot(document.getElementById('root')!).render(
+const root = document.getElementById('root');
+if (!root) throw new Error('ANTITODE root element is missing.');
+
+createRoot(root).render(
   <StrictMode>
-    <App />
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
   </StrictMode>,
-)
-
+);
