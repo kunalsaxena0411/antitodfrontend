@@ -86,49 +86,49 @@ const CyberNode = ({ data, selected, icon: DefaultIcon, colorClass, borderClass,
     return (
         <div className={`
             p-4 rounded-lg border-2 shadow-2xl transition-all duration-300 min-w-[220px] relative 
-            ${selected ? `${dynamicBorder} ring-4 ring-cyber-cyan/20 scale-[1.02]` : 'border-gray-800'} 
-            ${hasActiveThreat ? 'shadow-[0_0_20px_rgba(239,68,68,0.4)] border-red-600' : ''}
+            ${selected ? `${dynamicBorder} ring-4 ring-[#555] scale-[1.02]` : 'border-[#222328]'} 
+            ${hasActiveThreat ? 'shadow-[0_0_20px_rgba(234,74,74,0.4)] border-[#ea4a4a]' : ''}
             ${isCritical && !hasActiveThreat ? 'shadow-[0_0_15px_rgba(249,115,22,0.2)]' : ''}
-            bg-[#0a0f1e]/95 backdrop-blur-md cursor-grab active:cursor-grabbing
+            bg-[#111216] cursor-grab active:cursor-grabbing
         `}>
-            <Handle type="target" position={Position.Top} className="!bg-cyber-cyan !w-3 !h-3 !-top-1.5" />
+            <Handle type="target" position={Position.Top} className="!bg-[#ececec] !w-3 !h-3 !-top-1.5" />
             
             <div className="flex items-center gap-3">
-                <div className={`p-2.5 rounded-lg bg-opacity-20 ${hasActiveThreat ? 'bg-red-500 text-red-500' : dynamicColor}`}>
+                <div className={`p-2.5 rounded-lg bg-opacity-20 ${hasActiveThreat ? 'bg-[#3b2a2a] text-[#ea4a4a]' : dynamicColor}`}>
                     <Icon size={22} className={hasActiveThreat ? 'animate-pulse' : (dynamicColor.replace('bg-', 'text-'))} />
                 </div>
                 <div className="flex-1 overflow-hidden">
-                    <div className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-0.5 opacity-70">{typeLabel}</div>
+                    <div className="text-[9px] font-bold text-[#666] uppercase tracking-[0.2em] mb-0.5 opacity-70">{typeLabel}</div>
                     <input 
-                        className="bg-transparent text-sm font-bold text-white font-mono truncate w-full focus:outline-none border-b border-transparent focus:border-cyber-cyan/50"
+                        className="bg-transparent text-sm font-bold text-[#ececec] font-mono truncate w-full focus:outline-none border-b border-transparent focus:border-[#555]"
                         value={data.label}
                         onChange={(e) => { data.onLabelChange(data.id, e.target.value); }}
                     />
                 </div>
             </div>
             
-            <div className="mt-3 pt-3 border-t border-gray-800 flex flex-wrap gap-1.5">
-                <span className={`text-[8px] px-1.5 py-0.5 rounded font-bold uppercase border ${data.isExternal ? 'bg-red-900/30 text-red-400 border-red-500/30' : 'bg-green-900/30 text-green-400 border-green-500/30'}`}>
+            <div className="mt-3 pt-3 border-t border-[#222328] flex flex-wrap gap-1.5">
+                <span className={`text-[8px] px-1.5 py-0.5 rounded font-bold uppercase border ${data.isExternal ? 'bg-[#3b2a2a] text-[#ea4a4a] border-[#ea4a4a40]' : 'bg-[#1a2e20] text-[#4fae63] border-[#4fae6340]'}`}>
                     {data.isExternal ? 'External' : 'Internal'}
                 </span>
                 {data.sensitivity && data.sensitivity !== 'None' && (
-                    <span className="text-[8px] px-1.5 py-0.5 rounded font-bold uppercase bg-purple-900/30 text-purple-400 border border-purple-500/30">
+                    <span className="text-[8px] px-1.5 py-0.5 rounded font-bold uppercase bg-[#2a1b3d] text-[#c084fc] border border-[#c084fc40]">
                         {data.sensitivity}
                     </span>
                 )}
                 {data.vulnerabilities?.length > 0 && (
-                    <span className="text-[8px] px-1.5 py-0.5 rounded font-bold uppercase bg-orange-900/30 text-orange-400 border border-orange-500/30 flex items-center gap-1">
+                    <span className="text-[8px] px-1.5 py-0.5 rounded font-bold uppercase bg-[#3a2010] text-[#fb923c] border border-[#fb923c40] flex items-center gap-1">
                         <Flame size={8}/> {data.vulnerabilities.length} CVEs
                     </span>
                 )}
             </div>
 
             {selected && (
-                <div className="absolute -top-3 -right-3 p-1.5 bg-cyber-cyan rounded-full text-black shadow-lg animate-pulse">
+                <div className="absolute -top-3 -right-3 p-1.5 bg-[#ececec] rounded-full text-[#0a0a0a] shadow-lg animate-pulse">
                     <CheckIcon size={12} />
                 </div>
             )}
-            <Handle type="source" position={Position.Bottom} className="!bg-cyber-cyan !w-3 !h-3 !-bottom-1.5" />
+            <Handle type="source" position={Position.Bottom} className="!bg-[#ececec] !w-3 !h-3 !-bottom-1.5" />
         </div>
     );
 };
@@ -140,32 +140,32 @@ const NetworkNode = (props: any) => <CyberNode {...props} icon={Share2} colorCla
 const TacticNode = (props: any) => <CyberNode {...props} icon={Radar} colorClass="bg-purple-500" borderClass="border-purple-500" typeLabel="Tactic" />;
 
 const RiskNode = (props: any) => (
-    <div className={`p-3 rounded-lg border-2 shadow-2xl transition-all duration-300 min-w-[160px] relative ${props.selected ? 'border-orange-500 ring-4 ring-orange-500/20' : 'border-red-900'} bg-[#1a0505]/90 backdrop-blur-md cursor-grab active:cursor-grabbing`}>
-        <Handle type="target" position={Position.Top} className="!bg-red-500 !w-2 !h-2 !-top-1" />
+    <div className={`p-3 rounded-lg border-2 shadow-2xl transition-all duration-300 min-w-[160px] relative ${props.selected ? 'border-[#ea4a4a] ring-4 ring-[#ea4a4a40]' : 'border-[#3b2a2a]'} bg-[#111216] cursor-grab active:cursor-grabbing`}>
+        <Handle type="target" position={Position.Top} className="!bg-[#ea4a4a] !w-2 !h-2 !-top-1" />
         <div className="flex items-center gap-2">
-            <div className="p-2 rounded bg-red-500/20 text-red-500">
+            <div className="p-2 rounded bg-[#3b2a2a] text-[#ea4a4a]">
                 <Bomb size={18} />
             </div>
             <div className="flex-1 overflow-hidden">
-                <div className="text-[8px] font-bold text-red-600 uppercase tracking-widest mb-0.5">Vulnerability</div>
+                <div className="text-[8px] font-bold text-[#ea4a4a] uppercase tracking-widest mb-0.5">Vulnerability</div>
                 <input 
-                    className="bg-transparent text-xs font-bold text-red-100 font-mono truncate w-full focus:outline-none border-b border-transparent focus:border-red-500/50"
+                    className="bg-transparent text-xs font-bold text-[#fbcfe8] font-mono truncate w-full focus:outline-none border-b border-transparent focus:border-[#ea4a4a]"
                     value={props.data.label}
                     onChange={(e) => { props.data.onLabelChange(props.id, e.target.value); }}
                 />
             </div>
         </div>
-        <Handle type="source" position={Position.Bottom} className="!bg-red-500 !w-2 !h-2 !-bottom-1" />
+        <Handle type="source" position={Position.Bottom} className="!bg-[#ea4a4a] !w-2 !h-2 !-bottom-1" />
     </div>
 );
 
 const BoundaryNode = (props: any) => (
-    <div className={`p-8 rounded-xl border-2 border-dashed transition-all duration-300 min-w-[400px] min-h-[250px] relative ${props.selected ? 'border-red-500 bg-red-900/10' : 'border-gray-800 bg-gray-900/10'} cursor-grab active:cursor-grabbing`}>
-        <div className="absolute -top-3 left-4 px-3 py-1 bg-[#020617] border border-gray-700 rounded text-[10px] font-bold text-red-500 uppercase flex items-center gap-2 z-10 shadow-lg">
+    <div className={`p-8 rounded-xl border-2 border-dashed transition-all duration-300 min-w-[400px] min-h-[250px] relative ${props.selected ? 'border-[#ea4a4a] bg-[#3b2a2a20]' : 'border-[#222328] bg-[#12131650]'} cursor-grab active:cursor-grabbing`}>
+        <div className="absolute -top-3 left-4 px-3 py-1 bg-[#0a0a0a] border border-[#222328] rounded text-[10px] font-bold text-[#ea4a4a] uppercase flex items-center gap-2 z-10 shadow-lg">
             <Shield size={12}/> Trust Boundary
         </div>
         <input 
-            className="absolute top-4 left-4 bg-transparent text-xs font-bold text-gray-400 uppercase tracking-widest focus:outline-none z-10 border-b border-transparent focus:border-gray-700"
+            className="absolute top-4 left-4 bg-transparent text-xs font-bold text-[#666] uppercase tracking-widest focus:outline-none z-10 border-b border-transparent focus:border-[#555]"
             value={props.data.label}
             onChange={(e) => { props.data.onLabelChange(props.id, e.target.value); }}
         />
@@ -480,29 +480,29 @@ export const ThreatCanvasView: React.FC = () => {
     }, [paletteSearch, customStencils]);
 
     return (
-        <div className="h-full min-h-[calc(100vh-140px)] w-full flex bg-[#020617] text-gray-300 font-sans overflow-hidden">
+        <div className="h-full min-h-[calc(100vh-140px)] w-full flex bg-[#0a0a0a] text-[#ededed] font-sans overflow-hidden">
             {/* Sidebar: Palette */}
-            <div className="w-80 bg-[#050b1a] border-r border-gray-800 flex flex-col shrink-0 relative z-20 shadow-2xl">
-                <div className="p-5 border-b border-gray-800 bg-gray-900/20">
+            <div className="w-64 bg-[#0d0e10] border-r border-[#ffffff10] flex flex-col shrink-0 relative z-20">
+                <div className="p-5 border-b border-[#222328] bg-[#111216]">
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xs font-bold text-cyber-cyan uppercase tracking-[0.2em] flex items-center gap-2">
+                        <h2 className="text-xs font-bold text-[#888] uppercase tracking-[0.2em] flex items-center gap-2">
                             <Layers size={14}/> STENCILS
                         </h2>
                         <div className="flex gap-2">
-                            <button onClick={() => setShowStencilCreator(true)} className="p-1.5 hover:bg-white/10 rounded text-gray-400 hover:text-white" title="Custom Stencil"><Plus size={16}/></button>
-                            <button onClick={() => setShowModelsList(!showModelsList)} className={`p-1.5 rounded ${showModelsList ? 'bg-indigo-600 text-white' : 'hover:bg-white/10 text-gray-400'}`} title="Library"><List size={16}/></button>
+                            <button onClick={() => setShowStencilCreator(true)} className="p-1.5 hover:bg-[#ffffff10] rounded text-[#888] hover:text-[#fff]" title="Custom Stencil"><Plus size={16}/></button>
+                            <button onClick={() => setShowModelsList(!showModelsList)} className={`p-1.5 rounded ${showModelsList ? 'bg-[#ececec] text-[#0a0a0a]' : 'hover:bg-[#ffffff10] text-[#888]'}`} title="Library"><List size={16}/></button>
                         </div>
                     </div>
                     <div className="relative group">
-                        <Search className="absolute left-3 top-2.5 text-gray-500" size={16}/>
-                        <input type="text" className="w-full bg-black border border-gray-800 rounded-lg py-2 pl-10 pr-4 text-sm focus:border-cyber-cyan outline-none font-mono" placeholder="Search components..." value={paletteSearch} onChange={(e) => setPaletteSearch(e.target.value)}/>
+                        <Search className="absolute left-3 top-2.5 text-[#555]" size={16}/>
+                        <input type="text" className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg py-2 pl-10 pr-4 text-sm focus:border-[#555] outline-none font-mono text-[#ececec]" placeholder="Search components..." value={paletteSearch} onChange={(e) => setPaletteSearch(e.target.value)}/>
                     </div>
                 </div>
 
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-8 animate-fade-in">
                     {filteredPalette.map(group => (
                         <div key={group.title}>
-                            <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-3 flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-gray-600"></div> {group.title}</h3>
+                            <h3 className="text-[10px] font-bold text-[#666] uppercase tracking-widest mb-3 flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#666]"></div> {group.title}</h3>
                             <div className="grid grid-cols-1 gap-2">
                                 {group.items.map(item => (
                                     <div key={item.id} draggable onDragStart={(e) => { 
@@ -513,11 +513,11 @@ export const ThreatCanvasView: React.FC = () => {
                                         e.dataTransfer.setData('application/reactflow/isExternal', String(item.isExternal || false)); 
                                         e.dataTransfer.setData('application/reactflow/sensitivity', item.sensitivity || 'None');
                                         e.dataTransfer.setData('application/reactflow/criticality', item.criticality || 'MEDIUM');
-                                    }} className="p-3 bg-gray-900/40 border border-gray-800 rounded-lg cursor-grab hover:border-cyber-cyan/50 hover:bg-gray-800 transition-all group text-left"
+                                    }} className="p-3 bg-[#121316] border border-[#222328] rounded-lg cursor-grab hover:border-[#555] hover:bg-[#1a1c21] transition-all group text-left"
                                     >
                                         <div className="flex items-center gap-3">
                                             <div className={`p-2 rounded bg-opacity-10 ${item.color || 'bg-blue-500'}`}>{React.createElement(STENCIL_ICONS[item.iconName] || Box, { size: 16, className: (item.color || 'bg-blue-500').replace('bg-', 'text-') })}</div>
-                                            <div className="text-[11px] font-bold text-gray-400 group-hover:text-white transition-colors">{item.label}</div>
+                                            <div className="text-[11px] font-bold text-[#888] group-hover:text-[#ececec] transition-colors">{item.label}</div>
                                         </div>
                                     </div>
                                 ))}
@@ -526,8 +526,8 @@ export const ThreatCanvasView: React.FC = () => {
                     ))}
                 </div>
                 
-                <div className="mt-auto p-4 border-t border-gray-800 bg-gray-900/20 space-y-3">
-                    <button onClick={handleRunAnalysis} disabled={isAnalyzing || nodes.length === 0} className="w-full py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-xl active:scale-95 disabled:opacity-50">
+                <div className="mt-auto p-4 border-t border-[#222328] bg-[#0a0b0d] space-y-3">
+                    <button onClick={handleRunAnalysis} disabled={isAnalyzing || nodes.length === 0} className="w-full py-4 bg-[#ececec] hover:bg-[#fff] text-[#0a0a0a] rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-xl active:scale-95 disabled:opacity-50">
                         {isAnalyzing ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} fill="currentColor"/>}
                         RUN THREAT AUDIT
                     </button>
@@ -536,15 +536,15 @@ export const ThreatCanvasView: React.FC = () => {
 
             {/* Main Area */}
             <div className="flex-1 flex flex-col min-w-0 relative">
-                <div className="bg-[#0a0f1e] border-b border-gray-800 flex items-center px-4 gap-1 shrink-0 h-12">
-                    <div className="text-xs font-bold text-gray-500 px-4">Workspace: {workspaces.find(w => w.id === activeWorkspaceId)?.name}</div>
+                <div className="bg-[#111216] border-b border-[#222328] flex items-center px-4 gap-1 shrink-0 h-12">
+                    <div className="text-xs font-bold text-[#888] px-4">Workspace: {workspaces.find(w => w.id === activeWorkspaceId)?.name}</div>
                     <div className="flex gap-2 ml-auto pr-4">
-                        <button onClick={handleClearCanvas} className="p-1.5 hover:bg-red-900/20 rounded text-red-500" title="Clear Canvas"><RotateCcw size={16}/></button>
-                        <button onClick={handleSaveToDB} className="p-1.5 hover:bg-white/10 rounded text-cyber-cyan" title="Save Model"><Save size={16}/></button>
+                        <button onClick={handleClearCanvas} className="p-1.5 hover:bg-[#ffffff10] rounded text-[#888] hover:text-[#ea4a4a]" title="Clear Canvas"><RotateCcw size={16}/></button>
+                        <button onClick={handleSaveToDB} className="p-1.5 hover:bg-[#ffffff10] rounded text-[#888] hover:text-[#fff]" title="Save Model"><Save size={16}/></button>
                     </div>
                 </div>
 
-                <div className="flex-1 relative bg-[#020617] overflow-hidden">
+                <div className="flex-1 relative bg-[#0a0a0a] overflow-hidden">
                     <ReactFlow 
                         nodes={nodes} 
                         edges={edges} 
@@ -559,18 +559,18 @@ export const ThreatCanvasView: React.FC = () => {
                         onEdgeClick={(_, e) => { setSelectedEdge(e); setSelectedNode(null); }} 
                         onPaneClick={() => { setSelectedNode(null); setSelectedEdge(null); }} 
                         fitView 
-                        className="bg-[#020617]"
+                        className="bg-[#0a0a0a]"
                     >
-                        <Background color="#1e293b" gap={20} size={1} />
-                        <Controls />
+                        <Background color="#ffffff" gap={24} size={1} style={{ opacity: 0.05 }} />
+                        <Controls className="!bg-[#111216] !border !border-[#222328] !fill-[#999] shadow-md [&>button]:!border-b-[#222328] hover:[&>button]:!bg-[#1a1b20]" />
                     </ReactFlow>
                 </div>
             </div>
 
             {/* Right Sidebar: Intel & Properties */}
-            <div className="w-96 bg-[#050b1a] border-l border-gray-800 flex flex-col shrink-0 relative z-20">
-                <div className="p-5 border-b border-gray-800 bg-gray-900/20">
-                    <h2 className="text-xs font-bold text-cyber-cyan uppercase tracking-[0.2em] flex items-center gap-2">
+            <div className="w-80 bg-[#0d0e10] border-l border-[#ffffff10] flex flex-col shrink-0 relative z-20">
+                <div className="p-5 border-b border-[#222328] bg-[#111216]">
+                    <h2 className="text-xs font-bold text-[#888] uppercase tracking-[0.2em] flex items-center gap-2">
                         <Gauge size={14}/> {selectedNode ? 'ASSET INTEL' : selectedEdge ? 'FLOW LOGIC' : 'THREATS'}
                     </h2>
                 </div>
@@ -578,56 +578,56 @@ export const ThreatCanvasView: React.FC = () => {
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-5">
                     {selectedNode ? (
                         <div className="space-y-6 animate-fade-in">
-                            <div className="bg-gray-900/50 p-4 rounded border border-gray-800 space-y-4">
+                            <div className="bg-[#121316] p-4 rounded border border-[#222328] space-y-4">
                                 <div>
-                                    <div className="text-[10px] text-gray-500 uppercase font-bold mb-1">Asset Identity</div>
-                                    <input className="w-full bg-black border border-gray-700 rounded p-2 text-sm text-white focus:border-cyber-cyan outline-none font-mono" value={selectedNode.data.label} onChange={(e) => onLabelChange(selectedNode.id, e.target.value)} />
+                                    <div className="text-[10px] text-[#666] uppercase font-bold mb-1">Asset Identity</div>
+                                    <input className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-sm text-[#ececec] focus:border-[#555] outline-none font-mono" value={selectedNode.data.label} onChange={(e) => onLabelChange(selectedNode.id, e.target.value)} />
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="text-[9px] text-gray-500 uppercase font-bold mb-1 block">Criticality</label>
-                                        <select className="w-full bg-black border border-gray-700 rounded p-2 text-[10px] text-white outline-none" value={selectedNode.data.criticality} onChange={(e) => onPropertyChange(selectedNode.id, 'criticality', e.target.value)}>{CRITICALITY_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}</select>
+                                        <label className="text-[9px] text-[#666] uppercase font-bold mb-1 block">Criticality</label>
+                                        <select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none focus:border-[#555]" value={selectedNode.data.criticality} onChange={(e) => onPropertyChange(selectedNode.id, 'criticality', e.target.value)}>{CRITICALITY_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}</select>
                                     </div>
                                     <div>
-                                        <label className="text-[9px] text-gray-500 uppercase font-bold mb-1 block">Sensitivity</label>
-                                        <select className="w-full bg-black border border-gray-700 rounded p-2 text-[10px] text-white outline-none" value={selectedNode.data.sensitivity} onChange={(e) => onPropertyChange(selectedNode.id, 'sensitivity', e.target.value)}>{SENSITIVITY_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}</select>
+                                        <label className="text-[9px] text-[#666] uppercase font-bold mb-1 block">Sensitivity</label>
+                                        <select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none focus:border-[#555]" value={selectedNode.data.sensitivity} onChange={(e) => onPropertyChange(selectedNode.id, 'sensitivity', e.target.value)}>{SENSITIVITY_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}</select>
                                     </div>
                                 </div>
-                                <button onClick={() => onPropertyChange(selectedNode.id, 'isExternal', !selectedNode.data.isExternal)} className={`w-full py-2 rounded text-[10px] font-bold border transition-all ${selectedNode.data.isExternal ? 'bg-red-900/20 border-red-500/50 text-red-400' : 'bg-green-900/30 text-green-400 border border-green-500/30'}`}>{selectedNode.data.isExternal ? 'PUBLIC FACING' : 'INTERNAL ASSET'}</button>
+                                <button onClick={() => onPropertyChange(selectedNode.id, 'isExternal', !selectedNode.data.isExternal)} className={`w-full py-2 rounded text-[10px] font-bold border transition-all ${selectedNode.data.isExternal ? 'bg-[#3b2a2a] border-[#ea4a4a40] text-[#ea4a4a]' : 'bg-[#1a2e20] text-[#4fae63] border-[#4fae6340]'}`}>{selectedNode.data.isExternal ? 'PUBLIC FACING' : 'INTERNAL ASSET'}</button>
                             </div>
 
                             {/* Threat Intelligence Mapping */}
-                            <div className="bg-red-900/5 border border-red-500/20 rounded-lg p-4 space-y-4">
-                                <h3 className="text-[10px] font-bold text-red-400 uppercase flex items-center gap-2"><Siren size={12}/> Intel Mapping</h3>
+                            <div className="bg-[#121316] border border-[#ea4a4a40] rounded-lg p-4 space-y-4">
+                                <h3 className="text-[10px] font-bold text-[#ea4a4a] uppercase flex items-center gap-2"><Siren size={12}/> Intel Mapping</h3>
                                 
                                 <div className="space-y-3">
                                     <div className="flex gap-2">
-                                        <input type="text" className="flex-1 bg-black border border-gray-700 rounded p-2 text-[10px] text-white font-mono" placeholder="CVE-2024-..." value={newCve} onChange={e => setNewCve(e.target.value)}/>
-                                        <button onClick={() => { if(newCve) { onPropertyChange(selectedNode.id, 'vulnerabilities', [...selectedNode.data.vulnerabilities, newCve]); setNewCve(''); } }} className="px-3 bg-gray-800 rounded border border-gray-700 text-xs hover:bg-gray-700">+</button>
+                                        <input type="text" className="flex-1 bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] font-mono focus:border-[#555] outline-none" placeholder="CVE-2024-..." value={newCve} onChange={e => setNewCve(e.target.value)}/>
+                                        <button onClick={() => { if(newCve) { onPropertyChange(selectedNode.id, 'vulnerabilities', [...selectedNode.data.vulnerabilities, newCve]); setNewCve(''); } }} className="px-3 bg-[#111216] rounded border border-[#222328] text-xs hover:bg-[#1a1c21]">+</button>
                                     </div>
                                     <div className="flex flex-wrap gap-1">
                                         {selectedNode.data.vulnerabilities?.map((v: string) => (
-                                            <span key={v} className="px-2 py-0.5 bg-orange-900/30 text-orange-400 border border-orange-500/30 rounded text-[9px] font-mono flex items-center gap-1">{v} <X size={8} className="cursor-pointer" onClick={() => onPropertyChange(selectedNode.id, 'vulnerabilities', selectedNode.data.vulnerabilities.filter((item:string)=>item!==v))}/></span>
+                                            <span key={v} className="px-2 py-0.5 bg-[#3a2010] text-[#fb923c] border border-[#fb923c40] rounded text-[9px] font-mono flex items-center gap-1">{v} <X size={8} className="cursor-pointer" onClick={() => onPropertyChange(selectedNode.id, 'vulnerabilities', selectedNode.data.vulnerabilities.filter((item:string)=>item!==v))}/></span>
                                         ))}
                                     </div>
 
                                     <div className="flex gap-2">
-                                        <input type="text" className="flex-1 bg-black border border-gray-700 rounded p-2 text-[10px] text-white font-mono" placeholder="MITRE T1059..." value={newMitre} onChange={e => setNewMitre(e.target.value)}/>
-                                        <button onClick={() => { if(newMitre) { onPropertyChange(selectedNode.id, 'mitreIds', [...selectedNode.data.mitreIds, newMitre]); setNewMitre(''); } }} className="px-3 bg-gray-800 rounded border border-gray-700 text-xs hover:bg-gray-700">+</button>
+                                        <input type="text" className="flex-1 bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] font-mono focus:border-[#555] outline-none" placeholder="MITRE T1059..." value={newMitre} onChange={e => setNewMitre(e.target.value)}/>
+                                        <button onClick={() => { if(newMitre) { onPropertyChange(selectedNode.id, 'mitreIds', [...selectedNode.data.mitreIds, newMitre]); setNewMitre(''); } }} className="px-3 bg-[#111216] rounded border border-[#222328] text-xs hover:bg-[#1a1c21]">+</button>
                                     </div>
                                     <div className="flex flex-wrap gap-1">
                                         {selectedNode.data.mitreIds?.map((tid: string) => (
-                                            <span key={tid} className="px-2 py-0.5 bg-blue-900/30 text-blue-400 border border-blue-500/30 rounded text-[9px] font-mono flex items-center gap-1">{tid} <X size={8} className="cursor-pointer" onClick={() => onPropertyChange(selectedNode.id, 'mitreIds', selectedNode.data.mitreIds.filter((item:string)=>item!==tid))}/></span>
+                                            <span key={tid} className="px-2 py-0.5 bg-[#1e3a8a40] text-[#60a5fa] border border-[#60a5fa40] rounded text-[9px] font-mono flex items-center gap-1">{tid} <X size={8} className="cursor-pointer" onClick={() => onPropertyChange(selectedNode.id, 'mitreIds', selectedNode.data.mitreIds.filter((item:string)=>item!==tid))}/></span>
                                         ))}
                                     </div>
 
                                     <div className="flex gap-2">
-                                        <input type="text" className="flex-1 bg-black border border-gray-700 rounded p-2 text-[10px] text-white font-mono" placeholder="IOC (IP/Domain)..." value={newIoc} onChange={e => setNewIoc(e.target.value)}/>
-                                        <button onClick={() => { if(newIoc) { onPropertyChange(selectedNode.id, 'iocs', [...selectedNode.data.iocs, newIoc]); setNewIoc(''); } }} className="px-3 bg-gray-800 rounded border border-gray-700 text-xs hover:bg-gray-700">+</button>
+                                        <input type="text" className="flex-1 bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] font-mono focus:border-[#555] outline-none" placeholder="IOC (IP/Domain)..." value={newIoc} onChange={e => setNewIoc(e.target.value)}/>
+                                        <button onClick={() => { if(newIoc) { onPropertyChange(selectedNode.id, 'iocs', [...selectedNode.data.iocs, newIoc]); setNewIoc(''); } }} className="px-3 bg-[#111216] rounded border border-[#222328] text-xs hover:bg-[#1a1c21]">+</button>
                                     </div>
                                     <div className="flex flex-wrap gap-1">
                                         {selectedNode.data.iocs?.map((ioc: string) => (
-                                            <span key={ioc} className="px-2 py-0.5 bg-red-900/50 text-white border border-red-500 rounded text-[9px] font-mono flex items-center gap-1">{ioc} <X size={8} className="cursor-pointer" onClick={() => onPropertyChange(selectedNode.id, 'iocs', selectedNode.data.iocs.filter((item:string)=>item!==ioc))}/></span>
+                                            <span key={ioc} className="px-2 py-0.5 bg-[#3b2a2a] text-[#ea4a4a] border border-[#ea4a4a40] rounded text-[9px] font-mono flex items-center gap-1">{ioc} <X size={8} className="cursor-pointer" onClick={() => onPropertyChange(selectedNode.id, 'iocs', selectedNode.data.iocs.filter((item:string)=>item!==ioc))}/></span>
                                         ))}
                                     </div>
                                 </div>
@@ -635,58 +635,58 @@ export const ThreatCanvasView: React.FC = () => {
                         </div>
                     ) : selectedEdge ? (
                         <div className="space-y-6 animate-fade-in">
-                            <div className="bg-gray-900/50 p-4 rounded border border-gray-800 space-y-4">
+                            <div className="bg-[#121316] p-4 rounded border border-[#222328] space-y-4">
                                 <div>
-                                    <div className="text-[10px] text-gray-500 uppercase font-bold mb-1">Flow Name</div>
-                                    <input className="w-full bg-black border border-gray-700 rounded p-2 text-sm text-white focus:border-cyber-cyan outline-none" value={selectedEdge.label as string} onChange={e => onEdgePropertyChange(selectedEdge.id, 'label', e.target.value)} />
+                                    <div className="text-[10px] text-[#666] uppercase font-bold mb-1">Flow Name</div>
+                                    <input className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-sm text-[#ececec] focus:border-[#555] outline-none font-mono" value={selectedEdge.label as string} onChange={e => onEdgePropertyChange(selectedEdge.id, 'label', e.target.value)} />
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="text-[9px] text-gray-500 uppercase font-bold mb-1 block">Protocol</label>
-                                        <select className="w-full bg-black border border-gray-700 rounded p-2 text-[10px] text-white outline-none" value={selectedEdge.data.protocol} onChange={e => onEdgePropertyChange(selectedEdge.id, 'protocol', e.target.value)}>{PROTOCOLS.map(p => <option key={p} value={p}>{p}</option>)}</select>
+                                        <label className="text-[9px] text-[#666] uppercase font-bold mb-1 block">Protocol</label>
+                                        <select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none focus:border-[#555]" value={selectedEdge.data.protocol} onChange={e => onEdgePropertyChange(selectedEdge.id, 'protocol', e.target.value)}>{PROTOCOLS.map(p => <option key={p} value={p}>{p}</option>)}</select>
                                     </div>
                                     <div>
-                                        <label className="text-[9px] text-gray-500 uppercase font-bold mb-1 block">Port(s)</label>
-                                        <input type="text" className="w-full bg-black border border-gray-700 rounded p-2 text-[10px] text-white font-mono" value={selectedEdge.data.portRange} onChange={e => onEdgePropertyChange(selectedEdge.id, 'portRange', e.target.value)} placeholder="443, 80-8080"/>
+                                        <label className="text-[9px] text-[#666] uppercase font-bold mb-1 block">Port(s)</label>
+                                        <input type="text" className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none focus:border-[#555] font-mono" value={selectedEdge.data.portRange} onChange={e => onEdgePropertyChange(selectedEdge.id, 'portRange', e.target.value)} placeholder="443, 80-8080"/>
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="text-[9px] text-gray-500 uppercase font-bold mb-1 block">Authentication</label>
-                                    <select className="w-full bg-black border border-gray-700 rounded p-2 text-[10px] text-white outline-none" value={selectedEdge.data.authentication} onChange={e => onEdgePropertyChange(selectedEdge.id, 'authentication', e.target.value)}>{AUTH_METHODS.map(a => <option key={a} value={a}>{a}</option>)}</select>
+                                    <label className="text-[9px] text-[#666] uppercase font-bold mb-1 block">Authentication</label>
+                                    <select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none focus:border-[#555]" value={selectedEdge.data.authentication} onChange={e => onEdgePropertyChange(selectedEdge.id, 'authentication', e.target.value)}>{AUTH_METHODS.map(a => <option key={a} value={a}>{a}</option>)}</select>
                                 </div>
-                                <button onClick={() => onEdgePropertyChange(selectedEdge.id, 'isPermissive', !selectedEdge.data.isPermissive)} className={`w-full py-2 rounded text-[10px] font-bold border transition-all ${selectedEdge.data.isPermissive ? 'bg-orange-900/20 border-orange-500/50 text-orange-400' : 'bg-green-900/30 text-green-400 border border-green-500/30'}`}>{selectedEdge.data.isPermissive ? 'PERMISSIVE FLOW' : 'HARDENED FLOW'}</button>
+                                <button onClick={() => onEdgePropertyChange(selectedEdge.id, 'isPermissive', !selectedEdge.data.isPermissive)} className={`w-full py-2 rounded text-[10px] font-bold border transition-all ${selectedEdge.data.isPermissive ? 'bg-[#3b2a2a] border-[#ea4a4a40] text-[#ea4a4a]' : 'bg-[#1a2e20] text-[#4fae63] border-[#4fae6340]'}`}>{selectedEdge.data.isPermissive ? 'PERMISSIVE FLOW' : 'HARDENED FLOW'}</button>
                             </div>
                         </div>
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-center p-8 opacity-20"><Activity size={64} className="mb-6 text-gray-600"/><p className="text-xs font-mono uppercase tracking-[0.4em]">Engine Standby</p></div>
+                        <div className="h-full flex flex-col items-center justify-center text-center p-8 opacity-20"><Activity size={64} className="mb-6 text-[#666]"/><p className="text-xs font-mono uppercase tracking-[0.4em] text-[#666]">Engine Standby</p></div>
                     )}
                 </div>
             </div>
 
             {/* Modal: Custom Stencil Creator */}
             {showStencilCreator && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in" onClick={() => setShowStencilCreator(false)}>
-                    <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
-                        <div className="p-4 border-b border-gray-800 flex justify-between items-center bg-black/40">
-                            <h3 className="text-lg font-bold text-white flex items-center gap-2 uppercase tracking-tight"><Palette size={20} className="text-cyber-cyan"/> CREATE CUSTOM STENCIL</h3>
-                            <button onClick={() => setShowStencilCreator(false)} className="text-gray-500 hover:text-white"><X size={20}/></button>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in" onClick={() => setShowStencilCreator(false)}>
+                    <div className="bg-[#111216] border border-[#222328] rounded-xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+                        <div className="p-4 border-b border-[#222328] flex justify-between items-center bg-[#0a0b0d]">
+                            <h3 className="text-lg font-bold text-[#ececec] flex items-center gap-2 uppercase tracking-tight"><Palette size={20} className="text-[#888]"/> CREATE CUSTOM STENCIL</h3>
+                            <button onClick={() => setShowStencilCreator(false)} className="text-[#666] hover:text-[#fff]"><X size={20}/></button>
                         </div>
                         <div className="p-6 space-y-6 overflow-y-auto custom-scrollbar">
                             <div className="space-y-4">
-                                <div><label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Name</label><input type="text" className="w-full bg-black border border-gray-700 rounded p-2 text-sm text-white font-mono" placeholder="Component Label" value={newStencil.label} onChange={e => setNewStencil({...newStencil, label: e.target.value})}/></div>
+                                <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Name</label><input type="text" className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-sm text-[#ececec] focus:border-[#555] outline-none font-mono" placeholder="Component Label" value={newStencil.label} onChange={e => setNewStencil({...newStencil, label: e.target.value})}/></div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div><label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Type</label><select className="w-full bg-black border border-gray-700 rounded p-2 text-xs text-white" value={newStencil.type} onChange={e => setNewStencil({...newStencil, type: e.target.value as any})}><option value="compute">Process</option><option value="storage">Storage</option><option value="network">Interface</option><option value="actor">Actor</option></select></div>
-                                    <div><label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Icon</label><select className="w-full bg-black border border-gray-700 rounded p-2 text-xs text-white" value={newStencil.iconName} onChange={e => setNewStencil({...newStencil, iconName: e.target.value})}>{Object.keys(STENCIL_ICONS).map(icon => <option key={icon} value={icon}>{icon}</option>)}</select></div>
+                                    <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Type</label><select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] focus:border-[#555] outline-none" value={newStencil.type} onChange={e => setNewStencil({...newStencil, type: e.target.value as any})}><option value="compute">Process</option><option value="storage">Storage</option><option value="network">Interface</option><option value="actor">Actor</option></select></div>
+                                    <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Icon</label><select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] focus:border-[#555] outline-none" value={newStencil.iconName} onChange={e => setNewStencil({...newStencil, iconName: e.target.value})}>{Object.keys(STENCIL_ICONS).map(icon => <option key={icon} value={icon}>{icon}</option>)}</select></div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div><label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Default Criticality</label><select className="w-full bg-black border border-gray-700 rounded p-2 text-xs text-white" value={newStencil.criticality} onChange={e => setNewStencil({...newStencil, criticality: e.target.value})}>{CRITICALITY_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}</select></div>
-                                    <div><label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Default Color</label><select className="w-full bg-black border border-gray-700 rounded p-2 text-xs text-white" value={newStencil.color} onChange={e => setNewStencil({...newStencil, color: e.target.value})}><option value="bg-blue-500">Blue</option><option value="bg-red-500">Red</option><option value="bg-green-500">Green</option><option value="bg-purple-500">Purple</option><option value="bg-pink-500">Pink</option><option value="bg-orange-500">Orange</option></select></div>
+                                    <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Default Criticality</label><select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] focus:border-[#555] outline-none" value={newStencil.criticality} onChange={e => setNewStencil({...newStencil, criticality: e.target.value})}>{CRITICALITY_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}</select></div>
+                                    <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Default Color</label><select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] focus:border-[#555] outline-none" value={newStencil.color} onChange={e => setNewStencil({...newStencil, color: e.target.value})}><option value="bg-blue-500">Blue</option><option value="bg-red-500">Red</option><option value="bg-green-500">Green</option><option value="bg-purple-500">Purple</option><option value="bg-pink-500">Pink</option><option value="bg-orange-500">Orange</option></select></div>
                                 </div>
                             </div>
                         </div>
-                        <div className="p-4 bg-black/40 border-t border-gray-800 flex justify-end gap-3 shrink-0">
-                            <button onClick={() => setShowStencilCreator(false)} className="px-4 py-2 text-xs font-bold text-gray-500 hover:text-white uppercase">Cancel</button>
-                            <button onClick={handleCreateStencil} disabled={!newStencil.label} className="px-6 py-2 bg-cyber-cyan text-black font-bold rounded text-xs flex items-center gap-2 disabled:opacity-50">SAVE STENCIL</button>
+                        <div className="p-4 bg-[#0a0b0d] border-t border-[#222328] flex justify-end gap-3 shrink-0">
+                            <button onClick={() => setShowStencilCreator(false)} className="px-4 py-2 text-xs font-bold text-[#888] hover:text-[#fff] uppercase transition-colors">Cancel</button>
+                            <button onClick={handleCreateStencil} disabled={!newStencil.label} className="px-8 py-2.5 bg-[#ececec] text-[#0a0a0a] hover:bg-[#fff] font-bold rounded-lg text-xs flex items-center gap-2 disabled:opacity-50 transition-all">SAVE STENCIL</button>
                         </div>
                     </div>
                 </div>

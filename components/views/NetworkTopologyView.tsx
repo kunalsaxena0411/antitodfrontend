@@ -86,36 +86,34 @@ const NetworkNode = ({
 
     return (
         <div
-            className={`
-                at-topology-node
-                ${selected ? 'is-selected' : ''}
-                ${isCompromised ? 'is-compromised' : ''}
-            `}
+            className={`flex flex-col min-w-[160px] p-3 bg-[#111216] border rounded-lg shadow-sm text-[#ececec] transition-colors ${
+                selected ? 'border-[#555] bg-[#16181d]' : 'border-[#222328]'
+            } ${isCompromised ? 'border-[#ea4a4a] shadow-[0_0_15px_rgba(234,74,74,0.15)]' : ''}`}
         >
             <Handle
                 type="target"
                 position={Position.Left}
-                className="!w-1.5 !h-1.5 !bg-[#69727d] !border-0"
+                className="!w-2 !h-2 !bg-[#444] !border-none"
             />
 
             <Handle
                 type="target"
                 position={Position.Top}
-                className="!w-1.5 !h-1.5 !bg-[#69727d] !border-0"
+                className="!w-2 !h-2 !bg-[#444] !border-none"
             />
 
-            <div className="flex items-center gap-8">
-                <span className="at-topology-node-icon">
-                    <Icon size={15} />
+            <div className="flex items-center gap-3 mb-2">
+                <span className={`p-1.5 rounded-md bg-[#1d1e22] text-[#888] ${isCompromised ? 'bg-[#ea4a4a] text-white' : ''}`}>
+                    <Icon size={14} />
                 </span>
 
                 <div className="min-w-0 flex-1">
-                    <div className="at-topology-node-type">
+                    <div className="text-[9px] font-bold text-[#666] uppercase tracking-wider truncate">
                         {typeLabel}
                     </div>
 
                     <div
-                        className="at-topology-node-name"
+                        className="text-xs font-bold text-[#ececec] truncate"
                         title={data.label}
                     >
                         {data.label}
@@ -123,7 +121,7 @@ const NetworkNode = ({
                 </div>
             </div>
 
-            <div className="at-topology-node-meta">
+            <div className="text-[10px] text-[#7a7a7a] truncate mt-1">
                 {data.ipAddress ||
                     data.interface ||
                     (data.isInternetFacing
@@ -134,17 +132,17 @@ const NetworkNode = ({
             <Handle
                 type="source"
                 position={Position.Right}
-                className="!w-1.5 !h-1.5 !bg-[#69727d] !border-0"
+                className="!w-2 !h-2 !bg-[#444] !border-none"
             />
 
             <Handle
                 type="source"
                 position={Position.Bottom}
-                className="!w-1.5 !h-1.5 !bg-[#69727d] !border-0"
+                className="!w-2 !h-2 !bg-[#444] !border-none"
             />
 
             {isReachable && (
-                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-400" />
+                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#e5a040]" />
             )}
         </div>
     );
@@ -762,31 +760,31 @@ export const NetworkTopologyView: React.FC = () => {
     }, [paletteSearch, customStencils]);
 
     return (
-        <div className="at-topology-page">
+        <div className="flex w-full h-full bg-[#0a0a0a] text-[#ededed] font-sans overflow-hidden">
             {/* Sidebar: Palette & Library */}
-            <div className="at-topology-sidebar">
-                <div className="flex bg-gray-900 border-b border-gray-800">
-                    <button onClick={() => setSidebarMode('STENCILS')} className={`flex-1 py-3 text-[10px] font-bold uppercase transition-colors border-b-2 ${sidebarMode === 'STENCILS' ? 'border-[#d62828] text-[#f0f1f2] bg-white/5' : 'border-transparent text-gray-500 hover:text-gray-300'}`}>Stencils</button>
-                    <button onClick={() => setSidebarMode('LIBRARY')} className={`flex-1 py-3 text-[10px] font-bold uppercase transition-colors border-b-2 ${sidebarMode === 'LIBRARY' ? 'border-[#4a5059] text-[#9aa1a9] bg-white/5' : 'border-transparent text-gray-500 hover:text-gray-300'}`}>Library</button>
+            <div className="w-64 flex flex-col bg-[#0d0e10] border-r border-[#ffffff10] z-20 flex-shrink-0">
+                <div className="flex bg-[#0a0b0d] border-b border-[#ffffff10]">
+                    <button onClick={() => setSidebarMode('STENCILS')} className={`flex-1 py-3 text-[10px] font-bold uppercase transition-colors border-b-2 ${sidebarMode === 'STENCILS' ? 'border-[#d62828] text-[#ededed] bg-[#ffffff05]' : 'border-transparent text-[#777] hover:text-[#999]'}`}>Stencils</button>
+                    <button onClick={() => setSidebarMode('LIBRARY')} className={`flex-1 py-3 text-[10px] font-bold uppercase transition-colors border-b-2 ${sidebarMode === 'LIBRARY' ? 'border-[#555] text-[#ededed] bg-[#ffffff05]' : 'border-transparent text-[#777] hover:text-[#999]'}`}>Library</button>
                 </div>
 
                 {sidebarMode === 'STENCILS' ? (
                     <>
-                        <div className="p-4 border-b border-gray-800 bg-gray-900/20">
+                        <div className="p-4 border-b border-[#222328] bg-[#111216]">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-[10px] font-bold text-[#c7ccd2] uppercase tracking-[0.10em] flex items-center gap-2">
+                                <h3 className="text-[10px] font-bold text-[#888] uppercase tracking-[0.10em] flex items-center gap-2">
                                     <Layers size={14}/> STENCILS
                                 </h3>
-                                <button onClick={() => setShowStencilCreator(true)} className="p-1.5 hover:bg-white/10 rounded text-gray-400 hover:text-white" title="New Stencil">
+                                <button onClick={() => setShowStencilCreator(true)} className="p-1.5 hover:bg-[#ffffff10] rounded text-[#888] hover:text-[#fff]" title="New Stencil">
                                     <Plus size={16}/>
                                 </button>
                             </div>
                             <div className="relative group">
-                                <Search className="absolute left-3 top-2 text-gray-500 w-3.5 h-3.5" />
+                                <Search className="absolute left-3 top-2 text-[#555] w-3.5 h-3.5" />
                                 <input 
                                     type="text" 
                                     placeholder="Find stencil..." 
-                                    className="w-full bg-black border border-gray-700 rounded-lg py-2 pl-10 pr-4 text-xs text-gray-300 focus:border-cyber-cyan focus:outline-none transition-colors"
+                                    className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg py-2 pl-10 pr-4 text-xs text-[#ececec] focus:border-[#555] focus:outline-none transition-colors"
                                     value={paletteSearch}
                                     onChange={(e) => setPaletteSearch(e.target.value)}
                                 />
@@ -817,12 +815,12 @@ export const NetworkTopologyView: React.FC = () => {
                                                         e.dataTransfer.setData('application/reactflow/interface', (s as any).interface || '');
                                                         e.dataTransfer.setData('application/reactflow/vlan', (s as any).vlan || '');
                                                     }}
-                                                    className="p-2.5 bg-gray-900/40 border border-gray-800 rounded-lg cursor-grab hover:border-cyber-cyan/50 hover:bg-gray-800 transition-all group flex items-center gap-3"
+                                                    className="p-2.5 bg-[#121316] border border-[#222328] rounded-lg cursor-grab hover:border-[#555] hover:bg-[#1a1c21] transition-all group flex items-center gap-3"
                                                 >
-                                                    <div className={`p-1.5 rounded-md bg-opacity-10 ${s.color || 'bg-blue-500'} ${s.color ? s.color.replace('bg-', 'text-') : 'text-blue-400'} group-hover:text-cyber-cyan`}>
+                                                    <div className={`p-1.5 rounded-md bg-opacity-10 ${s.color || 'bg-blue-500'} ${s.color ? s.color.replace('bg-', 'text-') : 'text-blue-400'} group-hover:text-white`}>
                                                         <Icon size={14} />
                                                     </div>
-                                                    <span className="text-[11px] font-bold text-gray-400 group-hover:text-white">{s.label}</span>
+                                                    <span className="text-[11px] font-bold text-[#888] group-hover:text-[#ececec]">{s.label}</span>
                                                 </div>
                                             );
                                         })}
@@ -833,11 +831,11 @@ export const NetworkTopologyView: React.FC = () => {
                     </>
                 ) : (
                     <div className="flex-1 flex flex-col min-h-0">
-                        <div className="p-4 border-b border-gray-800 bg-gray-900/20 flex justify-between items-center">
-                            <h3 className="text-xs font-bold text-purple-400 uppercase tracking-widest flex items-center gap-2">
+                        <div className="p-4 border-b border-[#222328] bg-[#111216] flex justify-between items-center">
+                            <h3 className="text-xs font-bold text-[#888] uppercase tracking-widest flex items-center gap-2">
                                 <BookOpen size={14}/> SAVED DESIGNS
                             </h3>
-                            <button onClick={handleSaveDiagram} className="p-1.5 hover:bg-white/10 rounded text-purple-400 hover:text-white" title="Save Current Design">
+                            <button onClick={handleSaveDiagram} className="p-1.5 hover:bg-[#ffffff10] rounded text-[#888] hover:text-[#fff]" title="Save Current Design">
                                 <Save size={16}/>
                             </button>
                         </div>
@@ -846,20 +844,20 @@ export const NetworkTopologyView: React.FC = () => {
                                 <div 
                                     key={diag.id} 
                                     onClick={() => handleLoadDiagram(diag)}
-                                    className="p-3 bg-gray-900/40 border border-gray-800 rounded-lg cursor-pointer hover:border-purple-500/50 hover:bg-gray-800 transition-all group relative"
+                                    className="p-3 bg-[#121316] border border-[#222328] rounded-lg cursor-pointer hover:border-[#555] hover:bg-[#1a1c21] transition-all group relative"
                                 >
-                                    <button onClick={(e) => handleDeleteSavedDiagram(e, diag.id)} className="absolute top-2 right-2 p-1 text-gray-600 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100">
+                                    <button onClick={(e) => handleDeleteSavedDiagram(e, diag.id)} className="absolute top-2 right-2 p-1 text-[#555] hover:text-[#ea4a4a] transition-colors opacity-0 group-hover:opacity-100">
                                         <Trash2 size={12}/>
                                     </button>
-                                    <div className="text-xs font-bold text-white mb-1 truncate pr-5">{diag.name}</div>
+                                    <div className="text-xs font-bold text-[#ececec] mb-1 truncate pr-5">{diag.name}</div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-[9px] text-gray-500 font-mono">{new Date(diag.timestamp).toLocaleDateString()}</span>
-                                        <span className="text-[9px] text-purple-400 bg-purple-900/20 px-1.5 rounded border border-purple-500/30">{diag.nodeCount} nodes</span>
+                                        <span className="text-[9px] text-[#666] font-mono">{new Date(diag.timestamp).toLocaleDateString()}</span>
+                                        <span className="text-[9px] text-[#888] bg-[#222328] px-1.5 rounded border border-[#333]">{diag.nodeCount} nodes</span>
                                     </div>
                                 </div>
                             ))}
                             {savedDiagrams.length === 0 && (
-                                <div className="text-center py-10 text-gray-600 text-xs italic">
+                                <div className="text-center py-10 text-[#666] text-xs italic">
                                     No saved designs in library.
                                 </div>
                             )}
@@ -869,7 +867,7 @@ export const NetworkTopologyView: React.FC = () => {
             </div>
 
             {/* Canvas */}
-            <div className="at-topology-canvas">
+            <div className="flex-1 relative z-10 bg-[#0a0a0a]">
                 <ReactFlow 
                     nodes={nodes} 
                     edges={edges} 
@@ -886,10 +884,10 @@ export const NetworkTopologyView: React.FC = () => {
                     fitView
                     proOptions={{ hideAttribution: true }}
                 >
-                    <Background color="#39404a" gap={28} size={1} />
-                    <Controls />
-                    <Panel position="top-left" className="!m-0 !left-0 !top-0">
-                        <div className="at-topology-toolbar">
+                    <Background color="#ffffff" gap={24} size={1} style={{ opacity: 0.05 }} />
+                    <Controls className="!bg-[#111216] !border !border-[#222328] !fill-[#999] shadow-md [&>button]:!border-b-[#222328] hover:[&>button]:!bg-[#1a1b20]" />
+                    <Panel position="top-left" className="!m-4 !left-0 !top-0">
+                        <div className="flex flex-wrap items-center gap-2 p-2 bg-[#111216] border border-[#222328] rounded-lg shadow-lg">
                         {isConfigParsing && (
                             <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-900/40 text-indigo-400 border border-indigo-500/30 rounded text-[10px] font-bold animate-pulse">
                                 <Loader2 className="animate-spin" size={12}/> {parsingStatus}
@@ -977,9 +975,9 @@ export const NetworkTopologyView: React.FC = () => {
                     </Panel>
 
                     {/* HUD / Risk Meter */}
-                    <Panel position="bottom-left" className="!m-0 !left-0 !bottom-0">
-                        <div className="at-topology-risk-widget">
-                            <div className="at-topology-risk-title">
+                    <Panel position="bottom-left" className="!m-4 !left-0 !bottom-0">
+                        <div className="w-64 p-4 bg-[#111216] border border-[#222328] rounded-lg shadow-lg">
+                            <div className="flex items-center gap-2 text-xs font-bold text-[#888] uppercase mb-3">
                                 <span>Topology Risk Profile</span>
                                 <Activity size={14} />
                             </div>
@@ -1006,9 +1004,9 @@ export const NetworkTopologyView: React.FC = () => {
                                     </div>
                                 </div>
                             ) : (
-                                <div className="at-topology-risk-empty">
-                                    <Shield size={24} className="mx-auto mb-2"/>
-                                    <p>Network analysis engine standing by...</p>
+                                <div className="flex flex-col items-center justify-center p-6 text-center text-[#555]">
+                                    <Shield size={24} className="mb-2 opacity-50"/>
+                                    <p className="text-[10px] uppercase font-bold tracking-wider">Network analysis engine standing by</p>
                                 </div>
                             )}
                         </div>
@@ -1017,9 +1015,9 @@ export const NetworkTopologyView: React.FC = () => {
             </div>
 
             {/* Right Panel: Context & Simulation Output */}
-            <div className={`at-topology-inspector ${selectedNode || selectedEdge ? 'has-selection' : ''}`}>
-                <div className="p-4 border-b border-gray-800 bg-gray-900/20 flex items-center justify-between">
-                    <h3 className="text-xs font-bold text-cyber-cyan uppercase tracking-[0.2em] flex items-center gap-2">
+            <div className={`flex flex-col bg-[#0d0e10] border-[#ffffff10] transition-all duration-300 overflow-hidden flex-shrink-0 ${selectedNode || selectedEdge ? 'w-80 border-l z-20' : 'w-0 border-none'}`}>
+                <div className="p-4 border-b border-[#222328] bg-[#0a0b0d] flex items-center justify-between">
+                    <h3 className="text-xs font-bold text-[#888] uppercase tracking-[0.2em] flex items-center gap-2">
                         <Terminal size={14}/> {selectedNode ? 'ASSET INTEL' : selectedEdge ? 'FLOW' : 'ANALYTICS'}
                     </h3>
                 </div>
@@ -1028,13 +1026,13 @@ export const NetworkTopologyView: React.FC = () => {
                     {selectedNode ? (
                         <div className="space-y-6 animate-fade-in pb-10">
                             {/* Asset Identity Card */}
-                            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 space-y-4 shadow-lg">
+                            <div className="bg-[#111216] border border-[#222328] rounded-lg p-4 space-y-4 shadow-sm">
                                 <div className="flex items-center gap-3">
-                                    <div className={`p-2 rounded ${selectedNode.data.colorClass || 'bg-blue-500/20 text-blue-400'}`}>
+                                    <div className={`p-2 rounded-md ${selectedNode.data.colorClass || 'bg-[#1d1e22] text-[#888]'}`}>
                                         {React.createElement(STENCIL_ICONS[selectedNode.data.iconName] || Box, { size: 20 })}
                                     </div>
                                     <input 
-                                        className="bg-transparent font-bold text-white text-sm border-b border-transparent focus:border-cyber-cyan outline-none w-full"
+                                        className="bg-transparent font-bold text-[#ececec] text-sm border-b border-transparent focus:border-[#555] outline-none w-full"
                                         value={selectedNode.data.label}
                                         onChange={(e) => handleNodePropertyChange(selectedNode.id, 'label', e.target.value)}
                                     />
@@ -1042,48 +1040,48 @@ export const NetworkTopologyView: React.FC = () => {
                                 
                                 <div className="space-y-3">
                                     <div className="grid grid-cols-2 gap-3">
-                                        <div className="p-2 bg-black border border-cyber-cyan/30 rounded">
-                                            <label className="text-[8px] font-bold text-cyber-cyan uppercase block mb-1">Interface</label>
+                                        <div className="p-2 bg-[#0a0a0a] border border-[#222328] rounded">
+                                            <label className="text-[8px] font-bold text-[#666] uppercase block mb-1">Interface</label>
                                             <input 
-                                                className="bg-transparent w-full text-xs font-mono text-white focus:outline-none"
+                                                className="bg-transparent w-full text-xs font-mono text-[#ececec] focus:outline-none"
                                                 value={selectedNode.data.interface || ''}
                                                 onChange={(e) => handleNodePropertyChange(selectedNode.id, 'interface', e.target.value)}
                                                 placeholder="eth0, vlan10..."
                                             />
                                         </div>
-                                        <div className="p-2 bg-black border border-purple-500/30 rounded">
-                                            <label className="text-[8px] font-bold text-purple-400 uppercase block mb-1">VLAN Tag</label>
+                                        <div className="p-2 bg-[#0a0a0a] border border-[#222328] rounded">
+                                            <label className="text-[8px] font-bold text-[#666] uppercase block mb-1">VLAN Tag</label>
                                             <input 
-                                                className="bg-transparent w-full text-xs font-mono text-white focus:outline-none"
+                                                className="bg-transparent w-full text-xs font-mono text-[#ececec] focus:outline-none"
                                                 value={selectedNode.data.vlan || ''}
                                                 onChange={(e) => handleNodePropertyChange(selectedNode.id, 'vlan', e.target.value)}
                                                 placeholder="10, 20, 100..."
                                             />
                                         </div>
                                     </div>
-                                    <div className="p-2 bg-black border border-blue-500/30 rounded">
-                                        <label className="text-[8px] font-bold text-blue-400 uppercase block mb-1">IP Connectivity</label>
+                                    <div className="p-2 bg-[#0a0a0a] border border-[#222328] rounded">
+                                        <label className="text-[8px] font-bold text-[#666] uppercase block mb-1">IP Connectivity</label>
                                         <input 
-                                            className="bg-transparent w-full text-xs font-mono text-white focus:outline-none"
+                                            className="bg-transparent w-full text-xs font-mono text-[#ececec] focus:outline-none"
                                             value={selectedNode.data.ipAddress || ''}
                                             onChange={(e) => handleNodePropertyChange(selectedNode.id, 'ipAddress', e.target.value)}
                                             placeholder="10.0.0.1, 192.168.1.1..."
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-[9px] font-bold text-gray-500 uppercase block mb-1">Exposure Posture</label>
+                                        <label className="text-[9px] font-bold text-[#666] uppercase block mb-1">Exposure Posture</label>
                                         <button 
                                             onClick={() => handleNodePropertyChange(selectedNode.id, 'isInternetFacing', !selectedNode.data.isInternetFacing)}
-                                            className={`w-full py-1.5 rounded text-[10px] font-bold border transition-all ${selectedNode.data.isInternetFacing ? 'bg-red-900/20 border-red-500 text-red-400' : 'bg-green-900/30 text-green-400 border-green-500/30'}`}
+                                            className={`w-full py-2 rounded-md text-[10px] font-bold border transition-all ${selectedNode.data.isInternetFacing ? 'bg-[#3b2a2a] border-[#ea4a4a] text-[#ea4a4a]' : 'bg-[#1a2e20] text-[#4fae63] border-[#294d35]'}`}
                                         >
                                             {selectedNode.data.isInternetFacing ? 'PUBLIC INTERNET FACING' : 'ISOLATED INTERNAL'}
                                         </button>
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label className="text-[9px] font-bold text-gray-500 uppercase block mb-1">Criticality</label>
+                                            <label className="text-[9px] font-bold text-[#666] uppercase block mb-1">Criticality</label>
                                             <select 
-                                                className="w-full bg-black border border-gray-700 rounded p-1.5 text-xs text-white outline-none"
+                                                className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-xs text-[#ececec] outline-none"
                                                 value={selectedNode.data.criticality}
                                                 onChange={(e) => handleNodePropertyChange(selectedNode.id, 'criticality', e.target.value)}
                                             >
@@ -1091,9 +1089,9 @@ export const NetworkTopologyView: React.FC = () => {
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="text-[9px] font-bold text-gray-500 uppercase block mb-1">Sensitivity</label>
+                                            <label className="text-[9px] font-bold text-[#666] uppercase block mb-1">Sensitivity</label>
                                             <select 
-                                                className="w-full bg-black border border-gray-700 rounded p-2 text-xs text-purple-400 outline-none font-bold"
+                                                className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-xs text-[#888] outline-none font-bold"
                                                 value={selectedNode.data.sensitivity}
                                                 onChange={(e) => handleNodePropertyChange(selectedNode.id, 'sensitivity', e.target.value)}
                                             >
@@ -1107,28 +1105,28 @@ export const NetworkTopologyView: React.FC = () => {
                             </div>
 
                             {/* Threat Context Mapper */}
-                            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 space-y-4 shadow-lg">
-                                <h4 className="text-[10px] font-bold text-orange-400 uppercase flex items-center gap-2 border-b border-gray-800 pb-2">
+                            <div className="bg-[#111216] border border-[#222328] rounded-lg p-4 space-y-4 shadow-sm">
+                                <h4 className="text-[10px] font-bold text-[#d62828] uppercase flex items-center gap-2 border-b border-[#222328] pb-2">
                                     <ShieldAlert size={12}/> Threat Context Mapping
                                 </h4>
                                 
                                 <div className="space-y-3">
                                     <div>
-                                        <label className="text-[9px] font-bold text-gray-500 uppercase block mb-1">Mapped CVEs</label>
+                                        <label className="text-[9px] font-bold text-[#666] uppercase block mb-1">Mapped CVEs</label>
                                         <div className="flex gap-2 mb-2">
                                             <input 
                                                 type="text" 
-                                                className="flex-1 bg-black border border-gray-700 rounded p-1.5 text-[10px] text-white font-mono"
+                                                className="flex-1 bg-[#0a0a0a] border border-[#333] rounded p-1.5 text-[10px] text-[#ececec] font-mono focus:border-[#555] outline-none"
                                                 placeholder="CVE-2024-..."
                                                 value={newCve}
                                                 onChange={e => setNewCve(e.target.value)}
                                                 onKeyDown={e => e.key === 'Enter' && (setNewCve(''), handleNodePropertyChange(selectedNode.id, 'vulnerabilities', [...(selectedNode.data.vulnerabilities || []), newCve]))}
                                             />
-                                            <button onClick={() => { if(newCve) { handleNodePropertyChange(selectedNode.id, 'vulnerabilities', [...(selectedNode.data.vulnerabilities || []), newCve]); setNewCve(''); } }} className="px-2 bg-gray-800 rounded text-xs text-gray-400">+</button>
+                                            <button onClick={() => { if(newCve) { handleNodePropertyChange(selectedNode.id, 'vulnerabilities', [...(selectedNode.data.vulnerabilities || []), newCve]); setNewCve(''); } }} className="px-2 bg-[#222328] hover:bg-[#333] rounded text-xs text-[#ececec] transition-colors">+</button>
                                         </div>
                                         <div className="flex flex-wrap gap-1">
                                             {selectedNode.data.vulnerabilities?.map((v: string, i: number) => (
-                                                <span key={i} className="px-2 py-0.5 bg-orange-900/30 text-orange-400 border border-orange-500/30 rounded text-[9px] font-mono flex items-center gap-1">
+                                                <span key={i} className="px-2 py-0.5 bg-[#2a1a1a] text-[#ea4a4a] border border-[#ea4a4a40] rounded text-[9px] font-mono flex items-center gap-1">
                                                     {v} <X size={8} className="cursor-pointer hover:text-white" onClick={() => handleNodePropertyChange(selectedNode.id, 'vulnerabilities', selectedNode.data.vulnerabilities.filter((_:any,idx:number) => idx !== i))}/>
                                                 </span>
                                             ))}
@@ -1136,21 +1134,21 @@ export const NetworkTopologyView: React.FC = () => {
                                     </div>
 
                                     <div>
-                                        <label className="text-[9px] font-bold text-gray-500 uppercase block mb-1">Indicators (IP/Domain/Hash)</label>
+                                        <label className="text-[9px] font-bold text-[#666] uppercase block mb-1">Indicators (IP/Domain/Hash)</label>
                                         <div className="flex gap-2 mb-2">
                                             <input 
                                                 type="text" 
-                                                className="flex-1 bg-black border border-gray-700 rounded p-1.5 text-[10px] text-white font-mono"
+                                                className="flex-1 bg-[#0a0a0a] border border-[#333] rounded p-1.5 text-[10px] text-[#ececec] font-mono focus:border-[#555] outline-none"
                                                 placeholder="1.2.3.4, malware.com..."
                                                 value={newIoc}
                                                 onChange={e => setNewIoc(e.target.value)}
                                                 onKeyDown={e => e.key === 'Enter' && (setNewIoc(''), handleNodePropertyChange(selectedNode.id, 'iocs', [...(selectedNode.data.iocs || []), newIoc]))}
                                             />
-                                            <button onClick={() => { if(newIoc) { handleNodePropertyChange(selectedNode.id, 'iocs', [...(selectedNode.data.iocs || []), newIoc]); setNewIoc(''); } }} className="px-2 bg-gray-800 rounded text-xs text-gray-400">+</button>
+                                            <button onClick={() => { if(newIoc) { handleNodePropertyChange(selectedNode.id, 'iocs', [...(selectedNode.data.iocs || []), newIoc]); setNewIoc(''); } }} className="px-2 bg-[#222328] hover:bg-[#333] rounded text-xs text-[#ececec] transition-colors">+</button>
                                         </div>
                                         <div className="flex flex-wrap gap-1">
                                             {selectedNode.data.iocs?.map((ioc: string, i: number) => (
-                                                <span key={i} className="px-2 py-0.5 bg-red-900/30 text-red-400 border border-red-500/30 rounded text-[9px] font-mono flex items-center gap-1">
+                                                <span key={i} className="px-2 py-0.5 bg-[#2a1a1a] text-[#ea4a4a] border border-[#ea4a4a40] rounded text-[9px] font-mono flex items-center gap-1">
                                                     {ioc} <X size={8} className="cursor-pointer hover:text-white" onClick={() => handleNodePropertyChange(selectedNode.id, 'iocs', selectedNode.data.iocs.filter((_:any,idx:number) => idx !== i))}/>
                                                 </span>
                                             ))}
@@ -1163,56 +1161,56 @@ export const NetworkTopologyView: React.FC = () => {
                                 <button 
                                     onClick={handleNodeTechnicalAudit}
                                     disabled={isIntelLoading}
-                                    className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-[10px] flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 disabled:opacity-50"
+                                    className="w-full py-2.5 bg-[#1d1e22] hover:bg-[#2a2c30] text-[#ececec] border border-[#333] rounded font-bold text-[10px] flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50"
                                 >
                                     <ShieldAlert size={14}/> TECH AUDIT
                                 </button>
                                 <button 
                                     onClick={handleFetchNodeIntel}
                                     disabled={isIntelLoading}
-                                    className="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded font-bold text-[10px] flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 disabled:opacity-50"
+                                    className="w-full py-2.5 bg-[#1d1e22] hover:bg-[#2a2c30] text-[#ececec] border border-[#333] rounded font-bold text-[10px] flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50"
                                 >
                                     <Sparkles size={14}/> GLOBAL INTEL
                                 </button>
                                 <button 
                                     onClick={() => runSimulation(selectedNode.id)}
                                     disabled={isSimulating}
-                                    className="col-span-2 w-full py-3 bg-red-600 hover:bg-red-500 text-white rounded font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-red-900/20 transition-all active:scale-95 disabled:opacity-50"
+                                    className="col-span-2 w-full py-3 bg-[#d62828] hover:bg-[#b52222] text-white rounded font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50"
                                 >
                                     <Target size={14}/> SIMULATE COMPROMISE
                                 </button>
                             </div>
 
                             {(isIntelLoading || nodeIntel) && (
-                                <div className="bg-black/40 border border-gray-800 rounded-lg p-4 shadow-inner relative overflow-hidden">
-                                    <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple-500 to-transparent animate-scan"></div>
+                                <div className="bg-[#0a0a0a] border border-[#222328] rounded-lg p-4 shadow-inner relative overflow-hidden">
+                                    <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[#555] to-transparent animate-scan"></div>
                                     
                                     <div className="flex justify-between items-center mb-3">
-                                        <h4 className="text-[10px] font-bold text-purple-400 uppercase tracking-widest flex items-center gap-2">
+                                        <h4 className="text-[10px] font-bold text-[#888] uppercase tracking-widest flex items-center gap-2">
                                             <Bot size={12}/> Analysis Output
                                         </h4>
-                                        {isIntelLoading && <Loader2 className="animate-spin text-purple-500" size={12}/>}
+                                        {isIntelLoading && <Loader2 className="animate-spin text-[#d62828]" size={12}/>}
                                     </div>
 
                                     {isIntelLoading ? (
-                                        <div className="py-8 flex flex-col items-center justify-center gap-3 text-gray-600">
+                                        <div className="py-8 flex flex-col items-center justify-center gap-3 text-[#555]">
                                             <Activity className="animate-pulse" size={32}/>
                                             <span className="text-[9px] font-mono uppercase tracking-[0.2em]">Syncing Intelligence Hub...</span>
                                         </div>
                                     ) : (
                                         <div className="space-y-4">
-                                            <div className="text-xs text-gray-300 leading-relaxed font-sans whitespace-pre-line border-l-2 border-purple-500/30 pl-3 py-1">
+                                            <div className="text-xs text-[#a0a0a0] leading-relaxed font-sans whitespace-pre-line border-l-2 border-[#d62828] pl-3 py-1">
                                                 {nodeIntel?.text}
                                             </div>
                                             
                                             {nodeIntel?.sources && nodeIntel.sources.length > 0 && (
-                                                <div className="pt-3 border-t border-gray-800">
-                                                    <div className="text-[9px] text-gray-500 font-bold uppercase mb-2">Technical References</div>
+                                                <div className="pt-3 border-t border-[#222328]">
+                                                    <div className="text-[9px] text-[#666] font-bold uppercase mb-2">Technical References</div>
                                                     <div className="space-y-1.5">
                                                         {nodeIntel.sources.map((s, i) => (
-                                                            <a key={i} href={s.uri} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-2 bg-gray-900/50 rounded border border-gray-800 hover:border-purple-500/50 group transition-all">
-                                                                <span className="text-[10px] text-gray-400 truncate max-w-[200px]">{s.title || s.uri}</span>
-                                                                <ExternalLink size={10} className="text-gray-600 group-hover:text-purple-400"/>
+                                                            <a key={i} href={s.uri} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-2 bg-[#121316] rounded border border-[#222328] hover:border-[#444] group transition-all">
+                                                                <span className="text-[10px] text-[#a0a0a0] truncate max-w-[200px]">{s.title || s.uri}</span>
+                                                                <ExternalLink size={10} className="text-[#666] group-hover:text-[#fff]"/>
                                                             </a>
                                                         ))}
                                                     </div>
@@ -1224,20 +1222,20 @@ export const NetworkTopologyView: React.FC = () => {
                             )}
                         </div>
                     ) : selectedEdge ? (
-                        <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 space-y-4 animate-fade-in shadow-lg">
-                            <h4 className="text-xs font-bold text-blue-400 uppercase flex items-center gap-2 border-b border-gray-800 pb-2">
+                        <div className="bg-[#111216] border border-[#222328] rounded-lg p-4 space-y-4 animate-fade-in shadow-sm">
+                            <h4 className="text-xs font-bold text-[#888] uppercase flex items-center gap-2 border-b border-[#222328] pb-2">
                                 <Cable size={14}/> Logic Flow Configuration
                             </h4>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="text-[9px] font-bold text-gray-500 uppercase block mb-1">Traffic Identity</label>
-                                    <input className="w-full bg-black border border-gray-700 rounded p-2 text-sm text-white focus:border-cyber-cyan outline-none font-mono" value={selectedEdge.label as string} onChange={e => handleNodePropertyChange(selectedEdge.id, 'label', e.target.value)} />
+                                    <label className="text-[9px] font-bold text-[#666] uppercase block mb-1">Traffic Identity</label>
+                                    <input className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-sm text-[#ececec] focus:border-[#555] outline-none font-mono" value={selectedEdge.label as string} onChange={e => handleNodePropertyChange(selectedEdge.id, 'label', e.target.value)} />
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="text-[9px] font-bold text-gray-500 uppercase block mb-1">Protocol</label>
+                                        <label className="text-[9px] font-bold text-[#666] uppercase block mb-1">Protocol</label>
                                         <select 
-                                            className="w-full bg-black border border-gray-700 rounded p-2 text-[10px] text-white outline-none font-mono"
+                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none font-mono"
                                             value={selectedEdge.data?.protocol}
                                             onChange={e => handleNodePropertyChange(selectedEdge.id, 'protocol', e.target.value)}
                                         >
@@ -1245,36 +1243,36 @@ export const NetworkTopologyView: React.FC = () => {
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="text-[9px] font-bold text-gray-500 uppercase block mb-1">Port Range</label>
+                                        <label className="text-[9px] font-bold text-[#666] uppercase block mb-1">Port Range</label>
                                         <input 
                                             type="text" 
-                                            className="w-full bg-black border border-gray-700 rounded p-2 text-[10px] text-white font-mono"
+                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] font-mono outline-none"
                                             value={selectedEdge.data?.portRange}
                                             onChange={(e) => handleNodePropertyChange(selectedEdge.id, 'portRange', e.target.value)}
                                         />
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="text-[9px] font-bold text-gray-500 uppercase block mb-1">Firewall Status</label>
+                                    <label className="text-[9px] font-bold text-[#666] uppercase block mb-1">Firewall Status</label>
                                     <button 
                                         onClick={() => {
                                             const newVal = !(selectedEdge.data?.isPermissive ?? true);
                                             setEdges(eds => eds.map(e => e.id === selectedEdge.id ? { 
                                                 ...e, 
                                                 data: { ...e.data, isPermissive: newVal }, 
-                                                style: { ...e.style, stroke: newVal ? '#4361ee' : '#334155', opacity: newVal ? 1 : 0.4 } 
+                                                style: { ...e.style, stroke: newVal ? '#444' : '#333', opacity: newVal ? 1 : 0.4 } 
                                             } : e));
                                             setSelectedEdge(null);
                                         }}
-                                        className={`w-full py-2 rounded text-[10px] font-bold border transition-all ${selectedEdge.data?.isPermissive !== false ? 'bg-green-900/20 border-green-500 text-green-400' : 'bg-red-900/20 border-red-500 text-red-400'}`}
+                                        className={`w-full py-2 rounded text-[10px] font-bold border transition-all ${selectedEdge.data?.isPermissive !== false ? 'bg-[#1a2e20] border-[#294d35] text-[#4fae63]' : 'bg-[#3b2a2a] border-[#ea4a4a] text-[#ea4a4a]'}`}
                                     >
                                         {selectedEdge.data?.isPermissive !== false ? 'ACTIVE FLOW (ALLOWED)' : 'DENIED (HARD DROP)'}
                                     </button>
                                 </div>
                                 <div>
-                                    <label className="text-[9px] font-bold text-gray-500 uppercase block mb-1">Encryption</label>
+                                    <label className="text-[9px] font-bold text-[#666] uppercase block mb-1">Encryption</label>
                                     <select 
-                                        className="w-full bg-black border border-gray-700 rounded p-2 text-xs text-white outline-none"
+                                        className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-xs text-[#ececec] outline-none"
                                         value={selectedEdge.data?.encryption || 'TLS 1.3'}
                                         onChange={(e) => {
                                             const val = e.target.value;
@@ -1289,14 +1287,14 @@ export const NetworkTopologyView: React.FC = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="at-topology-empty-state">
-                            <Network size={28} />
+                        <div className="flex flex-col items-center justify-center p-10 text-center text-[#666] h-full">
+                            <Network size={28} className="mb-3 opacity-50" />
 
-                            <strong>
+                            <strong className="text-xs font-bold uppercase tracking-wider mb-2 block">
                                 Select an asset to inspect
                             </strong>
 
-                            <span>
+                            <span className="text-[11px] leading-relaxed">
                                 Choose a node or connection on the topology
                                 canvas to view configuration, security posture,
                                 relationships and available actions.
@@ -1305,12 +1303,12 @@ export const NetworkTopologyView: React.FC = () => {
                     )}
                 </div>
 
-                <div className="at-topology-inspector-footer">
+                <div className="p-4 border-t border-[#222328] bg-[#0a0b0d]">
                     <button
                         onClick={handleSaveDiagram}
-                        className="w-full h-9 flex items-center justify-center gap-2 rounded-md border border-[#343a43] bg-[#171a1f] text-[#c8ccd1] text-[10px] font-semibold hover:bg-[#1d2026] hover:text-white transition-colors"
+                        className="w-full py-2.5 flex items-center justify-center gap-2 rounded border border-[#2a2c30] bg-[#1a1c21] text-[#b0b0b0] text-[11px] font-bold uppercase tracking-wider hover:bg-[#22242a] hover:text-[#fff] transition-colors"
                     >
-                        <Save size={13} />
+                        <Save size={14} />
                         Save to library
                     </button>
                 </div>
@@ -1319,18 +1317,18 @@ export const NetworkTopologyView: React.FC = () => {
             {/* Modal: Stencil Creator */}
             {showStencilCreator && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in" onClick={() => setShowStencilCreator(false)}>
-                    <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
-                        <div className="p-4 border-b border-gray-800 flex justify-between items-center bg-black/40">
-                            <h3 className="text-lg font-bold text-white flex items-center gap-2 uppercase tracking-tight"><Palette size={20} className="text-cyber-cyan"/> DEFINE CUSTOM ASSET</h3>
-                            <button onClick={() => setShowStencilCreator(false)} className="text-gray-500 hover:text-white transition-colors p-1.5 rounded-full hover:bg-white/5"><X size={20}/></button>
+                    <div className="bg-[#111216] border border-[#222328] rounded-xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+                        <div className="p-4 border-b border-[#222328] flex justify-between items-center bg-[#0a0b0d]">
+                            <h3 className="text-lg font-bold text-[#ececec] flex items-center gap-2 uppercase tracking-tight"><Palette size={20} className="text-[#888]"/> DEFINE CUSTOM ASSET</h3>
+                            <button onClick={() => setShowStencilCreator(false)} className="text-[#666] hover:text-white transition-colors p-1.5 rounded-full hover:bg-[#ffffff10]"><X size={20}/></button>
                         </div>
                         <div className="p-6 space-y-6 overflow-y-auto custom-scrollbar">
                             <div className="space-y-4">
                                 <div>
-                                    <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Asset Label</label>
+                                    <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Asset Label</label>
                                     <input 
                                         type="text" 
-                                        className="w-full bg-black border border-gray-700 rounded p-2.5 text-sm text-white font-mono focus:border-cyber-cyan outline-none" 
+                                        className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-sm text-[#ececec] font-mono focus:border-[#555] outline-none" 
                                         placeholder="e.g. Core Auth Server" 
                                         value={newStencil.label} 
                                         onChange={e => setNewStencil({...newStencil, label: e.target.value})}
@@ -1338,9 +1336,9 @@ export const NetworkTopologyView: React.FC = () => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Node Type</label>
+                                        <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Node Type</label>
                                         <select 
-                                            className="w-full bg-black border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-cyber-cyan" 
+                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] outline-none focus:border-[#555]" 
                                             value={newStencil.type} 
                                             onChange={e => setNewStencil({...newStencil, type: e.target.value as any})}
                                         >
@@ -1352,9 +1350,9 @@ export const NetworkTopologyView: React.FC = () => {
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Icon Representation</label>
+                                        <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Icon Representation</label>
                                         <select 
-                                            className="w-full bg-black border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-cyber-cyan" 
+                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] outline-none focus:border-[#555]" 
                                             value={newStencil.iconName} 
                                             onChange={e => setNewStencil({...newStencil, iconName: e.target.value})}
                                         >
@@ -1364,20 +1362,20 @@ export const NetworkTopologyView: React.FC = () => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">IP Address</label>
+                                        <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">IP Address</label>
                                         <input 
                                             type="text" 
-                                            className="w-full bg-black border border-gray-700 rounded p-2.5 text-sm text-white font-mono focus:border-cyber-cyan outline-none" 
+                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-sm text-[#ececec] font-mono focus:border-[#555] outline-none" 
                                             placeholder="e.g. 10.0.0.1" 
                                             value={newStencil.ipAddress} 
                                             onChange={e => setNewStencil({...newStencil, ipAddress: e.target.value})}
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">VLAN Tag</label>
+                                        <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">VLAN Tag</label>
                                         <input 
                                             type="text" 
-                                            className="w-full bg-black border border-gray-700 rounded p-2.5 text-xs text-white font-mono focus:border-cyber-cyan outline-none" 
+                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] font-mono focus:border-[#555] outline-none" 
                                             placeholder="e.g. 10" 
                                             value={newStencil.vlan} 
                                             onChange={e => setNewStencil({...newStencil, vlan: e.target.value})}
@@ -1386,9 +1384,9 @@ export const NetworkTopologyView: React.FC = () => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Default Criticality</label>
+                                        <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Default Criticality</label>
                                         <select 
-                                            className="w-full bg-black border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-cyber-cyan" 
+                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] outline-none focus:border-[#555]" 
                                             value={newStencil.criticality} 
                                             onChange={e => setNewStencil({...newStencil, criticality: e.target.value})}
                                         >
@@ -1396,9 +1394,9 @@ export const NetworkTopologyView: React.FC = () => {
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Theme Color</label>
+                                        <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Theme Color</label>
                                         <select 
-                                            className="w-full bg-black border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-cyber-cyan" 
+                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] outline-none focus:border-[#555]" 
                                             value={newStencil.color} 
                                             onChange={e => setNewStencil({...newStencil, color: e.target.value})}
                                         >
@@ -1413,9 +1411,9 @@ export const NetworkTopologyView: React.FC = () => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Data Sensitivity</label>
+                                        <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Data Sensitivity</label>
                                         <select 
-                                            className="w-full bg-black border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-cyber-cyan" 
+                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] outline-none focus:border-[#555]" 
                                             value={newStencil.sensitivity} 
                                             onChange={e => setNewStencil({...newStencil, sensitivity: e.target.value})}
                                         >
@@ -1423,10 +1421,10 @@ export const NetworkTopologyView: React.FC = () => {
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Interface</label>
+                                        <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Interface</label>
                                         <input 
                                             type="text" 
-                                            className="w-full bg-black border border-gray-700 rounded p-2.5 text-xs text-white font-mono focus:border-cyber-cyan outline-none" 
+                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] font-mono focus:border-[#555] outline-none" 
                                             placeholder="e.g. eth0" 
                                             value={newStencil.interface} 
                                             onChange={e => setNewStencil({...newStencil, interface: e.target.value})}
@@ -1436,19 +1434,19 @@ export const NetworkTopologyView: React.FC = () => {
                                 <div className="flex flex-col justify-end mt-4">
                                     <button 
                                         onClick={() => setNewStencil({...newStencil, internet: !newStencil.internet})}
-                                        className={`w-full py-2.5 rounded text-[10px] font-bold border transition-all ${newStencil.internet ? 'bg-red-900/20 border-red-500 text-red-400' : 'bg-green-900/20 border-green-500 text-green-400'}`}
+                                        className={`w-full py-2.5 rounded text-[10px] font-bold border transition-all ${newStencil.internet ? 'bg-[#3b2a2a] border-[#ea4a4a] text-[#ea4a4a]' : 'bg-[#1a2e20] border-[#294d35] text-[#4fae63]'}`}
                                     >
                                         {newStencil.internet ? 'INTERNET EXPOSED' : 'INTERNAL ASSET'}
                                     </button>
                                 </div>
                             </div>
                         </div>
-                        <div className="p-4 bg-black/40 border-t border-gray-800 flex justify-end gap-3 shrink-0">
-                            <button onClick={() => setShowStencilCreator(false)} className="px-4 py-2 text-xs font-bold text-gray-500 hover:text-white uppercase transition-colors">Discard</button>
+                        <div className="p-4 bg-[#0a0b0d] border-t border-[#222328] flex justify-end gap-3 shrink-0">
+                            <button onClick={() => setShowStencilCreator(false)} className="px-4 py-2 text-xs font-bold text-[#888] hover:text-[#fff] uppercase transition-colors">Discard</button>
                             <button 
                                 onClick={handleCreateStencil} 
                                 disabled={!newStencil.label} 
-                                className="px-8 py-2.5 bg-cyber-cyan text-black font-bold rounded-lg text-xs flex items-center gap-2 disabled:opacity-50 shadow-[0_0_15px_rgba(67,97,238,0.4)] hover:scale-105 transition-all"
+                                className="px-8 py-2.5 bg-[#ececec] text-[#0a0a0a] hover:bg-[#fff] font-bold rounded-lg text-xs flex items-center gap-2 disabled:opacity-50 transition-all"
                             >
                                 <Save size={16}/> SAVE TO PALETTE
                             </button>
@@ -1460,14 +1458,14 @@ export const NetworkTopologyView: React.FC = () => {
             {/* Modal: AI Clarification */}
             {showClarificationModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in">
-                    <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
-                        <div className="p-4 border-b border-gray-800 flex justify-between items-center bg-black/40">
-                            <h3 className="text-lg font-bold text-white flex items-center gap-2 uppercase tracking-tight">
-                                <MessageCircleQuestion size={20} className="text-orange-400"/> ARCHITECTURAL CLARIFICATION
+                    <div className="bg-[#111216] border border-[#222328] rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+                        <div className="p-4 border-b border-[#222328] flex justify-between items-center bg-[#0a0b0d]">
+                            <h3 className="text-lg font-bold text-[#ececec] flex items-center gap-2 uppercase tracking-tight">
+                                <MessageCircleQuestion size={20} className="text-[#ea4a4a]"/> ARCHITECTURAL CLARIFICATION
                             </h3>
                         </div>
-                        <div className="p-6 space-y-6 overflow-y-auto custom-scrollbar flex-1 bg-black/20">
-                            <div className="bg-orange-900/10 border border-orange-500/30 p-4 rounded text-sm text-orange-200">
+                        <div className="p-6 space-y-6 overflow-y-auto custom-scrollbar flex-1 bg-[#121316]">
+                            <div className="bg-[#2a1a1a] border border-[#ea4a4a40] p-4 rounded text-sm text-[#ea4a4a]">
                                 <div className="font-bold flex items-center gap-2 mb-1"><Info size={16}/> ENGINE UNCERTAINTY</div>
                                 The AI engine requires additional context to accurately map your network topology. Please provide answers to the technical questions below.
                             </div>
@@ -1475,12 +1473,12 @@ export const NetworkTopologyView: React.FC = () => {
                             <div className="space-y-6">
                                 {clarificationQuestions.map((q, idx) => (
                                     <div key={idx} className="space-y-2">
-                                        <div className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                                            <span className="bg-gray-800 text-gray-500 px-1.5 rounded font-mono text-[10px]">{idx + 1}</span>
+                                        <div className="text-xs font-bold text-[#888] uppercase tracking-wider flex items-center gap-2">
+                                            <span className="bg-[#222328] text-[#aaa] px-1.5 rounded font-mono text-[10px]">{idx + 1}</span>
                                             {q}
                                         </div>
                                         <textarea 
-                                            className="w-full bg-black border border-gray-700 rounded p-3 text-xs text-white font-mono focus:border-cyber-cyan outline-none resize-none"
+                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-3 text-xs text-[#ececec] font-mono focus:border-[#555] outline-none resize-none"
                                             rows={2}
                                             placeholder="Provide technical detail..."
                                             value={userAnswers[idx] || ''}
@@ -1490,11 +1488,11 @@ export const NetworkTopologyView: React.FC = () => {
                                 ))}
                             </div>
                         </div>
-                        <div className="p-4 bg-black/40 border-t border-gray-800 flex justify-end gap-3 shrink-0">
-                            <button onClick={() => setShowClarificationModal(false)} className="px-4 py-2 text-xs font-bold text-gray-500 hover:text-white uppercase transition-colors">Discard</button>
+                        <div className="p-4 bg-[#0a0b0d] border-t border-[#222328] flex justify-end gap-3 shrink-0">
+                            <button onClick={() => setShowClarificationModal(false)} className="px-4 py-2 text-xs font-bold text-[#888] hover:text-[#fff] uppercase transition-colors">Discard</button>
                             <button 
                                 onClick={handleSubmitClarifications}
-                                className="px-8 py-2.5 bg-cyber-cyan text-black font-bold rounded-lg text-xs flex items-center gap-2 shadow-[0_0_15px_rgba(67,97,238,0.4)] hover:scale-105 transition-all"
+                                className="px-8 py-2.5 bg-[#ececec] text-[#0a0a0a] hover:bg-[#fff] font-bold rounded-lg text-xs flex items-center gap-2 transition-all"
                             >
                                 <Check size={16}/> SUBMIT ANSWERS
                             </button>

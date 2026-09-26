@@ -486,6 +486,17 @@ export default function IocPage() {
     setAddIocNotice,
   ] = useState('');
 
+  const [
+    currentPage,
+    setCurrentPage,
+  ] = useState(1);
+
+  const ITEMS_PER_PAGE = 100;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, typeFilter, severityFilter, sourceFilter, advancedMode]);
+
   /* ------------------------------------------------------------------------ */
   /*                       Synchronize inspector                              */
   /* ------------------------------------------------------------------------ */
@@ -1587,7 +1598,12 @@ export default function IocPage() {
                     </td>
                   </tr>
                 ) : (
-                  filtered.map(
+                  filtered
+                    .slice(
+                      (currentPage - 1) * ITEMS_PER_PAGE,
+                      currentPage * ITEMS_PER_PAGE,
+                    )
+                    .map(
                     (ioc) => {
                       const Icon =
                         TYPE_ICONS[
@@ -1745,6 +1761,30 @@ export default function IocPage() {
               </tbody>
             </table>
           </div>
+
+          {filtered.length > ITEMS_PER_PAGE && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderTop: '1px solid var(--at-border)' }}>
+              <button
+                type="button"
+                className="at-btn at-btn-ghost at-btn-sm"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              >
+                Previous
+              </button>
+              <span style={{ fontSize: '12px', color: 'var(--at-text-muted)' }}>
+                Page {currentPage} of {Math.ceil(filtered.length / ITEMS_PER_PAGE)}
+              </span>
+              <button
+                type="button"
+                className="at-btn at-btn-ghost at-btn-sm"
+                disabled={currentPage === Math.ceil(filtered.length / ITEMS_PER_PAGE)}
+                onClick={() => setCurrentPage(p => Math.min(Math.ceil(filtered.length / ITEMS_PER_PAGE), p + 1))}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </section>
 
         {/* ================================================================ */

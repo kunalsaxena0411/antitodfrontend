@@ -61,6 +61,19 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    sourcemap: false, // Disabling sourcemaps significantly reduces memory usage during build
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          tfjs: ['@tensorflow/tfjs', '@tensorflow-models/mobilenet'],
+          lucide: ['lucide-react'],
+          charts: ['recharts', 'd3']
+        }
+      }
+    }
+  }
 })
 
 
