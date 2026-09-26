@@ -17,6 +17,7 @@ interface HeaderProps {
   sidebarCollapsed: boolean;
   onToggleSidebar: () => void;
   onOpenSearch: () => void;
+  onNavigate?: (viewId: string) => void;
   onOpenSettings?: () => void;
 }
 
@@ -25,6 +26,7 @@ export default function Header({
   sidebarCollapsed,
   onToggleSidebar,
   onOpenSearch,
+  onNavigate,
   onOpenSettings,
 }: HeaderProps) {
   const [time, setTime] = useState(new Date());
@@ -82,6 +84,7 @@ export default function Header({
           className="at-header-quick-action"
           title="AI Assistant"
           aria-label="Open AI Assistant"
+          onClick={() => onNavigate && onNavigate('chat')}
         >
           <Sparkles size={15} />
         </button>
@@ -91,6 +94,7 @@ export default function Header({
           className="at-header-quick-action"
           title="Help"
           aria-label="Open help"
+          onClick={() => onNavigate && onNavigate('help')}
         >
           <HelpCircle size={15} />
         </button>

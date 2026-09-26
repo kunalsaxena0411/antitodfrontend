@@ -7,10 +7,8 @@ const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 // List of CORS proxies to try in order
 // Direct -> Vercel -> Public
 const PROXIES = [
-    (url: string) => url, // Direct
     (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`, // Vercel
-    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
-    (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`
+    (url: string) => url, // Direct
 ];
 
 const FEEDS = [

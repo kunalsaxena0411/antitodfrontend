@@ -218,23 +218,14 @@ export const fetchRemoteMalpedia = async (): Promise<MalpediaActor[]> => {
     
     // Proxy rotation to bypass CORS
     const PROXIES = [
-        (url: string) => url, // Direct
         (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`, // Vercel
-        (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`,
-        (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`
+        (url: string) => url, // Direct
     ];
 
     for (const proxy of PROXIES) {
         try {
             const url = proxy(targetUrl);
             
-            // Check Vercel marker
-            if (url.startsWith('/api/proxy')) {
-                // Fetch first to check headers before committing to stream read
-                const checkRes = await fetch(url, { method: 'HEAD' });
-                if (!checkRes.headers.get('X-Source-Proxy')) continue;
-            }
-
             const response = await fetch(url);
             if (response.ok) {
                 const json = await response.json();

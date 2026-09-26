@@ -26,23 +26,24 @@ export default function PageHeader({
   return (
     <section className="at-page-header">
       <div className="at-page-header-inner">
-        <div className="at-breadcrumb-row">
-          {timeRange && (
-            <button type="button" className="at-range-control" style={{ marginLeft: "auto" }}>
-              <Calendar size={13} />
-              <span>{timeRange}</span>
-              <ChevronRight size={12} />
-            </button>
-          )}
-        </div>
-
         <div className="at-page-title-row">
           <div className="at-page-heading">
             <h1>{title}</h1>
             {description && <p>{description}</p>}
           </div>
 
-          {actions && <div className="at-page-actions">{actions}</div>}
+          {(timeRange || actions) && (
+            <div className="at-page-actions">
+              {timeRange && (
+                <button type="button" className="at-range-control">
+                  <Calendar size={13} />
+                  <span>{timeRange}</span>
+                  <ChevronRight size={12} />
+                </button>
+              )}
+              {actions}
+            </div>
+          )}
         </div>
 
         {filters && <div className="at-page-filters">{filters}</div>}

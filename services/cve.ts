@@ -20,7 +20,7 @@ const fetchJsonWithProxy = async (targetUrl: string): Promise<any> => {
         try {
             const url = proxyGen(targetUrl);
             const res = await fetch(url);
-            
+
             // Check for Vercel marker if using local proxy path
             if (url.startsWith('/api/proxy') && !res.headers.get('X-Source-Proxy') && !res.ok) {
                 continue;
@@ -45,20 +45,20 @@ const transformNvdCve = (cveItem: any): CveEntry => {
     const cve = cveItem.cve || cveItem; // Sometimes wrapped in 'cve' property in NVD 2.0
     const metrics = cve.metrics?.cvssMetricV31?.[0] || cve.metrics?.cvssMetricV30?.[0] || cve.metrics?.cvssMetricV2?.[0] || {};
     const cvssData = metrics.cvssData || {};
-    
+
     // Determine severity
     let severity = 'UNKNOWN';
     if (cvssData.baseSeverity) severity = cvssData.baseSeverity;
     else if (metrics.baseSeverity) severity = metrics.baseSeverity; // V2
 
     // Check for exploit reference
-    const hasExploit = cve.references?.some((r: any) => 
+    const hasExploit = cve.references?.some((r: any) =>
         r.tags?.some((t: string) => t.toLowerCase() === 'exploit')
     ) || false;
 
     // Extract CPEs
     const configurations = cve.configurations?.flatMap((c: any) => c.nodes?.flatMap((n: any) => n.cpeMatch?.map((m: any) => m.criteria))) || [];
-    
+
     // Extract Vendor/Product from CPE
     let vendor = 'Unknown';
     let product = 'Unknown';
@@ -119,7 +119,7 @@ export const parseNvdCve = async (file: File): Promise<CveEntry[]> => {
                 const cves: CveEntry[] = [];
 
                 const vulnerabilities = json.vulnerabilities || [];
-                
+
                 for (const item of vulnerabilities) {
                     cves.push(transformNvdCve(item));
                 }
@@ -137,7 +137,7 @@ export const parseNvdCve = async (file: File): Promise<CveEntry[]> => {
 export const fetchCveUpdates = async (lastUpdate?: Date): Promise<CveEntry[]> => {
     const cves: CveEntry[] = [];
     const seenIds = new Set<string>();
-    
+
     // 1. Fetch CISA KEV
     try {
         const kevData = await fetchJsonWithProxy(CISA_KEV_GITHUB_MAIN);
@@ -154,7 +154,7 @@ export const fetchCveUpdates = async (lastUpdate?: Date): Promise<CveEntry[]> =>
                     lastModified: vuln.dateAdded,
                     status: 'Active',
                     description: vuln.shortDescription,
-                    cvssScore: 0, 
+                    cvssScore: 0,
                     severity: 'HIGH', // Implicit for KEV
                     vectorString: '',
                     weaknesses: [],
@@ -168,7 +168,7 @@ export const fetchCveUpdates = async (lastUpdate?: Date): Promise<CveEntry[]> =>
                     tags: ['KEV', 'Exploited'],
                     vector: {}
                 };
-                
+
                 cves.push(entry);
                 seenIds.add(vuln.cveID);
             });
@@ -181,25 +181,25 @@ export const fetchCveUpdates = async (lastUpdate?: Date): Promise<CveEntry[]> =>
     try {
         const params = new URLSearchParams();
         params.append('resultsPerPage', '500'); // Fetch a batch
-        
+
         if (lastUpdate) {
-             // NVD API format for dates: YYYY-MM-DDTHH:mm:ss.SSS
-             const start = lastUpdate.toISOString().replace(/\.\d{3}Z$/, '');
-             const end = new Date().toISOString().replace(/\.\d{3}Z$/, '');
-             params.append('lastModStartDate', start);
-             params.append('lastModEndDate', end);
+            // NVD API format for dates: YYYY-MM-DDTHH:mm:ss.SSS
+            const start = lastUpdate.toISOString().replace(/\.\d{3}Z$/, '');
+            const end = new Date().toISOString().replace(/\.\d{3}Z$/, '');
+            params.append('lastModStartDate', start);
+            params.append('lastModEndDate', end);
         } else {
-             // Initial load: Fetch last 120 days to populate database with relevant recent data
-             const daysAgo = new Date();
-             daysAgo.setDate(daysAgo.getDate() - 120);
-             const start = daysAgo.toISOString().replace(/\.\d{3}Z$/, '');
-             const end = new Date().toISOString().replace(/\.\d{3}Z$/, '');
-             params.append('pubStartDate', start);
-             params.append('pubEndDate', end);
+            // Initial load: Fetch last 120 days to populate database with relevant recent data
+            const daysAgo = new Date();
+            daysAgo.setDate(daysAgo.getDate() - 120);
+            const start = daysAgo.toISOString().replace(/\.\d{3}Z$/, '');
+            const end = new Date().toISOString().replace(/\.\d{3}Z$/, '');
+            params.append('pubStartDate', start);
+            params.append('pubEndDate', end);
         }
 
         const nvdData = await fetchJsonWithProxy(`${NVD_API_URL}?${params.toString()}`);
-        
+
         if (nvdData && nvdData.vulnerabilities) {
             for (const item of nvdData.vulnerabilities) {
                 const entry = transformNvdCve(item);

@@ -29,9 +29,10 @@ function corsProxyPlugin() {
         const client = targetUrl.startsWith('https') ? https : http;
         const proxyReq = client.request(targetUrl, options, (proxyRes) => {
           res.writeHead(proxyRes.statusCode || 200, {
+            ...proxyRes.headers,
             'Access-Control-Allow-Origin': '*',
+            'X-Source-Proxy': 'vite',
             'Content-Type': proxyRes.headers['content-type'] || 'text/plain',
-            ...proxyRes.headers
           });
           proxyRes.pipe(res);
         });

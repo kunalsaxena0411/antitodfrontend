@@ -9,8 +9,8 @@ interface ProxyConfig {
 // Priority: Direct -> CORSProxy -> CodeTabs -> Vercel -> Public Proxies
 // We prioritize proxies that support headers (x-apikey) for VT integration.
 const PROXIES: ProxyConfig[] = [
-    { name: 'Direct', url: (u) => u, isWrapped: false, supportsHeaders: true },
     { name: 'Vercel', url: (u) => `/api/proxy?url=${encodeURIComponent(u)}`, isWrapped: false, supportsHeaders: true },
+    { name: 'Direct', url: (u) => u, isWrapped: false, supportsHeaders: true },
     { name: 'AllOrigins', url: (u) => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`, isWrapped: true, supportsHeaders: false },
 ];
 

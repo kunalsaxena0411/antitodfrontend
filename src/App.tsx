@@ -1897,7 +1897,7 @@ export const App: React.FC = () => {
                 }}
                 onNavigate={(viewId) => {
                     navigate(viewId);
-                    if (window.innerWidth <= 768) {
+                    if (window.innerWidth <= 900) {
                         setSidebarCollapsed(true);
                         try {
                             localStorage.setItem(SIDEBAR_STORAGE_KEY, 'true');
@@ -1952,6 +1952,15 @@ export const App: React.FC = () => {
                     onOpenSettings={() =>
                         setIsSettingsOpen(true)
                     }
+                    onNavigate={(viewId) => {
+                        navigate(viewId);
+                        if (window.innerWidth <= 900) {
+                            setSidebarCollapsed(true);
+                            try {
+                                localStorage.setItem(SIDEBAR_STORAGE_KEY, 'true');
+                            } catch {}
+                        }
+                    }}
                 />
 
                 <main className="at-app-main">

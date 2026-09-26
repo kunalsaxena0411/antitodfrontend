@@ -44,6 +44,8 @@ function readStored<T>(key: string, fallback: T): T {
 function SidebarItem({ item, active, collapsed, favorite, onNavigate, onToggleFavorite }: SidebarItemProps) {
   const Icon = item.icon;
 
+
+
   return (
     <div className={`at-sidebar-item-wrap ${active ? 'is-active' : ''}`}>
       <button
@@ -158,9 +160,10 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
   const [favorites, setFavorites] = useState<string[]>(() => readStored(FAVORITES_KEY, []));
   const searchRef = useRef<HTMLInputElement>(null);
   const hoverCloseTimer = useRef<number | null>(null);
+  const hoverSuppressedUntil = useRef(0);
   const activeCanonical = canonicalViewId(activeView);
 
-  const visuallyExpanded = !autoPeek ? !collapsed : hoverPeek;
+  const visuallyExpanded = !collapsed || (autoPeek && hoverPeek);
 
   const filteredGroups = useMemo(() => {
     const value = menuSearch.trim().toLowerCase();
@@ -194,17 +197,33 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
   }, [autoPeek, collapsed]);
 
   useEffect(() => {
-    const handleResize = () => {
-      const desktop = window.innerWidth > 900;
+    const media = window.matchMedia('(min-width: 901px)');
+
+    const syncBreakpoint = () => {
+      const desktop = media.matches;
+
       setAutoPeek(desktop);
+
       if (!desktop) {
         setHoverPeek(false);
       }
     };
 
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    syncBreakpoint();
+
+    media.addEventListener('change', syncBreakpoint);
+
+    return () => {
+      media.removeEventListener('change', syncBreakpoint);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (hoverCloseTimer.current !== null) {
+        window.clearTimeout(hoverCloseTimer.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -243,31 +262,66 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
     });
   };
 
-  const handleSidebarEnter = () => {
-    if (!autoPeek) return;
+  const clearHoverCloseTimer = () => {
     if (hoverCloseTimer.current !== null) {
       window.clearTimeout(hoverCloseTimer.current);
       hoverCloseTimer.current = null;
     }
+  };
+
+  const handleSidebarEnter = () => {
+    if (!autoPeek || !collapsed) return;
+
+    clearHoverCloseTimer();
+
+    if (Date.now() < hoverSuppressedUntil.current) {
+      return;
+    }
+
     setHoverPeek(true);
+  };
+
+  const handleSidebarMove = () => {
+    if (!autoPeek || !collapsed) return;
+
+    clearHoverCloseTimer();
+
+    if (Date.now() < hoverSuppressedUntil.current) {
+      return;
+    }
+
+    /*
+     * Important:
+     * After clicking the collapse button the pointer may still be
+     * physically inside the sidebar. mouseenter will not fire again.
+     * Pointer movement gives us a second reliable way to trigger peek.
+     */
+    if (!hoverPeek) {
+      setHoverPeek(true);
+    }
   };
 
   const handleSidebarLeave = () => {
     if (!autoPeek) return;
-    if (hoverCloseTimer.current !== null) {
-      window.clearTimeout(hoverCloseTimer.current);
-    }
+
+    hoverSuppressedUntil.current = 0;
+
+    clearHoverCloseTimer();
+
     hoverCloseTimer.current = window.setTimeout(() => {
       setHoverPeek(false);
       hoverCloseTimer.current = null;
-    }, 90);
+    }, 120);
   };
 
   return (
     <aside
-      className={`at-sidebar ${!visuallyExpanded ? 'is-collapsed' : ''} ${hoverPeek ? 'is-peeked' : ''} ${autoPeek ? 'is-auto-peek' : ''}`}
-      onMouseEnter={handleSidebarEnter}
-      onMouseLeave={handleSidebarLeave}
+      className={`at-sidebar ${!visuallyExpanded ? 'is-collapsed' : ''} ${
+        hoverPeek ? 'is-peeked' : ''
+      } ${autoPeek && collapsed ? 'is-auto-peek' : ''}`}
+      onPointerEnter={handleSidebarEnter}
+      onPointerMove={handleSidebarMove}
+      onPointerLeave={handleSidebarLeave}
     >
       <div className="at-sidebar-top">
         <div className="at-sidebar-brand-row">
@@ -285,14 +339,21 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
             type="button"
             className="at-sidebar-collapse-button"
             onClick={() => {
-              setAutoPeek(false);
+              hoverSuppressedUntil.current = Date.now() + 220;
+              clearHoverCloseTimer();
               setHoverPeek(false);
               onToggle();
             }}
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            <span
+              className={`at-sidebar-toggle-icon ${
+                collapsed ? 'is-collapsed' : ''
+              }`}
+            >
+              <ChevronLeft size={16} />
+            </span>
           </button>
         </div>
 
