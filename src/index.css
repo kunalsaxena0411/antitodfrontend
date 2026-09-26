@@ -15829,3 +15829,84 @@
   background: var(--at-surface-raised);
 }
 
+
+.modeling-inspector {
+  min-height: 0;
+  overflow: hidden;
+  border-color: var(--at-border);
+  background: var(--at-surface);
+}
+
+.modeling-inspector-scroll {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+.modeling-canvas {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--at-bg);
+}
+
+.modeling-canvas > .react-flow {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.modeling-canvas .react-flow__controls {
+  overflow: hidden;
+  border: 1px solid var(--at-border) !important;
+  border-radius: 8px !important;
+  background: var(--at-surface) !important;
+  box-shadow: 0 16px 40px rgba(0,0,0,.35) !important;
+}
+
+.modeling-canvas .react-flow__controls-button {
+  width: 30px !important;
+  height: 30px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--at-border) !important;
+  background: var(--at-surface) !important;
+  color: var(--at-muted) !important;
+  fill: currentColor !important;
+}
+
+.modeling-canvas .react-flow__controls-button:last-child {
+  border-bottom: 0 !important;
+}
+
+.modeling-canvas .react-flow__controls-button:hover {
+  background: var(--at-surface-hover) !important;
+  color: var(--at-text) !important;
+}
+
+.modeling-canvas .react-flow__edge-path {
+  stroke: #626262;
+  stroke-width: 1.5;
+}
+
+.modeling-canvas .react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--at-accent);
+  stroke-width: 2;
+}
+
+.modeling-canvas .react-flow__handle {
+  width: 8px !important;
+  height: 8px !important;
+  border: 2px solid var(--at-bg) !important;
+  background: #777 !important;
+}
+
+.modeling-canvas .react-flow__handle:hover {
+  background: var(--at-accent) !important;
+}
+
+.modeling-canvas .react-flow__attribution {
+  display: none !important;
+}
