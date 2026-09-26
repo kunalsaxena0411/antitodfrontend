@@ -1589,7 +1589,7 @@ export default function InvestigationPage() {
    
    ================================================================ */}
 
-        <aside className="at-investigation-inspector">
+        <aside className={`at-investigation-inspector ${!selectedNode ? 'is-empty' : ''}`}>
           {!selectedNode ? (
             <div className="at-investigation-no-selection">
               <Network size={28} />

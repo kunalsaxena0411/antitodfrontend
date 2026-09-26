@@ -15910,3 +15910,52 @@
 .modeling-canvas .react-flow__attribution {
   display: none !important;
 }
+
+/* ==========================================================================
+   Mobile Responsiveness Modeling Overrides
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Modeling Shell */
+  .modeling-shell {
+    flex-direction: column;
+  }
+  
+  .modeling-palette {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 35vh !important;
+    min-height: 200px !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--at-border);
+  }
+  
+  .modeling-inspector {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 50;
+    border-left: 1px solid var(--at-border) !important;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+  }
+  
+  .modeling-inspector.w-80 {
+    width: calc(100% - 40px) !important;
+  }
+  
+  .modeling-toolbar {
+    flex-wrap: wrap;
+    height: auto !important;
+    padding: 8px !important;
+  }
+  
+  /* Graph Investigation View mobile fix */
+  .at-investigation-inspector.is-empty {
+    display: none !important;
+  }
+  
+  .at-investigation-body {
+    grid-template-columns: 1fr !important;
+  }
+}
