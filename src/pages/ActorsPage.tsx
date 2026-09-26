@@ -739,13 +739,13 @@ export default function ActorsPage() {
                     </td>
                   </tr>
                 ) : (
-                  filtered.map((actor) => {
+                  filtered.map((actor, index) => {
                     const selected =
                       selectedActorId === actor.id;
 
                     return (
                       <tr
-                        key={actor.id}
+                        key={actor.id || `actor-${index}`}
                         className={
                           selected ? 'active' : ''
                         }

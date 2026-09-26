@@ -22,20 +22,20 @@ function tlsDaysRemaining(notAfter: string | undefined): number | null {
 }
 
 function tlsCertTone(days: number | null): { text: string; cls: string } {
-  if (days === null) return { text: '—', cls: 'border-gray-600 text-gray-500' };
+  if (days === null) return { text: '—', cls: 'border-neutral-600 text-neutral-500' };
   if (days < 0) return { text: 'Expired', cls: 'border-red-600 text-red-300 bg-red-950/50' };
   if (days < 30) return { text: `SSL ${days}d`, cls: 'border-red-500/60 text-red-200' };
-  if (days < 60) return { text: `SSL ${days}d`, cls: 'border-amber-500/60 text-amber-200' };
-  return { text: `SSL ${days}d`, cls: 'border-green-600/50 text-green-300' };
+  if (days < 60) return { text: `SSL ${days}d`, cls: 'border-neutral-500/60 text-white' };
+  return { text: `SSL ${days}d`, cls: 'border-neutral-600/50 text-white' };
 }
 
 function statusPillClass(code: string): string {
   const s = String(code).trim();
   const n = parseInt(s, 10);
-  if ((n >= 200 && n < 300) || s.startsWith('2')) return 'border-green-600/50 text-green-300 bg-green-950/40';
-  if ((n >= 300 && n < 400) || s.startsWith('3')) return 'border-purple-600/50 text-purple-300 bg-purple-950/40';
+  if ((n >= 200 && n < 300) || s.startsWith('2')) return 'border-neutral-600/50 text-white bg-neutral-950/40';
+  if ((n >= 300 && n < 400) || s.startsWith('3')) return 'border-neutral-600/50 text-white bg-neutral-950/40';
   if ((n >= 400 && n < 600) || s.startsWith('4') || s.startsWith('5')) return 'border-red-600/50 text-red-300 bg-red-950/40';
-  return 'border-gray-600 text-gray-400 bg-black/30';
+  return 'border-neutral-600 text-neutral-400 bg-black/30';
 }
 
 function formatRelativeAgo(iso: string | undefined): string {
@@ -91,10 +91,10 @@ export const InventoryAllServicesTable: React.FC<AllServicesProps> = ({
   onScreenshotClick,
   onOpenAssetDetail,
 }) => (
-  <div className="overflow-x-auto rounded-xl border border-gray-800/80 bg-[#070b12]">
+  <div className="overflow-x-auto rounded-xl border border-neutral-800/80 bg-[#070b12]">
     <table className="w-full text-left text-[13px]">
       <thead>
-        <tr className="border-b border-gray-800 text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+        <tr className="border-b border-neutral-800 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
           <th className="min-w-[220px] p-3 pl-4">Service</th>
           <th className="w-[108px] p-3">Screenshot</th>
           <th className="min-w-[200px] p-3">Technologies</th>
@@ -132,14 +132,14 @@ export const InventoryAllServicesTable: React.FC<AllServicesProps> = ({
             typeof rawTitle === 'string' && rawTitle.trim() && rawTitle.trim() !== 'undefined' ? rawTitle.trim() : '';
           const assetId = String(asset.id ?? row.id ?? '');
           return (
-            <tr key={rowKey} className="border-t border-gray-800/80 align-top transition-colors hover:bg-white/[0.03]">
+            <tr key={rowKey} className="border-t border-neutral-800/80 align-top transition-colors hover:bg-white/[0.03]">
               <td className="p-3 pl-4">
                 <div className="flex gap-2.5">
                   <div className="shrink-0 pt-0.5">
                     {faviconSrc ? (
-                      <img src={faviconSrc} alt="" className="h-6 w-6 rounded-md border border-gray-700/80 object-cover" />
+                      <img src={faviconSrc} alt="" className="h-6 w-6 rounded-md border border-neutral-700/80 object-cover" />
                     ) : (
-                      <Globe size={22} className="text-gray-600" />
+                      <Globe size={22} className="text-neutral-600" />
                     )}
                   </div>
                   <div className="min-w-0 flex-1 space-y-1.5">
@@ -155,28 +155,28 @@ export const InventoryAllServicesTable: React.FC<AllServicesProps> = ({
                         </a>
                       ) : (
                         <span
-                          className={`break-all font-mono text-[13px] font-semibold ${failed ? 'text-gray-500 line-through' : 'text-white'}`}
+                          className={`break-all font-mono text-[13px] font-semibold ${failed ? 'text-neutral-500 line-through' : 'text-white'}`}
                         >
                           {String(asset.value ?? row.value ?? '—')}
                         </span>
                       )}
-                      {probeUrl && !failed ? <ExternalLink size={13} className="shrink-0 text-gray-500" aria-hidden /> : null}
+                      {probeUrl && !failed ? <ExternalLink size={13} className="shrink-0 text-neutral-500" aria-hidden /> : null}
                       {onOpenAssetDetail && assetId ? (
                         <button
                           type="button"
                           onClick={() => onOpenAssetDetail(assetId)}
-                          className="shrink-0 rounded p-0.5 text-gray-500 hover:bg-white/5 hover:text-cyan-400"
+                          className="shrink-0 rounded p-0.5 text-neutral-500 hover:bg-white/5 hover:text-red-400"
                           title="Asset details"
                         >
                           <Settings2 size={14} />
                         </button>
                       ) : null}
-                      <span className="rounded-full border border-gray-700/80 bg-black/25 px-2 py-0.5 font-mono text-[10px] text-gray-400">
+                      <span className="rounded-full border border-neutral-700/80 bg-black/25 px-2 py-0.5 font-mono text-[10px] text-neutral-400">
                         {String(asset.type)}
                       </span>
                     </div>
                     {titleStr ? (
-                      <p className="line-clamp-2 text-[12px] leading-snug text-gray-400" title={titleStr}>
+                      <p className="line-clamp-2 text-[12px] leading-snug text-neutral-400" title={titleStr}>
                         {titleStr}
                       </p>
                     ) : null}
@@ -184,7 +184,7 @@ export const InventoryAllServicesTable: React.FC<AllServicesProps> = ({
                       {chain.length > 0 ? (
                         chain.map((c, ci) => (
                           <span key={`${c}-${ci}`} className="inline-flex items-center gap-1">
-                            {ci > 0 ? <span className="text-[10px] text-gray-600">→</span> : null}
+                            {ci > 0 ? <span className="text-[10px] text-neutral-600">→</span> : null}
                             <span className={`rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-medium ${statusPillClass(c)}`}>
                               {c}
                             </span>
@@ -199,7 +199,7 @@ export const InventoryAllServicesTable: React.FC<AllServicesProps> = ({
                           {String(http.status_code ?? row.statusCode ?? '—')}
                         </span>
                       )}
-                      <span className="font-mono text-[10px] text-gray-500">
+                      <span className="font-mono text-[10px] text-neutral-500">
                         {String(http.scheme ?? 'http')}:{String(http.port ?? '—')}
                       </span>
                     </div>
@@ -207,16 +207,16 @@ export const InventoryAllServicesTable: React.FC<AllServicesProps> = ({
                       {ips.slice(0, 2).map((ip) => (
                         <span
                           key={ip}
-                          className="inline-flex max-w-[200px] items-center gap-1 truncate rounded-full border border-gray-700/80 bg-black/20 px-2 py-0.5 font-mono text-[10px] text-gray-300"
+                          className="inline-flex max-w-[200px] items-center gap-1 truncate rounded-full border border-neutral-700/80 bg-black/20 px-2 py-0.5 font-mono text-[10px] text-neutral-300"
                         >
-                          <Network size={11} className="shrink-0 text-gray-500" aria-hidden />
+                          <Network size={11} className="shrink-0 text-neutral-500" aria-hidden />
                           {ip}
                         </span>
                       ))}
                       {ips.length > 2 ? (
-                        <span className="rounded-full border border-gray-700 px-2 py-0.5 text-[10px] text-gray-500">+{ips.length - 2}</span>
+                        <span className="rounded-full border border-neutral-700 px-2 py-0.5 text-[10px] text-neutral-500">+{ips.length - 2}</span>
                       ) : null}
-                      {!ips.length ? <span className="text-[10px] text-gray-600">—</span> : null}
+                      {!ips.length ? <span className="text-[10px] text-neutral-600">—</span> : null}
                     </div>
                   </div>
                 </div>
@@ -226,12 +226,12 @@ export const InventoryAllServicesTable: React.FC<AllServicesProps> = ({
                   <button
                     type="button"
                     onClick={() => onScreenshotClick(shotRaw)}
-                    className="block overflow-hidden rounded-lg border border-gray-700/80 hover:border-sky-600/50"
+                    className="block overflow-hidden rounded-lg border border-neutral-700/80 hover:border-sky-600/50"
                   >
                     <img src={shotSrc} alt="" className="h-[72px] w-[96px] bg-black object-cover object-top" />
                   </button>
                 ) : (
-                  <div className="flex h-[72px] w-[96px] items-center justify-center rounded-lg border border-dashed border-gray-700/90 px-1 text-center text-[10px] text-gray-500">
+                  <div className="flex h-[72px] w-[96px] items-center justify-center rounded-lg border border-dashed border-neutral-700/90 px-1 text-center text-[10px] text-neutral-500">
                     No screenshot
                   </div>
                 )}
@@ -249,7 +249,7 @@ export const InventoryAllServicesTable: React.FC<AllServicesProps> = ({
                         <span
                           key={`${name}-${ti}`}
                           title={desc || name}
-                          className="inline-flex cursor-help items-center gap-1.5 rounded-full border border-gray-600/55 bg-gray-900/80 px-2.5 py-1 text-[11px] font-medium text-gray-100 shadow-sm"
+                          className="inline-flex cursor-help items-center gap-1.5 rounded-full border border-neutral-600/55 bg-neutral-900/80 px-2.5 py-1 text-[11px] font-medium text-neutral-100 shadow-sm"
                         >
                           {iconSrc ? <img src={iconSrc} alt="" className="h-4 w-4 rounded-sm object-contain" /> : null}
                           {name}
@@ -260,33 +260,33 @@ export const InventoryAllServicesTable: React.FC<AllServicesProps> = ({
                       ? techStrings.slice(0, 5).map((t) => (
                           <span
                             key={t}
-                            className="inline-flex items-center rounded-full border border-gray-600/55 bg-gray-900/80 px-2.5 py-1 text-[11px] text-gray-200"
+                            className="inline-flex items-center rounded-full border border-neutral-600/55 bg-neutral-900/80 px-2.5 py-1 text-[11px] text-neutral-200"
                           >
                             {t}
                           </span>
                         ))
                       : null}
                     {techTotal > 5 ? (
-                      <span className="inline-flex items-center rounded-full border border-gray-700 px-2.5 py-1 text-[11px] text-gray-500">
+                      <span className="inline-flex items-center rounded-full border border-neutral-700 px-2.5 py-1 text-[11px] text-neutral-500">
                         +{techTotal - 5}
                       </span>
                     ) : null}
                   </div>
                 ) : (
-                  <span className="text-xs text-gray-600">—</span>
+                  <span className="text-xs text-neutral-600">—</span>
                 )}
               </td>
               <td className="p-3 align-top">
                 <div className="space-y-2">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Lock size={13} className="shrink-0 text-gray-500" aria-hidden />
+                    <Lock size={13} className="shrink-0 text-neutral-500" aria-hidden />
                     <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold ${certTone.cls}`}>
                       {certTone.text}
                     </span>
                   </div>
                   {(issuerOrgs.length > 0 || issuerFallback) && (
                     <div className="flex flex-wrap items-start gap-2">
-                      <Globe size={13} className="mt-0.5 shrink-0 text-gray-500" aria-hidden />
+                      <Globe size={13} className="mt-0.5 shrink-0 text-neutral-500" aria-hidden />
                       <div className="flex flex-wrap gap-1">
                         {(issuerOrgs.length ? issuerOrgs : [issuerFallback])
                           .filter(Boolean)
@@ -294,7 +294,7 @@ export const InventoryAllServicesTable: React.FC<AllServicesProps> = ({
                           .map((org) => (
                             <span
                               key={org}
-                              className="max-w-[160px] truncate rounded-full border border-gray-700/80 bg-black/25 px-2 py-0.5 text-[10px] text-gray-300"
+                              className="max-w-[160px] truncate rounded-full border border-neutral-700/80 bg-black/25 px-2 py-0.5 text-[10px] text-neutral-300"
                               title={org}
                             >
                               {org}
@@ -305,7 +305,7 @@ export const InventoryAllServicesTable: React.FC<AllServicesProps> = ({
                   )}
                   {(sans.length > 0 || Boolean(tls.subject_cn)) && (
                     <div className="flex flex-wrap items-start gap-2">
-                      <Briefcase size={13} className="mt-0.5 shrink-0 text-gray-500" aria-hidden />
+                      <Briefcase size={13} className="mt-0.5 shrink-0 text-neutral-500" aria-hidden />
                       <div className="flex flex-wrap gap-1">
                         {[...sans, String(tls.subject_cn ?? '')]
                           .filter(Boolean)
@@ -313,7 +313,7 @@ export const InventoryAllServicesTable: React.FC<AllServicesProps> = ({
                           .map((d) => (
                             <span
                               key={d}
-                              className="max-w-[140px] truncate rounded-full border border-gray-700/70 px-2 py-0.5 text-[10px] text-gray-400"
+                              className="max-w-[140px] truncate rounded-full border border-neutral-700/70 px-2 py-0.5 text-[10px] text-neutral-400"
                               title={d}
                             >
                               {d}
@@ -323,11 +323,11 @@ export const InventoryAllServicesTable: React.FC<AllServicesProps> = ({
                     </div>
                   )}
                   {!tls.not_after && !issuerOrgs.length && !issuerFallback && !sans.length && !tls.subject_cn ? (
-                    <span className="text-xs text-gray-600">—</span>
+                    <span className="text-xs text-neutral-600">—</span>
                   ) : null}
                 </div>
               </td>
-              <td className="p-3 pr-4 align-top text-[12px] text-gray-400">
+              <td className="p-3 pr-4 align-top text-[12px] text-neutral-400">
                 {formatRelativeAgo(typeof row.createdAt === 'string' ? row.createdAt : undefined)}
               </td>
             </tr>
@@ -345,9 +345,9 @@ type GroupedProps = {
 };
 
 export const InventoryGroupedTable: React.FC<GroupedProps> = ({ group, items, resolveAssetMediaUrl }) => (
-  <div className="overflow-x-auto rounded-lg border border-gray-800">
+  <div className="overflow-x-auto rounded-lg border border-neutral-800">
     <table className="w-full text-left text-xs">
-      <thead className="bg-black/40 font-mono text-[11px] uppercase tracking-wide text-gray-500">
+      <thead className="bg-black/40 font-mono text-[11px] uppercase tracking-wide text-neutral-500">
         {group === 'ip' && (
           <tr>
             <th className="p-3 pl-4 font-medium">IP</th>
@@ -393,7 +393,7 @@ export const InventoryGroupedTable: React.FC<GroupedProps> = ({ group, items, re
           </tr>
         )}
       </thead>
-      <tbody className="text-gray-200">
+      <tbody className="text-neutral-200">
         {items.map((asset, idx) => {
           const row = asset as Record<string, unknown>;
           const rk = String(row.id ?? `${group}-${idx}`);
@@ -410,16 +410,16 @@ export const InventoryGroupedTable: React.FC<GroupedProps> = ({ group, items, re
             const orgLine = String(geo.asname ?? geo.org ?? geo.isp ?? '').trim();
             const asLine = String(geo.as ?? '').trim();
             return (
-              <tr key={rk} className="border-t border-gray-800/90 align-middle transition-colors hover:bg-white/[0.03]">
+              <tr key={rk} className="border-t border-neutral-800/90 align-middle transition-colors hover:bg-white/[0.03]">
                 <td className="p-3 pl-4 align-middle">
-                  <span className="inline-flex max-w-[220px] items-center gap-1.5 truncate rounded-full border border-gray-700/80 bg-black/25 px-2.5 py-1 font-mono text-[11px] text-gray-200">
-                    <Network size={12} className="shrink-0 text-gray-500" aria-hidden />
+                  <span className="inline-flex max-w-[220px] items-center gap-1.5 truncate rounded-full border border-neutral-700/80 bg-black/25 px-2.5 py-1 font-mono text-[11px] text-neutral-200">
+                    <Network size={12} className="shrink-0 text-neutral-500" aria-hidden />
                     {ipStr}
                   </span>
                 </td>
                 <td className="p-3 align-middle">
                   {mapThumb ? (
-                    <div className="relative h-14 w-[5.5rem] overflow-hidden rounded-lg border border-gray-700/80 bg-black/40">
+                    <div className="relative h-14 w-[5.5rem] overflow-hidden rounded-lg border border-neutral-700/80 bg-black/40">
                       <img src={mapThumb} alt="" className="h-full w-full object-cover" />
                       {city ? (
                         <span className="absolute bottom-0.5 left-1 max-w-[calc(100%-4px)] truncate text-[9px] font-bold uppercase tracking-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
@@ -428,24 +428,24 @@ export const InventoryGroupedTable: React.FC<GroupedProps> = ({ group, items, re
                       ) : null}
                     </div>
                   ) : (
-                    <span className="font-mono text-[11px] text-gray-600">—</span>
+                    <span className="font-mono text-[11px] text-neutral-600">—</span>
                   )}
                 </td>
                 <td className="p-3 align-middle">
                   <div className="text-[13px] font-medium text-white">{country || '—'}</div>
-                  {cc ? <div className="font-mono text-[11px] text-gray-500">{cc}</div> : null}
+                  {cc ? <div className="font-mono text-[11px] text-neutral-500">{cc}</div> : null}
                 </td>
                 <td className="max-w-[220px] p-3 align-middle">
-                  <div className="line-clamp-2 text-[12px] text-gray-200" title={orgLine}>
+                  <div className="line-clamp-2 text-[12px] text-neutral-200" title={orgLine}>
                     {orgLine || '—'}
                   </div>
                   {asLine ? (
-                    <div className="mt-0.5 truncate font-mono text-[10px] text-gray-500" title={asLine}>
+                    <div className="mt-0.5 truncate font-mono text-[10px] text-neutral-500" title={asLine}>
                       {asLine}
                     </div>
                   ) : null}
                 </td>
-                <td className="p-3 pr-4 align-middle text-right font-mono text-[12px] text-gray-300">
+                <td className="p-3 pr-4 align-middle text-right font-mono text-[12px] text-neutral-300">
                   {formatInventoryServiceCount(row.assetCount ?? row.count)}
                 </td>
               </tr>
@@ -454,14 +454,14 @@ export const InventoryGroupedTable: React.FC<GroupedProps> = ({ group, items, re
           if (group === 'port') {
             const portVal = String(row.port ?? row.value ?? '—');
             return (
-              <tr key={rk} className="border-t border-gray-800/90 align-middle transition-colors hover:bg-white/[0.03]">
+              <tr key={rk} className="border-t border-neutral-800/90 align-middle transition-colors hover:bg-white/[0.03]">
                 <td className="p-3 pl-4">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-gray-700/80 bg-black/25 px-2.5 py-1 font-mono text-[11px] text-gray-200">
-                    <Terminal size={12} className="shrink-0 text-gray-500" aria-hidden />
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-neutral-700/80 bg-black/25 px-2.5 py-1 font-mono text-[11px] text-neutral-200">
+                    <Terminal size={12} className="shrink-0 text-neutral-500" aria-hidden />
                     {portVal}
                   </span>
                 </td>
-                <td className="p-3 pr-4 text-right font-mono text-[12px] text-gray-300">
+                <td className="p-3 pr-4 text-right font-mono text-[12px] text-neutral-300">
                   {formatInventoryServiceCount(row.assetCount ?? row.count)}
                 </td>
               </tr>
@@ -470,14 +470,14 @@ export const InventoryGroupedTable: React.FC<GroupedProps> = ({ group, items, re
           if (group === 'host') {
             const hostVal = String(row.host ?? row.value ?? '—');
             return (
-              <tr key={rk} className="border-t border-gray-800/90 align-middle transition-colors hover:bg-white/[0.03]">
+              <tr key={rk} className="border-t border-neutral-800/90 align-middle transition-colors hover:bg-white/[0.03]">
                 <td className="p-3 pl-4">
-                  <span className="inline-flex max-w-[min(100%,320px)] items-center gap-1.5 truncate rounded-full border border-gray-700/80 bg-black/25 px-2.5 py-1 font-mono text-[11px] text-gray-200">
-                    <Cloud size={12} className="shrink-0 text-gray-500" aria-hidden />
+                  <span className="inline-flex max-w-[min(100%,320px)] items-center gap-1.5 truncate rounded-full border border-neutral-700/80 bg-black/25 px-2.5 py-1 font-mono text-[11px] text-neutral-200">
+                    <Cloud size={12} className="shrink-0 text-neutral-500" aria-hidden />
                     {hostVal}
                   </span>
                 </td>
-                <td className="p-3 pr-4 text-right font-mono text-[12px] text-gray-300">
+                <td className="p-3 pr-4 text-right font-mono text-[12px] text-neutral-300">
                   {formatInventoryServiceCount(row.assetCount ?? row.count)}
                 </td>
               </tr>
@@ -494,14 +494,14 @@ export const InventoryGroupedTable: React.FC<GroupedProps> = ({ group, items, re
             const rawCats = techObj.categoryNames ?? row.categoryNames;
             const cats = Array.isArray(rawCats) ? rawCats.map((c) => String(c)) : [];
             return (
-              <tr key={rk} className="border-t border-gray-800/90 align-top transition-colors hover:bg-white/[0.03]">
+              <tr key={rk} className="border-t border-neutral-800/90 align-top transition-colors hover:bg-white/[0.03]">
                 <td className="p-3 pl-4">
                   <div className="flex items-start gap-2.5">
                     {iconSrc ? (
-                      <img src={iconSrc} alt="" className="mt-0.5 h-8 w-8 shrink-0 rounded-md border border-gray-700/60 bg-black/30 object-contain p-0.5" />
+                      <img src={iconSrc} alt="" className="mt-0.5 h-8 w-8 shrink-0 rounded-md border border-neutral-700/60 bg-black/30 object-contain p-0.5" />
                     ) : (
-                      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-gray-700/50 bg-black/30">
-                        <Database size={16} className="text-gray-600" aria-hidden />
+                      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-neutral-700/50 bg-black/30">
+                        <Database size={16} className="text-neutral-600" aria-hidden />
                       </div>
                     )}
                     <div className="min-w-0 space-y-1.5">
@@ -509,7 +509,7 @@ export const InventoryGroupedTable: React.FC<GroupedProps> = ({ group, items, re
                       {cats.length > 0 ? (
                         <div className="flex flex-wrap gap-1">
                           {cats.slice(0, 6).map((c) => (
-                            <span key={c} className="rounded-full border border-gray-700/70 bg-black/30 px-2 py-0.5 text-[10px] text-gray-300">
+                            <span key={c} className="rounded-full border border-neutral-700/70 bg-black/30 px-2 py-0.5 text-[10px] text-neutral-300">
                               {c}
                             </span>
                           ))}
@@ -519,11 +519,11 @@ export const InventoryGroupedTable: React.FC<GroupedProps> = ({ group, items, re
                   </div>
                 </td>
                 <td className="max-w-md p-3">
-                  <p className="line-clamp-4 text-[12px] leading-snug text-gray-400" title={desc}>
+                  <p className="line-clamp-4 text-[12px] leading-snug text-neutral-400" title={desc}>
                     {desc || '—'}
                   </p>
                 </td>
-                <td className="p-3 pr-4 text-right font-mono text-[12px] text-gray-300 align-top">
+                <td className="p-3 pr-4 text-right font-mono text-[12px] text-neutral-300 align-top">
                   {formatInventoryServiceCount(row.assetCount ?? row.count)}
                 </td>
               </tr>
@@ -532,13 +532,13 @@ export const InventoryGroupedTable: React.FC<GroupedProps> = ({ group, items, re
           if (group === 'status-code') {
             const sc = String(row.statusCode ?? row.status_code ?? row.value ?? '—');
             return (
-              <tr key={rk} className="border-t border-gray-800/90 align-middle transition-colors hover:bg-white/[0.03]">
+              <tr key={rk} className="border-t border-neutral-800/90 align-middle transition-colors hover:bg-white/[0.03]">
                 <td className="p-3 pl-4">
                   <span className={`inline-flex rounded-full border px-2.5 py-1 font-mono text-[11px] font-medium ${statusPillClass(sc)}`}>
                     {sc}
                   </span>
                 </td>
-                <td className="p-3 pr-4 text-right font-mono text-[12px] text-gray-300">
+                <td className="p-3 pr-4 text-right font-mono text-[12px] text-neutral-300">
                   {formatInventoryServiceCount(row.assetCount ?? row.count)}
                 </td>
               </tr>
@@ -551,24 +551,24 @@ export const InventoryGroupedTable: React.FC<GroupedProps> = ({ group, items, re
             const tv = String(row.tls_version ?? '—');
             const subj = String(row.subject_dn ?? row.subject_cn ?? '—');
             return (
-              <tr key={rk} className="border-t border-gray-800/90 align-middle transition-colors hover:bg-white/[0.03]">
+              <tr key={rk} className="border-t border-neutral-800/90 align-middle transition-colors hover:bg-white/[0.03]">
                 <td className="p-3 pl-4 font-mono text-[12px] font-semibold text-white">{String(row.host ?? '—')}</td>
-                <td className="p-3 font-mono text-[11px] text-gray-400">{String(row.sni ?? '—')}</td>
-                <td className="max-w-[200px] truncate p-3 font-mono text-[11px] text-gray-300" title={subj}>
+                <td className="p-3 font-mono text-[11px] text-neutral-400">{String(row.sni ?? '—')}</td>
+                <td className="max-w-[200px] truncate p-3 font-mono text-[11px] text-neutral-300" title={subj}>
                   {subj}
                 </td>
                 <td className="p-3">
-                  <span className="inline-flex rounded-full border border-gray-600/80 bg-black/35 px-2.5 py-1 font-mono text-[10px] text-gray-200">
+                  <span className="inline-flex rounded-full border border-neutral-600/80 bg-black/35 px-2.5 py-1 font-mono text-[10px] text-neutral-200">
                     {tv}
                   </span>
                 </td>
-                <td className="p-3 font-mono text-[11px] text-gray-400">{formatTlsYmd(nb)}</td>
+                <td className="p-3 font-mono text-[11px] text-neutral-400">{formatTlsYmd(nb)}</td>
                 <td className="p-3 pr-4">
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <Clock size={13} className="shrink-0 text-gray-500" aria-hidden />
-                    <span className="font-mono text-[11px] text-gray-300">{formatTlsYmd(na)}</span>
+                    <Clock size={13} className="shrink-0 text-neutral-500" aria-hidden />
+                    <span className="font-mono text-[11px] text-neutral-300">{formatTlsYmd(na)}</span>
                     {d != null ? (
-                      <span className="rounded-full border border-gray-600/70 bg-black/30 px-2 py-0.5 font-mono text-[10px] text-gray-300">
+                      <span className="rounded-full border border-neutral-600/70 bg-black/30 px-2 py-0.5 font-mono text-[10px] text-neutral-300">
                         ({d}d)
                       </span>
                     ) : null}

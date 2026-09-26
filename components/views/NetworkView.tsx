@@ -52,7 +52,7 @@ const TimeSeriesChart = ({ data, yKey, color = "#8b5cf6" }: { data: any[], yKey:
         g.append("g").call(d3.axisLeft(y).ticks(5));
     }, [data, yKey, color]);
     
-    if (!data || data.length === 0) return <div className="flex items-center justify-center h-full text-gray-500 text-xs">No Time Series Data</div>;
+    if (!data || data.length === 0) return <div className="flex items-center justify-center h-full text-[#888] text-xs">No Time Series Data</div>;
     return <svg ref={ref} width="100%" height="100%"></svg>;
 };
 
@@ -121,16 +121,16 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
     return (
         <div className="h-full min-h-[calc(100vh-140px)] flex flex-col bg-[#090a0c] overflow-hidden w-full">
             {/* Header */}
-            <div className="bg-black/40 border-b border-gray-800 p-4 flex justify-between items-center shrink-0">
+            <div className="bg-black/40 border-b border-[#222] p-4 flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-4">
-                    <div className="p-2 bg-blue-900/20 rounded border border-blue-500/30">
-                        <Activity size={20} className="text-blue-400"/>
+                    <div className="p-2 bg-[#111] rounded border border-neutral-500/30">
+                        <Activity size={20} className="text-red-400"/>
                     </div>
                     <div>
                         <h2 className="text-lg font-bold text-white font-cyber flex items-center gap-2">
-                            NETWORK <span className="text-blue-400">FORENSICS</span>
+                            NETWORK <span className="text-red-400">FORENSICS</span>
                         </h2>
-                        <div className="flex gap-4 text-xs font-mono text-gray-500">
+                        <div className="flex gap-4 text-xs font-mono text-[#888]">
                             <span>{savedResult.fileType}</span>
                             <span>{savedResult.stats.totalPackets.toLocaleString()} pkts</span>
                             <span>{(Number(savedResult.stats.totalBytes) / 1024 / 1024).toFixed(2)} MB</span>
@@ -139,27 +139,27 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <button onClick={() => onUpdateResult(null)} className="px-3 py-1.5 text-xs font-bold text-gray-400 hover:text-white border border-gray-700 rounded hover:bg-gray-800">
+                    <button onClick={() => onUpdateResult(null)} className="px-3 py-1.5 text-xs font-bold text-[#AAA] hover:text-white border border-[#333] rounded hover:bg-[#151515]">
                         NEW ANALYSIS
                     </button>
                 </div>
             </div>
 
             {/* Navigation */}
-            <div className="flex bg-gray-900/30 border-b border-gray-800 px-4 shrink-0 overflow-x-auto">
-                <button onClick={() => setActiveTab('DASHBOARD')} className={`px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-2 transition-colors ${activeTab === 'DASHBOARD' ? 'border-blue-500 text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`}>
+            <div className="flex bg-[#111] border-b border-[#222] px-4 shrink-0 overflow-x-auto">
+                <button onClick={() => setActiveTab('DASHBOARD')} className={`px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-2 transition-colors ${activeTab === 'DASHBOARD' ? 'border-neutral-500 text-white' : 'border-transparent text-[#888] hover:text-neutral-300'}`}>
                     <Activity size={14}/> OVERVIEW
                 </button>
-                <button onClick={() => setActiveTab('PACKETS')} className={`px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-2 transition-colors ${activeTab === 'PACKETS' ? 'border-green-500 text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`}>
+                <button onClick={() => setActiveTab('PACKETS')} className={`px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-2 transition-colors ${activeTab === 'PACKETS' ? 'border-neutral-500 text-white' : 'border-transparent text-[#888] hover:text-neutral-300'}`}>
                     <List size={14}/> PACKETS
                 </button>
-                <button onClick={() => setActiveTab('STREAMS')} className={`px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-2 transition-colors ${activeTab === 'STREAMS' ? 'border-orange-500 text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`}>
+                <button onClick={() => setActiveTab('STREAMS')} className={`px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-2 transition-colors ${activeTab === 'STREAMS' ? 'border-neutral-500 text-white' : 'border-transparent text-[#888] hover:text-neutral-300'}`}>
                     <ArrowRight size={14}/> TCP STREAMS
                 </button>
-                <button onClick={() => setActiveTab('FILES')} className={`px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-2 transition-colors ${activeTab === 'FILES' ? 'border-purple-500 text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`}>
+                <button onClick={() => setActiveTab('FILES')} className={`px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-2 transition-colors ${activeTab === 'FILES' ? 'border-neutral-500 text-white' : 'border-transparent text-[#888] hover:text-neutral-300'}`}>
                     <FileCode size={14}/> FILES ({savedResult.files.length})
                 </button>
-                <button onClick={() => setActiveTab('THREATS')} className={`px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-2 transition-colors ${activeTab === 'THREATS' ? 'border-red-500 text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`}>
+                <button onClick={() => setActiveTab('THREATS')} className={`px-4 py-3 text-xs font-bold border-b-2 flex items-center gap-2 transition-colors ${activeTab === 'THREATS' ? 'border-red-500 text-white' : 'border-transparent text-[#888] hover:text-neutral-300'}`}>
                     <ShieldAlert size={14}/> THREATS ({savedResult.anomalies.length + savedResult.actorMatches.length})
                 </button>
             </div>
@@ -168,49 +168,49 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
                 {activeTab === 'DASHBOARD' && (
                     <div className="absolute inset-0 overflow-y-auto custom-scrollbar p-6 space-y-6">
                         {/* Traffic Volume */}
-                        <div className="h-64 bg-gray-900/40 border border-gray-800 rounded-lg p-4">
-                            <h3 className="text-xs font-bold text-gray-400 uppercase mb-4 flex items-center gap-2"><Activity size={14}/> Traffic Volume (Bytes)</h3>
+                        <div className="h-64 bg-[#111] border border-[#222] rounded-lg p-4">
+                            <h3 className="text-xs font-bold text-[#AAA] uppercase mb-4 flex items-center gap-2"><Activity size={14}/> Traffic Volume (Bytes)</h3>
                             <TimeSeriesChart data={savedResult.stats.timeSeries} yKey="bytes" color="#3b82f6" />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {/* Protocols */}
-                            <div className="bg-gray-900/40 border border-gray-800 rounded-lg p-4">
-                                <h3 className="text-xs font-bold text-gray-400 uppercase mb-4">Protocol Distribution</h3>
+                            <div className="bg-[#111] border border-[#222] rounded-lg p-4">
+                                <h3 className="text-xs font-bold text-[#AAA] uppercase mb-4">Protocol Distribution</h3>
                                 <div className="space-y-2">
                                     {Object.entries(savedResult.stats.protocols).sort((a: any, b: any) => Number(b[1]) - Number(a[1])).slice(0, 8).map(([proto, count], i) => (
                                         <div key={i} className="flex items-center justify-between text-xs">
-                                            <span className="text-gray-300 font-mono">{proto}</span>
+                                            <span className="text-neutral-300 font-mono">{proto}</span>
                                             <div className="flex items-center gap-2 flex-1 mx-3">
-                                                <div className="h-1.5 bg-gray-800 rounded-full flex-1 overflow-hidden">
-                                                    <div className="h-full bg-blue-500" style={{ width: `${(Number(count) / Number(savedResult.stats.totalPackets)) * 100}%` }}></div>
+                                                <div className="h-1.5 bg-[#151515] rounded-full flex-1 overflow-hidden">
+                                                    <div className="h-full bg-[#151515]" style={{ width: `${(Number(count) / Number(savedResult.stats.totalPackets)) * 100}%` }}></div>
                                                 </div>
                                             </div>
-                                            <span className="text-gray-500 font-mono">{Number(count)}</span>
+                                            <span className="text-[#888] font-mono">{Number(count)}</span>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
                             {/* Top Talkers */}
-                            <div className="bg-gray-900/40 border border-gray-800 rounded-lg p-4">
-                                <h3 className="text-xs font-bold text-gray-400 uppercase mb-4">Top Talkers (Source IP)</h3>
+                            <div className="bg-[#111] border border-[#222] rounded-lg p-4">
+                                <h3 className="text-xs font-bold text-[#AAA] uppercase mb-4">Top Talkers (Source IP)</h3>
                                 <div className="space-y-2">
                                     {savedResult.stats.topTalkers.slice(0, 8).map((talker: any, i: number) => (
                                         <div key={i} className="flex justify-between items-center text-xs p-1.5 hover:bg-white/5 rounded">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-gray-500 font-mono w-4">{i+1}.</span>
-                                                <span className="text-blue-300 font-mono">{talker.ip}</span>
+                                                <span className="text-[#888] font-mono w-4">{i+1}.</span>
+                                                <span className="text-white font-mono">{talker.ip}</span>
                                             </div>
-                                            <span className="text-gray-400">{(Number(talker.bytes) / 1024).toFixed(1)} KB</span>
+                                            <span className="text-[#AAA]">{(Number(talker.bytes) / 1024).toFixed(1)} KB</span>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
                             {/* Anomalies */}
-                            <div className="bg-gray-900/40 border border-gray-800 rounded-lg p-4">
-                                <h3 className="text-xs font-bold text-gray-400 uppercase mb-4 flex items-center gap-2"><AlertTriangle size={14}/> Detected Anomalies</h3>
+                            <div className="bg-[#111] border border-[#222] rounded-lg p-4">
+                                <h3 className="text-xs font-bold text-[#AAA] uppercase mb-4 flex items-center gap-2"><AlertTriangle size={14}/> Detected Anomalies</h3>
                                 <div className="space-y-2 overflow-y-auto custom-scrollbar max-h-60">
                                     {savedResult.anomalies.length > 0 ? savedResult.anomalies.map((anom, i) => (
                                         <div key={i} className="p-2 bg-red-900/10 border border-red-500/20 rounded text-xs">
@@ -218,9 +218,9 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
                                                 <span className="text-red-400 font-bold">{anom.type}</span>
                                                 <span className="text-red-300/50 text-[10px]">{anom.severity}</span>
                                             </div>
-                                            <p className="text-gray-400">{anom.description}</p>
+                                            <p className="text-[#AAA]">{anom.description}</p>
                                         </div>
-                                    )) : <div className="text-center text-gray-600 text-xs italic py-10">No anomalies detected.</div>}
+                                    )) : <div className="text-center text-neutral-600 text-xs italic py-10">No anomalies detected.</div>}
                                 </div>
                             </div>
                         </div>
@@ -229,12 +229,12 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
 
                 {activeTab === 'PACKETS' && (
                     <div className="absolute inset-0 flex flex-col">
-                        <div className="p-2 border-b border-gray-800 bg-gray-900/50 flex gap-2">
+                        <div className="p-2 border-b border-[#222] bg-[#111] flex gap-2">
                             <div className="relative flex-1">
-                                <Search className="absolute left-2 top-2 text-gray-500 w-3 h-3"/>
+                                <Search className="absolute left-2 top-2 text-[#888] w-3 h-3"/>
                                 <input 
                                     type="text" 
-                                    className="w-full bg-black border border-gray-700 rounded pl-8 pr-4 py-1 text-xs text-gray-300 focus:border-blue-500 focus:outline-none"
+                                    className="w-full bg-black border border-[#333] rounded pl-8 pr-4 py-1 text-xs text-neutral-300 focus:border-neutral-500 focus:outline-none"
                                     placeholder="Filter packets (protocol, ip, info)..."
                                     value={packetSearch}
                                     onChange={(e) => setPacketSearch(e.target.value)}
@@ -243,7 +243,7 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
                         </div>
                         <div className="flex-1 overflow-auto custom-scrollbar">
                             <table className="w-full text-left text-xs font-mono">
-                                <thead className="bg-gray-900 text-gray-500 sticky top-0 z-10">
+                                <thead className="bg-[#0A0A0A] text-[#888] sticky top-0 z-10">
                                     <tr>
                                         <th className="p-2 w-16">No.</th>
                                         <th className="p-2 w-24">Time</th>
@@ -254,16 +254,16 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
                                         <th className="p-2">Info</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-800 text-gray-300">
+                                <tbody className="divide-y divide-neutral-800 text-neutral-300">
                                     {filteredPackets.map((pkt) => (
                                         <tr key={pkt.id} className="hover:bg-white/5 cursor-pointer">
-                                            <td className="p-2 text-gray-500">{pkt.id}</td>
-                                            <td className="p-2 text-gray-500">{pkt.timestamp.toFixed(4)}</td>
-                                            <td className="p-2 text-blue-300">{pkt.source}</td>
-                                            <td className="p-2 text-orange-300">{pkt.destination}</td>
+                                            <td className="p-2 text-[#888]">{pkt.id}</td>
+                                            <td className="p-2 text-[#888]">{pkt.timestamp.toFixed(4)}</td>
+                                            <td className="p-2 text-white">{pkt.source}</td>
+                                            <td className="p-2 text-white">{pkt.destination}</td>
                                             <td className="p-2 font-bold">{pkt.protocol}</td>
-                                            <td className="p-2 text-right text-gray-500">{pkt.length}</td>
-                                            <td className="p-2 text-gray-400 truncate max-w-lg" title={pkt.info}>{pkt.info}</td>
+                                            <td className="p-2 text-right text-[#888]">{pkt.length}</td>
+                                            <td className="p-2 text-[#AAA] truncate max-w-lg" title={pkt.info}>{pkt.info}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -277,16 +277,16 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
                          {selectedStream ? (
                              <div className="flex-1 flex flex-col p-4">
                                  <div className="flex justify-between items-center mb-4">
-                                     <button onClick={() => setSelectedStream(null)} className="text-xs text-blue-400 hover:text-white flex items-center gap-1">
+                                     <button onClick={() => setSelectedStream(null)} className="text-xs text-red-400 hover:text-white flex items-center gap-1">
                                          <ChevronRight size={12} className="rotate-180"/> Back to Streams
                                      </button>
-                                     <div className="text-xs font-mono text-gray-400">
+                                     <div className="text-xs font-mono text-[#AAA]">
                                          Stream {selectedStream.id} • {selectedStream.application} • {selectedStream.duration.toFixed(2)}ms
                                      </div>
                                  </div>
-                                 <div className="flex-1 bg-black border border-gray-800 rounded p-4 overflow-auto custom-scrollbar font-mono text-xs">
+                                 <div className="flex-1 bg-black border border-[#222] rounded p-4 overflow-auto custom-scrollbar font-mono text-xs">
                                      {selectedStream.payloads.map((p, i) => (
-                                         <div key={i} className={`mb-2 ${p.direction === 'CLIENT_TO_SERVER' ? 'text-blue-300' : 'text-orange-300'}`}>
+                                         <div key={i} className={`mb-2 ${p.direction === 'CLIENT_TO_SERVER' ? 'text-white' : 'text-white'}`}>
                                              {/* Simulated text decoding for demo - in real app would use Hex view */}
                                              <div className="opacity-50 text-[10px] mb-0.5">{p.direction === 'CLIENT_TO_SERVER' ? 'Client -> Server' : 'Server -> Client'} ({p.data.length} bytes)</div>
                                              <div className="whitespace-pre-wrap break-all bg-white/5 p-2 rounded">
@@ -303,19 +303,19 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
                                      <div 
                                         key={stream.id} 
                                         onClick={() => setSelectedStream(stream)}
-                                        className="bg-gray-900/40 border border-gray-800 p-4 rounded hover:border-blue-500/30 cursor-pointer group transition-colors"
+                                        className="bg-[#111] border border-[#222] p-4 rounded hover:border-neutral-500/30 cursor-pointer group transition-colors"
                                      >
                                          <div className="flex justify-between items-start mb-2">
-                                             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${stream.protocol === 'TCP' ? 'bg-blue-900/20 text-blue-300' : 'bg-orange-900/20 text-orange-300'}`}>{stream.application}</span>
-                                             <span className="text-[10px] text-gray-500">{stream.packetCount} pkts</span>
+                                             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${stream.protocol === 'TCP' ? 'bg-[#111] text-white' : 'bg-neutral-900/20 text-white'}`}>{stream.application}</span>
+                                             <span className="text-[10px] text-[#888]">{stream.packetCount} pkts</span>
                                          </div>
-                                         <div className="text-xs font-mono text-gray-300 mb-1">
-                                             {stream.srcIp}:{stream.srcPort} <span className="text-gray-600">→</span> {stream.dstIp}:{stream.dstPort}
+                                         <div className="text-xs font-mono text-neutral-300 mb-1">
+                                             {stream.srcIp}:{stream.srcPort} <span className="text-neutral-600">→</span> {stream.dstIp}:{stream.dstPort}
                                          </div>
-                                         <div className="text-[10px] text-gray-500">
+                                         <div className="text-[10px] text-[#888]">
                                              Duration: {stream.duration.toFixed(2)}ms | Size: {(Number(stream.bytes)/1024).toFixed(2)} KB
                                          </div>
-                                         {stream.metadata?.sni && <div className="mt-2 text-[10px] text-purple-400 bg-purple-900/10 px-2 py-1 rounded truncate">SNI: {stream.metadata.sni}</div>}
+                                         {stream.metadata?.sni && <div className="mt-2 text-[10px] text-red-400 bg-neutral-900/10 px-2 py-1 rounded truncate">SNI: {stream.metadata.sni}</div>}
                                      </div>
                                  ))}
                              </div>
@@ -327,31 +327,31 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
                     <div className="absolute inset-0 overflow-y-auto custom-scrollbar p-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                             {savedResult.files.map(file => (
-                                <div key={file.id} className="bg-gray-900/40 border border-gray-800 p-4 rounded hover:border-gray-600 transition-colors group">
+                                <div key={file.id} className="bg-[#111] border border-[#222] p-4 rounded hover:border-neutral-600 transition-colors group">
                                     <div className="flex items-start justify-between mb-2">
-                                        <FileCode size={24} className="text-gray-500"/>
+                                        <FileCode size={24} className="text-[#888]"/>
                                         <button 
                                             onClick={() => {
                                                 const url = URL.createObjectURL(file.data);
                                                 const a = document.createElement('a'); a.href = url; a.download = file.name; a.click();
                                             }}
-                                            className="text-gray-500 hover:text-white"
+                                            className="text-[#888] hover:text-white"
                                         >
                                             <Download size={16}/>
                                         </button>
                                     </div>
                                     <div className="font-bold text-sm text-white truncate mb-1" title={file.name}>{file.name}</div>
-                                    <div className="text-xs text-gray-500 mb-2">{file.type} • {(file.size / 1024).toFixed(1)} KB</div>
+                                    <div className="text-xs text-[#888] mb-2">{file.type} • {(file.size / 1024).toFixed(1)} KB</div>
                                     <div className="flex items-center gap-2">
-                                        <span className={`text-[10px] px-1.5 py-0.5 rounded border ${file.entropy > 7 ? 'border-red-500/30 text-red-400 bg-red-900/10' : 'border-green-500/30 text-green-400 bg-green-900/10'}`}>
+                                        <span className={`text-[10px] px-1.5 py-0.5 rounded border ${file.entropy > 7 ? 'border-red-500/30 text-red-400 bg-red-900/10' : 'border-neutral-500/30 text-white bg-neutral-900/10'}`}>
                                             Entropy: {file.entropy.toFixed(2)}
                                         </span>
-                                        {file.isCompressed && <span className="text-[10px] text-gray-500 bg-gray-800 px-1.5 py-0.5 rounded">Compressed</span>}
+                                        {file.isCompressed && <span className="text-[10px] text-[#888] bg-[#151515] px-1.5 py-0.5 rounded">Compressed</span>}
                                     </div>
                                 </div>
                             ))}
                             {savedResult.files.length === 0 && (
-                                <div className="col-span-full text-center text-gray-500 italic py-10">No files extracted from stream.</div>
+                                <div className="col-span-full text-center text-[#888] italic py-10">No files extracted from stream.</div>
                             )}
                         </div>
                     </div>
@@ -368,24 +368,24 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
                                          <div key={i} className="bg-red-900/10 border border-red-500/30 p-4 rounded flex justify-between items-start">
                                              <div>
                                                  <div className="font-bold text-red-300">{match.actor.value}</div>
-                                                 <div className="text-xs text-gray-400">Trigger: {match.trigger} ({match.type})</div>
+                                                 <div className="text-xs text-[#AAA]">Trigger: {match.trigger} ({match.type})</div>
                                              </div>
                                              <span className="text-[10px] bg-red-900/40 text-red-200 px-2 py-1 rounded font-bold border border-red-500/30">{match.confidence} CONFIDENCE</span>
                                          </div>
                                      ))}
                                  </div>
-                             ) : <div className="text-gray-500 text-xs italic">No known threat actors matched.</div>}
+                             ) : <div className="text-[#888] text-xs italic">No known threat actors matched.</div>}
                          </div>
 
                          {/* JA3 Fingerprints */}
                          <div className="space-y-4">
-                             <h3 className="text-sm font-bold text-orange-400 uppercase flex items-center gap-2"><Fingerprint size={16} className="lucide-icon"/> TLS Fingerprints (JA3)</h3>
-                             <div className="bg-gray-900/40 border border-gray-800 rounded overflow-hidden">
+                             <h3 className="text-sm font-bold text-white uppercase flex items-center gap-2"><Fingerprint size={16} className="lucide-icon"/> TLS Fingerprints (JA3)</h3>
+                             <div className="bg-[#111] border border-[#222] rounded overflow-hidden">
                                  <table className="w-full text-left text-xs font-mono">
-                                     <thead className="bg-gray-900 text-gray-500">
+                                     <thead className="bg-[#0A0A0A] text-[#888]">
                                          <tr><th className="p-3">JA3 Hash</th><th className="p-3 text-right">Count</th></tr>
                                      </thead>
-                                     <tbody className="divide-y divide-gray-800 text-gray-300">
+                                     <tbody className="divide-y divide-neutral-800 text-neutral-300">
                                          {savedResult.tlsFingerprints.slice(0, 20).map((ja3, i) => (
                                              <tr key={i} className="hover:bg-white/5">
                                                  <td className="p-3">{ja3.hash}</td>

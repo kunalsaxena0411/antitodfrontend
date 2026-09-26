@@ -44,9 +44,9 @@ export const DashboardAssetLocationsMap: React.FC<{ locations: AssetLocation[] }
           pathOptions={{ color: '#22d3ee', weight: 2, fillColor: '#22d3ee', fillOpacity: 0.82 }}
         >
           <Popup>
-            <div className="text-xs text-gray-900 font-sans">
+            <div className="text-xs text-neutral-900 font-sans">
               <div className="font-semibold">{String(p.query ?? '—')}</div>
-              <div className="text-gray-600">{[p.city, p.country].filter(Boolean).join(', ') || '—'}</div>
+              <div className="text-neutral-600">{[p.city, p.country].filter(Boolean).join(', ') || '—'}</div>
             </div>
           </Popup>
         </CircleMarker>

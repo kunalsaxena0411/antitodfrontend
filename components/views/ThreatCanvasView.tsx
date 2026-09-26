@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import ReactFlow, { 
     addEdge, 
     Background, 
@@ -47,6 +47,9 @@ import { analyzeArchitecture } from '../../services/aiConverter';
 import { ThreatRecord, ThreatModelData, TopologyNodeData, TopologyEdgeData } from '../../types';
 import { downloadFile, generateThreatModelPDF } from '../../services/exporter';
 import { saveToStorage, loadFromStorage, STORES } from '../../services/storage';
+import PageHeader from '../../src/components/layout/PageHeader';
+import StencilPalette from '../../src/components/modeling/StencilPalette';
+import { getCanvasInsertPosition } from '../../src/utils/reactFlowPlacement';
 
 // --- INTERNAL HELPERS ---
 
@@ -85,11 +88,11 @@ const CyberNode = ({ data, selected, icon: DefaultIcon, colorClass, borderClass,
 
     return (
         <div className={`
-            p-4 rounded-lg border-2 shadow-2xl transition-all duration-300 min-w-[220px] relative 
-            ${selected ? `${dynamicBorder} ring-4 ring-[#555] scale-[1.02]` : 'border-[#222328]'} 
+            p-4 rounded-lg border shadow-xl transition-all duration-200 w-[260px] min-h-[150px] relative 
+            ${selected ? 'border-at-accent ring-2 ring-at-accent/20 scale-[1.01]' : 'border-at-border'} 
             ${hasActiveThreat ? 'shadow-[0_0_20px_rgba(234,74,74,0.4)] border-[#ea4a4a]' : ''}
             ${isCritical && !hasActiveThreat ? 'shadow-[0_0_15px_rgba(249,115,22,0.2)]' : ''}
-            bg-[#111216] cursor-grab active:cursor-grabbing
+            bg-at-surface cursor-grab active:cursor-grabbing
         `}>
             <Handle type="target" position={Position.Top} className="!bg-[#ececec] !w-3 !h-3 !-top-1.5" />
             
@@ -133,11 +136,11 @@ const CyberNode = ({ data, selected, icon: DefaultIcon, colorClass, borderClass,
     );
 };
 
-const ActorNode = (props: any) => <CyberNode {...props} icon={User} colorClass="bg-green-500" borderClass="border-green-500" typeLabel="Entity" />;
-const ComputeNode = (props: any) => <CyberNode {...props} icon={Cpu} colorClass="bg-blue-500" borderClass="border-blue-500" typeLabel="Process" />;
-const StorageNode = (props: any) => <CyberNode {...props} icon={Database} colorClass="bg-pink-500" borderClass="border-pink-500" typeLabel="Storage" />;
-const NetworkNode = (props: any) => <CyberNode {...props} icon={Share2} colorClass="bg-indigo-500" borderClass="border-indigo-500" typeLabel="Interlink" />;
-const TacticNode = (props: any) => <CyberNode {...props} icon={Radar} colorClass="bg-purple-500" borderClass="border-purple-500" typeLabel="Tactic" />;
+const ActorNode = (props: any) => <CyberNode {...props} icon={User} colorClass="bg-[#1C1C1C]" borderClass="border-neutral-500" typeLabel="Entity" />;
+const ComputeNode = (props: any) => <CyberNode {...props} icon={Cpu} colorClass="bg-[#151515]" borderClass="border-neutral-500" typeLabel="Process" />;
+const StorageNode = (props: any) => <CyberNode {...props} icon={Database} colorClass="bg-[#151515]" borderClass="border-neutral-500" typeLabel="Storage" />;
+const NetworkNode = (props: any) => <CyberNode {...props} icon={Share2} colorClass="bg-[#1C1C1C]" borderClass="border-neutral-500" typeLabel="Interlink" />;
+const TacticNode = (props: any) => <CyberNode {...props} icon={Radar} colorClass="bg-[#151515]" borderClass="border-neutral-500" typeLabel="Tactic" />;
 
 const RiskNode = (props: any) => (
     <div className={`p-3 rounded-lg border-2 shadow-2xl transition-all duration-300 min-w-[160px] relative ${props.selected ? 'border-[#ea4a4a] ring-4 ring-[#ea4a4a40]' : 'border-[#3b2a2a]'} bg-[#111216] cursor-grab active:cursor-grabbing`}>
@@ -188,12 +191,12 @@ const STENCIL_LIBRARY = [
     {
         title: 'Compute & Logic',
         items: [
-            { id: 'web_server', type: 'compute', iconName: 'Globe', label: 'Web Service', color: 'bg-blue-500', description: 'Application front-end' },
-            { id: 'app_srv', type: 'compute', iconName: 'Server', label: 'App Logic', color: 'bg-blue-600', description: 'Business processing' },
-            { id: 'k8s_pod', type: 'compute', iconName: 'Monitor', label: 'Container/Pod', color: 'bg-cyan-500', description: 'Containerized unit' },
-            { id: 'lambda_fn', type: 'compute', iconName: 'Zap', label: 'Serverless', color: 'bg-amber-500', description: 'Function-as-a-Service' },
-            { id: 'mainframe', type: 'compute', iconName: 'MainframeIcon', label: 'Legacy Core', color: 'bg-slate-600', description: 'Central compute' },
-            { id: 'logic', type: 'compute', iconName: 'Logic', label: 'Edge Worker', color: 'bg-indigo-400', description: 'CDNs/Edge logic' },
+            { id: 'web_server', type: 'compute', iconName: 'Globe', label: 'Web Service', color: 'bg-[#151515]', description: 'Application front-end' },
+            { id: 'app_srv', type: 'compute', iconName: 'Server', label: 'App Logic', color: 'bg-[#151515]', description: 'Business processing' },
+            { id: 'k8s_pod', type: 'compute', iconName: 'Monitor', label: 'Container/Pod', color: 'bg-[#1C1C1C]', description: 'Containerized unit' },
+            { id: 'lambda_fn', type: 'compute', iconName: 'Zap', label: 'Serverless', color: 'bg-neutral-600', description: 'Function-as-a-Service' },
+            { id: 'mainframe', type: 'compute', iconName: 'MainframeIcon', label: 'Legacy Core', color: 'bg-[#0A0A0A]', description: 'Central compute' },
+            { id: 'logic', type: 'compute', iconName: 'Logic', label: 'Edge Worker', color: 'bg-[#1C1C1C]', description: 'CDNs/Edge logic' },
         ]
     },
     {
@@ -201,40 +204,40 @@ const STENCIL_LIBRARY = [
         items: [
             { id: 'firewall', type: 'network', iconName: 'Firewall', label: 'Firewall', color: 'bg-red-600', description: 'Access control' },
             { id: 'waf', type: 'network', iconName: 'Waf', label: 'WAF', color: 'bg-red-500', description: 'Web app protection' },
-            { id: 'api_gateway', type: 'network', iconName: 'ApiGwIcon', label: 'API Gateway', color: 'bg-indigo-400', description: 'API orchestration' },
-            { id: 'lb', type: 'network', iconName: 'LoadBalancer', label: 'Load Balancer', color: 'bg-blue-400', description: 'Traffic distribution' },
-            { id: 'proxy', type: 'network', iconName: 'Proxy', label: 'Proxy / LB', color: 'bg-emerald-500', description: 'Intermediary server' },
-            { id: 'vpn', type: 'network', iconName: 'Link', label: 'VPN Tunnel', color: 'bg-cyan-600', isExternal: true, description: 'Secure link' },
+            { id: 'api_gateway', type: 'network', iconName: 'ApiGwIcon', label: 'API Gateway', color: 'bg-[#1C1C1C]', description: 'API orchestration' },
+            { id: 'lb', type: 'network', iconName: 'LoadBalancer', label: 'Load Balancer', color: 'bg-[#151515]', description: 'Traffic distribution' },
+            { id: 'proxy', type: 'network', iconName: 'Proxy', label: 'Proxy / LB', color: 'bg-[#151515]', description: 'Intermediary server' },
+            { id: 'vpn', type: 'network', iconName: 'Link', label: 'VPN Tunnel', color: 'bg-[#1C1C1C]', isExternal: true, description: 'Secure link' },
         ]
     },
     {
         title: 'Storage & Data',
         items: [
-            { id: 'sql_db', type: 'storage', iconName: 'Database', label: 'Relational DB', color: 'bg-pink-500', sensitivity: 'PII', description: 'Structured data' },
-            { id: 'nosql_db', type: 'storage', iconName: 'DatabaseZap', label: 'NoSQL Store', color: 'bg-pink-600', description: 'Unstructured data' },
-            { id: 'bucket', type: 'storage', iconName: 'Box', label: 'Cloud Bucket', color: 'bg-orange-500', sensitivity: 'Protected', description: 'Object storage' },
-            { id: 'hsm', type: 'storage', iconName: 'HsmIcon', label: 'HSM / Vault', color: 'bg-yellow-500', sensitivity: 'Secret', description: 'Keys & Secrets' },
-            { id: 'archive', type: 'storage', iconName: 'Archive', label: 'Tape / Cold', color: 'bg-stone-500', description: 'Backup storage' },
+            { id: 'sql_db', type: 'storage', iconName: 'Database', label: 'Relational DB', color: 'bg-[#151515]', sensitivity: 'PII', description: 'Structured data' },
+            { id: 'nosql_db', type: 'storage', iconName: 'DatabaseZap', label: 'NoSQL Store', color: 'bg-[#151515]', description: 'Unstructured data' },
+            { id: 'bucket', type: 'storage', iconName: 'Box', label: 'Cloud Bucket', color: 'bg-[#1C1C1C]', sensitivity: 'Protected', description: 'Object storage' },
+            { id: 'hsm', type: 'storage', iconName: 'HsmIcon', label: 'HSM / Vault', color: 'bg-neutral-600', sensitivity: 'Secret', description: 'Keys & Secrets' },
+            { id: 'archive', type: 'storage', iconName: 'Archive', label: 'Tape / Cold', color: 'bg-[#0A0A0A]', description: 'Backup storage' },
         ]
     },
     {
         title: 'Actors & Entities',
         items: [
-            { id: 'user', type: 'actor', iconName: 'User', label: 'Generic User', color: 'bg-green-500', description: 'Standard persona' },
-            { id: 'admin', type: 'actor', iconName: 'UserCheck', label: 'Privileged User', color: 'bg-blue-500', description: 'Administrator' },
-            { id: 'partner', type: 'actor', iconName: 'UserPlus', label: '3rd Party', color: 'bg-amber-400', isExternal: true, description: 'Partner/Vendor' },
-            { id: 'iot', type: 'actor', iconName: 'Radio', label: 'IoT Sensor', color: 'bg-cyan-400', description: 'Connected hardware' },
-            { id: 'bot', type: 'actor', iconName: 'Bot', label: 'Service Bot', color: 'bg-purple-400', description: 'Automated entity' },
+            { id: 'user', type: 'actor', iconName: 'User', label: 'Generic User', color: 'bg-[#1C1C1C]', description: 'Standard persona' },
+            { id: 'admin', type: 'actor', iconName: 'UserCheck', label: 'Privileged User', color: 'bg-[#151515]', description: 'Administrator' },
+            { id: 'partner', type: 'actor', iconName: 'UserPlus', label: '3rd Party', color: 'bg-neutral-600', isExternal: true, description: 'Partner/Vendor' },
+            { id: 'iot', type: 'actor', iconName: 'Radio', label: 'IoT Sensor', color: 'bg-[#1C1C1C]', description: 'Connected hardware' },
+            { id: 'bot', type: 'actor', iconName: 'Bot', label: 'Service Bot', color: 'bg-[#151515]', description: 'Automated entity' },
             { id: 'attacker', type: 'actor', iconName: 'Skull', label: 'Threat Actor', color: 'bg-red-800', isExternal: true, description: 'Adversary' },
         ]
     },
     {
         title: 'Boundaries',
         items: [
-            { id: 'b_region', type: 'boundary', iconName: 'Cloud', label: 'Cloud VPC', color: 'bg-blue-900' },
-            { id: 'b_dmz', type: 'boundary', iconName: 'Shield', label: 'DMZ Segment', color: 'bg-orange-900' },
+            { id: 'b_region', type: 'boundary', iconName: 'Cloud', label: 'Cloud VPC', color: 'bg-[#151515]' },
+            { id: 'b_dmz', type: 'boundary', iconName: 'Shield', label: 'DMZ Segment', color: 'bg-[#1C1C1C]' },
             { id: 'b_internet', type: 'boundary', iconName: 'Globe', label: 'Public Web', color: 'bg-red-900' },
-            { id: 'b_mgmt', type: 'boundary', iconName: 'Settings', label: 'Mgmt Plane', color: 'bg-purple-900' },
+            { id: 'b_mgmt', type: 'boundary', iconName: 'Settings', label: 'Mgmt Plane', color: 'bg-[#151515]' },
         ]
     }
 ];
@@ -247,6 +250,7 @@ const AUTH_METHODS = ['None', 'OAuth2', 'JWT', 'Basic', 'mTLS', 'API Key', 'Kerb
 
 export const ThreatCanvasView: React.FC = () => {
     const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
+    const canvasRef = useRef<HTMLDivElement>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [paletteSearch, setPaletteSearch] = useState('');
     const [selectedNode, setSelectedNode] = useState<Node | null>(null);
@@ -271,7 +275,7 @@ export const ThreatCanvasView: React.FC = () => {
         description: '',
         type: 'compute',
         iconName: 'Box',
-        color: 'bg-blue-500',
+        color: 'bg-[#151515]',
         isExternal: false,
         sensitivity: 'None',
         criticality: 'MEDIUM'
@@ -363,41 +367,81 @@ export const ThreatCanvasView: React.FC = () => {
             authentication: 'None',
             mitreIds: []
         },
-        labelStyle: { fill: '#4361ee', fontWeight: 700, fontSize: 8 },
-        markerEnd: { type: MarkerType.ArrowClosed, color: '#4361ee' },
-        style: { stroke: '#4361ee', strokeWidth: 2 }
+        labelStyle: { fill: '#333333', fontWeight: 700, fontSize: 8 },
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#333333' },
+        style: { stroke: '#333333', strokeWidth: 2 }
     }, eds)), [setEdges]);
 
-    const onDrop = useCallback(
-        (event: React.DragEvent) => {
-            event.preventDefault();
-            if (!reactFlowInstance) return;
-            const type = event.dataTransfer.getData('application/reactflow/type');
-            const label = event.dataTransfer.getData('application/reactflow/label');
-            const description = event.dataTransfer.getData('application/reactflow/description');
-            const sensitivity = event.dataTransfer.getData('application/reactflow/sensitivity') || 'None';
-            const criticality = event.dataTransfer.getData('application/reactflow/criticality') || 'MEDIUM';
-            const isExternal = event.dataTransfer.getData('application/reactflow/isExternal') === 'true';
-            const iconName = event.dataTransfer.getData('application/reactflow/iconName');
-            const colorClass = event.dataTransfer.getData('application/reactflow/colorClass');
-            if (!type) return;
-            const position = reactFlowInstance.screenToFlowPosition({ x: event.clientX, y: event.clientY });
-            const id = `${type}-${Date.now()}`;
-            const newNode = {
-                id, type, position,
-                data: { 
-                    label: label || 'New Unit', 
-                    description: description || '',
-                    onLabelChange, id, sensitivity, isExternal, criticality,
-                    vulnerabilities: [], iocs: [], mitreIds: [],
-                    iconName: iconName || undefined,
-                    colorClass: colorClass || undefined,
-                    borderClass: colorClass ? colorClass.replace('bg-', 'border-') : undefined
+    const handleAddStencilToCanvas = useCallback(
+        (stencil: any) => {
+            if (!reactFlowInstance || !canvasRef.current) {
+                return;
+            }
+
+            const id = `${stencil.type}-${crypto.randomUUID()}`;
+
+            const isBoundary = stencil.type === 'boundary';
+
+            const position = getCanvasInsertPosition(
+                reactFlowInstance,
+                canvasRef,
+                nodes,
+                {
+                    nodeWidth: isBoundary ? 420 : 260,
+                    nodeHeight: isBoundary ? 280 : 150,
+                    horizontalGap: 90,
+                    verticalGap: 70,
+                }
+            );
+
+            const newNode: Node = {
+                id,
+                type: stencil.type,
+                position,
+                data: {
+                    label: stencil.label || 'New Unit',
+                    description: stencil.description || '',
+                    onLabelChange,
+                    id,
+                    sensitivity: stencil.sensitivity || 'None',
+                    isExternal: Boolean(stencil.isExternal),
+                    criticality: stencil.criticality || 'MEDIUM',
+                    vulnerabilities: [],
+                    iocs: [],
+                    mitreIds: [],
+                    iconName: stencil.iconName || undefined,
+                    colorClass: stencil.color || undefined,
+                    borderClass: stencil.color
+                        ? stencil.color.replace(
+                              'bg-',
+                              'border-'
+                          )
+                        : undefined,
                 },
             };
-            setNodes((nds) => nds.concat(newNode));
+
+            setNodes((currentNodes) => [
+                ...currentNodes,
+                newNode,
+            ]);
+
+            setSelectedNode(newNode);
+            setSelectedEdge(null);
+
+            reactFlowInstance.setCenter(
+                position.x + (isBoundary ? 210 : 130),
+                position.y + (isBoundary ? 140 : 75),
+                {
+                    duration: 250,
+                }
+            );
         },
-        [reactFlowInstance, setNodes, onLabelChange]
+        [
+            reactFlowInstance,
+            nodes,
+            setNodes,
+            onLabelChange,
+        ]
     );
 
     const handleCreateStencil = async () => {
@@ -407,7 +451,7 @@ export const ThreatCanvasView: React.FC = () => {
         setCustomStencils(updated);
         await saveToStorage(STORES.CUSTOM_STENCILS, updated, 'list');
         setShowStencilCreator(false);
-        setNewStencil({ label: '', description: '', type: 'compute', iconName: 'Box', color: 'bg-blue-500', isExternal: false, sensitivity: 'None', criticality: 'MEDIUM' });
+        setNewStencil({ label: '', description: '', type: 'compute', iconName: 'Box', color: 'bg-[#151515]', isExternal: false, sensitivity: 'None', criticality: 'MEDIUM' });
         showToast("Custom stencil added", "success");
     };
 
@@ -479,52 +523,45 @@ export const ThreatCanvasView: React.FC = () => {
         })).filter(group => group.items.length > 0);
     }, [paletteSearch, customStencils]);
 
-    return (
-        <div className="h-full min-h-[calc(100vh-140px)] w-full flex bg-[#0a0a0a] text-[#ededed] font-sans overflow-hidden">
-            {/* Sidebar: Palette */}
-            <div className="w-64 bg-[#0d0e10] border-r border-[#ffffff10] flex flex-col shrink-0 relative z-20">
-                <div className="p-5 border-b border-[#222328] bg-[#111216]">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xs font-bold text-[#888] uppercase tracking-[0.2em] flex items-center gap-2">
-                            <Layers size={14}/> STENCILS
-                        </h2>
-                        <div className="flex gap-2">
-                            <button onClick={() => setShowStencilCreator(true)} className="p-1.5 hover:bg-[#ffffff10] rounded text-[#888] hover:text-[#fff]" title="Custom Stencil"><Plus size={16}/></button>
-                            <button onClick={() => setShowModelsList(!showModelsList)} className={`p-1.5 rounded ${showModelsList ? 'bg-[#ececec] text-[#0a0a0a]' : 'hover:bg-[#ffffff10] text-[#888]'}`} title="Library"><List size={16}/></button>
-                        </div>
-                    </div>
-                    <div className="relative group">
-                        <Search className="absolute left-3 top-2.5 text-[#555]" size={16}/>
-                        <input type="text" className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg py-2 pl-10 pr-4 text-sm focus:border-[#555] outline-none font-mono text-[#ececec]" placeholder="Search components..." value={paletteSearch} onChange={(e) => setPaletteSearch(e.target.value)}/>
-                    </div>
-                </div>
+    const addStencilToCanvas = useCallback((item: any) => {
+        const newId = `${item.type}-${Date.now()}`;
+        const position = reactFlowInstance 
+            ? reactFlowInstance.screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 }) 
+            : { x: 250 + Math.random() * 100, y: 250 + Math.random() * 100 };
+            
+        const newNode = {
+            id: newId, type: item.type, position,
+            data: { 
+                label: item.label, description: item.description || '', onLabelChange, id: newId,
+                sensitivity: item.sensitivity || 'None', isExternal: item.isExternal || false, criticality: item.criticality || 'MEDIUM',
+                vulnerabilities: [], iocs: [], mitreIds: [], iconName: item.iconName || undefined, colorClass: item.color || undefined, borderClass: item.color ? item.color.replace('bg-', 'border-') : undefined
+            },
+        };
+        setNodes((nds) => nds.concat(newNode));
+    }, [reactFlowInstance, setNodes, onLabelChange]);
 
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-8 animate-fade-in">
-                    {filteredPalette.map(group => (
-                        <div key={group.title}>
-                            <h3 className="text-[10px] font-bold text-[#666] uppercase tracking-widest mb-3 flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#666]"></div> {group.title}</h3>
-                            <div className="grid grid-cols-1 gap-2">
-                                {group.items.map(item => (
-                                    <div key={item.id} draggable onDragStart={(e) => { 
-                                        e.dataTransfer.setData('application/reactflow/type', item.type); 
-                                        e.dataTransfer.setData('application/reactflow/label', item.label); 
-                                        e.dataTransfer.setData('application/reactflow/iconName', item.iconName || ''); 
-                                        e.dataTransfer.setData('application/reactflow/colorClass', item.color || ''); 
-                                        e.dataTransfer.setData('application/reactflow/isExternal', String(item.isExternal || false)); 
-                                        e.dataTransfer.setData('application/reactflow/sensitivity', item.sensitivity || 'None');
-                                        e.dataTransfer.setData('application/reactflow/criticality', item.criticality || 'MEDIUM');
-                                    }} className="p-3 bg-[#121316] border border-[#222328] rounded-lg cursor-grab hover:border-[#555] hover:bg-[#1a1c21] transition-all group text-left"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div className={`p-2 rounded bg-opacity-10 ${item.color || 'bg-blue-500'}`}>{React.createElement(STENCIL_ICONS[item.iconName] || Box, { size: 16, className: (item.color || 'bg-blue-500').replace('bg-', 'text-') })}</div>
-                                            <div className="text-[11px] font-bold text-[#888] group-hover:text-[#ececec] transition-colors">{item.label}</div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
+    return (
+        <div className="flex flex-col flex-1 min-h-0 bg-transparent text-[#ededed] font-sans">
+            <PageHeader
+                breadcrumbs={[{ label: 'Modeling' }, { label: 'Threat Canvas' }]}
+                title="Threat Canvas"
+                description="Interactive STRIDE threat modeling with AI analysis."
+            />
+            <div className="flex w-full flex-1 min-h-0 overflow-hidden relative">
+                {/* Sidebar: Palette */}
+                <div className="w-64 bg-at-bg border-r border-at-border flex flex-col shrink-0 relative z-20 h-full">
+                <StencilPalette
+                    groups={filteredPalette}
+                    query={paletteSearch}
+                    onQueryChange={setPaletteSearch}
+                    onAdd={handleAddStencilToCanvas}
+                    onCreate={() => setShowStencilCreator(true)}
+                    getIcon={(item) =>
+                        STENCIL_ICONS[item.iconName || 'Box'] || Box
+                    }
+                    title="STENCILS"
+                    placeholder="Search components..."
+                />
                 
                 <div className="mt-auto p-4 border-t border-[#222328] bg-[#0a0b0d] space-y-3">
                     <button onClick={handleRunAnalysis} disabled={isAnalyzing || nodes.length === 0} className="w-full py-4 bg-[#ececec] hover:bg-[#fff] text-[#0a0a0a] rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-xl active:scale-95 disabled:opacity-50">
@@ -544,22 +581,33 @@ export const ThreatCanvasView: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="flex-1 relative bg-[#0a0a0a] overflow-hidden">
-                    <ReactFlow 
-                        nodes={nodes} 
-                        edges={edges} 
-                        nodeTypes={nodeTypes} 
-                        onNodesChange={onNodesChange} 
-                        onEdgesChange={onEdgesChange} 
-                        onConnect={onConnect} 
-                        onInit={setReactFlowInstance} 
-                        onDrop={onDrop} 
-                        onDragOver={(e) => e.preventDefault()} 
-                        onNodeClick={(_, n) => { setSelectedNode(n); setSelectedEdge(null); }} 
-                        onEdgeClick={(_, e) => { setSelectedEdge(e); setSelectedNode(null); }} 
-                        onPaneClick={() => { setSelectedNode(null); setSelectedEdge(null); }} 
-                        fitView 
-                        className="bg-[#0a0a0a]"
+                <div
+                    ref={canvasRef}
+                    className="flex-1 relative min-w-0 bg-at-bg overflow-hidden z-10"
+                >
+                    <ReactFlow
+                        nodes={nodes}
+                        edges={edges}
+                        nodeTypes={nodeTypes}
+                        onNodesChange={onNodesChange}
+                        onEdgesChange={onEdgesChange}
+                        onConnect={onConnect}
+                        onInit={setReactFlowInstance}
+                        onNodeClick={(_, node) => {
+                            setSelectedNode(node);
+                            setSelectedEdge(null);
+                        }}
+                        onEdgeClick={(_, edge) => {
+                            setSelectedEdge(edge);
+                            setSelectedNode(null);
+                        }}
+                        onPaneClick={() => {
+                            setSelectedNode(null);
+                            setSelectedEdge(null);
+                        }}
+                        fitView
+                        className="!bg-at-bg"
+                        proOptions={{ hideAttribution: true }}
                     >
                         <Background color="#ffffff" gap={24} size={1} style={{ opacity: 0.05 }} />
                         <Controls className="!bg-[#111216] !border !border-[#222328] !fill-[#999] shadow-md [&>button]:!border-b-[#222328] hover:[&>button]:!bg-[#1a1b20]" />
@@ -568,7 +616,7 @@ export const ThreatCanvasView: React.FC = () => {
             </div>
 
             {/* Right Sidebar: Intel & Properties */}
-            <div className="w-80 bg-[#0d0e10] border-l border-[#ffffff10] flex flex-col shrink-0 relative z-20">
+            <div className="w-80 bg-[#0A0A0A] border-l border-[#ffffff10] flex flex-col shrink-0 relative z-20">
                 <div className="p-5 border-b border-[#222328] bg-[#111216]">
                     <h2 className="text-xs font-bold text-[#888] uppercase tracking-[0.2em] flex items-center gap-2">
                         <Gauge size={14}/> {selectedNode ? 'ASSET INTEL' : selectedEdge ? 'FLOW LOGIC' : 'THREATS'}
@@ -680,7 +728,7 @@ export const ThreatCanvasView: React.FC = () => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Default Criticality</label><select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] focus:border-[#555] outline-none" value={newStencil.criticality} onChange={e => setNewStencil({...newStencil, criticality: e.target.value})}>{CRITICALITY_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}</select></div>
-                                    <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Default Color</label><select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] focus:border-[#555] outline-none" value={newStencil.color} onChange={e => setNewStencil({...newStencil, color: e.target.value})}><option value="bg-blue-500">Blue</option><option value="bg-red-500">Red</option><option value="bg-green-500">Green</option><option value="bg-purple-500">Purple</option><option value="bg-pink-500">Pink</option><option value="bg-orange-500">Orange</option></select></div>
+                                    <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Default Color</label><select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] focus:border-[#555] outline-none" value={newStencil.color} onChange={e => setNewStencil({...newStencil, color: e.target.value})}><option value="bg-[#151515]">Gray Dark</option><option value="bg-red-500">Red</option><option value="bg-[#1C1C1C]">Gray Medium</option><option value="bg-[#151515]">Gray Light</option><option value="bg-[#151515]">Black</option><option value="bg-[#1C1C1C]">Gray</option></select></div>
                                 </div>
                             </div>
                         </div>
@@ -691,6 +739,7 @@ export const ThreatCanvasView: React.FC = () => {
                     </div>
                 </div>
             )}
+            </div>
         </div>
     );
 };

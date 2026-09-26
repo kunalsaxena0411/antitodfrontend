@@ -549,49 +549,49 @@ export const AttackMapView: React.FC<AttackMapViewProps> = ({ results, globalThr
     };
 
     return (
-        <div ref={containerRef} className="w-full h-full bg-[#020617] relative overflow-hidden flex flex-col">
+        <div ref={containerRef} className="w-full h-full bg-[#0A0A0A] relative overflow-hidden flex flex-col">
             {!cinematic && (
                 <div className="absolute top-4 left-4 z-20 flex flex-col gap-4 pointer-events-none">
-                    <div className="bg-black/80 backdrop-blur-md border border-cyber-cyan/30 p-4 rounded-lg pointer-events-auto shadow-[0_0_20px_rgba(14,165,233,0.1)]">
-                        <div className="flex items-center gap-2 mb-3 border-b border-gray-800 pb-2">
-                            <Target className="text-cyber-cyan animate-pulse" size={20}/>
+                    <div className="bg-black/80 backdrop-blur-md border border-red-500/30 p-4 rounded-lg pointer-events-auto shadow-[0_0_20px_rgba(14,165,233,0.1)]">
+                        <div className="flex items-center gap-2 mb-3 border-b border-[#222] pb-2">
+                            <Target className="text-red-500 animate-pulse" size={20}/>
                             <div>
                                 <h2 className="text-white font-cyber font-bold text-lg leading-none">THREAT MAP</h2>
-                                <span className="text-[10px] text-gray-500 font-mono">LIVE MONITORING</span>
+                                <span className="text-[10px] text-[#888] font-mono">LIVE MONITORING</span>
                             </div>
                         </div>
                         <div className="space-y-2 font-mono text-xs">
                             <div className="flex justify-between gap-8">
-                                <span className="text-gray-400">ACTIVE THREATS</span>
+                                <span className="text-[#AAA]">ACTIVE THREATS</span>
                                 <span className="text-red-400 font-bold">{stats.active}</span>
                             </div>
                             <div className="flex justify-between gap-8">
-                                <span className="text-gray-400">TOTAL IMPACTS</span>
+                                <span className="text-[#AAA]">TOTAL IMPACTS</span>
                                 <span className="text-white font-bold">{stats.total}</span>
                             </div>
                             <div className="flex justify-between gap-8">
-                                <span className="text-gray-400">PEAK LOAD</span>
-                                <span className="text-orange-400 font-bold">{stats.peak}</span>
+                                <span className="text-[#AAA]">PEAK LOAD</span>
+                                <span className="text-white font-bold">{stats.peak}</span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-black/80 backdrop-blur-md border border-gray-800 p-2 rounded-lg pointer-events-auto flex flex-col gap-2">
-                        <button onClick={() => setProjectionType(p => p === 'ORTHO' ? 'MERCATOR' : 'ORTHO')} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 text-xs font-bold text-gray-300 transition-colors">
+                    <div className="bg-black/80 backdrop-blur-md border border-[#222] p-2 rounded-lg pointer-events-auto flex flex-col gap-2">
+                        <button onClick={() => setProjectionType(p => p === 'ORTHO' ? 'MERCATOR' : 'ORTHO')} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 text-xs font-bold text-neutral-300 transition-colors">
                             {projectionType === 'ORTHO' ? <MapIcon size={14}/> : <Globe size={14}/>} {projectionType === 'ORTHO' ? '2D MAP' : '3D GLOBE'}
                         </button>
-                        <div className="h-px bg-gray-800 mx-2"></div>
-                        <button onClick={() => handleZoom(0.5)} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 text-xs font-bold text-gray-300 transition-colors">
+                        <div className="h-px bg-[#151515] mx-2"></div>
+                        <button onClick={() => handleZoom(0.5)} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 text-xs font-bold text-neutral-300 transition-colors">
                             <Plus size={14}/> ZOOM IN
                         </button>
-                        <button onClick={() => handleZoom(-0.5)} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 text-xs font-bold text-gray-300 transition-colors">
+                        <button onClick={() => handleZoom(-0.5)} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 text-xs font-bold text-neutral-300 transition-colors">
                             <Minus size={14}/> ZOOM OUT
                         </button>
-                        <div className="h-px bg-gray-800 mx-2"></div>
-                        <button onClick={() => setIsPaused(!isPaused)} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 text-xs font-bold text-gray-300 transition-colors">
+                        <div className="h-px bg-[#151515] mx-2"></div>
+                        <button onClick={() => setIsPaused(!isPaused)} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 text-xs font-bold text-neutral-300 transition-colors">
                             {isPaused ? <Play size={14}/> : <Pause size={14}/>} {isPaused ? 'RESUME' : 'PAUSE'}
                         </button>
-                        <button onClick={toggleFullscreen} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 text-xs font-bold text-gray-300 transition-colors">
+                        <button onClick={toggleFullscreen} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 text-xs font-bold text-neutral-300 transition-colors">
                             {isFullscreen ? <Minimize2 size={14}/> : <Maximize2 size={14}/>} FULLSCREEN
                         </button>
                     </div>
@@ -599,50 +599,50 @@ export const AttackMapView: React.FC<AttackMapViewProps> = ({ results, globalThr
             )}
 
             {!cinematic && (
-                <div className="absolute top-4 bottom-4 right-4 z-20 w-80 bg-black/80 backdrop-blur-md border border-gray-800 rounded-lg pointer-events-auto flex flex-col shadow-2xl overflow-hidden">
-                    <div className="p-3 border-b border-gray-800 bg-gray-900/50 flex items-center justify-between">
+                <div className="absolute top-4 bottom-4 right-4 z-20 w-80 bg-black/80 backdrop-blur-md border border-[#222] rounded-lg pointer-events-auto flex flex-col shadow-2xl overflow-hidden">
+                    <div className="p-3 border-b border-[#222] bg-[#111] flex items-center justify-between">
                         <div className="flex items-center gap-2 text-white font-bold text-xs font-cyber">
-                            <Terminal size={14} className="text-green-400"/> INTERCEPT LOG
+                            <Terminal size={14} className="text-white"/> INTERCEPT LOG
                         </div>
                         <div className="flex items-center gap-1">
                             <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                            <span className="text-[10px] text-gray-500 font-mono">LIVE</span>
+                            <span className="text-[10px] text-[#888] font-mono">LIVE</span>
                         </div>
                     </div>
                     
                     <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2 relative">
                         {attackLog.length === 0 ? (
-                            <div className="text-center text-gray-600 text-xs font-mono mt-10 flex flex-col items-center">
+                            <div className="text-center text-neutral-600 text-xs font-mono mt-10 flex flex-col items-center">
                                 <Activity className="animate-spin mb-2 opacity-20" size={24}/>
                                 Waiting for traffic...
                             </div>
                         ) : (
                             attackLog.map(log => (
-                                <div key={log.id} className="bg-gray-900/40 border border-gray-800 hover:border-gray-600 p-2 rounded transition-all group animate-fade-in">
+                                <div key={log.id} className="bg-[#111] border border-[#222] hover:border-neutral-600 p-2 rounded transition-all group animate-fade-in">
                                     <div className="flex justify-between items-start mb-1">
                                         <div className="flex items-center gap-2">
-                                            {log.srcFlag ? <img src={log.srcFlag} alt="flag" className="w-4 h-3 rounded-sm"/> : <Globe size={12} className="text-gray-500"/>}
-                                            <span className="text-[10px] text-gray-300 font-bold uppercase">{log.srcCountry}</span>
+                                            {log.srcFlag ? <img src={log.srcFlag} alt="flag" className="w-4 h-3 rounded-sm"/> : <Globe size={12} className="text-[#888]"/>}
+                                            <span className="text-[10px] text-neutral-300 font-bold uppercase">{log.srcCountry}</span>
                                         </div>
-                                        <span className="text-[10px] text-gray-500 font-mono">{log.timestamp}</span>
+                                        <span className="text-[10px] text-[#888] font-mono">{log.timestamp}</span>
                                     </div>
                                     
                                     <div className="flex items-center justify-between mb-1">
-                                        <span className="text-[10px] font-mono text-blue-400 truncate max-w-[120px]" title={log.srcIp}>{log.srcIp}</span>
-                                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${log.risk === 'CRITICAL' ? 'bg-red-900/30 text-red-400 border border-red-500/30' : log.risk === 'HIGH' ? 'bg-orange-900/30 text-orange-400' : 'bg-gray-800 text-gray-400'}`}>
+                                        <span className="text-[10px] font-mono text-red-400 truncate max-w-[120px]" title={log.srcIp}>{log.srcIp}</span>
+                                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${log.risk === 'CRITICAL' ? 'bg-red-900/30 text-red-400 border border-red-500/30' : log.risk === 'HIGH' ? 'bg-neutral-900/30 text-white' : 'bg-[#151515] text-[#AAA]'}`}>
                                             {log.risk}
                                         </span>
                                     </div>
 
-                                    <div className="text-[11px] font-bold text-gray-200 truncate mb-1" title={log.signature}>
+                                    <div className="text-[11px] font-bold text-neutral-200 truncate mb-1" title={log.signature}>
                                         {log.signature}
                                     </div>
 
                                     <div className="flex items-center justify-between">
-                                        <div className="bg-black/50 rounded p-1.5 border border-gray-800 text-[10px] font-mono text-gray-400 break-all line-clamp-2 w-3/4" title={log.payload}>
-                                            <span className="text-gray-600 mr-1">$</span>{log.payload}
+                                        <div className="bg-black/50 rounded p-1.5 border border-[#222] text-[10px] font-mono text-[#AAA] break-all line-clamp-2 w-3/4" title={log.payload}>
+                                            <span className="text-neutral-600 mr-1">$</span>{log.payload}
                                         </div>
-                                        <span className="text-[8px] bg-gray-800 px-1 rounded text-gray-500 uppercase">{log.source}</span>
+                                        <span className="text-[8px] bg-[#151515] px-1 rounded text-[#888] uppercase">{log.source}</span>
                                     </div>
                                 </div>
                             ))
@@ -655,27 +655,27 @@ export const AttackMapView: React.FC<AttackMapViewProps> = ({ results, globalThr
             )}
 
             {!cinematic && (
-                <div className="absolute bottom-6 left-6 z-20 bg-black/60 backdrop-blur-md border border-gray-800 p-3 rounded-lg pointer-events-none">
-                    <h3 className="text-[10px] text-gray-500 font-bold uppercase mb-2">Risk Classification</h3>
+                <div className="absolute bottom-6 left-6 z-20 bg-black/60 backdrop-blur-md border border-[#222] p-3 rounded-lg pointer-events-none">
+                    <h3 className="text-[10px] text-[#888] font-bold uppercase mb-2">Risk Classification</h3>
                     <div className="space-y-1.5 text-[10px] font-mono">
                         <div className="flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></span>
                             <span className="text-red-400">CRITICAL</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-orange-500"></span>
-                            <span className="text-orange-400">HIGH</span>
+                            <span className="w-2 h-2 rounded-full bg-neutral-500"></span>
+                            <span className="text-white">HIGH</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
-                            <span className="text-yellow-400">MEDIUM</span>
+                            <span className="w-2 h-2 rounded-full bg-neutral-500"></span>
+                            <span className="text-white">MEDIUM</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                            <span className="text-blue-400">LOW/INFO</span>
+                            <span className="w-2 h-2 rounded-full bg-[#151515]"></span>
+                            <span className="text-red-400">LOW/INFO</span>
                         </div>
                     </div>
-                    <div className="mt-3 pt-2 border-t border-gray-700/50 text-[9px] text-gray-500 flex items-center gap-1">
+                    <div className="mt-3 pt-2 border-t border-[#333]/50 text-[9px] text-[#888] flex items-center gap-1">
                         <MousePointer2 size={10}/> <span className="opacity-70">DRAG TO ROTATE/PAN</span>
                     </div>
                 </div>
@@ -683,10 +683,10 @@ export const AttackMapView: React.FC<AttackMapViewProps> = ({ results, globalThr
 
             {cinematic && allowInteraction && (
                  <div className="absolute bottom-6 right-6 z-30 flex gap-2 pointer-events-auto">
-                     <button onClick={() => setIsPaused(!isPaused)} className="p-2 bg-black/40 hover:bg-black/80 text-gray-400 hover:text-white rounded border border-gray-700/50 backdrop-blur transition-all">
+                     <button onClick={() => setIsPaused(!isPaused)} className="p-2 bg-black/40 hover:bg-black/80 text-[#AAA] hover:text-white rounded border border-[#333]/50 backdrop-blur transition-all">
                          {isPaused ? <Play size={16}/> : <Pause size={16}/>}
                      </button>
-                     <button onClick={() => setProjectionType(p => p === 'ORTHO' ? 'MERCATOR' : 'ORTHO')} className="p-2 bg-black/40 hover:bg-black/80 text-gray-400 hover:text-white rounded border border-gray-700/50 backdrop-blur transition-all">
+                     <button onClick={() => setProjectionType(p => p === 'ORTHO' ? 'MERCATOR' : 'ORTHO')} className="p-2 bg-black/40 hover:bg-black/80 text-[#AAA] hover:text-white rounded border border-[#333]/50 backdrop-blur transition-all">
                          {projectionType === 'ORTHO' ? <Globe size={16}/> : <MapIcon size={16}/>}
                      </button>
                  </div>

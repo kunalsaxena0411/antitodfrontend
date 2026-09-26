@@ -605,7 +605,7 @@ export default function CvePage() {
     const payload = filtered.map(
       (cve) => ({
         id: cve.id,
-        cvss: cve.cvss,
+          cvss: cve.cvss,
         severity: cve.severity,
         description: cve.description,
         vendor: cve.vendor,
@@ -688,341 +688,234 @@ export default function CvePage() {
       /* SUMMARY                                                              */
       /* ================================================================== */}
 
-      <section className="at-cve-summary">
-        <div className="at-cve-summary-total">
-          <span className="at-v2-kicker">
-            VULNERABILITY REPOSITORY
-          </span>
-
-          <div className="at-cve-total-value">
-            <strong>
-              {MOCK_CVES.length}
-            </strong>
-
-            <span>
-              indexed vulnerabilities
+      <section className="flex flex-col gap-6 p-6 border-b border-[#333] bg-[#0a0a0a]">
+        {/* SUMMARY HEADER */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="flex flex-col gap-2">
+            <span className="text-[10px] font-bold text-[#888] tracking-widest uppercase">
+              Vulnerability Repository
             </span>
+            <div className="flex items-center gap-2">
+              <strong className="text-2xl font-semibold text-white">
+                {MOCK_CVES.length}
+              </strong>
+              <span className="text-sm text-[#888]">
+                indexed vulnerabilities
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-8 h-8 rounded bg-red-950/30 text-red-500">
+                <ShieldAlert size={16} />
+              </div>
+              <div className="flex flex-col">
+                <strong className="text-sm text-white leading-none">{criticalCount}</strong>
+                <small className="text-[10px] text-[#888] uppercase tracking-wider">Critical</small>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-8 h-8 rounded bg-[#111] text-white">
+                <AlertTriangle size={16} />
+              </div>
+              <div className="flex flex-col">
+                <strong className="text-sm text-white leading-none">{highCount}</strong>
+                <small className="text-[10px] text-[#888] uppercase tracking-wider">High</small>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-8 h-8 rounded bg-[#111] text-white">
+                <Target size={16} />
+              </div>
+              <div className="flex flex-col">
+                <strong className="text-sm text-white leading-none">{exploitCount}</strong>
+                <small className="text-[10px] text-[#888] uppercase tracking-wider">Exploits</small>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-8 h-8 rounded bg-[#111] text-[#888]">
+                <FileWarning size={16} />
+              </div>
+              <div className="flex flex-col">
+                <strong className="text-sm text-white leading-none">{vendorCount}</strong>
+                <small className="text-[10px] text-[#888] uppercase tracking-wider">Vendors</small>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="at-cve-summary-stats">
-          <div className="at-cve-summary-stat">
-            <span className="at-cve-summary-icon critical">
-              <ShieldAlert size={14} />
-            </span>
-
-            <div>
-              <strong>
-                {criticalCount}
-              </strong>
-
-              <small>critical</small>
-            </div>
-          </div>
-
-          <div className="at-cve-summary-stat">
-            <span className="at-cve-summary-icon high">
-              <AlertTriangle size={14} />
-            </span>
-
-            <div>
-              <strong>
-                {highCount}
-              </strong>
-
-              <small>high severity</small>
-            </div>
-          </div>
-
-          <div className="at-cve-summary-stat">
-            <span className="at-cve-summary-icon exploit">
-              <Target size={14} />
-            </span>
-
-            <div>
-              <strong>
-                {exploitCount}
-              </strong>
-
-              <small>
-                exploits available
-              </small>
-            </div>
-          </div>
-
-          <div className="at-cve-summary-stat">
-            <span className="at-cve-summary-icon vendor">
-              <FileWarning size={14} />
-            </span>
-
-            <div>
-              <strong>
-                {vendorCount}
-              </strong>
-
-              <small>vendors</small>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ================================================================== */
-      /* QUERY / FILTERS                                                     */
-      /* ================================================================== */}
-
-      <section className="at-cve-query">
-        <div className="at-cve-query-main">
-          <div
-            className={`at-cve-search ${advancedMode ? 'advanced' : ''
-              }`}
-          >
-            {advancedMode ? (
-              <TerminalSquare size={15} />
-            ) : (
-              <Search size={15} />
-            )}
-
-            <input
-              value={search}
-              onChange={(event) =>
-                setSearch(
-                  event.target.value,
-                )
-              }
-              placeholder={
-                advancedMode
-                  ? 'severity:critical exploit:true vendor:microsoft authentication...'
-                  : 'Search CVE-ID, description, vendor, or product...'
-              }
-              aria-label="Search CVE database"
-              spellCheck={false}
-            />
-
-            {search && (
-              <button
-                type="button"
-                onClick={() =>
-                  setSearch('')
-                }
-                aria-label="Clear CVE search"
-              >
-                <X size={13} />
-              </button>
-            )}
-          </div>
-
-          <button
-            type="button"
-            className={`at-cve-advanced ${advancedMode ? 'active' : ''
-              }`}
-            onClick={() =>
-              setAdvancedMode(
-                (current) => !current,
-              )
-            }
-            aria-pressed={advancedMode}
-          >
-            <TerminalSquare size={13} />
-            Advanced
-          </button>
-
-          <button
-            type="button"
-            className={`at-cve-filter-placeholder ${showFilters ? 'active' : ''
-              }`}
-            onClick={() =>
-              setShowFilters(
-                (current) => !current,
-              )
-            }
-            aria-expanded={showFilters}
-            aria-haspopup="true"
-          >
-            <SlidersHorizontal size={13} />
-            Filters
-            <ChevronDown
-              size={12}
-              className={
-                showFilters
-                  ? 'rotate-180'
-                  : ''
-              }
-            />
-          </button>
-
-          <span className="at-cve-query-count">
-            {filtered.length}{' '}
-            {filtered.length === 1
-              ? 'result'
-              : 'results'}
-          </span>
-        </div>
-
-        {showFilters && (
-          <div
-            className="at-cve-filter-panel"
-            role="region"
-            aria-label="CVE filters"
-          >
-            <div className="at-cve-filter-control">
-              <label htmlFor="cve-severity">
-                Severity
-              </label>
-
-              <select
-                id="cve-severity"
-                value={severityFilter}
-                onChange={(event) =>
-                  setSeverityFilter(
-                    event.target
-                      .value as SeverityFilter,
-                  )
-                }
-              >
-                <option value="ALL">
-                  All severities
-                </option>
-
-                <option value="critical">
-                  Critical
-                </option>
-
-                <option value="high">
-                  High
-                </option>
-
-                <option value="medium">
-                  Medium
-                </option>
-
-                <option value="low">
-                  Low
-                </option>
-              </select>
-            </div>
-
-            <div className="at-cve-filter-control">
-              <label htmlFor="cve-vendor">
-                Vendor
-              </label>
-
-              <select
-                id="cve-vendor"
-                value={vendorFilter}
-                onChange={(event) =>
-                  setVendorFilter(
-                    event.target.value,
-                  )
-                }
-              >
-                <option value="">
-                  All vendors
-                </option>
-
-                {vendorOptions.map(
-                  (vendor) => (
-                    <option
-                      key={vendor}
-                      value={vendor}
-                    >
-                      {vendor}
-                    </option>
-                  ),
-                )}
-              </select>
-            </div>
-
-            <label className="at-cve-filter-toggle">
+        {/* QUERY & SEARCH BAR */}
+        <div className="flex flex-col gap-4 mt-2">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative flex-1 min-w-[300px]">
+              {advancedMode ? (
+                <TerminalSquare size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666]" />
+              ) : (
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666]" />
+              )}
+              
               <input
-                type="checkbox"
-                checked={exploitOnly}
-                onChange={(event) =>
-                  setExploitOnly(
-                    event.target.checked,
-                  )
+                className="w-full bg-[#111] border border-[#333] rounded-lg py-2.5 pl-10 pr-10 text-sm text-white placeholder-[#555] focus:outline-none focus:border-red-500 transition-colors"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder={
+                  advancedMode
+                    ? 'severity:critical exploit:true vendor:microsoft authentication...'
+                    : 'Search CVE-ID, description, vendor, or product...'
                 }
+                spellCheck={false}
               />
 
-              <span>
-                Exploit available only
-              </span>
-            </label>
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => setSearch('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#666] hover:text-white transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
 
             <button
               type="button"
-              className="at-btn at-btn-ghost at-btn-sm"
-              onClick={
-                clearAllFilters
-              }
+              className={`flex items-center gap-2 px-4 py-2.5 border rounded-lg text-sm transition-colors ${
+                advancedMode ? 'bg-red-950/20 border-red-500 text-red-500' : 'bg-[#111] border-[#333] text-[#888] hover:text-white hover:border-[#444]'
+              }`}
+              onClick={() => setAdvancedMode((c) => !c)}
             >
-              Clear filters
+              <TerminalSquare size={14} />
+              Advanced
             </button>
+
+            <button
+              type="button"
+              className={`flex items-center gap-2 px-4 py-2.5 border rounded-lg text-sm transition-colors ${
+                showFilters ? 'bg-red-950/20 border-red-500 text-red-500' : 'bg-[#111] border-[#333] text-[#888] hover:text-white hover:border-[#444]'
+              }`}
+              onClick={() => setShowFilters((c) => !c)}
+            >
+              <SlidersHorizontal size={14} />
+              Filters
+              <ChevronDown
+                size={14}
+                className={`transition-transform ${showFilters ? 'rotate-180' : ''}`}
+              />
+            </button>
+            
+            <div className="ml-auto text-xs text-[#666] font-medium hidden md:block">
+              {filtered.length} {filtered.length === 1 ? 'result' : 'results'}
+            </div>
           </div>
-        )}
 
-        <div className="at-cve-filter-row">
-          <span className="at-cve-filter-label">
-            ACTIVE FILTERS
-          </span>
+          {/* FILTER PANEL */}
+          {showFilters && (
+            <div className="flex flex-wrap items-center gap-6 p-4 bg-[#111] border border-[#222] rounded-lg">
+              <div className="flex items-center gap-2">
+                <label className="text-xs text-[#888]">Severity</label>
+                <select
+                  value={severityFilter}
+                  onChange={(e) => setSeverityFilter(e.target.value as SeverityFilter)}
+                  className="bg-black border border-[#333] text-white text-xs rounded px-2 py-1.5 focus:border-red-500 outline-none cursor-pointer"
+                >
+                  <option value="ALL">All severities</option>
+                  <option value="critical">Critical</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
 
-          {!hasActiveFilters ? (
-            <span className="at-cve-filter-empty">
-              No filters applied
+              <div className="flex items-center gap-2">
+                <label className="text-xs text-[#888]">Vendor</label>
+                <select
+                  value={vendorFilter}
+                  onChange={(e) => setVendorFilter(e.target.value)}
+                  className="bg-black border border-[#333] text-white text-xs rounded px-2 py-1.5 focus:border-red-500 outline-none cursor-pointer max-w-[200px]"
+                >
+                  <option value="">All vendors</option>
+                  {vendorOptions.map((vendor) => (
+                    <option key={vendor} value={vendor}>{vendor}</option>
+                  ))}
+                </select>
+              </div>
+
+              <label className="flex items-center gap-2 text-xs text-[#888] cursor-pointer hover:text-white transition-colors">
+                <input
+                  type="checkbox"
+                  checked={exploitOnly}
+                  onChange={(e) => setExploitOnly(e.target.checked)}
+                  className="accent-red-500 rounded-sm bg-black border-[#333]"
+                />
+                Exploit available only
+              </label>
+
+              <button
+                type="button"
+                onClick={clearAllFilters}
+                className="ml-auto text-xs text-red-500 hover:text-red-400 font-medium transition-colors"
+              >
+                Clear all filters
+              </button>
+            </div>
+          )}
+
+          {/* ACTIVE FILTERS BAR */}
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <span className="text-[10px] font-bold text-[#555] tracking-widest uppercase">
+              Active Filters
             </span>
-          ) : (
-            <>
-              {activeFilters.map(
-                (filter) => (
+
+            {!hasActiveFilters ? (
+              <span className="text-xs text-[#444] italic">
+                No filters applied
+              </span>
+            ) : (
+              <>
+                {activeFilters.map((filter) => (
                   <span
-                    className="at-cve-filter-chip"
                     key={filter}
+                    className="flex items-center gap-1.5 bg-[#1a1a1a] border border-[#333] text-white text-[11px] px-2.5 py-1 rounded-full"
                   >
                     {filter}
-
                     <button
                       type="button"
-                      onClick={() =>
-                        removeFilter(
-                          filter,
-                        )
-                      }
-                      aria-label={`Remove ${filter}`}
+                      onClick={() => removeFilter(filter)}
+                      className="text-[#666] hover:text-white transition-colors"
                     >
-                      <X size={10} />
+                      <X size={12} />
                     </button>
                   </span>
-                ),
-              )}
+                ))}
 
-              {search.trim() &&
-                !advancedMode && (
-                  <span className="at-cve-filter-chip search">
-                    query:{search.trim()}
-
+                {search.trim() && !advancedMode && (
+                  <span className="flex items-center gap-1.5 bg-[#1a1a1a] border border-[#333] text-white text-[11px] px-2.5 py-1 rounded-full">
+                    query: {search.trim()}
                     <button
                       type="button"
-                      onClick={() =>
-                        setSearch('')
-                      }
-                      aria-label="Remove search query"
+                      onClick={() => setSearch('')}
+                      className="text-[#666] hover:text-white transition-colors"
                     >
-                      <X size={10} />
+                      <X size={12} />
                     </button>
                   </span>
                 )}
 
-              <button
-                type="button"
-                className="at-cve-clear"
-                onClick={
-                  clearAllFilters
-                }
-              >
-                <CircleX size={12} />
-                Clear
-              </button>
-            </>
-          )}
+                <button
+                  type="button"
+                  onClick={clearAllFilters}
+                  className="flex items-center gap-1.5 text-xs text-[#666] hover:text-white transition-colors ml-2"
+                >
+                  <CircleX size={14} />
+                  Clear
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </section>
 
@@ -1141,7 +1034,7 @@ export default function CvePage() {
                         {/* CVE ID */}
 
                         <td>
-                          <div className="at-cve-id-cell">
+                          <div className="at-cve-id-cell whitespace-nowrap">
                             {cve.exploitAvailable && (
                               <span className="at-cve-exploit-mark">
                                 <Target
@@ -1185,9 +1078,9 @@ export default function CvePage() {
                               cve.cvss,
                             )}`}
                           >
-                            {Number(
+                            {cve.cvss && !Number.isNaN(Number(cve.cvss)) ? Number(
                               cve.cvss,
-                            ).toFixed(1)}
+                            ).toFixed(1) : 'N/A'}
                           </span>
                         </td>
 

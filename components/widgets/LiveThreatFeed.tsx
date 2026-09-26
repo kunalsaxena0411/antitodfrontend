@@ -127,37 +127,37 @@ export const LiveThreatFeed: React.FC<LiveThreatFeedProps> = ({
     const getIcon = (type: string) => {
         switch(type) {
             case 'RANSOMWARE': return <Skull size={16} className="text-red-500" />;
-            case 'IOC': return <Wifi size={16} className="text-purple-500" />;
-            case 'CVE': return <ShieldAlert size={16} className="text-orange-500" />;
-            default: return <Activity size={16} className="text-gray-500" />;
+            case 'IOC': return <Wifi size={16} className="text-red-500" />;
+            case 'CVE': return <ShieldAlert size={16} className="text-white" />;
+            default: return <Activity size={16} className="text-neutral-500" />;
         }
     };
 
     const getBorderColor = (type: string) => {
         switch(type) {
             case 'RANSOMWARE': return 'border-l-red-500 bg-red-900/10';
-            case 'IOC': return 'border-l-purple-500 bg-purple-900/10';
-            case 'CVE': return 'border-l-orange-500 bg-orange-900/10';
-            default: return 'border-l-gray-500 bg-gray-900/10';
+            case 'IOC': return 'border-l-purple-500 bg-neutral-900/10';
+            case 'CVE': return 'border-l-orange-500 bg-neutral-900/10';
+            default: return 'border-l-gray-500 bg-neutral-900/10';
         }
     };
 
     return (
-        <div className="bg-black/40 border border-gray-800 rounded-lg flex flex-col h-full overflow-hidden">
+        <div className="bg-black/40 border border-neutral-800 rounded-lg flex flex-col h-full overflow-hidden">
             {/* Header */}
-            <div className="p-3 border-b border-gray-800 bg-gray-900/50 flex justify-between items-center shrink-0">
+            <div className="p-3 border-b border-neutral-800 bg-neutral-900/50 flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-2">
-                    <Zap size={14} className="text-yellow-400 animate-pulse"/>
+                    <Zap size={14} className="text-white animate-pulse"/>
                     <h3 className="text-xs font-bold text-white uppercase tracking-wider">Live Threat Stream</h3>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1 text-[9px] font-mono text-gray-500">
-                        <span className={`w-1.5 h-1.5 rounded-full ${isPaused ? 'bg-gray-600' : 'bg-green-500 animate-pulse'}`}></span>
+                    <div className="flex items-center gap-1 text-[9px] font-mono text-neutral-500">
+                        <span className={`w-1.5 h-1.5 rounded-full ${isPaused ? 'bg-neutral-600' : 'bg-neutral-500 animate-pulse'}`}></span>
                         {isPaused ? 'PAUSED' : 'LIVE'}
                     </div>
                     <button 
                         onClick={() => setIsPaused(!isPaused)}
-                        className="p-1 hover:bg-white/10 rounded text-gray-400 hover:text-white transition-colors"
+                        className="p-1 hover:bg-white/10 rounded text-neutral-400 hover:text-white transition-colors"
                     >
                         {isPaused ? <Play size={12}/> : <Pause size={12}/>}
                     </button>
@@ -179,26 +179,26 @@ export const LiveThreatFeed: React.FC<LiveThreatFeedProps> = ({
                             <div className="flex justify-between items-start mb-1">
                                 <div className="flex items-center gap-2">
                                     {getIcon(item.type)}
-                                    <span className="text-[10px] font-bold text-gray-400 bg-black/40 px-1.5 py-0.5 rounded border border-gray-700">
+                                    <span className="text-[10px] font-bold text-neutral-400 bg-black/40 px-1.5 py-0.5 rounded border border-neutral-700">
                                         {item.source}
                                     </span>
                                     {item.meta && (
-                                        <span className="text-[10px] text-gray-500 font-mono">
+                                        <span className="text-[10px] text-neutral-500 font-mono">
                                             [{item.meta}]
                                         </span>
                                     )}
                                 </div>
-                                <span className="text-[9px] text-gray-600 font-mono">
+                                <span className="text-[9px] text-neutral-600 font-mono">
                                     {new Date(item.timestamp).toLocaleTimeString()}
                                 </span>
                             </div>
                             
                             <div className="flex justify-between items-center">
                                 <div className="min-w-0 pr-2">
-                                    <div className="text-sm font-bold text-gray-200 truncate" title={item.title}>
+                                    <div className="text-sm font-bold text-neutral-200 truncate" title={item.title}>
                                         {item.title}
                                     </div>
-                                    <div className="text-xs text-gray-500 truncate font-mono">
+                                    <div className="text-xs text-neutral-500 truncate font-mono">
                                         {item.subtitle}
                                     </div>
                                 </div>
@@ -207,7 +207,7 @@ export const LiveThreatFeed: React.FC<LiveThreatFeedProps> = ({
                                         href={item.link} 
                                         target="_blank" 
                                         rel="noopener noreferrer"
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 bg-gray-800 text-gray-300 rounded hover:bg-cyber-cyan hover:text-black"
+                                        className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 bg-neutral-800 text-neutral-300 rounded hover:bg-red-500 hover:text-black"
                                     >
                                         <ExternalLink size={12}/>
                                     </a>
@@ -217,7 +217,7 @@ export const LiveThreatFeed: React.FC<LiveThreatFeedProps> = ({
                     ))}
                     
                     {stream.length === 0 && (
-                        <div className="text-center text-gray-500 text-xs py-10 flex flex-col items-center gap-2">
+                        <div className="text-center text-neutral-500 text-xs py-10 flex flex-col items-center gap-2">
                             <Activity className="opacity-20 animate-spin" size={24}/>
                             Initializing Stream...
                         </div>

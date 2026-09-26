@@ -1895,11 +1895,31 @@ export const App: React.FC = () => {
                         },
                     );
                 }}
-                onNavigate={navigate}
+                onNavigate={(viewId) => {
+                    navigate(viewId);
+                    if (window.innerWidth <= 768) {
+                        setSidebarCollapsed(true);
+                        try {
+                            localStorage.setItem(SIDEBAR_STORAGE_KEY, 'true');
+                        } catch {}
+                    }
+                }}
                 onOpenSearch={() =>
                     setSearchOpen(true)
                 }
             />
+
+            {!sidebarCollapsed && (
+                <div 
+                    className="at-sidebar-mobile-overlay"
+                    onClick={() => {
+                        setSidebarCollapsed(true);
+                        try {
+                            localStorage.setItem(SIDEBAR_STORAGE_KEY, 'true');
+                        } catch {}
+                    }}
+                />
+            )}
 
             <div className="at-shell-main">
                 <Header

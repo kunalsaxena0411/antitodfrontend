@@ -38,6 +38,9 @@ import { runBlastRadiusSimulation, calculateNodeSecurityIndex } from '../../serv
 import { parseNetworkConfig, ParsedTopology } from '../../services/configParser';
 import { exportTopologyImage, exportToVisio, downloadFile } from '../../services/exporter';
 import { saveToStorage, loadFromStorage, STORES } from '../../services/storage';
+import PageHeader from '../../src/components/layout/PageHeader';
+import StencilPalette from '../../src/components/modeling/StencilPalette';
+import { getCanvasInsertPosition } from '../../src/utils/reactFlowPlacement';
 
 // --- CONSTANTS ---
 const PROTOCOLS = ['HTTPS', 'HTTP', 'SQL', 'SSH', 'gRPC', 'AMQP', 'LDAP', 'DNS', 'SMB', 'FTP', 'SMTP', 'Custom'];
@@ -84,11 +87,16 @@ const NetworkNode = ({
     const isReachable =
         data.isReachable;
 
+    const hasIntel = data.vulnerabilities?.length > 0 || data.iocs?.length > 0;
     return (
         <div
-            className={`flex flex-col min-w-[160px] p-3 bg-[#111216] border rounded-lg shadow-sm text-[#ececec] transition-colors ${
-                selected ? 'border-[#555] bg-[#16181d]' : 'border-[#222328]'
-            } ${isCompromised ? 'border-[#ea4a4a] shadow-[0_0_15px_rgba(234,74,74,0.15)]' : ''}`}
+            className={`
+                relative flex flex-col w-[240px] min-h-[120px] p-3 rounded-lg border bg-at-surface shadow-xl text-at-text transition-all duration-200 cursor-grab active:cursor-grabbing
+                ${selected ? 'border-at-accent ring-2 ring-at-accent/20' : 'border-at-border'}
+                ${isCompromised ? 'border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.25)]' : ''}
+                ${isReachable && !isCompromised ? 'border-orange-500 shadow-[0_0_16px_rgba(249,115,22,0.18)]' : ''}
+                ${hasIntel && !isCompromised && !isReachable ? 'border-yellow-600' : ''}
+            `}
         >
             <Handle
                 type="target"
@@ -149,22 +157,22 @@ const NetworkNode = ({
 };
 
 const BoundaryNode = (props: any) => (
-    <div className={`p-10 rounded-xl border-2 border-dashed transition-all duration-300 min-w-[400px] min-h-[300px] relative ${props.selected ? 'border-red-500 bg-red-900/5' : 'border-gray-800 bg-gray-900/5'} cursor-grab active:cursor-grabbing`}>
-        <div className="absolute -top-3 left-4 px-3 py-1 bg-[#020617] border border-gray-700 rounded text-[10px] font-bold text-gray-500 uppercase flex items-center gap-2 z-10 shadow-lg">
+    <div className={`p-10 rounded-xl border-2 border-dashed transition-all duration-300 min-w-[400px] min-h-[300px] relative ${props.selected ? 'border-red-500 bg-red-900/5' : 'border-[#222] bg-[#111]'} cursor-grab active:cursor-grabbing`}>
+        <div className="absolute -top-3 left-4 px-3 py-1 bg-[#0A0A0A] border border-[#333] rounded text-[10px] font-bold text-[#888] uppercase flex items-center gap-2 z-10 shadow-lg">
             <BoxSelect size={12}/> {props.data.label}
         </div>
         <div className="flex items-center justify-center h-full opacity-5 pointer-events-none absolute inset-0">
-            <Shield size={150} className="text-gray-500"/>
+            <Shield size={150} className="text-[#888]"/>
         </div>
     </div>
 );
 
 const nodeTypes = {
-    standard: (props: any) => <NetworkNode {...props} icon={Box} colorClass="bg-blue-500" typeLabel="Component" />,
-    gateway: (props: any) => <NetworkNode {...props} icon={Shield} colorClass="bg-indigo-500" typeLabel="Security" />,
-    server: (props: any) => <NetworkNode {...props} icon={Server} colorClass="bg-blue-600" typeLabel="Compute" />,
-    storage: (props: any) => <NetworkNode {...props} icon={Database} colorClass="bg-pink-500" typeLabel="Storage" />,
-    endpoint: (props: any) => <NetworkNode {...props} icon={Laptop} colorClass="bg-emerald-500" typeLabel="Endpoint" />,
+    standard: (props: any) => <NetworkNode {...props} icon={Box} colorClass="bg-[#151515]" typeLabel="Component" />,
+    gateway: (props: any) => <NetworkNode {...props} icon={Shield} colorClass="bg-[#1C1C1C]" typeLabel="Security" />,
+    server: (props: any) => <NetworkNode {...props} icon={Server} colorClass="bg-[#151515]" typeLabel="Compute" />,
+    storage: (props: any) => <NetworkNode {...props} icon={Database} colorClass="bg-[#151515]" typeLabel="Storage" />,
+    endpoint: (props: any) => <NetworkNode {...props} icon={Laptop} colorClass="bg-[#1C1C1C]" typeLabel="Endpoint" />,
     boundary: BoundaryNode
 };
 
@@ -222,6 +230,7 @@ const STENCIL_CATEGORIES = [
 
 export const NetworkTopologyView: React.FC = () => {
     const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
+    const canvasRef = useRef<HTMLDivElement>(null);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [isSimulating, setIsSimulating] = useState(false);
@@ -255,7 +264,7 @@ export const NetworkTopologyView: React.FC = () => {
         label: '',
         type: 'standard',
         iconName: 'Box',
-        color: 'bg-blue-500',
+        color: 'bg-[#d62828]',
         internet: false,
         sensitivity: 'None',
         criticality: 'MEDIUM',
@@ -293,53 +302,82 @@ export const NetworkTopologyView: React.FC = () => {
                 authentication: 'None',
                 mitreIds: []
             },
-            style: { stroke: '#4361ee', strokeWidth: 2 },
-            markerEnd: { type: MarkerType.ArrowClosed, color: '#4361ee' }
+            style: { stroke: '#555', strokeWidth: 2 },
+            markerEnd: { type: MarkerType.ArrowClosed, color: '#555' }
         }, eds));
     }, [setEdges]);
 
-    const onDragOver = useCallback((event: React.DragEvent) => {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = 'move';
-    }, []);
-
-    const onDrop = useCallback((event: React.DragEvent) => {
-        event.preventDefault();
-        if (!reactFlowInstance) return;
-        
-        const type = event.dataTransfer.getData('application/reactflow/type');
-        const label = event.dataTransfer.getData('application/reactflow/label');
-        const criticality = event.dataTransfer.getData('application/reactflow/criticality');
-        const internet = event.dataTransfer.getData('application/reactflow/internet') === 'true';
-        const iconName = event.dataTransfer.getData('application/reactflow/iconName');
-        const sensitivity = event.dataTransfer.getData('application/reactflow/sensitivity') || 'None';
-        const colorClass = event.dataTransfer.getData('application/reactflow/colorClass');
-        const ipAddress = event.dataTransfer.getData('application/reactflow/ipAddress');
-        const interface_val = event.dataTransfer.getData('application/reactflow/interface');
-        const vlan_val = event.dataTransfer.getData('application/reactflow/vlan');
-
-        const position = reactFlowInstance.screenToFlowPosition({ x: event.clientX, y: event.clientY });
-        const id = `${type}-${Date.now()}`;
-        
-        const newNode: Node = {
-            id, type, position,
-            data: { 
-                label, 
-                criticality, 
-                isInternetFacing: internet, 
-                vulnerabilities: [], 
-                iocs: [],
-                status: 'SECURE',
-                iconName,
-                sensitivity,
-                colorClass: colorClass || undefined,
-                ipAddress: ipAddress || undefined,
-                interface: interface_val || undefined,
-                vlan: vlan_val || undefined
+    const handleAddStencilToCanvas = useCallback(
+        (stencil: any, e?: React.MouseEvent) => {
+            if (!reactFlowInstance || !canvasRef.current) {
+                return;
             }
-        };
-        setNodes((nds) => nds.concat(newNode));
-    }, [reactFlowInstance, setNodes]);
+
+            const id = `${stencil.type}-${crypto.randomUUID()}`;
+
+            const position = getCanvasInsertPosition(
+                reactFlowInstance,
+                canvasRef,
+                nodes,
+                {
+                    nodeWidth: stencil.type === 'boundary' ? 420 : 240,
+                    nodeHeight: stencil.type === 'boundary' ? 300 : 140,
+                    horizontalGap: 80,
+                    verticalGap: 60,
+                }
+            );
+
+            const newNode: Node = {
+                id,
+                type: stencil.type,
+                position,
+                data: {
+                    label: stencil.label,
+                    criticality: stencil.criticality || 'MEDIUM',
+                    isInternetFacing: Boolean(stencil.internet),
+                    vulnerabilities: [],
+                    iocs: [],
+                    status: 'SECURE',
+                    iconName: stencil.iconName || undefined,
+                    sensitivity: stencil.sensitivity || 'None',
+                    colorClass: stencil.color || undefined,
+                    ipAddress: stencil.ipAddress || undefined,
+                    interface: stencil.interface || undefined,
+                    vlan: stencil.vlan || undefined,
+                },
+            };
+
+            setNodes((currentNodes) => [
+                ...currentNodes,
+                newNode,
+            ]);
+
+            setSelectedNode(newNode);
+            setSelectedEdge(null);
+            setNodeIntel(null);
+
+            const focusX =
+                position.x +
+                (stencil.type === 'boundary' ? 210 : 120);
+
+            const focusY =
+                position.y +
+                (stencil.type === 'boundary' ? 150 : 70);
+
+            reactFlowInstance.setCenter(
+                focusX,
+                focusY,
+                {
+                    duration: 250,
+                }
+            );
+        },
+        [
+            reactFlowInstance,
+            nodes,
+            setNodes,
+        ]
+    );
 
     const applyAutomaticLayout = useCallback((layoutType: 'force' | 'tiered' | 'criticality', nodesToLayout?: Node[], edgesToLayout?: Edge[]) => {
         const targetNodes = nodesToLayout || nodes;
@@ -459,8 +497,8 @@ export const NetworkTopologyView: React.FC = () => {
                     portRange: e.portRange,
                     isPermissive: true
                 },
-                style: { stroke: '#4361ee', strokeWidth: 2 },
-                markerEnd: { type: MarkerType.ArrowClosed, color: '#4361ee' }
+                style: { stroke: '#555', strokeWidth: 2 },
+                markerEnd: { type: MarkerType.ArrowClosed, color: '#555' }
             }));
 
             setNodes(newNodes);
@@ -629,7 +667,7 @@ export const NetworkTopologyView: React.FC = () => {
             animated: result.reachableNodes.includes(e.source) && result.reachableNodes.includes(e.target),
             style: { 
                 ...e.style, 
-                stroke: (result.reachableNodes.includes(e.source) && result.reachableNodes.includes(e.target)) ? '#ef4444' : '#4361ee',
+                stroke: (result.reachableNodes.includes(e.source) && result.reachableNodes.includes(e.target)) ? '#ef4444' : '#555',
                 strokeWidth: (result.reachableNodes.includes(e.source) && result.reachableNodes.includes(e.target)) ? 3 : 2
             }
         })));
@@ -673,7 +711,7 @@ export const NetworkTopologyView: React.FC = () => {
     const clearSimulation = () => {
         setSimulation(null);
         setNodes(nds => nds.map(n => ({ ...n, data: { ...n.data, status: 'SECURE', isReachable: false } })));
-        setEdges(eds => eds.map(e => ({ ...e, animated: true, style: { stroke: '#4361ee', strokeWidth: 2 } })));
+        setEdges(eds => eds.map(e => ({ ...e, animated: true, style: { stroke: '#555', strokeWidth: 2 } })));
     };
 
     const handleNodePropertyChange = (id: string, key: string, value: any) => {
@@ -748,8 +786,25 @@ export const NetworkTopologyView: React.FC = () => {
         setCustomStencils(updated);
         await saveToStorage(STORES.CUSTOM_STENCILS, updated, 'network_topology_list');
         setShowStencilCreator(false);
-        setNewStencil({ label: '', type: 'standard', iconName: 'Box', color: 'bg-blue-500', internet: false, sensitivity: 'None', criticality: 'MEDIUM', ipAddress: '', interface: '', vlan: '' });
+        setNewStencil({ label: '', type: 'standard', iconName: 'Box', color: 'bg-[#d62828]', internet: false, sensitivity: 'None', criticality: 'MEDIUM', ipAddress: '', interface: '', vlan: '' });
     };
+
+    const addStencilToCanvas = useCallback((s: any) => {
+        const position = reactFlowInstance 
+            ? reactFlowInstance.screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 }) 
+            : { x: 250 + Math.random() * 100, y: 250 + Math.random() * 100 };
+            
+        const newNode = {
+            id: `${s.type}-${Date.now()}`, type: s.type, position,
+            data: { 
+                label: s.label, criticality: s.criticality || 'MEDIUM', isInternetFacing: s.internet || false, 
+                vulnerabilities: [], iocs: [], status: 'SECURE', iconName: s.iconName,
+                sensitivity: s.sensitivity || 'None', colorClass: s.color || undefined,
+                ipAddress: s.ipAddress || undefined, interface: s.interface || undefined, vlan: s.vlan || undefined
+            }
+        };
+        setNodes((nds) => nds.concat(newNode));
+    }, [reactFlowInstance, setNodes]);
 
     const filteredStencils = useMemo(() => {
         let combined = [...STENCIL_CATEGORIES];
@@ -760,74 +815,34 @@ export const NetworkTopologyView: React.FC = () => {
     }, [paletteSearch, customStencils]);
 
     return (
-        <div className="flex w-full h-full bg-[#0a0a0a] text-[#ededed] font-sans overflow-hidden">
-            {/* Sidebar: Palette & Library */}
-            <div className="w-64 flex flex-col bg-[#0d0e10] border-r border-[#ffffff10] z-20 flex-shrink-0">
-                <div className="flex bg-[#0a0b0d] border-b border-[#ffffff10]">
-                    <button onClick={() => setSidebarMode('STENCILS')} className={`flex-1 py-3 text-[10px] font-bold uppercase transition-colors border-b-2 ${sidebarMode === 'STENCILS' ? 'border-[#d62828] text-[#ededed] bg-[#ffffff05]' : 'border-transparent text-[#777] hover:text-[#999]'}`}>Stencils</button>
-                    <button onClick={() => setSidebarMode('LIBRARY')} className={`flex-1 py-3 text-[10px] font-bold uppercase transition-colors border-b-2 ${sidebarMode === 'LIBRARY' ? 'border-[#555] text-[#ededed] bg-[#ffffff05]' : 'border-transparent text-[#777] hover:text-[#999]'}`}>Library</button>
+        <div className="flex flex-col flex-1 min-h-0 bg-transparent text-[#ededed] font-sans">
+            <PageHeader
+                breadcrumbs={[{ label: 'Modeling' }, { label: 'Network Topology' }]}
+                title="Network Topology"
+                description="Design and simulate blast radius across infrastructure."
+            />
+            <div className="flex w-full flex-1 min-h-0 overflow-hidden relative">
+                {/* Sidebar: Palette & Library */}
+                <div className="w-64 flex flex-col bg-at-bg border-r border-at-border z-20 flex-shrink-0 h-full">
+                <div className="flex bg-at-surface border-b border-at-border">
+                    <button onClick={() => setSidebarMode('STENCILS')} className={`flex-1 py-3 text-[10px] font-bold uppercase transition-colors border-b-2 ${sidebarMode === 'STENCILS' ? 'border-at-accent text-at-text bg-at-surface-hover' : 'border-transparent text-at-muted hover:text-at-text-secondary'}`}>Stencils</button>
+                    <button onClick={() => setSidebarMode('LIBRARY')} className={`flex-1 py-3 text-[10px] font-bold uppercase transition-colors border-b-2 ${sidebarMode === 'LIBRARY' ? 'border-at-border-strong text-at-text bg-at-surface-hover' : 'border-transparent text-at-muted hover:text-at-text-secondary'}`}>Library</button>
                 </div>
 
                 {sidebarMode === 'STENCILS' ? (
                     <>
-                        <div className="p-4 border-b border-[#222328] bg-[#111216]">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-[10px] font-bold text-[#888] uppercase tracking-[0.10em] flex items-center gap-2">
-                                    <Layers size={14}/> STENCILS
-                                </h3>
-                                <button onClick={() => setShowStencilCreator(true)} className="p-1.5 hover:bg-[#ffffff10] rounded text-[#888] hover:text-[#fff]" title="New Stencil">
-                                    <Plus size={16}/>
-                                </button>
-                            </div>
-                            <div className="relative group">
-                                <Search className="absolute left-3 top-2 text-[#555] w-3.5 h-3.5" />
-                                <input 
-                                    type="text" 
-                                    placeholder="Find stencil..." 
-                                    className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg py-2 pl-10 pr-4 text-xs text-[#ececec] focus:border-[#555] focus:outline-none transition-colors"
-                                    value={paletteSearch}
-                                    onChange={(e) => setPaletteSearch(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                        <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-6">
-                            {filteredStencils.map(cat => (
-                                <div key={cat.title}>
-                                    <h4 className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                        <div className="w-1 h-1 rounded-full bg-gray-600"></div> {cat.title}
-                                    </h4>
-                                    <div className="grid grid-cols-1 gap-2">
-                                        {cat.items.map(s => {
-                                            const Icon = STENCIL_ICONS[s.iconName] || Box;
-                                            return (
-                                                <div 
-                                                    key={s.id || s.label}
-                                                    draggable
-                                                    onDragStart={(e) => {
-                                                        e.dataTransfer.setData('application/reactflow/type', s.type);
-                                                        e.dataTransfer.setData('application/reactflow/label', s.label);
-                                                        e.dataTransfer.setData('application/reactflow/criticality', s.criticality || 'MEDIUM');
-                                                        e.dataTransfer.setData('application/reactflow/internet', String(s.internet || false));
-                                                        e.dataTransfer.setData('application/reactflow/iconName', s.iconName || '');
-                                                        e.dataTransfer.setData('application/reactflow/sensitivity', s.sensitivity || 'None');
-                                                        e.dataTransfer.setData('application/reactflow/colorClass', s.color || '');
-                                                        e.dataTransfer.setData('application/reactflow/ipAddress', (s as any).ipAddress || '');
-                                                        e.dataTransfer.setData('application/reactflow/interface', (s as any).interface || '');
-                                                        e.dataTransfer.setData('application/reactflow/vlan', (s as any).vlan || '');
-                                                    }}
-                                                    className="p-2.5 bg-[#121316] border border-[#222328] rounded-lg cursor-grab hover:border-[#555] hover:bg-[#1a1c21] transition-all group flex items-center gap-3"
-                                                >
-                                                    <div className={`p-1.5 rounded-md bg-opacity-10 ${s.color || 'bg-blue-500'} ${s.color ? s.color.replace('bg-', 'text-') : 'text-blue-400'} group-hover:text-white`}>
-                                                        <Icon size={14} />
-                                                    </div>
-                                                    <span className="text-[11px] font-bold text-[#888] group-hover:text-[#ececec]">{s.label}</span>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        <StencilPalette
+                            groups={filteredStencils}
+                            query={paletteSearch}
+                            onQueryChange={setPaletteSearch}
+                            onAdd={handleAddStencilToCanvas}
+                            onCreate={() => setShowStencilCreator(true)}
+                            getIcon={(item) =>
+                                STENCIL_ICONS[item.iconName || 'Box'] || Box
+                            }
+                            title="STENCILS"
+                            placeholder="Find stencil..."
+                        />
                     </>
                 ) : (
                     <div className="flex-1 flex flex-col min-h-0">
@@ -867,29 +882,45 @@ export const NetworkTopologyView: React.FC = () => {
             </div>
 
             {/* Canvas */}
-            <div className="flex-1 relative z-10 bg-[#0a0a0a]">
-                <ReactFlow 
-                    nodes={nodes} 
-                    edges={edges} 
-                    nodeTypes={nodeTypes} 
-                    onNodesChange={onNodesChange} 
-                    onEdgesChange={onEdgesChange} 
-                    onConnect={onConnect} 
-                    onInit={reactFlowInstance => setReactFlowInstance(reactFlowInstance)}
-                    onDrop={onDrop}
-                    onDragOver={onDragOver}
-                    onNodeClick={(_, n) => { setSelectedNode(n); setSelectedEdge(null); setNodeIntel(null); }}
-                    onEdgeClick={(_, e) => { setSelectedEdge(e); setSelectedNode(null); setNodeIntel(null); }}
-                    onPaneClick={() => { setSelectedNode(null); setSelectedEdge(null); setNodeIntel(null); }}
+            <div
+                ref={canvasRef}
+                className="flex-1 relative min-w-0 bg-at-bg overflow-hidden z-10"
+            >
+                <div className="absolute top-0 left-0 z-[100] bg-black text-white p-4 max-w-lg max-h-[400px] overflow-auto text-xs pointer-events-none opacity-80">
+                    <pre>{JSON.stringify(nodes, null, 2)}</pre>
+                </div>
+                <ReactFlow
+                    nodes={nodes}
+                    edges={edges}
+                    nodeTypes={nodeTypes}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onConnect={onConnect}
+                    onInit={(instance) => setReactFlowInstance(instance)}
+                    onNodeClick={(_, node) => {
+                        setSelectedNode(node);
+                        setSelectedEdge(null);
+                        setNodeIntel(null);
+                    }}
+                    onEdgeClick={(_, edge) => {
+                        setSelectedEdge(edge);
+                        setSelectedNode(null);
+                        setNodeIntel(null);
+                    }}
+                    onPaneClick={() => {
+                        setSelectedNode(null);
+                        setSelectedEdge(null);
+                        setNodeIntel(null);
+                    }}
                     fitView
-                    proOptions={{ hideAttribution: true }}
+                    className="!bg-at-bg"
                 >
                     <Background color="#ffffff" gap={24} size={1} style={{ opacity: 0.05 }} />
                     <Controls className="!bg-[#111216] !border !border-[#222328] !fill-[#999] shadow-md [&>button]:!border-b-[#222328] hover:[&>button]:!bg-[#1a1b20]" />
                     <Panel position="top-left" className="!m-4 !left-0 !top-0">
                         <div className="flex flex-wrap items-center gap-2 p-2 bg-[#111216] border border-[#222328] rounded-lg shadow-lg">
                         {isConfigParsing && (
-                            <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-900/40 text-indigo-400 border border-indigo-500/30 rounded text-[10px] font-bold animate-pulse">
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-[#1C1C1C]/40 text-[#AAA] border border-neutral-500/30 rounded text-[10px] font-bold animate-pulse">
                                 <Loader2 className="animate-spin" size={12}/> {parsingStatus}
                             </div>
                         )}
@@ -899,16 +930,16 @@ export const NetworkTopologyView: React.FC = () => {
                                 <RefreshCw size={14}/> CLEAR SIMULATION
                             </button>
                         ) : (
-                            <div className="text-[10px] text-gray-500 font-bold uppercase flex items-center gap-2 px-2">
-                                <Siren size={14} className="text-orange-500 animate-pulse"/> SELECT NODE FOR INTEL & PROPERTIES
+                            <div className="text-[10px] text-[#888] font-bold uppercase flex items-center gap-2 px-2">
+                                <Siren size={14} className="text-white animate-pulse"/> SELECT NODE FOR INTEL & PROPERTIES
                             </div>
                         )}
                         
-                        <div className="h-6 w-px bg-gray-700 mx-1"></div>
+                        <div className="h-6 w-px bg-[#1C1C1C] mx-1"></div>
                         
-                        <div className="at-topology-toolbar-group">
-                            <label title="Build Topology from Multiple Configs">
-                                <FileUp size={16}/> LOAD CONFIGS
+                        <div className="flex items-center gap-2">
+                            <label title="Build Topology from Multiple Configs" className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold text-[#AAA] hover:text-white hover:bg-white/10 rounded transition-colors cursor-pointer">
+                                <FileUp size={14}/> LOAD CONFIGS
                                 <input type="file" className="hidden" accept=".txt,.cfg,.conf" multiple onChange={handleConfigUpload} ref={configInputRef} />
                             </label>
 
@@ -916,20 +947,21 @@ export const NetworkTopologyView: React.FC = () => {
                                 <button 
                                     onClick={() => { setShowLayoutMenu(!showLayoutMenu); setShowExportMenu(false); }}
                                     title="Automatic Layout"
+                                    className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold text-[#AAA] hover:text-white hover:bg-white/10 rounded transition-colors"
                                 >
-                                    <Layout size={16}/> LAYOUT
+                                    <Layout size={14}/> LAYOUT
                                 </button>
                                 
                                 {showLayoutMenu && (
-                                    <div className="absolute top-full right-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-lg shadow-xl overflow-hidden z-[100] animate-fade-in">
-                                        <div className="p-2 text-[10px] font-bold text-gray-500 uppercase border-b border-gray-800">Select Algorithm</div>
-                                        <button onClick={() => applyAutomaticLayout('force')} className="w-full text-left px-4 py-2.5 text-xs text-gray-300 hover:bg-white/5 flex items-center gap-3 transition-colors">
-                                            <Move size={14} className="text-blue-400"/> Force-Directed
+                                    <div className="absolute top-full right-0 mt-2 w-48 bg-[#0A0A0A] border border-[#333] rounded-lg shadow-xl overflow-hidden z-[100] animate-fade-in">
+                                        <div className="p-2 text-[10px] font-bold text-[#888] uppercase border-b border-[#222]">Select Algorithm</div>
+                                        <button onClick={() => applyAutomaticLayout('force')} className="w-full text-left px-4 py-2.5 text-xs text-neutral-300 hover:bg-white/5 flex items-center gap-3 transition-colors">
+                                            <Move size={14} className="text-red-400"/> Force-Directed
                                         </button>
-                                        <button onClick={() => applyAutomaticLayout('tiered')} className="w-full text-left px-4 py-2.5 text-xs text-gray-300 hover:bg-white/5 flex items-center gap-3 transition-colors">
-                                            <AlignJustify size={14} className="text-green-400"/> Tiered Architecture
+                                        <button onClick={() => applyAutomaticLayout('tiered')} className="w-full text-left px-4 py-2.5 text-xs text-neutral-300 hover:bg-white/5 flex items-center gap-3 transition-colors">
+                                            <AlignJustify size={14} className="text-white"/> Tiered Architecture
                                         </button>
-                                        <button onClick={() => applyAutomaticLayout('criticality')} className="w-full text-left px-4 py-2.5 text-xs text-gray-300 hover:bg-white/5 flex items-center gap-3 transition-colors">
+                                        <button onClick={() => applyAutomaticLayout('criticality')} className="w-full text-left px-4 py-2.5 text-xs text-neutral-300 hover:bg-white/5 flex items-center gap-3 transition-colors">
                                             <Shield size={14} className="text-red-400"/> Risk-Based Lanes
                                         </button>
                                     </div>
@@ -940,42 +972,43 @@ export const NetworkTopologyView: React.FC = () => {
                                 <button 
                                     onClick={() => { setShowExportMenu(!showExportMenu); setShowLayoutMenu(false); }}
                                     title="Export Diagram"
+                                    className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold text-[#AAA] hover:text-white hover:bg-white/10 rounded transition-colors"
                                 >
-                                    <Download size={16}/> EXPORT
+                                    <Download size={14}/> EXPORT
                                 </button>
                                 
                                 {showExportMenu && (
-                                    <div className="absolute top-full right-0 mt-2 w-56 bg-gray-900 border border-gray-700 rounded-lg shadow-xl overflow-hidden z-[100] animate-fade-in">
-                                        <div className="p-2 text-[10px] font-bold text-gray-500 uppercase border-b border-gray-800">Choose Format</div>
-                                        <button onClick={() => { setShowExportMenu(false); exportTopologyImage('png'); }} className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:bg-white/5 flex items-center gap-3 transition-colors">
-                                            <ImageIcon size={14} className="text-blue-400"/> High-Res PNG
+                                    <div className="absolute top-full right-0 mt-2 w-56 bg-[#0A0A0A] border border-[#333] rounded-lg shadow-xl overflow-hidden z-[100] animate-fade-in">
+                                        <div className="p-2 text-[10px] font-bold text-[#888] uppercase border-b border-[#222]">Choose Format</div>
+                                        <button onClick={() => { setShowExportMenu(false); exportTopologyImage('png'); }} className="w-full text-left px-4 py-2 text-xs text-neutral-300 hover:bg-white/5 flex items-center gap-3 transition-colors">
+                                            <ImageIcon size={14} className="text-red-400"/> High-Res PNG
                                         </button>
-                                        <button onClick={() => { setShowExportMenu(false); exportTopologyImage('jpeg'); }} className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:bg-white/5 flex items-center gap-3 transition-colors">
-                                            <ImageIcon size={14} className="text-orange-400"/> Legacy JPEG
+                                        <button onClick={() => { setShowExportMenu(false); exportTopologyImage('jpeg'); }} className="w-full text-left px-4 py-2 text-xs text-neutral-300 hover:bg-white/5 flex items-center gap-3 transition-colors">
+                                            <ImageIcon size={14} className="text-white"/> Legacy JPEG
                                         </button>
-                                        <button onClick={() => { setShowExportMenu(false); exportToVisio(nodes, edges); }} className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:bg-white/5 flex items-center gap-3 transition-colors">
-                                            <FileWarning size={14} className="text-indigo-400"/> Microsoft Visio (.vdx)
+                                        <button onClick={() => { setShowExportMenu(false); exportToVisio(nodes, edges); }} className="w-full text-left px-4 py-2 text-xs text-neutral-300 hover:bg-white/5 flex items-center gap-3 transition-colors">
+                                            <FileWarning size={14} className="text-[#AAA]"/> Microsoft Visio (.vdx)
                                         </button>
                                         <button onClick={() => {
                                             setShowExportMenu(false);
                                             const data = JSON.stringify({ nodes, edges }, null, 2);
                                             downloadFile(data, `topology_model_${Date.now()}.json`, 'application/json');
-                                        }} className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:bg-white/5 flex items-center gap-3 transition-colors">
-                                            <FileCode size={14} className="text-green-400"/> Logic Model (JSON)
+                                        }} className="w-full text-left px-4 py-2 text-xs text-neutral-300 hover:bg-white/5 flex items-center gap-3 transition-colors">
+                                            <FileCode size={14} className="text-white"/> Logic Model (JSON)
                                         </button>
                                     </div>
                                 )}
                             </div>
 
-                            <button onClick={() => { setNodes([]); setEdges([]); setSimulation(null); }} className="danger" title="Reset Canvas">
-                                <Trash2 size={16}/> RESET
+                            <button onClick={() => { setNodes([]); setEdges([]); setSimulation(null); }} className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold text-red-500 hover:text-white hover:bg-red-500/20 rounded transition-colors" title="Reset Canvas">
+                                <Trash2 size={14}/> RESET
                             </button>
                         </div>
                         </div>
                     </Panel>
 
                     {/* HUD / Risk Meter */}
-                    <Panel position="bottom-left" className="!m-4 !left-0 !bottom-0">
+                    <Panel position="bottom-right" className="!m-4 !right-0 !bottom-0">
                         <div className="w-64 p-4 bg-[#111216] border border-[#222328] rounded-lg shadow-lg">
                             <div className="flex items-center gap-2 text-xs font-bold text-[#888] uppercase mb-3">
                                 <span>Topology Risk Profile</span>
@@ -988,17 +1021,17 @@ export const NetworkTopologyView: React.FC = () => {
                                             <span className="text-red-400 font-bold">BLAST RADIUS</span>
                                             <span className="text-white font-mono">{simulation.blastRadiusScore}%</span>
                                         </div>
-                                        <div className="h-2 w-full bg-gray-800 rounded-full overflow-hidden">
+                                        <div className="h-2 w-full bg-[#151515] rounded-full overflow-hidden">
                                             <div className="h-full bg-red-500 animate-pulse" style={{ width: `${simulation.blastRadiusScore}%` }}></div>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2 text-[10px]">
-                                        <div className="p-2 bg-gray-900 rounded border border-gray-800">
-                                            <div className="text-gray-500 uppercase">Reached</div>
+                                        <div className="p-2 bg-[#0A0A0A] rounded border border-[#222]">
+                                            <div className="text-[#888] uppercase">Reached</div>
                                             <div className="text-white font-bold">{simulation.reachableNodes.length} Units</div>
                                         </div>
-                                        <div className="p-2 bg-gray-900 rounded border border-gray-800">
-                                            <div className="text-gray-500 uppercase">Crit Paths</div>
+                                        <div className="p-2 bg-[#0A0A0A] rounded border border-[#222]">
+                                            <div className="text-[#888] uppercase">Crit Paths</div>
                                             <div className="text-white font-bold">{simulation.criticalPaths.length} Active</div>
                                         </div>
                                     </div>
@@ -1015,7 +1048,7 @@ export const NetworkTopologyView: React.FC = () => {
             </div>
 
             {/* Right Panel: Context & Simulation Output */}
-            <div className={`flex flex-col bg-[#0d0e10] border-[#ffffff10] transition-all duration-300 overflow-hidden flex-shrink-0 ${selectedNode || selectedEdge ? 'w-80 border-l z-20' : 'w-0 border-none'}`}>
+            <div className={`flex flex-col bg-[#0A0A0A] border-[#ffffff10] transition-all duration-300 overflow-hidden flex-shrink-0 ${selectedNode || selectedEdge ? 'w-80 border-l z-20' : 'w-0 border-none'}`}>
                 <div className="p-4 border-b border-[#222328] bg-[#0a0b0d] flex items-center justify-between">
                     <h3 className="text-xs font-bold text-[#888] uppercase tracking-[0.2em] flex items-center gap-2">
                         <Terminal size={14}/> {selectedNode ? 'ASSET INTEL' : selectedEdge ? 'FLOW' : 'ANALYTICS'}
@@ -1400,12 +1433,9 @@ export const NetworkTopologyView: React.FC = () => {
                                             value={newStencil.color} 
                                             onChange={e => setNewStencil({...newStencil, color: e.target.value})}
                                         >
-                                            <option value="bg-blue-500">Blue</option>
-                                            <option value="bg-red-500">Red</option>
-                                            <option value="bg-green-500">Green</option>
-                                            <option value="bg-purple-500">Purple</option>
-                                            <option value="bg-pink-500">Pink</option>
-                                            <option value="bg-orange-500">Orange</option>
+                                            <option value="bg-[#333]">Dark Gray</option>
+                                            <option value="bg-[#ececec]">White</option>
+                                            <option value="bg-[#d62828]">Red</option>
                                         </select>
                                     </div>
                                 </div>
@@ -1505,15 +1535,16 @@ export const NetworkTopologyView: React.FC = () => {
             {toast && (
                 <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] animate-fade-in-up">
                     <div className={`px-6 py-3 rounded-full border shadow-2xl flex items-center gap-3 backdrop-blur-md ${
-                        toast.type === 'success' ? 'bg-green-900/40 border-green-500/50 text-green-300' :
-                        toast.type === 'error' ? 'bg-red-900/40 border-red-500/50 text-red-300' :
-                        'bg-blue-900/40 border-blue-500/50 text-blue-300'
+                        toast.type === 'success' ? 'bg-[#1a1c21] border-[#333] text-[#ececec]' :
+                        toast.type === 'error' ? 'bg-[#3b2a2a] border-[#ea4a4a]/50 text-[#ea4a4a]' :
+                        'bg-[#1a1c21] border-[#333] text-[#ececec]'
                     }`}>
                         {toast.type === 'success' ? <CheckCircle size={18}/> : <Info size={18}/>}
                         <span className="text-sm font-bold uppercase tracking-widest">{toast.message}</span>
                     </div>
                 </div>
             )}
+            </div>
         </div>
     );
 };

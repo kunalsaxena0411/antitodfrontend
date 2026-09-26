@@ -117,7 +117,18 @@ export const searchThreatIntelligence = async (query: string) => {
     }
 };
 
-export const createThreatChat = (context: string): Chat => {
+export const createThreatChat = (context: string): Chat | any => {
+    if (!GEMINI_API_KEY || GEMINI_API_KEY === 'mock-key') {
+        return {
+            sendMessageStream: async function* ({ message }: { message: string }) {
+                yield { text: "**[OFFLINE MODE] Gemini API Key missing.**\n\n" };
+                yield { text: "I am a simulated fallback response because the system could not detect a valid `VITE_GEMINI_API_KEY`.\n\n" };
+                yield { text: "> " + message + "\n\n" };
+                yield { text: "To enable active threat analysis, please configure your API key in the environment." };
+            }
+        };
+    }
+
     const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
     
     return ai.chats.create({

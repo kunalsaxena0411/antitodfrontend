@@ -67,7 +67,7 @@ const statusMeta = (status: MockPlaybook['status']) => {
       return {
         label: 'Active',
         className:
-          'bg-amber-500/10 text-amber-500 border-amber-500/30',
+          'bg-neutral-500/10 text-white border-neutral-500/30',
         icon: Activity,
       };
     default:

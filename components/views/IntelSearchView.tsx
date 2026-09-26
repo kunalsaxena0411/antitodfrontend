@@ -108,7 +108,7 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
         return parts.map((part, i) => {
             if (part.startsWith('`')) {
                 return (
-                    <code key={i} className="bg-cyber-cyan/10 text-cyber-cyan px-1.5 py-0.5 rounded border border-cyber-cyan/20 font-mono text-[11px] mx-0.5">
+                    <code key={i} className="bg-at-accent/10 text-at-accent px-1.5 py-0.5 rounded border border-at-accent/20 font-mono text-[11px] mx-0.5">
                         {part.slice(1, -1)}
                     </code>
                 );
@@ -117,7 +117,7 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
                 const innerText = part.slice(2, -2);
                 const isIdentifier = /CVE-\d{4}-\d+|APT\d+|[A-Z]{2,}/.test(innerText);
                 return (
-                    <strong key={i} className={`font-bold ${isIdentifier ? 'text-cyber-cyan bg-cyber-cyan/5 px-1 rounded shadow-[0_0_5px_rgba(67,97,238,0.1)]' : 'text-white'}`}>
+                    <strong key={i} className={`font-bold ${isIdentifier ? 'text-at-accent bg-at-accent/5 px-1 rounded shadow-none' : 'text-white'}`}>
                         {innerText}
                     </strong>
                 );
@@ -133,27 +133,27 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
         ).filter(row => row.length > 0);
 
         return (
-            <div key={`table-${keyIndex}`} className="my-8 overflow-hidden rounded-xl border border-gray-800 bg-black/40">
-                <div className="bg-gray-900/50 px-4 py-2 border-b border-gray-800 flex items-center gap-2">
-                    <Table size={12} className="text-cyber-cyan"/>
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Enriched Data Table</span>
+            <div key={`table-${keyIndex}`} className="my-8 overflow-hidden rounded-xl border border-at-border bg-black/40">
+                <div className="bg-at-surface-raised px-4 py-2 border-b border-at-border flex items-center gap-2">
+                    <Table size={12} className="text-at-accent"/>
+                    <span className="text-[10px] font-bold text-[#888] uppercase tracking-widest">Enriched Data Table</span>
                 </div>
                 <div className="overflow-x-auto custom-scrollbar">
                     <table className="w-full text-left border-collapse font-mono text-xs">
                         <thead>
-                            <tr className="bg-gray-900/80 border-b border-gray-800">
+                            <tr className="bg-at-surface-raised border-b border-at-border">
                                 {headerRow.map((cell, idx) => (
-                                    <th key={idx} className="p-4 font-bold text-cyber-cyan uppercase tracking-tighter border-r border-gray-800 last:border-0">
+                                    <th key={idx} className="p-4 font-bold text-at-accent uppercase tracking-tighter border-r border-at-border last:border-0">
                                         {renderStyledText(cell)}
                                     </th>
                                 ))}
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-800">
+                        <tbody className="divide-y divide-neutral-800">
                             {bodyRows.map((row, rIdx) => (
                                 <tr key={rIdx} className="hover:bg-white/5 transition-colors group">
                                     {row.map((cell, cIdx) => (
-                                        <td key={cIdx} className="p-4 text-gray-300 border-r border-gray-800/50 last:border-0 whitespace-nowrap">
+                                        <td key={cIdx} className="p-4 text-neutral-300 border-r border-at-border/50 last:border-0 whitespace-nowrap">
                                             {renderStyledText(cell)}
                                         </td>
                                     ))}
@@ -195,14 +195,14 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
 
             if (line.startsWith('# ')) {
                 elements.push(
-                    <h1 key={i} className="mt-14 mb-8 text-3xl font-cyber font-extrabold text-white tracking-tighter border-b-2 border-cyber-cyan/50 pb-4">
+                    <h1 key={i} className="mt-14 mb-8 text-3xl font-cyber font-extrabold text-white tracking-tighter border-b-2 border-at-accent/50 pb-4">
                         {renderStyledText(line.replace('# ', ''))}
                     </h1>
                 );
             } else if (line.startsWith('## ')) {
                 elements.push(
-                    <div key={i} className="mt-12 mb-6 border-b border-gray-800 pb-3 flex items-end gap-3">
-                        <span className="text-[10px] font-mono text-gray-500 uppercase tracking-tighter mb-1">SECTION:</span>
+                    <div key={i} className="mt-12 mb-6 border-b border-at-border pb-3 flex items-end gap-3">
+                        <span className="text-[10px] font-mono text-[#888] uppercase tracking-tighter mb-1">SECTION:</span>
                         <h2 className="text-xl font-bold text-white uppercase tracking-tight">
                             {renderStyledText(line.replace('## ', ''))}
                         </h2>
@@ -210,15 +210,15 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
                 );
             } else if (line.startsWith('### ')) {
                 elements.push(
-                    <h3 key={i} className="text-xs font-bold text-cyber-cyan mt-8 mb-3 uppercase tracking-[0.2em] flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-cyber-cyan animate-pulse"></div>
+                    <h3 key={i} className="text-xs font-bold text-at-accent mt-8 mb-3 uppercase tracking-[0.2em] flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-at-accent animate-pulse"></div>
                         {renderStyledText(line.replace('### ', ''))}
                     </h3>
                 );
             } else if (line.startsWith('#### ')) {
                 elements.push(
                     <h4 key={i} className="text-sm font-bold text-white mt-6 mb-2 flex items-center gap-2">
-                        <span className="text-cyber-cyan opacity-50 font-mono">//</span>
+                        <span className="text-at-accent opacity-50 font-mono">//</span>
                         {renderStyledText(line.replace('#### ', ''))}
                     </h4>
                 );
@@ -226,15 +226,15 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
             else if (line.startsWith('- ') || line.startsWith('* ')) {
                 elements.push(
                     <div key={i} className="flex gap-3 ml-2 mb-3 group">
-                        <div className="mt-1.5 shrink-0 w-1 h-1 rounded-full bg-gray-600 group-hover:bg-cyber-cyan transition-colors"></div>
-                        <div className="text-gray-300 text-[13px] leading-relaxed font-sans">
+                        <div className="mt-1.5 shrink-0 w-1 h-1 rounded-full bg-neutral-600 group-hover:bg-at-accent transition-colors"></div>
+                        <div className="text-neutral-300 text-[13px] leading-relaxed font-sans">
                             {renderStyledText(line.substring(2))}
                         </div>
                     </div>
                 );
             } else {
                 elements.push(
-                    <p key={i} className="text-gray-400 text-sm leading-relaxed mb-4 font-sans max-w-4xl">
+                    <p key={i} className="text-[#AAA] text-sm leading-relaxed mb-4 font-sans max-w-4xl">
                         {renderStyledText(line)}
                     </p>
                 );
@@ -246,13 +246,13 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
     };
 
     return (
-        <div className="h-full flex relative overflow-hidden bg-[#0d1013] text-[#cfd2d6]">
-            <div className={`bg-[#090a0c] border-r border-[#22262c] transition-all duration-300 flex flex-col z-20 ${isSidebarOpen ? 'w-72' : 'w-0 opacity-0 invisible'}`}>
-                <div className="p-4 border-b border-[#22262c] flex items-center justify-between shrink-0">
-                    <h3 className="text-[10px] font-bold text-[#8b929b] uppercase tracking-widest flex items-center gap-2">
-                        <History size={14} className="text-[#8b929b]"/> INTEL HISTORY
+        <div className="at-intel-grounding-page">
+            <div className={`at-intel-history ${isSidebarOpen ? "is-open" : "is-closed"}`}>
+                <div className="p-4 border-b border-at-border flex items-center justify-between shrink-0">
+                    <h3 className="text-[10px] font-bold text-at-muted uppercase tracking-widest flex items-center gap-2">
+                        <History size={14} className="text-at-muted"/> INTEL HISTORY
                     </h3>
-                    <button onClick={() => setHistory([])} className="text-[#5e666f] hover:text-[#d62828] transition-colors">
+                    <button onClick={() => setHistory([])} className="text-at-disabled hover:text-[#d62828] transition-colors">
                         <Trash2 size={14}/>
                     </button>
                 </div>
@@ -261,33 +261,33 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
                         <div 
                             key={idx}
                             onClick={() => handleSearch(undefined, item.query)}
-                            className={`group p-4 border-b border-[#22262c] cursor-pointer transition-colors relative overflow-hidden ${result?.query === item.query ? 'bg-[#151920]' : 'hover:bg-[#111418]'}`}
+                            className={`group p-4 border-b border-at-border cursor-pointer transition-colors relative overflow-hidden ${result?.query === item.query ? 'bg-[#151920]' : 'hover:bg-[#111418]'}`}
                         >
                             <div className="flex justify-between items-start relative z-10">
-                                <span className="text-xs font-bold text-[#f0f1f2] truncate pr-4 uppercase tracking-wide">{item.query}</span>
-                                <button onClick={(e) => deleteHistoryItem(e, item.query)} className="opacity-0 group-hover:opacity-100 text-[#5e666f] hover:text-[#d62828] transition-all"><X size={12}/></button>
+                                <span className="text-xs font-bold text-at-text truncate pr-4 uppercase tracking-wide">{item.query}</span>
+                                <button onClick={(e) => deleteHistoryItem(e, item.query)} className="opacity-0 group-hover:opacity-100 text-at-disabled hover:text-[#d62828] transition-all"><X size={12}/></button>
                             </div>
-                            <div className="flex justify-between items-center text-[10px] text-[#5e666f] font-mono mt-2 relative z-10">
+                            <div className="flex justify-between items-center text-[10px] text-at-disabled font-mono mt-2 relative z-10">
                                 <span className="flex items-center gap-1"><Clock size={10}/> {new Date(item.timestamp).toLocaleDateString()}</span>
                                 <span className="text-[#d62828] opacity-0 group-hover:opacity-100 transition-opacity font-bold">RECALL &rarr;</span>
                             </div>
                         </div>
                     ))}
                     {history.length === 0 && (
-                        <div className="text-center py-20 text-[#5e666f] text-[11px] font-mono">Archive Empty.</div>
+                        <div className="text-center py-20 text-at-disabled text-[11px] font-mono">Archive Empty.</div>
                     )}
                 </div>
             </div>
 
-            <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+            <div className="at-intel-main">
                 <button 
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-30 p-2 bg-[#090a0c] border border-l-0 border-[#22262c] rounded-r text-[#8b929b] hover:text-white transition-all shadow-md"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 z-30 p-2 bg-at-surface border border-l-0 border-at-border rounded-r text-at-muted hover:text-white transition-all shadow-md"
                 >
                     {isSidebarOpen ? <ChevronLeft size={16}/> : <ChevronRight size={16}/>}
                 </button>
 
-                <div className="px-10 py-12 border-b border-[#22262c] bg-[#0d1013] shrink-0">
+                <div className="at-intel-hero">
                     <div className="max-w-4xl mx-auto space-y-6">
                         <div className="flex flex-col items-center text-center space-y-3">
                             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[#d62828]/10 border border-[#d62828]/30 text-[#d62828] text-[10px] font-bold tracking-widest uppercase mb-4">
@@ -300,13 +300,13 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
                         </div>
 
                         <form onSubmit={handleSearch} className="relative max-w-3xl mx-auto group mt-4">
-                            <div className="relative flex items-center bg-[#090a0c] border border-[#22262c] rounded shadow-lg overflow-hidden">
-                                <div className="pl-5 text-[#5e666f]">
+                            <div className="relative flex items-center bg-at-surface border border-at-border rounded shadow-lg overflow-hidden">
+                                <div className="pl-5 text-at-disabled">
                                     <Search size={18}/>
                                 </div>
                                 <input 
                                     type="text" 
-                                    className="flex-1 bg-transparent border-none text-[#f0f1f2] px-4 py-4 focus:ring-0 placeholder-[#5e666f] font-mono text-sm"
+                                    className="flex-1 bg-transparent border-none text-at-text px-4 py-4 focus:ring-0 placeholder-[#5e666f] font-mono text-sm"
                                     placeholder="Execute research query (e.g. Lazarus TTPs, CVE-2025 details)..."
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
@@ -314,7 +314,7 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
                                 <button 
                                     type="submit"
                                     disabled={isSearching || !query.trim()}
-                                    className="bg-[#d62828] text-white px-8 py-4 font-bold text-xs tracking-wider hover:bg-[#b01e1e] transition-colors border-l border-[#22262c] disabled:opacity-50 flex items-center gap-3 uppercase"
+                                    className="bg-[#d62828] text-white px-8 py-4 font-bold text-xs tracking-wider hover:bg-[#b01e1e] transition-colors border-l border-at-border disabled:opacity-50 flex items-center gap-3 uppercase"
                                 >
                                     {isSearching ? <Loader2 className="animate-spin" size={16}/> : <Terminal size={16}/>}
                                     Process
@@ -324,61 +324,61 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-10 bg-[#0d1013]">
+                <div className="at-intel-results custom-scrollbar">
                     <div className="max-w-5xl mx-auto">
                         
                         {isSearching && !result && (
                             <div className="flex flex-col items-center justify-center py-32 gap-8">
                                 <div className="relative">
-                                    <div className="w-32 h-32 border-2 border-t-cyber-cyan border-gray-800 rounded-full animate-spin"></div>
+                                    <div className="w-32 h-32 border-2 border-t-at-accent border-at-border rounded-full animate-spin"></div>
                                     <div className="absolute inset-0 flex items-center justify-center">
-                                        <Globe className="text-cyber-cyan animate-pulse" size={48} />
+                                        <Globe className="text-at-accent animate-pulse" size={48} />
                                     </div>
                                 </div>
                                 <div className="text-center space-y-3">
                                     <h3 className="text-xl font-mono font-bold text-white tracking-widest uppercase animate-pulse">Scanning Open Intelligence</h3>
-                                    <p className="text-gray-500 font-mono text-[11px] uppercase tracking-widest">Grounding verification • Peer report correlation</p>
+                                    <p className="text-[#888] font-mono text-[11px] uppercase tracking-widest">Grounding verification • Peer report correlation</p>
                                 </div>
                             </div>
                         )}
 
                         {error && (
-                            <div className="bg-red-900/10 border border-red-500/40 p-8 rounded-2xl flex items-start gap-5 animate-fade-in">
-                                <AlertCircle className="text-red-500 shrink-0 mt-1" size={24}/>
+                            <div className="bg-red-900/10 border border-at-accent/40 p-8 rounded-2xl flex items-start gap-5 animate-fade-in">
+                                <AlertCircle className="text-at-accent shrink-0 mt-1" size={24}/>
                                 <div>
-                                    <h4 className="text-red-400 font-bold mb-2 uppercase tracking-wider text-sm">Briefing Failure</h4>
-                                    <p className="text-gray-400 text-sm font-mono leading-relaxed">{error}</p>
+                                    <h4 className="text-at-accent font-bold mb-2 uppercase tracking-wider text-sm">Briefing Failure</h4>
+                                    <p className="text-[#AAA] text-sm font-mono leading-relaxed">{error}</p>
                                 </div>
                             </div>
                         )}
 
                         {result && (
                             <div className="space-y-12 animate-fade-in pb-32">
-                                <div className="flex justify-between items-center border-b border-gray-800 pb-4">
-                                     <div className="flex items-center gap-3 text-xs font-mono text-gray-500">
-                                        <Bookmark size={14} className="text-cyber-cyan"/>
+                                <div className="flex justify-between items-center border-b border-at-border pb-4">
+                                     <div className="flex items-center gap-3 text-xs font-mono text-[#888]">
+                                        <Bookmark size={14} className="text-at-accent"/>
                                         <span className="uppercase">Research Dossier: {result.query}</span>
                                     </div>
                                     {result.isCached && (
-                                        <div className="flex items-center gap-2 px-3 py-1 bg-cyber-cyan/10 border border-cyber-cyan/30 rounded text-cyber-cyan text-[10px] font-bold uppercase tracking-widest">
+                                        <div className="flex items-center gap-2 px-3 py-1 bg-at-accent/10 border border-at-accent/30 rounded text-at-accent text-[10px] font-bold uppercase tracking-widest">
                                             <Database size={10}/> Tactical Cache
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="bg-gray-900/20 border border-gray-800/60 rounded-3xl p-10 shadow-3xl backdrop-blur-xl relative overflow-hidden group">
+                                <div className="bg-at-surface-raised border border-at-border/60 rounded-3xl p-10 shadow-3xl backdrop-blur-xl relative overflow-hidden group">
                                     <div className="absolute top-0 right-0 p-8 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity pointer-events-none">
                                         <Shield size={250}/>
                                     </div>
-                                    <div className="font-sans leading-relaxed text-gray-100">
+                                    <div className="font-sans leading-relaxed text-neutral-100">
                                         {formatContent(result.text)}
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                    <div className="bg-black/40 border border-gray-800/50 rounded-2xl p-8 flex flex-col shadow-inner">
-                                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
-                                            <Link size={16} className="text-blue-500"/> TECHNICAL REFERENCES
+                                    <div className="bg-black/40 border border-at-border/50 rounded-2xl p-8 flex flex-col shadow-inner">
+                                        <h3 className="text-xs font-bold text-[#888] uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
+                                            <Link size={16} className="text-at-accent"/> TECHNICAL REFERENCES
                                         </h3>
                                         <div className="space-y-3">
                                             {result.sources.map((source, i) => (
@@ -387,40 +387,40 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
                                                     href={source.uri} 
                                                     target="_blank" 
                                                     rel="noopener noreferrer"
-                                                    className="flex items-center justify-between p-4 bg-[#0a0a0a] border border-gray-800 rounded-xl hover:border-blue-500/50 hover:bg-blue-900/5 transition-all group"
+                                                    className="flex items-center justify-between p-4 bg-at-bg border border-at-border rounded-xl hover:border-neutral-500/50 hover:bg-at-surface-raised transition-all group"
                                                 >
                                                     <div className="flex-1 min-w-0 mr-4">
-                                                        <div className="text-xs font-bold text-gray-200 group-hover:text-blue-400 truncate mb-1">{source.title}</div>
-                                                        <div className="text-[10px] text-gray-600 truncate font-mono">{source.uri}</div>
+                                                        <div className="text-xs font-bold text-neutral-200 group-hover:text-at-accent truncate mb-1">{source.title}</div>
+                                                        <div className="text-[10px] text-neutral-600 truncate font-mono">{source.uri}</div>
                                                     </div>
-                                                    <ExternalLink size={14} className="text-gray-700 group-hover:text-blue-400 shrink-0"/>
+                                                    <ExternalLink size={14} className="text-neutral-700 group-hover:text-at-accent shrink-0"/>
                                                 </a>
                                             ))}
-                                            {result.sources.length === 0 && <p className="text-[11px] text-gray-700 italic font-mono">No direct references logged for this query.</p>}
+                                            {result.sources.length === 0 && <p className="text-[11px] text-neutral-700 italic font-mono">No direct references logged for this query.</p>}
                                         </div>
                                     </div>
 
-                                    <div className="bg-black/40 border border-gray-800/50 rounded-2xl p-8 flex flex-col shadow-inner">
-                                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
-                                            <Fingerprint size={16} className="text-purple-500"/> FIDELITY ASSESSMENT
+                                    <div className="bg-black/40 border border-at-border/50 rounded-2xl p-8 flex flex-col shadow-inner">
+                                        <h3 className="text-xs font-bold text-[#888] uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
+                                            <Fingerprint size={16} className="text-at-accent"/> FIDELITY ASSESSMENT
                                         </h3>
                                         <div className="flex-1 space-y-6">
-                                            <div className="p-5 bg-[#0a0a0a] border border-gray-800 rounded-xl">
+                                            <div className="p-5 bg-at-bg border border-at-border rounded-xl">
                                                 <div className="flex justify-between items-center mb-3">
-                                                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Confidence Level</span>
-                                                    <span className="text-[10px] text-green-400 font-mono font-bold">VERIFIED</span>
+                                                    <span className="text-[10px] text-[#888] font-bold uppercase tracking-widest">Confidence Level</span>
+                                                    <span className="text-[10px] text-white font-mono font-bold">VERIFIED</span>
                                                 </div>
-                                                <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-gradient-to-r from-blue-500 to-green-500" style={{ width: '92%' }}></div>
+                                                <div className="h-1.5 w-full bg-[#151515] rounded-full overflow-hidden">
+                                                    <div className="h-full bg-at-accent" style={{ width: '92%' }}></div>
                                                 </div>
                                             </div>
-                                            <div className="p-5 bg-[#0a0a0a] border border-gray-800 rounded-xl">
-                                                <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-3">Research Status</div>
+                                            <div className="p-5 bg-at-bg border border-at-border rounded-xl">
+                                                <div className="text-[10px] text-[#888] font-bold uppercase tracking-widest mb-3">Research Status</div>
                                                 <div className="flex items-start gap-3">
                                                     <div className="mt-1">
-                                                        <CheckCircle size={14} className="text-green-500"/>
+                                                        <CheckCircle size={14} className="text-white"/>
                                                     </div>
-                                                    <p className="text-[11px] text-gray-400 leading-relaxed font-mono">
+                                                    <p className="text-[11px] text-[#AAA] leading-relaxed font-mono">
                                                         {result.isCached 
                                                             ? "Retrieved from local intelligence store. Model verification bypassed to conserve API quota." 
                                                             : "Grounding model performed real-time data ingestion from authoritative security bulletins and technical whitepapers."}
@@ -437,7 +437,7 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
                 </div>
 
                 {!result && !isSearching && (
-                    <div className="p-8 border-t border-[#22262c] flex justify-center gap-16 text-[#5e666f] text-[10px] font-mono uppercase tracking-widest">
+                    <div className="p-8 border-t border-at-border flex justify-center gap-16 text-at-disabled text-[10px] font-mono uppercase tracking-widest">
                         <div className="flex items-center gap-2"><Globe size={12} className="text-[#3c424a]"/> GLOBAL OSINT</div>
                         <div className="flex items-center gap-2"><Database size={12} className="text-[#3c424a]"/> CROSS-FEED LOGIC</div>
                         <div className="flex items-center gap-2"><Layout size={12} className="text-[#3c424a]"/> STRUCTURED INTEL</div>

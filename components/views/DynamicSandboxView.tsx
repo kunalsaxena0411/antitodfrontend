@@ -185,12 +185,12 @@ export const DynamicSandboxView: React.FC = () => {
             if (part.startsWith('```')) {
                  const content = part.replace(/^```\w*\n?|```$/g, '');
                  return (
-                     <div key={i} className="bg-black/50 border border-gray-700 rounded p-3 my-2 font-mono text-xs text-green-400 overflow-x-auto whitespace-pre scrollbar-thin">
+                     <div key={i} className="bg-black/50 border border-[#333] rounded p-3 my-2 font-mono text-xs text-white overflow-x-auto whitespace-pre scrollbar-thin">
                          {content}
                      </div>
                  );
             } else if (part.startsWith('`')) {
-                return <span key={i} className="bg-black/50 border border-gray-700 px-1.5 py-0.5 rounded font-mono text-xs text-yellow-400 mx-1">{part.replace(/`/g, '')}</span>;
+                return <span key={i} className="bg-black/50 border border-[#333] px-1.5 py-0.5 rounded font-mono text-xs text-white mx-1">{part.replace(/`/g, '')}</span>;
             } else if (part.startsWith('**')) {
                 return <strong key={i} className="text-white">{part.replace(/\*\*/g, '')}</strong>;
             }
@@ -210,18 +210,18 @@ export const DynamicSandboxView: React.FC = () => {
 
         const score = (suricataAlerts.length * 10) + (yaraMatches.length * 20) + (clamAv ? 40 : 0) + (msDefender ? 40 : 0);
         const verdict = score > 0 ? (score > 50 ? 'MALICIOUS' : 'SUSPICIOUS') : 'CLEAN';
-        const color = verdict === 'MALICIOUS' ? 'text-red-500' : verdict === 'SUSPICIOUS' ? 'text-orange-500' : 'text-green-500';
-        const border = verdict === 'MALICIOUS' ? 'border-red-500/50' : verdict === 'SUSPICIOUS' ? 'border-orange-500/50' : 'border-green-500/50';
+        const color = verdict === 'MALICIOUS' ? 'text-red-500' : verdict === 'SUSPICIOUS' ? 'text-white' : 'text-white';
+        const border = verdict === 'MALICIOUS' ? 'border-red-500/50' : verdict === 'SUSPICIOUS' ? 'border-neutral-500/50' : 'border-neutral-500/50';
 
         return (
             <div className={`bg-black/40 border ${border} rounded-lg p-6 flex flex-col items-center justify-center text-center h-full`}>
-                <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Automated Verdict</div>
+                <div className="text-xs font-bold text-[#888] uppercase tracking-widest mb-2">Automated Verdict</div>
                 <div className={`text-4xl font-cyber font-bold ${color} mb-2`}>{verdict}</div>
-                <div className="text-xs text-gray-400 font-mono">Threat Score: {Math.min(100, score)}/100</div>
+                <div className="text-xs text-[#AAA] font-mono">Threat Score: {Math.min(100, score)}/100</div>
                 <div className="mt-4 flex gap-2 flex-wrap justify-center">
                     {clamAv && <span className="text-[10px] bg-red-900/40 text-red-300 px-2 py-1 rounded border border-red-500/30">CLAMAV: {clamAv}</span>}
-                    {msDefender && <span className="text-[10px] bg-blue-900/40 text-blue-300 px-2 py-1 rounded border border-blue-500/30">DEFENDER: {msDefender}</span>}
-                    {yaraMatches.length > 0 && <span className="text-[10px] bg-purple-900/40 text-purple-300 px-2 py-1 rounded border border-purple-500/30">{yaraMatches.length} YARA RULES</span>}
+                    {msDefender && <span className="text-[10px] bg-[#111] text-white px-2 py-1 rounded border border-neutral-500/30">DEFENDER: {msDefender}</span>}
+                    {yaraMatches.length > 0 && <span className="text-[10px] bg-neutral-900/40 text-white px-2 py-1 rounded border border-neutral-500/30">{yaraMatches.length} YARA RULES</span>}
                 </div>
             </div>
         );
@@ -231,23 +231,23 @@ export const DynamicSandboxView: React.FC = () => {
         <div className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* File Info */}
-                <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
-                    <h3 className="text-sm font-bold text-blue-400 uppercase mb-4 flex items-center gap-2"><FileCode size={16}/> File Metadata</h3>
-                    <div className="space-y-2 text-xs font-mono text-gray-300">
-                        <div className="flex justify-between border-b border-gray-800 pb-1">
-                            <span className="text-gray-500">SHA256</span>
+                <div className="bg-black/40 border border-[#222] rounded-lg p-6">
+                    <h3 className="text-sm font-bold text-red-400 uppercase mb-4 flex items-center gap-2"><FileCode size={16}/> File Metadata</h3>
+                    <div className="space-y-2 text-xs font-mono text-neutral-300">
+                        <div className="flex justify-between border-b border-[#222] pb-1">
+                            <span className="text-[#888]">SHA256</span>
                             <span className="break-all select-all text-white" title={report!.analysis.info.results.sha256}>{report!.analysis.info.results.sha256}</span>
                         </div>
-                        <div className="flex justify-between border-b border-gray-800 pb-1">
-                            <span className="text-gray-500">MD5</span>
+                        <div className="flex justify-between border-b border-[#222] pb-1">
+                            <span className="text-[#888]">MD5</span>
                             <span className="break-all select-all" title={report!.analysis.info.results.md5}>{report!.analysis.info.results.md5}</span>
                         </div>
-                        <div className="flex justify-between border-b border-gray-800 pb-1">
-                            <span className="text-gray-500">Type</span>
+                        <div className="flex justify-between border-b border-[#222] pb-1">
+                            <span className="text-[#888]">Type</span>
                             <span>{report!.analysis.info.results.file_type}</span>
                         </div>
-                        <div className="flex justify-between border-b border-gray-800 pb-1">
-                            <span className="text-gray-500">Size</span>
+                        <div className="flex justify-between border-b border-[#222] pb-1">
+                            <span className="text-[#888]">Size</span>
                             <span>{report?.analysis?.info?.results?.filesize ? report.analysis.info.results.filesize.toLocaleString() : 'Unknown'} bytes</span>
                         </div>
                     </div>
@@ -257,22 +257,22 @@ export const DynamicSandboxView: React.FC = () => {
                 <div>{renderVerdict()}</div>
 
                 {/* Analysis Overview Stats */}
-                <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
-                     <h3 className="text-sm font-bold text-purple-400 uppercase mb-4 flex items-center gap-2"><Activity size={16}/> Analysis Overview</h3>
-                     <div className="space-y-3 text-xs text-gray-300">
-                        <div className="flex justify-between items-center p-2 rounded bg-gray-900/50 border border-gray-800">
+                <div className="bg-black/40 border border-[#222] rounded-lg p-6">
+                     <h3 className="text-sm font-bold text-red-400 uppercase mb-4 flex items-center gap-2"><Activity size={16}/> Analysis Overview</h3>
+                     <div className="space-y-3 text-xs text-neutral-300">
+                        <div className="flex justify-between items-center p-2 rounded bg-[#111] border border-[#222]">
                             <span>PE Sections</span>
                             <span className="font-bold font-mono">{report!.analysis.plugins.pe32info?.results.sections.length || 0}</span>
                         </div>
-                        <div className="flex justify-between items-center p-2 rounded bg-gray-900/50 border border-gray-800">
+                        <div className="flex justify-between items-center p-2 rounded bg-[#111] border border-[#222]">
                             <span>Imported DLLs</span>
                             <span className="font-bold font-mono">{report!.analysis.plugins.pe32info?.results.imports.length || 0}</span>
                         </div>
-                        <div className="flex justify-between items-center p-2 rounded bg-gray-900/50 border border-gray-800">
+                        <div className="flex justify-between items-center p-2 rounded bg-[#111] border border-[#222]">
                             <span>IDS Alerts</span>
-                            <span className="font-bold font-mono text-orange-400">{report!.analysis.plugins.suricata?.results.alerts.length || 0}</span>
+                            <span className="font-bold font-mono text-white">{report!.analysis.plugins.suricata?.results.alerts.length || 0}</span>
                         </div>
-                        <div className="flex justify-between items-center p-2 rounded bg-gray-900/50 border border-gray-800">
+                        <div className="flex justify-between items-center p-2 rounded bg-[#111] border border-[#222]">
                             <span>PE Anomalies</span>
                             <span className="font-bold font-mono text-red-400">{report!.analysis.plugins.peanomal?.results.anomalies || 0}</span>
                         </div>
@@ -285,16 +285,16 @@ export const DynamicSandboxView: React.FC = () => {
     const renderThreats = () => (
         <div className="space-y-6 animate-fade-in">
              {/* YARA */}
-             <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
+             <div className="bg-black/40 border border-[#222] rounded-lg p-6">
                  <h3 className="text-sm font-bold text-red-400 uppercase mb-4 flex items-center gap-2"><ShieldAlert size={16}/> YARA Detections</h3>
                  {report!.analysis.plugins.yarad?.results.detection.length ? (
                      <div className="grid grid-cols-1 gap-3">
                          {report!.analysis.plugins.yarad!.results.detection.map((y, i) => (
                              <div key={i} className="bg-red-900/10 border border-red-500/20 p-3 rounded text-xs">
                                  <div className="font-bold text-red-300 mb-1">{y.rule_name}</div>
-                                 {y.description && <div className="text-gray-500 text-[10px] mb-2">{y.description}</div>}
+                                 {y.description && <div className="text-[#888] text-[10px] mb-2">{y.description}</div>}
                                  {y.strings && (
-                                     <div className="bg-black/50 p-2 rounded font-mono text-[10px] text-gray-400 break-all border border-red-500/10">
+                                     <div className="bg-black/50 p-2 rounded font-mono text-[10px] text-[#AAA] break-all border border-red-500/10">
                                          {y.strings.map((s, idx) => (
                                              <span key={idx} className="block">{JSON.stringify(s)}</span>
                                          ))}
@@ -303,25 +303,25 @@ export const DynamicSandboxView: React.FC = () => {
                              </div>
                          ))}
                      </div>
-                 ) : <div className="text-gray-500 italic text-xs">No YARA rules matched.</div>}
+                 ) : <div className="text-[#888] italic text-xs">No YARA rules matched.</div>}
              </div>
 
              {/* Suricata / IDS */}
-             <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
-                 <h3 className="text-sm font-bold text-orange-400 uppercase mb-4 flex items-center gap-2"><Siren size={16}/> IDS Detections (Suricata)</h3>
+             <div className="bg-black/40 border border-[#222] rounded-lg p-6">
+                 <h3 className="text-sm font-bold text-white uppercase mb-4 flex items-center gap-2"><Siren size={16}/> IDS Detections (Suricata)</h3>
                  {report!.analysis.plugins.suricata?.results.alerts.length ? (
                      <div className="space-y-2">
                          {report!.analysis.plugins.suricata!.results.alerts.map((s, i) => (
-                             <div key={i} className="bg-orange-900/10 border border-orange-500/20 p-3 rounded text-xs flex justify-between items-center">
-                                 <span className="text-orange-300 font-mono">{s.signature}</span>
+                             <div key={i} className="bg-neutral-900/10 border border-neutral-500/20 p-3 rounded text-xs flex justify-between items-center">
+                                 <span className="text-white font-mono">{s.signature}</span>
                                  <div className="flex gap-2">
-                                     <span className="bg-black/40 px-2 py-1 rounded text-[10px] text-gray-400">{s.category}</span>
+                                     <span className="bg-black/40 px-2 py-1 rounded text-[10px] text-[#AAA]">{s.category}</span>
                                      <span className="bg-red-900/30 text-red-400 px-2 py-1 rounded text-[10px] font-bold">Sev: {s.severity}</span>
                                  </div>
                              </div>
                          ))}
                      </div>
-                 ) : <div className="text-gray-500 italic text-xs">No IDS alerts generated.</div>}
+                 ) : <div className="text-[#888] italic text-xs">No IDS alerts generated.</div>}
              </div>
         </div>
     );
@@ -330,12 +330,12 @@ export const DynamicSandboxView: React.FC = () => {
         <div className="space-y-6 animate-fade-in">
              {/* DISA Entrypoint */}
              {report!.analysis.plugins.disa_entrypoint?.results.instructions && (
-                <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
-                    <h3 className="text-sm font-bold text-green-400 uppercase mb-4 flex items-center gap-2"><Terminal size={16}/> DISA Entrypoint Disassembly</h3>
-                    <div className="bg-black p-4 rounded border border-gray-700 font-mono text-xs text-green-300 space-y-1">
+                <div className="bg-black/40 border border-[#222] rounded-lg p-6">
+                    <h3 className="text-sm font-bold text-white uppercase mb-4 flex items-center gap-2"><Terminal size={16}/> DISA Entrypoint Disassembly</h3>
+                    <div className="bg-black p-4 rounded border border-[#333] font-mono text-xs text-white space-y-1">
                         {report!.analysis.plugins.disa_entrypoint!.results.instructions.map((inst, i) => (
                             <div key={i} className="flex gap-4">
-                                <span className="text-gray-600 select-none">{String(i).padStart(2, '0')}</span>
+                                <span className="text-neutral-600 select-none">{String(i).padStart(2, '0')}</span>
                                 <span>{inst}</span>
                             </div>
                         ))}
@@ -345,20 +345,20 @@ export const DynamicSandboxView: React.FC = () => {
 
              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                  {/* PE Sections */}
-                 <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
-                     <h3 className="text-sm font-bold text-purple-400 uppercase mb-4 flex items-center gap-2"><Layers size={16}/> PE Sections</h3>
+                 <div className="bg-black/40 border border-[#222] rounded-lg p-6">
+                     <h3 className="text-sm font-bold text-red-400 uppercase mb-4 flex items-center gap-2"><Layers size={16}/> PE Sections</h3>
                      <div className="overflow-x-auto">
-                         <table className="w-full text-left text-xs font-mono text-gray-300">
-                             <thead className="text-gray-500 border-b border-gray-700">
+                         <table className="w-full text-left text-xs font-mono text-neutral-300">
+                             <thead className="text-[#888] border-b border-[#333]">
                                  <tr><th className="pb-2">Name</th><th className="pb-2">Size</th><th className="pb-2">Entropy</th></tr>
                              </thead>
-                             <tbody className="divide-y divide-gray-800">
+                             <tbody className="divide-y divide-neutral-800">
                                 {report!.analysis.plugins.pe32info?.results.sections.map((sec, i) => (
                                     <tr key={i}>
                                         <td className="py-2 text-white">{sec.Name}</td>
                                         <td className="py-2">{sec.SizeOfRawData}</td>
                                         <td className="py-2">
-                                            <span className={`px-1.5 py-0.5 rounded ${Number(sec.entropy) > 7 ? 'bg-red-900/30 text-red-400' : 'text-green-400'}`}>
+                                            <span className={`px-1.5 py-0.5 rounded ${Number(sec.entropy) > 7 ? 'bg-red-900/30 text-red-400' : 'text-white'}`}>
                                                 {Number(sec.entropy).toFixed(3)}
                                             </span>
                                         </td>
@@ -371,29 +371,29 @@ export const DynamicSandboxView: React.FC = () => {
 
                  {/* PE Version Info & Anomalies */}
                  <div className="space-y-6">
-                     <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
-                         <h3 className="text-sm font-bold text-blue-400 uppercase mb-4 flex items-center gap-2"><Info size={16}/> Version Information</h3>
-                         <div className="space-y-2 text-xs font-mono text-gray-300">
+                     <div className="bg-black/40 border border-[#222] rounded-lg p-6">
+                         <h3 className="text-sm font-bold text-red-400 uppercase mb-4 flex items-center gap-2"><Info size={16}/> Version Information</h3>
+                         <div className="space-y-2 text-xs font-mono text-neutral-300">
                             {report!.analysis.plugins.pe32info?.results.version_information?.map((v, i) => (
-                                <div key={i} className="flex justify-between border-b border-gray-800 pb-1 last:border-0">
-                                    <span className="text-gray-500">{v.name}</span>
+                                <div key={i} className="flex justify-between border-b border-[#222] pb-1 last:border-0">
+                                    <span className="text-[#888]">{v.name}</span>
                                     <span className="text-white text-right truncate max-w-[200px]">{v.value}</span>
                                 </div>
                             ))}
-                            {!report!.analysis.plugins.pe32info?.results.version_information?.length && <span className="text-gray-500 italic">No version info.</span>}
+                            {!report!.analysis.plugins.pe32info?.results.version_information?.length && <span className="text-[#888] italic">No version info.</span>}
                          </div>
                      </div>
 
                      {report!.analysis.plugins.peanomal && (
-                         <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
-                             <h3 className="text-sm font-bold text-yellow-400 uppercase mb-4 flex items-center gap-2"><AlertTriangle size={16}/> PE Anomalies</h3>
+                         <div className="bg-black/40 border border-[#222] rounded-lg p-6">
+                             <h3 className="text-sm font-bold text-white uppercase mb-4 flex items-center gap-2"><AlertTriangle size={16}/> PE Anomalies</h3>
                              <div className="space-y-2 text-xs font-mono">
                                  {report!.analysis.plugins.peanomal!.results.detection.map((d, i) => (
-                                     <div key={i} className="bg-yellow-900/10 border border-yellow-500/20 p-2 rounded text-yellow-200">
+                                     <div key={i} className="bg-neutral-900/10 border border-neutral-500/20 p-2 rounded text-white">
                                          {d.name}
                                      </div>
                                  ))}
-                                 {!report!.analysis.plugins.peanomal!.results.detection.length && <span className="text-green-500">No anomalies detected.</span>}
+                                 {!report!.analysis.plugins.peanomal!.results.detection.length && <span className="text-white">No anomalies detected.</span>}
                              </div>
                          </div>
                      )}
@@ -401,12 +401,12 @@ export const DynamicSandboxView: React.FC = () => {
              </div>
 
              {/* PE Imports */}
-             <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
-                 <h3 className="text-sm font-bold text-gray-300 uppercase mb-4 flex items-center gap-2"><Box size={16}/> PE Imports</h3>
+             <div className="bg-black/40 border border-[#222] rounded-lg p-6">
+                 <h3 className="text-sm font-bold text-neutral-300 uppercase mb-4 flex items-center gap-2"><Box size={16}/> PE Imports</h3>
                  <div className="max-h-64 overflow-y-auto custom-scrollbar grid grid-cols-2 md:grid-cols-3 gap-2">
                      {report!.analysis.plugins.pe32info?.results.imports.map((imp, i) => (
-                         <div key={i} className="bg-gray-900/30 p-2 rounded border border-gray-800 text-[10px] font-mono text-gray-400 truncate" title={`${imp.dll} - ${imp.name}`}>
-                             <span className="text-blue-400 font-bold">{imp.dll}</span> :: {imp.name}
+                         <div key={i} className="bg-[#111] p-2 rounded border border-[#222] text-[10px] font-mono text-[#AAA] truncate" title={`${imp.dll} - ${imp.name}`}>
+                             <span className="text-red-400 font-bold">{imp.dll}</span> :: {imp.name}
                          </div>
                      ))}
                  </div>
@@ -416,32 +416,32 @@ export const DynamicSandboxView: React.FC = () => {
 
     const renderNetwork = () => {
         const network = report!.analysis.plugins.cuckoo?.result?.network;
-        if (!network) return <div className="text-gray-500 text-center p-10">No network activity recorded.</div>;
+        if (!network) return <div className="text-[#888] text-center p-10">No network activity recorded.</div>;
         
         return (
             <div className="space-y-6 animate-fade-in">
                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                     <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
-                         <h3 className="text-sm font-bold text-purple-400 uppercase mb-4 flex items-center gap-2"><Globe size={16}/> DNS Queries</h3>
+                     <div className="bg-black/40 border border-[#222] rounded-lg p-6">
+                         <h3 className="text-sm font-bold text-red-400 uppercase mb-4 flex items-center gap-2"><Globe size={16}/> DNS Queries</h3>
                          <div className="space-y-1 max-h-64 overflow-y-auto custom-scrollbar">
                              {network.dns?.map((d, i) => (
-                                 <div key={i} className="bg-gray-900/30 p-2 rounded border border-gray-800 text-xs font-mono text-gray-300 flex justify-between">
-                                     <span className="text-blue-300">{d.request}</span>
-                                     <span className="text-gray-500">{d.type}</span>
+                                 <div key={i} className="bg-[#111] p-2 rounded border border-[#222] text-xs font-mono text-neutral-300 flex justify-between">
+                                     <span className="text-white">{d.request}</span>
+                                     <span className="text-[#888]">{d.type}</span>
                                  </div>
-                             )) || <div className="text-gray-500 text-xs italic">None</div>}
+                             )) || <div className="text-[#888] text-xs italic">None</div>}
                          </div>
                      </div>
 
-                     <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
-                         <h3 className="text-sm font-bold text-orange-400 uppercase mb-4 flex items-center gap-2"><Network size={16}/> HTTP Requests</h3>
+                     <div className="bg-black/40 border border-[#222] rounded-lg p-6">
+                         <h3 className="text-sm font-bold text-white uppercase mb-4 flex items-center gap-2"><Network size={16}/> HTTP Requests</h3>
                          <div className="space-y-1 max-h-64 overflow-y-auto custom-scrollbar">
                              {network.http?.map((h, i) => (
-                                 <div key={i} className="bg-gray-900/30 p-2 rounded border border-gray-800 text-xs font-mono text-gray-300 break-all">
-                                     <span className="text-purple-400 mr-2 font-bold">{h.method}</span>
-                                     <span className="text-gray-400">http://{h.host}</span>{h.uri}
+                                 <div key={i} className="bg-[#111] p-2 rounded border border-[#222] text-xs font-mono text-neutral-300 break-all">
+                                     <span className="text-red-400 mr-2 font-bold">{h.method}</span>
+                                     <span className="text-[#AAA]">http://{h.host}</span>{h.uri}
                                  </div>
-                             )) || <div className="text-gray-500 text-xs italic">None</div>}
+                             )) || <div className="text-[#888] text-xs italic">None</div>}
                          </div>
                      </div>
                  </div>
@@ -453,38 +453,38 @@ export const DynamicSandboxView: React.FC = () => {
         <div className="space-y-6 animate-fade-in">
              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                  {/* EXIF Data */}
-                 <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
-                     <h3 className="text-sm font-bold text-cyan-400 uppercase mb-4 flex items-center gap-2"><Image size={16}/> EXIF Metadata</h3>
-                     <div className="space-y-1 max-h-80 overflow-y-auto custom-scrollbar text-xs font-mono text-gray-300">
+                 <div className="bg-black/40 border border-[#222] rounded-lg p-6">
+                     <h3 className="text-sm font-bold text-red-400 uppercase mb-4 flex items-center gap-2"><Image size={16}/> EXIF Metadata</h3>
+                     <div className="space-y-1 max-h-80 overflow-y-auto custom-scrollbar text-xs font-mono text-neutral-300">
                         {report!.analysis.plugins.exiftool?.results ? (
                             Object.entries(report!.analysis.plugins.exiftool!.results).map(([k, v], i) => (
-                                <div key={i} className="flex justify-between border-b border-gray-800 pb-1">
-                                    <span className="text-gray-500 truncate pr-4" title={k}>{k}</span>
+                                <div key={i} className="flex justify-between border-b border-[#222] pb-1">
+                                    <span className="text-[#888] truncate pr-4" title={k}>{k}</span>
                                     <span className="text-white text-right truncate pl-4" title={String(v)}>{String(v)}</span>
                                 </div>
                             ))
-                        ) : <div className="text-gray-500 italic">No EXIF data.</div>}
+                        ) : <div className="text-[#888] italic">No EXIF data.</div>}
                      </div>
                  </div>
 
                  {/* Resource Strings */}
-                 <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
-                     <h3 className="text-sm font-bold text-gray-300 uppercase mb-4 flex items-center gap-2"><FileCode size={16}/> Resource Strings</h3>
-                     <div className="max-h-80 overflow-y-auto custom-scrollbar bg-black p-2 rounded border border-gray-800 text-[10px] font-mono text-gray-400 space-y-1">
+                 <div className="bg-black/40 border border-[#222] rounded-lg p-6">
+                     <h3 className="text-sm font-bold text-neutral-300 uppercase mb-4 flex items-center gap-2"><FileCode size={16}/> Resource Strings</h3>
+                     <div className="max-h-80 overflow-y-auto custom-scrollbar bg-black p-2 rounded border border-[#222] text-[10px] font-mono text-[#AAA] space-y-1">
                         {report!.analysis.plugins.pe32info?.results.resource_strings?.map((s, i) => (
-                            <div key={i} className="break-all border-b border-gray-900 pb-1">{s}</div>
-                        )) || <div className="text-gray-500 italic">No resource strings found.</div>}
+                            <div key={i} className="break-all border-b border-neutral-900 pb-1">{s}</div>
+                        )) || <div className="text-[#888] italic">No resource strings found.</div>}
                      </div>
                  </div>
              </div>
 
              {/* Interesting Strings */}
-             <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
-                 <h3 className="text-sm font-bold text-green-400 uppercase mb-4 flex items-center gap-2"><Terminal size={16}/> Interesting Strings</h3>
-                 <div className="max-h-64 overflow-y-auto custom-scrollbar bg-black p-4 rounded border border-gray-800 text-[10px] font-mono text-green-300/80 columns-1 md:columns-2 lg:columns-3 gap-4">
+             <div className="bg-black/40 border border-[#222] rounded-lg p-6">
+                 <h3 className="text-sm font-bold text-white uppercase mb-4 flex items-center gap-2"><Terminal size={16}/> Interesting Strings</h3>
+                 <div className="max-h-64 overflow-y-auto custom-scrollbar bg-black p-4 rounded border border-[#222] text-[10px] font-mono text-white/80 columns-1 md:columns-2 lg:columns-3 gap-4">
                     {report!.analysis.plugins.strings?.results?.slice(0, 300).map((s, i) => (
                         <div key={i} className="break-all mb-1">{s}</div>
-                    )) || <div className="text-gray-500 italic">No strings extracted.</div>}
+                    )) || <div className="text-[#888] italic">No strings extracted.</div>}
                  </div>
              </div>
         </div>
@@ -493,23 +493,23 @@ export const DynamicSandboxView: React.FC = () => {
     return (
         <div className="h-[calc(100vh-70px)] bg-cyber-grid flex flex-col overflow-hidden relative">
             {/* Header */}
-            <div className="p-6 border-b border-gray-800 bg-black/40 shrink-0 flex justify-between items-center">
+            <div className="p-6 border-b border-[#222] bg-black/40 shrink-0 flex justify-between items-center">
                 <div className="flex items-center gap-3">
-                    <div className="p-3 bg-indigo-900/20 rounded-lg border border-indigo-500/30 text-indigo-400">
+                    <div className="p-3 bg-neutral-900/20 rounded-lg border border-neutral-500/30 text-red-400">
                         <Box size={24} />
                     </div>
                     <div>
                         <h2 className="text-2xl font-bold text-white font-cyber flex items-center gap-2">
-                            DYNAMIC <span className="text-indigo-400">SANDBOX</span>
+                            DYNAMIC <span className="text-red-400">SANDBOX</span>
                         </h2>
-                        <p className="text-sm text-gray-500 font-mono">AlienVault OTX Integration</p>
+                        <p className="text-sm text-[#888] font-mono">AlienVault OTX Integration</p>
                     </div>
                 </div>
                 
                 {report && (
                      <button 
                         onClick={handleAiAnalysis}
-                        className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded text-xs font-bold flex items-center gap-2 shadow-lg shadow-purple-900/20 transition-colors"
+                        className="px-4 py-2 bg-neutral-600 hover:bg-neutral-500 text-white rounded text-xs font-bold flex items-center gap-2 shadow-lg shadow-purple-900/20 transition-colors"
                     >
                         <Sparkles size={14}/> Ask Xyber AI
                     </button>
@@ -518,7 +518,7 @@ export const DynamicSandboxView: React.FC = () => {
 
             <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
                 {analysisStatus === 'IDLE' && (
-                    <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-800 rounded-xl bg-black/20 relative group h-full min-h-[400px]">
+                    <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-[#222] rounded-xl bg-black/20 relative group h-full min-h-[400px]">
                         <input 
                             type="file" 
                             className="absolute inset-0 opacity-0 cursor-pointer" 
@@ -526,17 +526,17 @@ export const DynamicSandboxView: React.FC = () => {
                             ref={fileInputRef}
                         />
                         <div className="text-center p-10 transition-all group-hover:scale-105">
-                            <div className="w-20 h-20 bg-indigo-900/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-indigo-500/30 group-hover:bg-indigo-900/40">
-                                <Upload size={32} className="text-indigo-400"/>
+                            <div className="w-20 h-20 bg-neutral-900/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-neutral-500/30 group-hover:bg-neutral-900/40">
+                                <Upload size={32} className="text-red-400"/>
                             </div>
                             <h3 className="text-xl font-bold text-white mb-2">{file ? file.name : "Drop File to Detonate"}</h3>
-                            <p className="text-gray-500 text-sm font-mono mb-6">
+                            <p className="text-[#888] text-sm font-mono mb-6">
                                 {file ? `${(file.size / 1024).toFixed(2)} KB selected` : "Supports PE, PDF, Office, Archive formats"}
                             </p>
                             {file && (
                                 <button 
                                     onClick={(e) => { e.stopPropagation(); handleUpload(); }}
-                                    className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm shadow-lg shadow-indigo-900/20 flex items-center gap-2 mx-auto"
+                                    className="px-8 py-3 bg-neutral-600 hover:bg-[#151515] text-white rounded font-bold text-sm shadow-lg shadow-indigo-900/20 flex items-center gap-2 mx-auto"
                                 >
                                     <Activity size={16}/> INITIATE ANALYSIS
                                 </button>
@@ -547,19 +547,19 @@ export const DynamicSandboxView: React.FC = () => {
 
                 {(analysisStatus === 'UPLOADING' || analysisStatus === 'ANALYZING' || analysisStatus === 'CALCULATING_HASH' || analysisStatus === 'CHECKING_CACHE') && (
                     <div className="flex-1 flex flex-col items-center justify-center h-full min-h-[400px]">
-                        <div className="w-24 h-24 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-8"></div>
+                        <div className="w-24 h-24 border-4 border-neutral-500 border-t-transparent rounded-full animate-spin mb-8"></div>
                         <h3 className="text-2xl font-bold text-white animate-pulse">
                             {analysisStatus === 'CALCULATING_HASH' && 'CALCULATING SHA256...'}
                             {analysisStatus === 'CHECKING_CACHE' && 'CHECKING OTX DB...'}
                             {analysisStatus === 'UPLOADING' && 'UPLOADING SAMPLE...'}
                             {analysisStatus === 'ANALYZING' && 'RUNNING SANDBOX...'}
                         </h3>
-                        <p className="text-gray-500 font-mono mt-2">
+                        <p className="text-[#888] font-mono mt-2">
                             {analysisStatus === 'ANALYZING' && `Polling Results (Attempt ${retryCount})...`}
                             {analysisStatus === 'UPLOADING' && `Sending file to AlienVault...`}
                             {analysisStatus === 'CHECKING_CACHE' && `Looking for existing analysis...`}
                         </p>
-                        {hash && <div className="mt-4 p-2 bg-black/40 rounded border border-gray-800 font-mono text-xs text-indigo-400 flex items-center gap-2"><Hash size={12}/> {hash}</div>}
+                        {hash && <div className="mt-4 p-2 bg-black/40 rounded border border-[#222] font-mono text-xs text-red-400 flex items-center gap-2"><Hash size={12}/> {hash}</div>}
                     </div>
                 )}
 
@@ -570,7 +570,7 @@ export const DynamicSandboxView: React.FC = () => {
                         <p className="text-red-400 font-mono mb-6">{error}</p>
                         <button 
                             onClick={() => { setFile(null); setAnalysisStatus('IDLE'); }}
-                            className="px-6 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded font-bold text-sm"
+                            className="px-6 py-2 bg-[#151515] hover:bg-[#1C1C1C] text-white rounded font-bold text-sm"
                         >
                             TRY AGAIN
                         </button>
@@ -580,7 +580,7 @@ export const DynamicSandboxView: React.FC = () => {
                 {analysisStatus === 'READY' && report && (
                     <div className="flex flex-col gap-6 pb-10">
                         {/* Tabs */}
-                        <div className="flex bg-black/40 border-b border-gray-800 px-2 overflow-x-auto custom-scrollbar">
+                        <div className="flex bg-black/40 border-b border-[#222] px-2 overflow-x-auto custom-scrollbar">
                              {[
                                  { id: 'SUMMARY', label: 'Summary', icon: Activity },
                                  { id: 'STATIC', label: 'Static Analysis', icon: Cpu },
@@ -591,7 +591,7 @@ export const DynamicSandboxView: React.FC = () => {
                                  <button
                                      key={tab.id}
                                      onClick={() => setActiveTab(tab.id as any)}
-                                     className={`py-3 px-4 text-xs font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === tab.id ? 'border-indigo-500 text-white bg-white/5' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
+                                     className={`py-3 px-4 text-xs font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === tab.id ? 'border-neutral-500 text-white bg-white/5' : 'border-transparent text-[#888] hover:text-neutral-300'}`}
                                  >
                                      <tab.icon size={14}/> {tab.label}
                                  </button>
@@ -607,8 +607,8 @@ export const DynamicSandboxView: React.FC = () => {
                             {activeTab === 'METADATA' && renderMetadata()}
                         </div>
                         
-                        <div className="flex justify-end pt-4 border-t border-gray-800">
-                            <button onClick={() => { setFile(null); setAnalysisStatus('IDLE'); }} className="px-6 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded font-bold text-xs border border-gray-700">
+                        <div className="flex justify-end pt-4 border-t border-[#222]">
+                            <button onClick={() => { setFile(null); setAnalysisStatus('IDLE'); }} className="px-6 py-2 bg-[#151515] hover:bg-[#1C1C1C] text-white rounded font-bold text-xs border border-[#333]">
                                 NEW ANALYSIS
                             </button>
                         </div>
@@ -619,18 +619,18 @@ export const DynamicSandboxView: React.FC = () => {
             {/* AI Chat Modal */}
             {showAiModal && (
                 <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-6 animate-fade-in">
-                    <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
-                        <div className="p-4 border-b border-gray-800 flex justify-between items-center bg-black/40">
+                    <div className="bg-[#0A0A0A] border border-[#333] rounded-xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+                        <div className="p-4 border-b border-[#222] flex justify-between items-center bg-black/40">
                             <h3 className="text-lg font-bold text-white flex items-center gap-2 font-cyber">
-                                <Sparkles className="text-purple-400" size={18}/> XYBER AI FORENSIC ASSISTANT
+                                <Sparkles className="text-red-400" size={18}/> XYBER AI FORENSIC ASSISTANT
                             </h3>
-                            <button onClick={() => setShowAiModal(false)} className="text-gray-500 hover:text-white"><X size={20}/></button>
+                            <button onClick={() => setShowAiModal(false)} className="text-[#888] hover:text-white"><X size={20}/></button>
                         </div>
                         
                         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-black/20 space-y-6">
                             {isAiLoading && messages.length === 0 && (
-                                <div className="flex flex-col items-center justify-center h-48 gap-4 text-gray-500">
-                                    <Sparkles className="animate-spin text-purple-500" size={48}/>
+                                <div className="flex flex-col items-center justify-center h-48 gap-4 text-[#888]">
+                                    <Sparkles className="animate-spin text-red-500" size={48}/>
                                     <p className="font-mono text-sm animate-pulse">Analyzing malware report...</p>
                                 </div>
                             )}
@@ -641,15 +641,15 @@ export const DynamicSandboxView: React.FC = () => {
                                     className={`flex gap-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                                 >
                                     {msg.role === 'model' && (
-                                        <div className="w-8 h-8 rounded-full bg-purple-900/20 border border-purple-500/30 flex items-center justify-center shrink-0 mt-1">
-                                            <Bot size={16} className="text-purple-400"/>
+                                        <div className="w-8 h-8 rounded-full bg-neutral-900/20 border border-neutral-500/30 flex items-center justify-center shrink-0 mt-1">
+                                            <Bot size={16} className="text-red-400"/>
                                         </div>
                                     )}
                                     
                                     <div className={`max-w-[85%] md:max-w-[75%] rounded-lg p-4 text-sm leading-relaxed shadow-lg ${
                                         msg.role === 'user' 
-                                            ? 'bg-cyber-cyan/10 border border-cyber-cyan/30 text-cyber-cyan rounded-tr-none' 
-                                            : 'bg-gray-900/80 border border-gray-800 text-gray-300 rounded-tl-none font-mono'
+                                            ? 'bg-red-500/10 border border-red-500/30 text-red-500 rounded-tr-none' 
+                                            : 'bg-[#111] border border-[#222] text-neutral-300 rounded-tl-none font-mono'
                                     }`}>
                                         {msg.role === 'user' ? (
                                             <div className="whitespace-pre-wrap">{msg.text}</div>
@@ -662,8 +662,8 @@ export const DynamicSandboxView: React.FC = () => {
                                     </div>
 
                                     {msg.role === 'user' && (
-                                        <div className="w-8 h-8 rounded-full bg-cyber-cyan/20 border border-cyber-cyan/30 flex items-center justify-center shrink-0 mt-1">
-                                            <User size={16} className="text-cyber-cyan"/>
+                                        <div className="w-8 h-8 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center shrink-0 mt-1">
+                                            <User size={16} className="text-red-500"/>
                                         </div>
                                     )}
                                 </div>
@@ -671,10 +671,10 @@ export const DynamicSandboxView: React.FC = () => {
                             
                             {isAiLoading && messages.length > 0 && (
                                  <div className="flex gap-4 justify-start">
-                                    <div className="w-8 h-8 rounded-full bg-purple-900/20 border border-purple-500/30 flex items-center justify-center shrink-0 mt-1 animate-pulse">
-                                        <Bot size={16} className="text-purple-400"/>
+                                    <div className="w-8 h-8 rounded-full bg-neutral-900/20 border border-neutral-500/30 flex items-center justify-center shrink-0 mt-1 animate-pulse">
+                                        <Bot size={16} className="text-red-400"/>
                                     </div>
-                                    <div className="p-4 rounded-lg rounded-tl-none bg-gray-900/80 border border-gray-800 text-purple-400 text-xs font-mono">
+                                    <div className="p-4 rounded-lg rounded-tl-none bg-[#111] border border-[#222] text-red-400 text-xs font-mono">
                                         <Loader2 size={14} className="animate-spin inline mr-2"/> Thinking...
                                     </div>
                                 </div>
@@ -682,7 +682,7 @@ export const DynamicSandboxView: React.FC = () => {
                             <div ref={messagesEndRef} />
                         </div>
 
-                        <div className="bg-black/40 border-t border-gray-800 p-4">
+                        <div className="bg-black/40 border-t border-[#222] p-4">
                             <div className="relative">
                                 <textarea
                                     value={chatInput}
@@ -694,15 +694,15 @@ export const DynamicSandboxView: React.FC = () => {
                                         }
                                     }}
                                     placeholder="Ask about the malware analysis..."
-                                    className="w-full bg-gray-900/50 border border-gray-700 rounded-xl pl-4 pr-14 py-3 text-sm text-gray-200 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/50 transition-all resize-none h-14 custom-scrollbar font-mono shadow-inner"
+                                    className="w-full bg-[#111] border border-[#333] rounded-xl pl-4 pr-14 py-3 text-sm text-neutral-200 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-purple-500/50 transition-all resize-none h-14 custom-scrollbar font-mono shadow-inner"
                                 />
                                 <button 
                                     onClick={handleSendMessage} 
                                     disabled={isAiLoading || !chatInput.trim()}
                                     className={`absolute right-2 top-2 bottom-2 aspect-square flex items-center justify-center rounded-lg transition-all ${
                                         chatInput.trim() && !isAiLoading 
-                                            ? 'bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-900/20' 
-                                            : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                                            ? 'bg-neutral-600 hover:bg-neutral-500 text-white shadow-lg shadow-purple-900/20' 
+                                            : 'bg-[#151515] text-[#888] cursor-not-allowed'
                                     }`}
                                 >
                                     {isAiLoading ? <Loader2 className="animate-spin" size={18}/> : <Send size={18}/>}

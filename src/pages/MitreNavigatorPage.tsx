@@ -428,7 +428,7 @@ export default function MitreNavigatorPage({
       <PageHeader
         breadcrumbs={[
           {
-            label: 'Detection & Response',
+            label: 'Modeling',
           },
           {
             label: 'MITRE Navigator',
@@ -438,6 +438,23 @@ export default function MitreNavigatorPage({
         description="Map enterprise ATT&CK techniques by tactic, platform and sub-technique."
         actions={
           <div className="at-mitre-header-actions">
+            <div className="at-mitre-query-search" style={{ border: 'none', background: 'transparent' }}>
+              <Search size={14} color="#888" />
+              <input
+                type="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search technique, tactic..."
+                spellCheck={false}
+                style={{ width: '150px', background: 'transparent', color: '#fff', fontSize: '11px', border: 'none', outline: 'none' }}
+              />
+              {search && (
+                <button type="button" onClick={() => setSearch('')}>
+                  <X size={12} color="#888" />
+                </button>
+              )}
+            </div>
+
             <button
               type="button"
               className={`at-btn at-btn-secondary at-btn-sm ${showFilters
@@ -489,99 +506,32 @@ export default function MitreNavigatorPage({
             Overview
            ================================================================ */}
 
-        <div className="at-mitre-overview">
-          <div className="at-mitre-overview-card">
-            <span>TACTICS</span>
-            <strong>{tacticCount}</strong>
-            <small>
-              Enterprise attack lifecycle
-            </small>
+        <div className="at-mitre-overview" style={{ gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '10px' }}>
+          <div className="at-mitre-overview-card" style={{ minHeight: 'auto', padding: '10px 15px' }}>
+            <span style={{ fontSize: '9px', opacity: 0.6 }}>TACTICS</span>
+            <strong style={{ fontSize: '18px', marginTop: '4px' }}>{tacticCount}</strong>
           </div>
 
-          <div className="at-mitre-overview-card">
-            <span>TECHNIQUES</span>
-            <strong>
+          <div className="at-mitre-overview-card" style={{ minHeight: 'auto', padding: '10px 15px' }}>
+            <span style={{ fontSize: '9px', opacity: 0.6 }}>TECHNIQUES</span>
+            <strong style={{ fontSize: '18px', marginTop: '4px' }}>
               {totalTechniques}
             </strong>
-            <small>
-              Primary ATT&amp;CK techniques
-            </small>
           </div>
 
-          <div className="at-mitre-overview-card">
-            <span>SUB-TECHNIQUES</span>
-            <strong>
+          <div className="at-mitre-overview-card" style={{ minHeight: 'auto', padding: '10px 15px' }}>
+            <span style={{ fontSize: '9px', opacity: 0.6 }}>SUB-TECHNIQUES</span>
+            <strong style={{ fontSize: '18px', marginTop: '4px' }}>
               {totalSubTechniques}
             </strong>
-            <small>
-              Nested technique coverage
-            </small>
           </div>
 
-          <div className="at-mitre-overview-card">
-            <span>VISIBLE</span>
-            <strong>
+          <div className="at-mitre-overview-card" style={{ minHeight: 'auto', padding: '10px 15px' }}>
+            <span style={{ fontSize: '9px', opacity: 0.6 }}>VISIBLE</span>
+            <strong style={{ fontSize: '18px', marginTop: '4px', color: '#e05d63' }}>
               {filteredTechniques.length}
             </strong>
-            <small>
-              Current filtered dataset
-            </small>
           </div>
-        </div>
-
-        {/* ================================================================
-            Query / filtering
-           ================================================================ */}
-
-        <div className="at-mitre-query">
-          <div className="at-mitre-query-search">
-            <Search size={14} />
-
-            <input
-              type="search"
-              value={search}
-              onChange={(event) =>
-                setSearch(
-                  event.target.value,
-                )
-              }
-              placeholder="Search technique, tactic, ID, platform..."
-              spellCheck={false}
-              aria-label="Search ATT&CK dataset"
-            />
-
-            {search && (
-              <button
-                type="button"
-                onClick={() =>
-                  setSearch('')
-                }
-                aria-label="Clear search"
-              >
-                <X size={12} />
-              </button>
-            )}
-          </div>
-
-          <span className="at-mitre-query-count">
-            {filteredTechniques.length.toLocaleString()}{' '}
-            results
-          </span>
-
-          <button
-            type="button"
-            className="at-mitre-query-filter"
-            onClick={() =>
-              setShowFilters(
-                (value) => !value,
-              )
-            }
-          >
-            <Filter size={12} />
-            {showFilters
-              ? 'Hide filters'
-              : 'Filter view'}
-          </button>
         </div>
 
         {showFilters && (
@@ -651,6 +601,40 @@ export default function MitreNavigatorPage({
         )}
 
         {/* ================================================================
+            Tactic summary
+           ================================================================ */}
+
+        <div className="at-mitre-tactic-strip">
+          {tacticSummary.map(
+            (tactic) => (
+              <button
+                type="button"
+                key={tactic.slug}
+                onClick={() =>
+                  setSelectedTactic(
+                    tactic.slug,
+                  )
+                }
+                className={
+                  selectedTactic ===
+                    tactic.slug
+                    ? 'active'
+                    : ''
+                }
+              >
+                <span>
+                  {tactic.name}
+                </span>
+
+                <strong>
+                  {tactic.count}
+                </strong>
+              </button>
+            ),
+          )}
+        </div>
+
+        {/* ================================================================
             Main workspace
            ================================================================ */}
 
@@ -710,6 +694,8 @@ export default function MitreNavigatorPage({
                         filteredByTactic.get(
                           tactic.slug,
                         ) ?? [];
+
+                      if (selectedTactic !== 'ALL' && selectedTactic !== tactic.slug) return null;
 
                       return (
                         <section
@@ -1007,39 +993,6 @@ export default function MitreNavigatorPage({
           )}
         </div>
 
-        {/* ================================================================
-            Tactic summary
-           ================================================================ */}
-
-        <div className="at-mitre-tactic-strip">
-          {tacticSummary.map(
-            (tactic) => (
-              <button
-                type="button"
-                key={tactic.slug}
-                onClick={() =>
-                  setSelectedTactic(
-                    tactic.slug,
-                  )
-                }
-                className={
-                  selectedTactic ===
-                    tactic.slug
-                    ? 'active'
-                    : ''
-                }
-              >
-                <span>
-                  {tactic.name}
-                </span>
-
-                <strong>
-                  {tactic.count}
-                </strong>
-              </button>
-            ),
-          )}
-        </div>
       </div>
     </div>
   );

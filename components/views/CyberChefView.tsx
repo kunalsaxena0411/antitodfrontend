@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
     Search, Plus, Trash2, ArrowRight, Play, RefreshCw, 
@@ -437,14 +437,20 @@ const OPERATIONS: Operation[] = [
     }
 ];
 
-export const CyberChefView: React.FC<CyberChefViewProps> = ({ onNavigateToIntel }) => {
-    // Persist recipe and input across unmounts/mounts
-    const [input, setInput] = useState(() => localStorage.getItem('cyberchef_input') || '');
+export const CyberChefView: React.FC<CyberChefViewProps> = ({
+    onNavigateToIntel,
+}) => {
+    const [input, setInput] = useState(
+        () => localStorage.getItem('cyberchef_input') || ''
+    );
+
     const [recipe, setRecipe] = useState<RecipeStep[]>(() => {
         try {
             const saved = localStorage.getItem('cyberchef_recipe');
             return saved ? JSON.parse(saved) : [];
-        } catch { return []; }
+        } catch {
+            return [];
+        }
     });
 
     const [output, setOutput] = useState('');
@@ -454,10 +460,14 @@ export const CyberChefView: React.FC<CyberChefViewProps> = ({ onNavigateToIntel 
     const [copied, setCopied] = useState(false);
     const [autoBake, setAutoBake] = useState(true);
     const [forEachLine, setForEachLine] = useState(false);
+    const [activeCategory, setActiveCategory] = useState<OpCategory | 'All'>('All');
 
     useEffect(() => {
         localStorage.setItem('cyberchef_input', input);
-        localStorage.setItem('cyberchef_recipe', JSON.stringify(recipe));
+        localStorage.setItem(
+            'cyberchef_recipe',
+            JSON.stringify(recipe)
+        );
     }, [input, recipe]);
 
     const bake = async () => {
@@ -465,390 +475,1275 @@ export const CyberChefView: React.FC<CyberChefViewProps> = ({ onNavigateToIntel 
             setOutput('');
             return;
         }
+
         setIsBaking(true);
-        
+
         try {
             const processData = async (data: string) => {
                 let currentData = data;
                 const registers: Record<string, string> = {};
+
                 for (const step of recipe) {
                     if (step.disabled) continue;
-                    const op = OPERATIONS.find(o => o.id === step.opId);
-                    if (op) {
-                        if (currentData.startsWith('IMAGE_DATA:')) {
-                            if (op.id !== 'ai-ocr') {
-                                currentData = "[Piping images to text-based operations is not supported. Use OCR first.]";
-                                break;
-                            }
-                            currentData = currentData.replace('IMAGE_DATA:data:image/png;base64,', '');
-                            const binary = atob(currentData);
-                            currentData = Array.from(binary).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+
+                    const op = OPERATIONS.find(
+                        (operation) => operation.id === step.opId
+                    );
+
+                    if (!op) continue;
+
+                    if (currentData.startsWith('IMAGE_DATA:')) {
+                        if (op.id !== 'ai-ocr') {
+                            currentData =
+                                '[Piping images to text-based operations is not supported. Use OCR first.]';
+                            break;
                         }
-                        currentData = await op.run(currentData, step.args, registers);
+
+                        currentData = currentData.replace(
+                            'IMAGE_DATA:data:image/png;base64,',
+                            ''
+                        );
+
+                        const binary = atob(currentData);
+
+                        currentData = Array.from(binary)
+                            .map((char) =>
+                                char
+                                    .charCodeAt(0)
+                                    .toString(16)
+                                    .padStart(2, '0')
+                            )
+                            .join('');
                     }
+
+                    currentData = await op.run(
+                        currentData,
+                        step.args,
+                        registers
+                    );
                 }
+
                 return currentData;
             };
 
             if (forEachLine) {
                 const lines = input.split(/\r?\n/);
-                const results = await Promise.all(lines.map(line => processData(line)));
+
+                const results = await Promise.all(
+                    lines.map((line) => processData(line))
+                );
+
                 setOutput(results.join('\n'));
             } else {
                 setOutput(await processData(input));
             }
-        } catch (err) {
-            setOutput(`[CRITICAL ERROR IN RECIPE CHAIN]`);
+        } catch (error) {
+            console.error('CyberChef execution failed:', error);
+            setOutput('[CRITICAL ERROR IN RECIPE CHAIN]');
         } finally {
             setIsBaking(false);
         }
     };
 
-    /**
-     * Uses Gemini to suggest a recipe based on input patterns.
-     * Fixed: Guideline adherence - removing invalid empty Type.OBJECT from responseSchema.
-     * Relying on responseMimeType: 'application/json' for flexible argument structure.
-     */
     const handleMagicWand = async () => {
         if (!input || isCookingAi) return;
+
         setIsCookingAi(true);
 
         try {
-            const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-            const response = await ai.models.generateContent({
-                model: 'gemini-3-flash-preview',
-                contents: `Analyze the following data for common cybersecurity obfuscation, encoding, or compression patterns (e.g. Base64, Hex, URL encoding, ROT13, etc.).
-                
-                Suggest a multi-step CyberChef recipe to decode/analyze it.
-                Return ONLY a JSON array of operations.
-                Valid operation IDs are: ${OPERATIONS.map(o => `'${o.id}'`).join(', ')}.
-                
-                Each object in the array must have:
-                - "opId": The exact ID string from the list above.
-                - "args": An object mapping argument names (if any) to values.
-                
-                Data to analyze (first 4KB):
-                ${input.substring(0, 4000)}`,
-                config: {
-                    responseMimeType: "application/json",
-                }
+            const ai = new GoogleGenAI({
+                apiKey: GEMINI_API_KEY,
             });
 
-            const suggestedSteps = JSON.parse(response.text);
+            const response = await ai.models.generateContent({
+                model: 'gemini-3-flash-preview',
+                contents: `
+Analyze the following data for common cybersecurity obfuscation,
+encoding, or compression patterns.
+
+Suggest a multi-step CyberChef recipe to decode or analyze it.
+
+Return ONLY a JSON array of operations.
+
+Valid operation IDs:
+${OPERATIONS.map((operation) => `'${operation.id}'`).join(', ')}
+
+Each object:
+- "opId": exact operation ID
+- "args": object with operation arguments
+
+Data:
+${input.substring(0, 4000)}
+                `,
+                config: {
+                    responseMimeType: 'application/json',
+                },
+            });
+
+            const suggestedSteps = JSON.parse(
+                response.text
+            );
+
             if (Array.isArray(suggestedSteps)) {
-                const newSteps: RecipeStep[] = suggestedSteps.map(s => ({
-                    id: crypto.randomUUID(),
-                    opId: s.opId,
-                    args: s.args || {}
-                }));
+                const newSteps: RecipeStep[] =
+                    suggestedSteps
+                        .map((step: any) => ({
+                            id: crypto.randomUUID(),
+                            opId: step.opId,
+                            args: step.args || {},
+                        }))
+                        .filter((step: RecipeStep) =>
+                            OPERATIONS.some(
+                                (operation) =>
+                                    operation.id === step.opId
+                            )
+                        );
+
                 setRecipe(newSteps);
             }
-        } catch (err) {
-            console.error("Chef de Cuisine failed:", err);
+        } catch (error) {
+            console.error(
+                'CyberChef AI suggestion failed:',
+                error
+            );
         } finally {
             setIsCookingAi(false);
         }
     };
 
     useEffect(() => {
-        if (autoBake) {
-            const timer = setTimeout(bake, 400);
-            return () => clearTimeout(timer);
-        }
-    }, [input, recipe, autoBake, forEachLine]);
+        if (!autoBake) return;
+
+        const timer = window.setTimeout(() => {
+            void bake();
+        }, 400);
+
+        return () => {
+            window.clearTimeout(timer);
+        };
+    }, [
+        input,
+        recipe,
+        autoBake,
+        forEachLine,
+    ]);
 
     const addOp = (opId: string) => {
-        const op = OPERATIONS.find(o => o.id === opId);
+        const op = OPERATIONS.find(
+            (operation) => operation.id === opId
+        );
+
         const initialArgs: Record<string, any> = {};
-        op?.args?.forEach(a => initialArgs[a.name] = a.default);
-        setRecipe([...recipe, { id: crypto.randomUUID(), opId, args: initialArgs }]);
+
+        op?.args?.forEach((argument) => {
+            initialArgs[argument.name] =
+                argument.default;
+        });
+
+        setRecipe((currentRecipe) => [
+            ...currentRecipe,
+            {
+                id: crypto.randomUUID(),
+                opId,
+                args: initialArgs,
+            },
+        ]);
+
+        setActiveCategory(
+            op?.category || 'All'
+        );
     };
 
-    const updateArg = (stepId: string, argName: string, value: any) => {
-        setRecipe(recipe.map(s => s.id === stepId ? { ...s, args: { ...s.args, [argName]: value } } : s));
+    const updateArg = (
+        stepId: string,
+        argName: string,
+        value: any
+    ) => {
+        setRecipe((currentRecipe) =>
+            currentRecipe.map((step) =>
+                step.id === stepId
+                    ? {
+                          ...step,
+                          args: {
+                              ...step.args,
+                              [argName]: value,
+                          },
+                      }
+                    : step
+            )
+        );
     };
 
     const toggleStep = (id: string) => {
-        setRecipe(recipe.map(s => s.id === id ? { ...s, disabled: !s.disabled } : s));
+        setRecipe((currentRecipe) =>
+            currentRecipe.map((step) =>
+                step.id === id
+                    ? {
+                          ...step,
+                          disabled: !step.disabled,
+                      }
+                    : step
+            )
+        );
     };
 
-    const removeStep = (id: string) => setRecipe(recipe.filter(s => s.id !== id));
-    const clearRecipe = () => setRecipe([]);
-
-    const handleCopy = () => {
-        const textToCopy = output.startsWith('IMAGE_DATA:') ? output.split(',')[1] : output;
-        navigator.clipboard.writeText(textToCopy);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+    const removeStep = (id: string) => {
+        setRecipe((currentRecipe) =>
+            currentRecipe.filter(
+                (step) => step.id !== id
+            )
+        );
     };
 
-    const renderInteractiveOutput = (text: string) => {
+    const clearRecipe = () => {
+        setRecipe([]);
+        setOutput('');
+    };
+
+    const clearInput = () => {
+        setInput('');
+        setOutput('');
+    };
+
+    const handleCopy = async () => {
+        if (!output) return;
+
+        const textToCopy = output.startsWith(
+            'IMAGE_DATA:'
+        )
+            ? output.split(',')[1]
+            : output;
+
+        try {
+            await navigator.clipboard.writeText(
+                textToCopy
+            );
+
+            setCopied(true);
+
+            window.setTimeout(() => {
+                setCopied(false);
+            }, 2000);
+        } catch (error) {
+            console.error(
+                'Clipboard copy failed:',
+                error
+            );
+        }
+    };
+
+    const renderInteractiveOutput = (
+        text: string
+    ) => {
         if (!text) return null;
-        
-        // Comprehensive IOC Regex: IPs, SHA256/MD5 Hashes, and valid Domains
-        const iocRegex = /(\b(?:\d{1,3}\.){3}\d{1,3}\b|\b[a-f0-9]{64}\b|\b[a-f0-9]{32}\b|\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}\b)/gi;
+
+        const iocRegex =
+            /(\b(?:\d{1,3}\.){3}\d{1,3}\b|\b[a-f0-9]{64}\b|\b[a-f0-9]{32}\b|\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}\b)/gi;
+
         const parts = text.split(iocRegex);
-        
-        return parts.map((part, i) => {
-            if (part && part.match(iocRegex)) {
-                // Heuristic: check if this is likely a real domain or just an extension/random word
-                const isDomain = part.includes('.');
-                if (isDomain && part.length < 4) return part; // Ignore .js, .py, etc.
+
+        return parts.map((part, index) => {
+            if (
+                part &&
+                part.match(iocRegex)
+            ) {
+                const isDomain =
+                    part.includes('.');
+
+                if (
+                    isDomain &&
+                    part.length < 4
+                ) {
+                    return part;
+                }
 
                 return (
-                    <button 
-                        key={i}
-                        onClick={() => onNavigateToIntel?.(part)}
-                        className="text-blue-400 font-bold hover:text-cyber-cyan transition-colors px-0.5 rounded hover:bg-white/5 inline-flex items-center gap-1 group/ioc"
+                    <button
+                        key={index}
+                        type="button"
+                        onClick={() =>
+                            onNavigateToIntel?.(
+                                part
+                            )
+                        }
+                        className="
+                            cyberchef-ioc
+                        "
                         title={`Search Intelligence for: ${part}`}
                     >
                         {part}
-                        <ExternalLink size={10} className="opacity-0 group-hover/ioc:opacity-100 transition-opacity"/>
+                        <ExternalLink size={10} />
                     </button>
                 );
             }
+
             return part;
         });
     };
 
-    const filteredOps = useMemo(() => {
-        const lower = searchTerm.toLowerCase();
-        return OPERATIONS.filter(op => 
-            op.name.toLowerCase().includes(lower) || 
-            op.category.toLowerCase().includes(lower) ||
-            op.description.toLowerCase().includes(lower)
+    const categories: OpCategory[] =
+        Array.from(
+            new Set(
+                OPERATIONS.map(
+                    (operation) =>
+                        operation.category
+                )
+            )
         );
-    }, [searchTerm]);
 
-    const categories: OpCategory[] = Array.from(new Set(OPERATIONS.map(o => o.category)));
+    const filteredOps = useMemo(() => {
+        const lower =
+            searchTerm
+                .trim()
+                .toLowerCase();
+
+        return OPERATIONS.filter((operation) => {
+            const matchesSearch =
+                !lower ||
+                operation.name
+                    .toLowerCase()
+                    .includes(lower) ||
+                operation.category
+                    .toLowerCase()
+                    .includes(lower) ||
+                operation.description
+                    .toLowerCase()
+                    .includes(lower);
+
+            const matchesCategory =
+                activeCategory === 'All' ||
+                operation.category ===
+                    activeCategory;
+
+            return (
+                matchesSearch &&
+                matchesCategory
+            );
+        });
+    }, [searchTerm, activeCategory]);
+
+    const activeRecipeCount =
+        recipe.filter(
+            (step) => !step.disabled
+        ).length;
 
     return (
-        <div className="h-full flex bg-[#020617] text-gray-300 font-sans overflow-hidden">
-            <div className="w-80 bg-black/40 border-r border-gray-800 flex flex-col shrink-0">
-                <div className="p-4 border-b border-gray-800 bg-gray-900/10">
-                    <h2 className="text-xs font-bold text-cyber-cyan uppercase tracking-widest mb-4 flex items-center gap-2">
-                        <Settings2 size={14}/> Operation Library
-                    </h2>
-                    <div className="relative group">
-                        <Search className="absolute left-3 top-2.5 text-gray-500 group-focus-within:text-cyber-cyan transition-colors" size={16}/>
-                        <input 
-                            type="text" 
-                            className="w-full bg-gray-900 border border-gray-700 rounded-lg py-2 pl-10 pr-4 text-sm focus:border-cyber-cyan focus:outline-none focus:ring-1 focus:ring-cyber-cyan/30 transition-all font-mono"
-                            placeholder="Search operations..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                </div>
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-4">
-                    {categories.map(cat => {
-                        const opsInCat = filteredOps.filter(o => o.category === cat);
-                        if (opsInCat.length === 0) return null;
-                        return (
-                            <div key={cat}>
-                                <div className="px-3 py-1 text-[10px] font-bold text-gray-600 uppercase tracking-tighter mb-1 flex items-center gap-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-gray-700"></div> {cat}
-                                </div>
-                                <div className="space-y-1">
-                                    {opsInCat.map(op => (
-                                        <button 
-                                            key={op.id}
-                                            onClick={() => addOp(op.id)}
-                                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors group text-left"
-                                        >
-                                            <div className="p-1.5 bg-gray-800 rounded border border-gray-700 group-hover:border-cyber-cyan/50 text-gray-500 group-hover:text-cyber-cyan transition-all">
-                                                <op.icon size={14}/>
-                                            </div>
-                                            <div className="min-w-0">
-                                                <div className="text-xs font-bold text-gray-300 group-hover:text-white truncate">{op.name}</div>
-                                                <div className="text-[10px] text-gray-600 line-clamp-1">{op.description}</div>
-                                            </div>
-                                            <Plus size={14} className="ml-auto text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"/>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
+        <div className="cyberchef-page">
 
-            <div className="w-96 bg-[#050b1a] border-r border-gray-800 flex flex-col shrink-0">
-                <div className="p-4 border-b border-gray-800 bg-gray-900/20 flex items-center justify-between">
-                    <h2 className="text-xs font-bold text-purple-400 uppercase tracking-widest flex items-center gap-2">
-                        <Wand size={14}/> Tactical Recipe
-                    </h2>
-                    <div className="flex gap-3">
-                        <button 
-                            onClick={handleMagicWand}
-                            disabled={!input || isCookingAi}
-                            className={`p-1.5 rounded bg-purple-600/20 border border-purple-500/30 text-purple-400 hover:bg-purple-600/40 transition-all flex items-center gap-2 text-[10px] font-bold uppercase shadow-[0_0_10px_rgba(168,85,247,0.2)] ${isCookingAi ? 'animate-pulse cursor-wait' : ''}`}
-                            title="Chef de Cuisine: AI Recipe Suggestion"
-                        >
-                            {isCookingAi ? <Loader2 className="animate-spin" size={12}/> : <Sparkles size={12}/>}
-                            Magic Wand
-                        </button>
-                        <button 
-                            onClick={clearRecipe}
-                            className="text-[10px] font-bold text-red-400 hover:text-red-300 transition-colors uppercase"
-                        >
-                            Clear
-                        </button>
-                    </div>
-                </div>
+            {/* =========================================================
+                OPERATION LIBRARY
+               ========================================================= */}
 
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
-                    {recipe.map((step, index) => {
-                        const op = OPERATIONS.find(o => o.id === step.opId);
-                        if (!op) return null;
-                        return (
-                            <div key={step.id} className={`relative animate-fade-in ${step.disabled ? 'opacity-50 grayscale' : ''}`}>
-                                {index < recipe.length - 1 && (
-                                    <div className="absolute left-6 top-12 bottom-[-16px] w-0.5 bg-gray-800 z-0"></div>
-                                )}
-                                <div className="bg-gray-900 border border-gray-700 rounded-xl p-4 relative z-10 hover:border-purple-500/50 transition-all group shadow-lg">
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <div className="w-6 h-6 flex items-center justify-center bg-gray-800 border border-gray-700 rounded-full text-[10px] font-bold text-gray-500 font-mono">
-                                            {index + 1}
-                                        </div>
-                                        <div className="flex-1">
-                                            <div className="text-xs font-bold text-white uppercase tracking-wider">{op.name}</div>
-                                        </div>
-                                        <div className="flex gap-1">
-                                            <button 
-                                                onClick={() => toggleStep(step.id)}
-                                                className={`p-1 rounded hover:bg-white/5 transition-all ${step.disabled ? 'text-gray-600' : 'text-green-500'}`}
-                                                title={step.disabled ? 'Enable Step' : 'Disable Step'}
-                                            >
-                                                {step.disabled ? <Play size={14}/> : <Pause size={14}/>}
-                                            </button>
-                                            <button 
-                                                onClick={() => removeStep(step.id)}
-                                                className="p-1 text-gray-600 hover:text-red-400 transition-all"
-                                            >
-                                                <X size={14}/>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    {op.args && op.args.length > 0 && !step.disabled && (
-                                        <div className="space-y-3 pt-3 border-t border-gray-800">
-                                            {op.args.map(arg => (
-                                                <div key={arg.name}>
-                                                    <label className="text-[10px] font-bold text-gray-600 uppercase mb-1 block">{arg.name}</label>
-                                                    {arg.type === 'select' ? (
-                                                        <select
-                                                            className="w-full bg-black border border-gray-800 rounded px-2 py-1.5 text-xs text-cyber-cyan font-mono focus:border-cyber-cyan/50 outline-none"
-                                                            value={step.args[arg.name]}
-                                                            onChange={(e) => updateArg(step.id, arg.name, e.target.value)}
-                                                        >
-                                                            {arg.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                                                        </select>
-                                                    ) : arg.type === 'toggle' ? (
-                                                        <button 
-                                                            onClick={() => updateArg(step.id, arg.name, !step.args[arg.name])}
-                                                            className={`flex items-center gap-2 text-[10px] font-bold py-1 px-2 rounded border transition-colors ${step.args[arg.name] ? 'bg-cyber-cyan/20 border-cyber-cyan text-cyber-cyan' : 'bg-gray-800 border-gray-700 text-gray-500'}`}
-                                                        >
-                                                            {step.args[arg.name] ? 'ON' : 'OFF'}
-                                                        </button>
-                                                    ) : (
-                                                        <input 
-                                                            type={arg.type === 'number' ? 'number' : 'text'}
-                                                            className="w-full bg-black border border-gray-800 rounded px-2 py-1.5 text-xs text-cyber-cyan font-mono focus:border-cyber-cyan/50 outline-none"
-                                                            value={step.args[arg.name]}
-                                                            onChange={(e) => updateArg(step.id, arg.name, e.target.value)}
-                                                        />
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        );
-                    })}
-                    {recipe.length === 0 && (
-                        <div className="h-full flex flex-col items-center justify-center text-center p-8 opacity-20 mt-10">
-                            <Brackets size={48} className="mb-4 text-gray-500"/>
-                            <p className="text-sm font-mono uppercase tracking-widest">Recipe Empty</p>
-                        </div>
-                    )}
-                </div>
+            <aside className="cyberchef-library">
 
-                <div className="p-4 border-t border-gray-800 bg-gray-900/40">
-                    <button 
-                        onClick={bake}
-                        disabled={isBaking}
-                        className={`w-full py-4 rounded-lg font-bold text-xs flex items-center justify-center gap-3 transition-all shadow-xl group ${isBaking ? 'bg-gray-800 text-gray-500' : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:scale-[1.02]'}`}
-                    >
-                        {isBaking ? <Loader2 className="animate-spin" size={16}/> : <Zap size={16} className="group-hover:animate-pulse" fill="currentColor"/>}
-                        BAKE OUTPUT
-                    </button>
-                    <div className="mt-4 grid grid-cols-2 gap-2">
-                         <label className="flex items-center justify-center gap-2 px-2 py-1.5 rounded border border-gray-800 bg-black/40 cursor-pointer hover:border-gray-600 transition-colors">
-                            <input type="checkbox" checked={autoBake} onChange={(e) => setAutoBake(e.target.checked)} className="w-3 h-3 accent-cyber-cyan"/>
-                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Auto-Bake</span>
-                         </label>
-                         <label className="flex items-center justify-center gap-2 px-2 py-1.5 rounded border border-gray-800 bg-black/40 cursor-pointer hover:border-gray-600 transition-colors">
-                            <input type="checkbox" checked={forEachLine} onChange={(e) => setForEachLine(e.target.checked)} className="w-3 h-3 accent-purple-500"/>
-                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Line By Line</span>
-                         </label>
-                    </div>
-                </div>
-            </div>
+                <div className="cyberchef-library-header">
 
-            {/* COLUMN 3: INPUT / OUTPUT */}
-            <div className="flex-1 flex flex-col bg-black/20">
-                <div className="flex-1 flex flex-col min-h-0 border-b border-gray-800">
-                    <div className="px-4 py-2 bg-gray-900/50 border-b border-gray-800 flex items-center justify-between shrink-0">
-                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                            <ArrowRight size={12}/> SOURCE BUFFER
+                    <div className="cyberchef-section-title">
+                        <span className="cyberchef-section-icon">
+                            <Settings2 size={14} />
                         </span>
-                        <span className="text-[10px] text-gray-600 font-mono">LEN: {input.length.toLocaleString()}</span>
+
+                        <div>
+                            <span className="cyberchef-eyebrow">
+                                TOOLS
+                            </span>
+
+                            <strong>
+                                Operations
+                            </strong>
+                        </div>
                     </div>
-                    <textarea 
-                        className="flex-1 w-full bg-transparent p-6 text-sm font-mono text-gray-300 focus:outline-none resize-none custom-scrollbar placeholder-gray-800"
-                        placeholder="Paste data, hex bytes, or raw logs..."
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
+
+                    <span className="cyberchef-count">
+                        {OPERATIONS.length}
+                    </span>
+                </div>
+
+                <div className="cyberchef-search-wrap">
+
+                    <Search
+                        size={14}
+                        className="cyberchef-search-icon"
+                    />
+
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(event) =>
+                            setSearchTerm(
+                                event.target.value
+                            )
+                        }
+                        placeholder="Search operations..."
+                        className="cyberchef-search"
                     />
                 </div>
 
-                <div className="flex-1 flex flex-col min-h-0 relative">
-                    <div className="px-4 py-2 bg-gray-900/50 border-b border-gray-800 flex items-center justify-between shrink-0">
-                        <span className="text-[10px] font-bold text-cyber-cyan uppercase tracking-[0.2em] flex items-center gap-2">
-                            <CheckCircle size={12}/> PROCESSED OUTPUT
-                        </span>
-                        <div className="flex gap-4">
-                            <button onClick={handleCopy} className="text-[10px] font-bold text-gray-500 hover:text-white flex items-center gap-1.5 transition-colors uppercase">
-                                {copied ? <Check size={12} className="text-green-500"/> : <Copy size={12}/>} {copied ? 'Copied' : 'Copy'}
+                <div className="cyberchef-category-scroll">
+
+                    <button
+                        type="button"
+                        className={`
+                            cyberchef-category-chip
+                            ${
+                                activeCategory ===
+                                'All'
+                                    ? 'active'
+                                    : ''
+                            }
+                        `}
+                        onClick={() =>
+                            setActiveCategory('All')
+                        }
+                    >
+                        All
+                    </button>
+
+                    {categories.map(
+                        (category) => (
+                            <button
+                                key={category}
+                                type="button"
+                                className={`
+                                    cyberchef-category-chip
+                                    ${
+                                        activeCategory ===
+                                        category
+                                            ? 'active'
+                                            : ''
+                                    }
+                                `}
+                                onClick={() =>
+                                    setActiveCategory(
+                                        category
+                                    )
+                                }
+                            >
+                                {category}
                             </button>
+                        )
+                    )}
+
+                </div>
+
+                <div className="cyberchef-library-list custom-scrollbar">
+
+                    {categories.map(
+                        (category) => {
+                            const opsInCategory =
+                                filteredOps.filter(
+                                    (operation) =>
+                                        operation.category ===
+                                        category
+                                );
+
+                            if (
+                                opsInCategory.length ===
+                                0
+                            ) {
+                                return null;
+                            }
+
+                            return (
+                                <section
+                                    key={category}
+                                    className="cyberchef-operation-group"
+                                >
+
+                                    <div className="cyberchef-group-heading">
+                                        <span>
+                                            {category}
+                                        </span>
+
+                                        <span className="cyberchef-group-count">
+                                            {opsInCategory.length}
+                                        </span>
+                                    </div>
+
+                                    <div className="cyberchef-operation-list">
+
+                                        {opsInCategory.map(
+                                            (operation) => {
+                                                const Icon =
+                                                    operation.icon;
+
+                                                return (
+                                                    <button
+                                                        key={operation.id}
+                                                        type="button"
+                                                        className="cyberchef-operation"
+                                                        onClick={() =>
+                                                            addOp(
+                                                                operation.id
+                                                            )
+                                                        }
+                                                    >
+                                                        <span className="cyberchef-operation-icon">
+                                                            <Icon
+                                                                size={15}
+                                                            />
+                                                        </span>
+
+                                                        <span className="cyberchef-operation-content">
+
+                                                            <span className="cyberchef-operation-name">
+                                                                {
+                                                                    operation.name
+                                                                }
+                                                            </span>
+
+                                                            <span className="cyberchef-operation-description">
+                                                                {
+                                                                    operation.description
+                                                                }
+                                                            </span>
+
+                                                        </span>
+
+                                                        <span className="cyberchef-operation-add">
+                                                            <Plus
+                                                                size={13}
+                                                            />
+                                                        </span>
+                                                    </button>
+                                                );
+                                            }
+                                        )}
+
+                                    </div>
+                                </section>
+                            );
+                        }
+                    )}
+
+                    {filteredOps.length === 0 && (
+                        <div className="cyberchef-empty-library">
+                            <Search size={22} />
+                            <strong>
+                                No operations found
+                            </strong>
+                            <span>
+                                Try another search.
+                            </span>
+                        </div>
+                    )}
+
+                </div>
+            </aside>
+
+            {/* =========================================================
+                RECIPE
+               ========================================================= */}
+
+            <section className="cyberchef-recipe">
+
+                <header className="cyberchef-recipe-header">
+
+                    <div>
+                        <div className="cyberchef-section-title">
+
+                            <span className="cyberchef-section-icon">
+                                <Wand size={14} />
+                            </span>
+
+                            <div>
+                                <span className="cyberchef-eyebrow">
+                                    WORKFLOW
+                                </span>
+
+                                <strong>
+                                    Tactical Recipe
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div className="cyberchef-recipe-meta">
+                            <span>
+                                {recipe.length} STEP
+                                {recipe.length !==
+                                1
+                                    ? 'S'
+                                    : ''}
+                            </span>
+
+                            <span className="separator">
+                                â€¢
+                            </span>
+
+                            <span
+                                className={
+                                    activeRecipeCount >
+                                    0
+                                        ? 'ready'
+                                        : ''
+                                }
+                            >
+                                {activeRecipeCount >
+                                0
+                                    ? 'READY'
+                                    : 'EMPTY'}
+                            </span>
                         </div>
                     </div>
-                    <div className="flex-1 relative overflow-auto custom-scrollbar p-6 bg-black/40">
-                        {output.startsWith('IMAGE_DATA:') ? (
-                            <div className="flex flex-col items-center justify-center gap-4 h-full">
-                                <img src={output.split('IMAGE_DATA:')[1]} className="max-w-full max-h-[300px] rounded border border-gray-700 shadow-2xl" alt="Chef Render" />
-                                <span className="text-[10px] text-gray-500 font-mono bg-gray-900 px-3 py-1 rounded border border-gray-800 uppercase tracking-widest">Rendered Image</span>
+
+                    <div className="cyberchef-recipe-actions">
+
+                        <button
+                            type="button"
+                            className="cyberchef-secondary-button"
+                            onClick={
+                                handleMagicWand
+                            }
+                            disabled={
+                                !input ||
+                                isCookingAi
+                            }
+                        >
+                            {isCookingAi ? (
+                                <Loader2
+                                    size={13}
+                                    className="animate-spin"
+                                />
+                            ) : (
+                                <Sparkles
+                                    size={13}
+                                />
+                            )}
+
+                            {isCookingAi
+                                ? 'ANALYZING'
+                                : 'AI SUGGEST'}
+                        </button>
+
+                        <button
+                            type="button"
+                            className="cyberchef-quiet-button"
+                            onClick={
+                                clearRecipe
+                            }
+                            disabled={
+                                recipe.length ===
+                                0
+                            }
+                        >
+                            CLEAR
+                        </button>
+                    </div>
+
+                </header>
+
+                <div className="cyberchef-recipe-body custom-scrollbar">
+
+                    {recipe.length === 0 ? (
+                        <div className="cyberchef-empty-recipe">
+
+                            <div className="cyberchef-empty-recipe-icon">
+                                <Plus size={20} />
+                            </div>
+
+                            <strong>
+                                Build your recipe
+                            </strong>
+
+                            <span>
+                                Select operations from
+                                the library to create
+                                an analysis pipeline.
+                            </span>
+
+                            <small>
+                                Steps execute from top
+                                to bottom.
+                            </small>
+
+                        </div>
+                    ) : (
+                        <div className="cyberchef-steps">
+
+                            {recipe.map(
+                                (
+                                    step,
+                                    index
+                                ) => {
+                                    const operation =
+                                        OPERATIONS.find(
+                                            (item) =>
+                                                item.id ===
+                                                step.opId
+                                        );
+
+                                    if (
+                                        !operation
+                                    ) {
+                                        return null;
+                                    }
+
+                                    const Icon =
+                                        operation.icon;
+
+                                    return (
+                                        <React.Fragment
+                                            key={
+                                                step.id
+                                            }
+                                        >
+
+                                            <article
+                                                className={`
+                                                    cyberchef-step
+                                                    ${
+                                                        step.disabled
+                                                            ? 'disabled'
+                                                            : ''
+                                                    }
+                                                `}
+                                            >
+
+                                                <div className="cyberchef-step-header">
+
+                                                    <div className="cyberchef-step-index">
+                                                        {String(
+                                                            index +
+                                                                1
+                                                        ).padStart(
+                                                            2,
+                                                            '0'
+                                                        )}
+                                                    </div>
+
+                                                    <div className="cyberchef-step-icon">
+                                                        <Icon
+                                                            size={
+                                                                14
+                                                            }
+                                                        />
+                                                    </div>
+
+                                                    <div className="cyberchef-step-heading">
+
+                                                        <span className="cyberchef-eyebrow">
+                                                            {
+                                                                operation.category
+                                                            }
+                                                        </span>
+
+                                                        <strong>
+                                                            {
+                                                                operation.name
+                                                            }
+                                                        </strong>
+
+                                                    </div>
+
+                                                    <div className="cyberchef-step-actions">
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                toggleStep(
+                                                                    step.id
+                                                                )
+                                                            }
+                                                            title={
+                                                                step.disabled
+                                                                    ? 'Enable step'
+                                                                    : 'Disable step'
+                                                            }
+                                                            className={
+                                                                step.disabled
+                                                                    ? 'muted'
+                                                                    : 'active'
+                                                            }
+                                                        >
+                                                            {step.disabled ? (
+                                                                <Play
+                                                                    size={
+                                                                        13
+                                                                    }
+                                                                />
+                                                            ) : (
+                                                                <Pause
+                                                                    size={
+                                                                        13
+                                                                    }
+                                                                />
+                                                            )}
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                removeStep(
+                                                                    step.id
+                                                                )
+                                                            }
+                                                            title="Remove step"
+                                                            className="danger"
+                                                        >
+                                                            <X
+                                                                size={
+                                                                    13
+                                                                }
+                                                            />
+                                                        </button>
+
+                                                    </div>
+
+                                                </div>
+
+                                                {operation.args &&
+                                                    operation
+                                                        .args
+                                                        .length >
+                                                        0 &&
+                                                    !step.disabled && (
+                                                        <div className="cyberchef-step-settings">
+
+                                                            {operation.args.map(
+                                                                (
+                                                                    argument
+                                                                ) => (
+                                                                    <div
+                                                                        key={
+                                                                            argument.name
+                                                                        }
+                                                                        className="cyberchef-field"
+                                                                    >
+
+                                                                        <label>
+                                                                            {
+                                                                                argument.name
+                                                                            }
+                                                                        </label>
+
+                                                                        {argument.type ===
+                                                                        'select' ? (
+                                                                            <select
+                                                                                value={
+                                                                                    step
+                                                                                        .args[
+                                                                                        argument.name
+                                                                                    ]
+                                                                                }
+                                                                                onChange={(
+                                                                                    event
+                                                                                ) =>
+                                                                                    updateArg(
+                                                                                        step.id,
+                                                                                        argument.name,
+                                                                                        event
+                                                                                            .target
+                                                                                            .value
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                {argument.options?.map(
+                                                                                    (
+                                                                                        option
+                                                                                    ) => (
+                                                                                        <option
+                                                                                            key={
+                                                                                                option
+                                                                                            }
+                                                                                            value={
+                                                                                                option
+                                                                                            }
+                                                                                        >
+                                                                                            {
+                                                                                                option
+                                                                                            }
+                                                                                        </option>
+                                                                                    )
+                                                                                )}
+                                                                            </select>
+                                                                        ) : argument.type ===
+                                                                          'toggle' ? (
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() =>
+                                                                                    updateArg(
+                                                                                        step.id,
+                                                                                        argument.name,
+                                                                                        !step
+                                                                                            .args[
+                                                                                            argument.name
+                                                                                        ]
+                                                                                    )
+                                                                                }
+                                                                                className={`
+                                                                                    cyberchef-inline-toggle
+                                                                                    ${
+                                                                                        step
+                                                                                            .args[
+                                                                                            argument.name
+                                                                                        ]
+                                                                                            ? 'active'
+                                                                                            : ''
+                                                                                    }
+                                                                                `}
+                                                                            >
+                                                                                {
+                                                                                    step
+                                                                                        .args[
+                                                                                        argument.name
+                                                                                    ]
+                                                                                        ? 'ON'
+                                                                                        : 'OFF'
+                                                                                }
+                                                                            </button>
+                                                                        ) : (
+                                                                            <input
+                                                                                type={
+                                                                                    argument.type ===
+                                                                                    'number'
+                                                                                        ? 'number'
+                                                                                        : 'text'
+                                                                                }
+                                                                                value={
+                                                                                    step
+                                                                                        .args[
+                                                                                        argument.name
+                                                                                    ]
+                                                                                }
+                                                                                onChange={(
+                                                                                    event
+                                                                                ) =>
+                                                                                    updateArg(
+                                                                                        step.id,
+                                                                                        argument.name,
+                                                                                        argument.type ===
+                                                                                        'number'
+                                                                                            ? Number(
+                                                                                                  event
+                                                                                                      .target
+                                                                                                      .value
+                                                                                              )
+                                                                                            : event
+                                                                                                  .target
+                                                                                                  .value
+                                                                                    )
+                                                                                }
+                                                                            />
+                                                                        )}
+
+                                                                    </div>
+                                                                )
+                                                            )}
+
+                                                        </div>
+                                                    )}
+
+                                            </article>
+
+                                            {index <
+                                                recipe.length -
+                                                    1 && (
+                                                <div className="cyberchef-step-connector">
+                                                    <span>
+                                                        â†“
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                        </React.Fragment>
+                                    );
+                                }
+                            )}
+
+                        </div>
+                    )}
+
+                </div>
+
+                <footer className="cyberchef-recipe-footer">
+
+                    <button
+                        type="button"
+                        className={`
+                            cyberchef-run-button
+                            ${
+                                isBaking
+                                    ? 'running'
+                                    : ''
+                            }
+                        `}
+                        onClick={bake}
+                        disabled={isBaking}
+                    >
+                        {isBaking ? (
+                            <Loader2
+                                size={15}
+                                className="animate-spin"
+                            />
+                        ) : (
+                            <Zap
+                                size={15}
+                                fill="currentColor"
+                            />
+                        )}
+
+                        {isBaking
+                            ? 'RUNNING RECIPE'
+                            : 'RUN RECIPE'}
+                    </button>
+
+                    <div className="cyberchef-toggle-grid">
+
+                        <label className="cyberchef-toggle-control">
+                            <span>
+                                AUTO-BAKE
+                            </span>
+
+                            <input
+                                type="checkbox"
+                                checked={
+                                    autoBake
+                                }
+                                onChange={(
+                                    event
+                                ) =>
+                                    setAutoBake(
+                                        event.target
+                                            .checked
+                                    )
+                                }
+                            />
+
+                            <span className="cyberchef-switch" />
+                        </label>
+
+                        <label className="cyberchef-toggle-control">
+                            <span>
+                                LINE BY LINE
+                            </span>
+
+                            <input
+                                type="checkbox"
+                                checked={
+                                    forEachLine
+                                }
+                                onChange={(
+                                    event
+                                ) =>
+                                    setForEachLine(
+                                        event.target
+                                            .checked
+                                    )
+                                }
+                            />
+
+                            <span className="cyberchef-switch" />
+                        </label>
+
+                    </div>
+
+                </footer>
+            </section>
+
+            {/* =========================================================
+                SOURCE / OUTPUT
+               ========================================================= */}
+
+            <section className="cyberchef-workspace">
+
+                <article className="cyberchef-io-panel">
+
+                    <header className="cyberchef-io-header">
+
+                        <div className="cyberchef-io-title">
+                            <span className="cyberchef-io-icon">
+                                <ArrowRight
+                                    size={13}
+                                />
+                            </span>
+
+                            <div>
+                                <span className="cyberchef-eyebrow">
+                                    INPUT
+                                </span>
+
+                                <strong>
+                                    Source Buffer
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div className="cyberchef-io-actions">
+
+                            <span>
+                                {input.length.toLocaleString()}{' '}
+                                BYTES
+                            </span>
+
+                            {input && (
+                                <button
+                                    type="button"
+                                    onClick={
+                                        clearInput
+                                    }
+                                    title="Clear input"
+                                >
+                                    <X size={13} />
+                                </button>
+                            )}
+
+                        </div>
+
+                    </header>
+
+                    <textarea
+                        value={input}
+                        onChange={(event) =>
+                            setInput(
+                                event.target.value
+                            )
+                        }
+                        placeholder="Paste data, hex bytes, encoded content, logs..."
+                        className="cyberchef-source-editor custom-scrollbar"
+                    />
+
+                </article>
+
+                <article className="cyberchef-io-panel">
+
+                    <header className="cyberchef-io-header">
+
+                        <div className="cyberchef-io-title">
+
+                            <span className="cyberchef-io-icon result">
+                                <CheckCircle
+                                    size={13}
+                                />
+                            </span>
+
+                            <div>
+                                <span className="cyberchef-eyebrow">
+                                    RESULT
+                                </span>
+
+                                <strong>
+                                    Processed Output
+                                </strong>
+                            </div>
+
+                        </div>
+
+                        <div className="cyberchef-io-actions">
+
+                            {output && (
+                                <button
+                                    type="button"
+                                    onClick={
+                                        handleCopy
+                                    }
+                                    className="cyberchef-copy-button"
+                                >
+                                    {copied ? (
+                                        <Check
+                                            size={13}
+                                        />
+                                    ) : (
+                                        <Copy
+                                            size={13}
+                                        />
+                                    )}
+
+                                    {copied
+                                        ? 'COPIED'
+                                        : 'COPY'}
+                                </button>
+                            )}
+
+                        </div>
+
+                    </header>
+
+                    <div className="cyberchef-output custom-scrollbar">
+
+                        {output.startsWith(
+                            'IMAGE_DATA:'
+                        ) ? (
+                            <div className="cyberchef-output-image">
+                                <img
+                                    src={
+                                        output.split(
+                                            'IMAGE_DATA:'
+                                        )[1]
+                                    }
+                                    alt="Processed result"
+                                />
+
+                                <span>
+                                    RENDERED IMAGE
+                                </span>
                             </div>
                         ) : (
-                            <div 
-                                className={`w-full h-full bg-transparent p-0 text-sm font-mono whitespace-pre-wrap break-all ${isBaking ? 'text-gray-700' : 'text-cyber-cyan'}`}
-                            >
-                                {renderInteractiveOutput(output)}
-                                {!output && !isBaking && <span className="text-gray-700 italic">Awaiting recipe execution...</span>}
-                            </div>
+                            <>
+                                {!output &&
+                                    !isBaking && (
+                                        <div className="cyberchef-output-empty">
+                                            <FileSearch
+                                                size={24}
+                                            />
+
+                                            <strong>
+                                                Awaiting execution
+                                            </strong>
+
+                                            <span>
+                                                Add operations
+                                                to the recipe
+                                                and run it to
+                                                inspect the
+                                                result.
+                                            </span>
+                                        </div>
+                                    )}
+
+                                {output && (
+                                    <div
+                                        className={`
+                                            cyberchef-output-text
+                                            ${
+                                                isBaking
+                                                    ? 'processing'
+                                                    : ''
+                                            }
+                                        `}
+                                    >
+                                        {renderInteractiveOutput(
+                                            output
+                                        )}
+                                    </div>
+                                )}
+                            </>
                         )}
-                        {(isBaking || isCookingAi) && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px] pointer-events-none">
-                                <div className="bg-gray-900/80 px-4 py-2 rounded border border-gray-700 text-xs font-bold text-cyber-cyan flex items-center gap-2 shadow-2xl animate-pulse">
-                                    <RefreshCw size={14} className="animate-spin"/> {isCookingAi ? 'AI IS COOKING...' : 'BAKING...'}
+
+                        {(isBaking ||
+                            isCookingAi) && (
+                            <div className="cyberchef-processing">
+
+                                <div className="cyberchef-processing-card">
+                                    <RefreshCw
+                                        size={14}
+                                        className="animate-spin"
+                                    />
+
+                                    <span>
+                                        {isCookingAi
+                                            ? 'AI IS ANALYZING THE INPUT'
+                                            : 'RUNNING RECIPE'}
+                                    </span>
                                 </div>
+
                             </div>
                         )}
+
                     </div>
-                </div>
-            </div>
+
+                </article>
+
+            </section>
         </div>
     );
 };

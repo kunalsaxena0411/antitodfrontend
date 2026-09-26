@@ -22,6 +22,7 @@ import { calculateFileHash, submitFileToSandbox } from '../../services/otxSandbo
 // Fixed Error: performRdapLookup was used but not imported
 import { performRdapLookup } from '../../services/netTools';
 import { IPDATA_API_KEY } from '../../config/config';
+import PageHeader from '../../src/components/layout/PageHeader';
 
 interface CaseNote {
     id: string;
@@ -584,10 +585,10 @@ export const InvestigationBenchView: React.FC<InvestigationBenchViewProps> = ({
     const getRiskColor = (level: string) => {
         switch(level?.toUpperCase()) {
             case 'CRITICAL': return 'text-red-500 border-red-500/50 bg-red-900/20';
-            case 'HIGH': return 'text-orange-500 border-orange-500/50 bg-orange-900/20';
-            case 'MEDIUM': return 'text-yellow-500 border-yellow-500/50 bg-yellow-900/20';
-            case 'LOW': return 'text-green-500 border-green-500/50 bg-green-900/20';
-            default: return 'text-gray-500 border-gray-600 bg-gray-800';
+            case 'HIGH': return 'text-white border-neutral-500/50 bg-neutral-900/20';
+            case 'MEDIUM': return 'text-white border-neutral-500/50 bg-neutral-900/20';
+            case 'LOW': return 'text-white border-neutral-500/50 bg-neutral-900/20';
+            default: return 'text-[#888] border-neutral-600 bg-[#151515]';
         }
     };
 
@@ -651,37 +652,37 @@ export const InvestigationBenchView: React.FC<InvestigationBenchViewProps> = ({
 
     if (viewMode === 'CASE_LIST') {
         return (
-            <div className="h-full bg-cyber-grid p-8 overflow-y-auto custom-scrollbar">
-                <div className="max-w-5xl mx-auto">
-                    <div className="flex justify-between items-center mb-8">
-                        <div>
-                            <h2 className="text-3xl font-cyber font-bold text-white mb-2">CASE MANAGEMENT</h2>
-                            <p className="text-gray-400 font-mono text-sm">Active Investigations & Incident Response</p>
-                        </div>
-                        <button onClick={() => setShowNewCaseModal(true)} className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-lg font-bold flex items-center gap-2 shadow-lg shadow-indigo-900/20">
-                            <Plus size={18}/> NEW CASE
+            <div className="flex flex-col flex-1 min-h-0 overflow-y-auto custom-scrollbar">
+                <PageHeader
+                    breadcrumbs={[{ label: 'Operations' }, { label: 'Investigation Bench' }]}
+                    title="Case Management"
+                    description="Active Investigations & Incident Response"
+                    actions={
+                        <button onClick={() => setShowNewCaseModal(true)} className="at-btn at-btn-primary">
+                            <Plus size={14}/> NEW CASE
                         </button>
-                    </div>
-
+                    }
+                />
+                <div className="max-w-5xl mx-auto w-full p-6">
                     {showNewCaseModal && (
-                        <div className="mb-8 bg-gray-900 border border-gray-700 rounded-lg p-6 animate-fade-in">
+                        <div className="mb-8 bg-[#0A0A0A] border border-[#333] rounded-lg p-6 animate-fade-in">
                             <h3 className="text-white font-bold mb-4">Create New Investigation</h3>
                             <div className="flex gap-4">
-                                <input type="text" placeholder="Case Title / Incident ID..." className="flex-1 bg-black border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-indigo-500 outline-none" value={newCaseTitle} onChange={e => setNewCaseTitle(e.target.value)} autoFocus onKeyDown={e => e.key === 'Enter' && handleCreateCase()} />
-                                <button onClick={handleCreateCase} className="bg-indigo-600 px-6 py-2 rounded-lg text-white font-bold text-sm">CREATE</button>
-                                <button onClick={() => setShowNewCaseModal(false)} className="bg-gray-800 px-4 py-2 rounded-lg text-gray-300 font-bold text-sm">CANCEL</button>
+                                <input type="text" placeholder="Case Title / Incident ID..." className="flex-1 bg-black border border-[#333] rounded-lg px-4 py-2 text-white focus:border-neutral-500 outline-none" value={newCaseTitle} onChange={e => setNewCaseTitle(e.target.value)} autoFocus onKeyDown={e => e.key === 'Enter' && handleCreateCase()} />
+                                <button onClick={handleCreateCase} className="bg-neutral-600 px-6 py-2 rounded-lg text-white font-bold text-sm">CREATE</button>
+                                <button onClick={() => setShowNewCaseModal(false)} className="bg-[#151515] px-4 py-2 rounded-lg text-neutral-300 font-bold text-sm">CANCEL</button>
                             </div>
                         </div>
                     )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {cases.map(c => (
-                            <div key={c.id} onClick={() => { setActiveCaseId(c.id); setViewMode('WORKBENCH'); }} className="bg-gray-900/40 border border-gray-800 rounded-xl p-6 hover:border-indigo-500/50 hover:bg-gray-900/60 transition-all cursor-pointer group relative overflow-hidden">
-                                <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity"><button onClick={(e) => handleDeleteCase(c.id, e)} className="text-gray-600 hover:text-red-400 p-2"><Trash2 size={16}/></button></div>
-                                <div className="flex justify-between items-start mb-4"><div className="p-3 bg-indigo-900/20 rounded-lg border border-indigo-500/30 text-indigo-400"><Briefcase size={24}/></div><span className={`text-[10px] font-bold px-2 py-1 rounded border ${c.priority === 'CRITICAL' ? 'bg-red-900/20 text-red-400 border-red-500/30' : 'bg-blue-900/20 text-blue-400 border-blue-500/30'}`}>{c.priority}</span></div>
+                            <div key={c.id} onClick={() => { setActiveCaseId(c.id); setViewMode('WORKBENCH'); }} className="bg-[#111] border border-[#222] rounded-xl p-6 hover:border-neutral-500/50 hover:bg-[#111] transition-all cursor-pointer group relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity"><button onClick={(e) => handleDeleteCase(c.id, e)} className="text-neutral-600 hover:text-red-400 p-2"><Trash2 size={16}/></button></div>
+                                <div className="flex justify-between items-start mb-4"><div className="p-3 bg-neutral-900/20 rounded-lg border border-neutral-500/30 text-red-400"><Briefcase size={24}/></div><span className={`text-[10px] font-bold px-2 py-1 rounded border ${c.priority === 'CRITICAL' ? 'bg-red-900/20 text-red-400 border-red-500/30' : 'bg-[#111] text-red-400 border-neutral-500/30'}`}>{c.priority}</span></div>
                                 <h3 className="text-lg font-bold text-white mb-2 truncate pr-6">{c.title}</h3>
-                                <div className="flex justify-between items-center mb-4"><p className="text-xs text-gray-500 font-mono">Created: {new Date(c.created).toLocaleDateString()}</p><span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${c.status === 'OPEN' ? 'text-green-400 border-green-500/30 bg-green-900/10' : c.status === 'IN_PROGRESS' ? 'text-blue-400 border-blue-500/30 bg-blue-900/10' : c.status === 'ON_HOLD' ? 'text-yellow-400 border-yellow-500/30 bg-yellow-900/10' : c.status === 'CLOSED' ? 'text-gray-400 border-gray-600 bg-gray-800' : 'text-purple-400 border-purple-500/30 bg-purple-900/10'}`}>{c.status.replace('_', ' ')}</span></div>
-                                <div className="flex items-center gap-4 text-xs text-gray-400 border-t border-gray-800 pt-4"><span className="flex items-center gap-1"><FileText size={12}/> {c.artifacts.length} Artifacts</span><span className="flex items-center gap-1"><MessageSquare size={12}/> {c.notes.length} Notes</span></div>
+                                <div className="flex justify-between items-center mb-4"><p className="text-xs text-[#888] font-mono">Created: {new Date(c.created).toLocaleDateString()}</p><span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${c.status === 'OPEN' ? 'text-white border-neutral-500/30 bg-neutral-900/10' : c.status === 'IN_PROGRESS' ? 'text-red-400 border-neutral-500/30 bg-[#111]' : c.status === 'ON_HOLD' ? 'text-white border-neutral-500/30 bg-neutral-900/10' : c.status === 'CLOSED' ? 'text-[#AAA] border-neutral-600 bg-[#151515]' : 'text-red-400 border-neutral-500/30 bg-neutral-900/10'}`}>{c.status.replace('_', ' ')}</span></div>
+                                <div className="flex items-center gap-4 text-xs text-[#AAA] border-t border-[#222] pt-4"><span className="flex items-center gap-1"><FileText size={12}/> {c.artifacts.length} Artifacts</span><span className="flex items-center gap-1"><MessageSquare size={12}/> {c.notes.length} Notes</span></div>
                             </div>
                         ))}
                     </div>
@@ -691,23 +692,23 @@ export const InvestigationBenchView: React.FC<InvestigationBenchViewProps> = ({
     }
 
     return (
-        <div className="h-full bg-cyber-grid flex flex-col relative overflow-hidden">
+        <div className="flex flex-col flex-1 min-h-0 relative overflow-hidden">
              {selectedArtifact && (
                 <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex justify-end animate-fade-in">
-                    <div className="w-full max-w-xl bg-gray-900/95 border-l border-gray-800 h-full shadow-2xl flex flex-col animate-slide-in-right">
-                        <div className="p-4 border-b border-gray-800 flex justify-between items-start bg-black/40">
-                             <div><div className="flex items-center gap-2 mb-1">{React.createElement(ARTIFACT_ICONS[selectedArtifact.type] || Box, { size: 16, className: 'text-cyber-cyan' })}<span className="text-xs font-bold text-gray-500 uppercase">{selectedArtifact.type}</span></div><h3 className="text-xl font-mono font-bold text-white break-all">{selectedArtifact.value}</h3><div className="text-xs text-gray-500 mt-1">Added: {new Date(selectedArtifact.addedAt).toLocaleString()}</div></div>
-                             <button onClick={() => setSelectedArtifact(null)} className="text-gray-500 hover:text-white"><X size={20}/></button>
+                    <div className="w-full max-w-xl bg-[#111] border-l border-[#222] h-full shadow-2xl flex flex-col animate-slide-in-right">
+                        <div className="p-4 border-b border-[#222] flex justify-between items-start bg-black/40">
+                             <div><div className="flex items-center gap-2 mb-1">{React.createElement(ARTIFACT_ICONS[selectedArtifact.type] || Box, { size: 16, className: 'text-red-500' })}<span className="text-xs font-bold text-[#888] uppercase">{selectedArtifact.type}</span></div><h3 className="text-xl font-mono font-bold text-white break-all">{selectedArtifact.value}</h3><div className="text-xs text-[#888] mt-1">Added: {new Date(selectedArtifact.addedAt).toLocaleString()}</div></div>
+                             <button onClick={() => setSelectedArtifact(null)} className="text-[#888] hover:text-white"><X size={20}/></button>
                         </div>
                         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
-                            <div className="grid grid-cols-2 gap-4"><div className="bg-black/40 border border-gray-800 rounded p-4 text-center"><div className="text-[10px] text-gray-500 uppercase font-bold mb-1">Risk Score</div><div className={`text-3xl font-cyber font-bold ${getRiskColor(selectedArtifact.enrichmentData?.risk?.level || 'LOW').split(' ')[0]}`}>{selectedArtifact.enrichmentData?.risk?.score || 0}/100</div><div className="text-xs text-gray-400 mt-1">{selectedArtifact.enrichmentData?.risk?.level || 'UNKNOWN'}</div></div><div className="bg-black/40 border border-gray-800 rounded p-4 flex flex-col justify-center gap-2"><button onClick={() => handleAlienVaultEnrich(selectedArtifact)} className="w-full py-1.5 bg-orange-900/20 hover:bg-orange-900/40 text-orange-400 border border-orange-500/30 rounded text-xs font-bold flex items-center justify-center gap-2 transition-colors"><Radar size={12}/> OTX ENRICH</button><button onClick={() => handleVirusTotalEnrich(selectedArtifact)} className="w-full py-1.5 bg-blue-900/20 hover:bg-blue-900/40 text-blue-400 border border-blue-500/30 rounded text-xs font-bold flex items-center justify-center gap-2 transition-colors"><Shield size={12}/> VT SCAN</button></div></div>
+                            <div className="grid grid-cols-2 gap-4"><div className="bg-black/40 border border-[#222] rounded p-4 text-center"><div className="text-[10px] text-[#888] uppercase font-bold mb-1">Risk Score</div><div className={`text-3xl font-cyber font-bold ${getRiskColor(selectedArtifact.enrichmentData?.risk?.level || 'LOW').split(' ')[0]}`}>{selectedArtifact.enrichmentData?.risk?.score || 0}/100</div><div className="text-xs text-[#AAA] mt-1">{selectedArtifact.enrichmentData?.risk?.level || 'UNKNOWN'}</div></div><div className="bg-black/40 border border-[#222] rounded p-4 flex flex-col justify-center gap-2"><button onClick={() => handleAlienVaultEnrich(selectedArtifact)} className="w-full py-1.5 bg-neutral-900/20 hover:bg-neutral-900/40 text-white border border-neutral-500/30 rounded text-xs font-bold flex items-center justify-center gap-2 transition-colors"><Radar size={12}/> OTX ENRICH</button><button onClick={() => handleVirusTotalEnrich(selectedArtifact)} className="w-full py-1.5 bg-[#111] hover:bg-[#111] text-red-400 border border-neutral-500/30 rounded text-xs font-bold flex items-center justify-center gap-2 transition-colors"><Shield size={12}/> VT SCAN</button></div></div>
                             {selectedArtifact.note && (
-                                <div className="bg-blue-900/10 border border-blue-500/30 rounded p-4">
-                                    <div className="text-xs font-bold text-blue-400 uppercase mb-2">Analyst Remarks</div>
-                                    <p className="text-sm text-gray-300 italic">{selectedArtifact.note}</p>
+                                <div className="bg-[#111] border border-neutral-500/30 rounded p-4">
+                                    <div className="text-xs font-bold text-red-400 uppercase mb-2">Analyst Remarks</div>
+                                    <p className="text-sm text-neutral-300 italic">{selectedArtifact.note}</p>
                                 </div>
                             )}
-                            <div className="space-y-2"><div className="text-xs font-bold text-gray-500 uppercase">Raw Enrichment Data</div><div className="bg-black p-3 rounded border border-gray-800 text-[10px] font-mono text-gray-400 overflow-x-auto whitespace-pre-wrap max-h-64 custom-scrollbar">{JSON.stringify(selectedArtifact.enrichmentData, null, 2)}</div></div>
+                            <div className="space-y-2"><div className="text-xs font-bold text-[#888] uppercase">Raw Enrichment Data</div><div className="bg-black p-3 rounded border border-[#222] text-[10px] font-mono text-[#AAA] overflow-x-auto whitespace-pre-wrap max-h-64 custom-scrollbar">{JSON.stringify(selectedArtifact.enrichmentData, null, 2)}</div></div>
                         </div>
                     </div>
                 </div>
@@ -715,24 +716,24 @@ export const InvestigationBenchView: React.FC<InvestigationBenchViewProps> = ({
 
             {showBulkImport && (
                 <div className="absolute inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-8 animate-fade-in">
-                    <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
-                        <div className="p-4 border-b border-gray-800 flex justify-between items-center bg-black/40">
+                    <div className="bg-[#0A0A0A] border border-[#333] rounded-xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+                        <div className="p-4 border-b border-[#222] flex justify-between items-center bg-black/40">
                             <h3 className="text-lg font-bold text-white flex items-center gap-2 uppercase tracking-tight">
-                                <Upload size={20} className="text-indigo-400"/> BULK ARTIFACT INGESTION
+                                <Upload size={20} className="text-red-400"/> BULK ARTIFACT INGESTION
                             </h3>
-                            <button onClick={() => { setShowBulkImport(false); setBulkPreview([]); }} className="text-gray-500 hover:text-white"><X size={20}/></button>
+                            <button onClick={() => { setShowBulkImport(false); setBulkPreview([]); }} className="text-[#888] hover:text-white"><X size={20}/></button>
                         </div>
                         <div className="flex-1 overflow-hidden flex flex-col p-6 gap-6">
                             <div className="flex-1 flex flex-col gap-3 min-h-0">
                                 <div className="flex justify-between items-center">
-                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Source Data (Paste Logs/Text)</label>
-                                    <label className="text-[10px] text-indigo-400 hover:text-white flex items-center gap-1 cursor-pointer">
+                                    <label className="text-xs font-bold text-[#888] uppercase tracking-widest">Source Data (Paste Logs/Text)</label>
+                                    <label className="text-[10px] text-red-400 hover:text-white flex items-center gap-1 cursor-pointer">
                                         <FileUp size={12}/> IMPORT FROM FILE
                                         <input type="file" className="hidden" onChange={handleBulkFileUpload} ref={fileInputRef} />
                                     </label>
                                 </div>
                                 <textarea 
-                                    className="flex-1 bg-black border border-gray-700 rounded-lg p-4 font-mono text-xs text-gray-300 focus:border-indigo-500 outline-none resize-none custom-scrollbar"
+                                    className="flex-1 bg-black border border-[#333] rounded-lg p-4 font-mono text-xs text-neutral-300 focus:border-neutral-500 outline-none resize-none custom-scrollbar"
                                     placeholder="Paste raw email headers, proxy logs, or threat intel reports..."
                                     value={bulkInputText}
                                     onChange={(e) => setBulkInputText(e.target.value)}
@@ -740,36 +741,36 @@ export const InvestigationBenchView: React.FC<InvestigationBenchViewProps> = ({
                                 <button 
                                     onClick={handleBulkProcess}
                                     disabled={!bulkInputText.trim() || isProcessingBulk}
-                                    className="bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                    className="bg-neutral-600 hover:bg-[#151515] text-white py-3 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                                 >
                                     {isProcessingBulk ? <Loader2 className="animate-spin" size={18}/> : <RefreshCw size={18}/>} EXTRACT INDICATORS
                                 </button>
                             </div>
 
                             {bulkPreview.length > 0 && (
-                                <div className="flex-1 flex flex-col border border-gray-800 rounded-lg overflow-hidden bg-black/20 min-h-0 animate-fade-in">
-                                    <div className="bg-gray-800/50 px-4 py-2 border-b border-gray-800 flex justify-between items-center">
-                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{bulkPreview.length} Candidates Identified</span>
+                                <div className="flex-1 flex flex-col border border-[#222] rounded-lg overflow-hidden bg-black/20 min-h-0 animate-fade-in">
+                                    <div className="bg-[#151515]/50 px-4 py-2 border-b border-[#222] flex justify-between items-center">
+                                        <span className="text-[10px] font-bold text-[#AAA] uppercase tracking-widest">{bulkPreview.length} Candidates Identified</span>
                                     </div>
                                     <div className="flex-1 overflow-y-auto custom-scrollbar">
                                         <table className="w-full text-left text-xs">
-                                            <thead className="bg-gray-900/80 text-gray-500 font-bold sticky top-0">
+                                            <thead className="bg-[#111] text-[#888] font-bold sticky top-0">
                                                 <tr><th className="p-2 w-20">Type</th><th className="p-2">Value</th><th className="p-2 w-10"></th></tr>
                                             </thead>
-                                            <tbody className="divide-y divide-gray-800/50">
+                                            <tbody className="divide-y divide-neutral-800/50">
                                                 {bulkPreview.map((item, idx) => (
                                                     <tr key={idx} className="hover:bg-white/5 transition-colors group">
-                                                        <td className="p-2"><span className="bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded border border-gray-700 font-mono text-[9px]">{item.type}</span></td>
-                                                        <td className="p-2 font-mono text-gray-300 break-all">{item.value}</td>
-                                                        <td className="p-2 text-right"><button onClick={() => handleRemovePreviewItem(idx)} className="text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100"><X size={14}/></button></td>
+                                                        <td className="p-2"><span className="bg-[#151515] text-[#AAA] px-1.5 py-0.5 rounded border border-[#333] font-mono text-[9px]">{item.type}</span></td>
+                                                        <td className="p-2 font-mono text-neutral-300 break-all">{item.value}</td>
+                                                        <td className="p-2 text-right"><button onClick={() => handleRemovePreviewItem(idx)} className="text-neutral-600 hover:text-red-400 opacity-0 group-hover:opacity-100"><X size={14}/></button></td>
                                                     </tr>
                                                 ))}
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div className="p-4 bg-gray-900 border-t border-gray-800 flex justify-end gap-3">
-                                        <button onClick={() => setBulkPreview([])} className="text-xs text-gray-500 hover:text-white px-4">Discard All</button>
-                                        <button onClick={handleCommitImport} className="bg-green-600 hover:bg-green-500 text-white px-8 py-2 rounded-lg font-bold text-sm shadow-lg shadow-green-900/20">COMMIT TO CASE</button>
+                                    <div className="p-4 bg-[#0A0A0A] border-t border-[#222] flex justify-end gap-3">
+                                        <button onClick={() => setBulkPreview([])} className="text-xs text-[#888] hover:text-white px-4">Discard All</button>
+                                        <button onClick={handleCommitImport} className="bg-neutral-600 hover:bg-neutral-500 text-white px-8 py-2 rounded-lg font-bold text-sm shadow-lg shadow-green-900/20">COMMIT TO CASE</button>
                                     </div>
                                 </div>
                             )}
@@ -778,82 +779,82 @@ export const InvestigationBenchView: React.FC<InvestigationBenchViewProps> = ({
                 </div>
             )}
 
-            <div className="border-b border-gray-800 bg-black/40 px-6 py-4 flex items-center justify-between shrink-0">
-                 <div className="flex items-center gap-4"><button onClick={() => setViewMode('CASE_LIST')} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition-colors"><ChevronLeft size={20}/></button><div><div className="flex items-center gap-3"><h2 className="text-lg font-bold text-white">{activeCase.title}</h2></div><div className="text-xs text-gray-500 font-mono flex items-center gap-3 mt-1"><span className="flex items-center gap-1"><Clock size={10}/> Started: {new Date(activeCase.created).toLocaleString()}</span><span className="flex items-center gap-1"><User size={10}/> Lead: Analyst</span></div></div></div>
-                 <div className="flex bg-gray-900 rounded-lg p-1 border border-gray-800"><button onClick={() => setActiveTab('ARTIFACTS')} className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'ARTIFACTS' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'}`}><Box size={14}/> ARTIFACTS</button><button onClick={() => setActiveTab('TIMELINE')} className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'TIMELINE' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'}`}><Calendar size={14}/> TIMELINE</button><button onClick={() => setActiveTab('COLLAB')} className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'COLLAB' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'}`}><MessageSquare size={14}/> COLLAB</button></div>
-                 <div className="flex items-center gap-2"><button onClick={() => handleExportCase('JSON')} className="p-2 hover:bg-gray-800 rounded text-gray-400 hover:text-white" title="Export JSON"><FileJson size={16}/></button><button onClick={() => handleExportCase('CSV')} className="p-2 hover:bg-gray-800 rounded text-gray-400 hover:text-white" title="Export CSV"><FileText size={16}/></button></div>
+            <div className="border-b border-[#222] bg-black/40 px-6 py-4 flex items-center justify-between shrink-0">
+                 <div className="flex items-center gap-4"><button onClick={() => setViewMode('CASE_LIST')} className="p-2 hover:bg-[#151515] rounded-lg text-[#AAA] hover:text-white transition-colors"><ChevronLeft size={20}/></button><div><div className="flex items-center gap-3"><h2 className="text-lg font-bold text-white">{activeCase.title}</h2></div><div className="text-xs text-[#888] font-mono flex items-center gap-3 mt-1"><span className="flex items-center gap-1"><Clock size={10}/> Started: {new Date(activeCase.created).toLocaleString()}</span><span className="flex items-center gap-1"><User size={10}/> Lead: Analyst</span></div></div></div>
+                 <div className="flex bg-[#0A0A0A] rounded-lg p-1 border border-[#222]"><button onClick={() => setActiveTab('ARTIFACTS')} className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'ARTIFACTS' ? 'bg-neutral-600 text-white' : 'text-[#AAA] hover:text-white'}`}><Box size={14}/> ARTIFACTS</button><button onClick={() => setActiveTab('TIMELINE')} className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'TIMELINE' ? 'bg-neutral-600 text-white' : 'text-[#AAA] hover:text-white'}`}><Calendar size={14}/> TIMELINE</button><button onClick={() => setActiveTab('COLLAB')} className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'COLLAB' ? 'bg-neutral-600 text-white' : 'text-[#AAA] hover:text-white'}`}><MessageSquare size={14}/> COLLAB</button></div>
+                 <div className="flex items-center gap-2"><button onClick={() => handleExportCase('JSON')} className="p-2 hover:bg-[#151515] rounded text-[#AAA] hover:text-white" title="Export JSON"><FileJson size={16}/></button><button onClick={() => handleExportCase('CSV')} className="p-2 hover:bg-[#151515] rounded text-[#AAA] hover:text-white" title="Export CSV"><FileText size={16}/></button></div>
             </div>
             
             {activeTab === 'ARTIFACTS' && (
                 <div className="flex-1 flex flex-col p-6 min-h-0">
                     <div className="flex-1 flex flex-col gap-4 min-h-0">
-                        <div className="flex gap-3 items-center bg-gray-900/30 p-3 rounded-lg border border-gray-800 shrink-0 flex-wrap">
-                            <div className="relative group w-48"><Search className="absolute left-2 top-2 text-gray-500 w-3.5 h-3.5" /><input type="text" placeholder="Search IP, ASN, Tags..." className="bg-black border border-gray-700 rounded pl-8 pr-2 py-1.5 text-xs text-gray-300 focus:outline-none focus:border-indigo-500 w-full" value={artifactSearch} onChange={e => setArtifactSearch(e.target.value)} /></div>
-                            <div className="h-6 w-px bg-gray-700 mx-1"></div>
-                            <select className="bg-black border border-gray-700 rounded px-2 py-1.5 text-xs text-white outline-none" value={newArtifactType} onChange={(e) => setNewArtifactType(e.target.value as any)}><option value="IP">IP</option><option value="DOMAIN">Domain</option><option value="URL">URL</option><option value="FILE">File</option><option value="HASH">Hash</option><option value="EMAIL">Email</option><option value="TEXT">Text</option></select>
-                            <input type="text" className="flex-1 bg-black border border-gray-700 rounded px-3 py-1.5 text-xs text-white focus:border-indigo-500 focus:outline-none min-w-[200px]" placeholder="Enter artifact value..." value={newArtifactVal} onChange={(e) => setNewArtifactVal(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAddArtifact()} />
+                        <div className="flex gap-3 items-center bg-[#111] p-3 rounded-lg border border-[#222] shrink-0 flex-wrap">
+                            <div className="relative group w-48"><Search className="absolute left-2 top-2 text-[#888] w-3.5 h-3.5" /><input type="text" placeholder="Search IP, ASN, Tags..." className="bg-black border border-[#333] rounded pl-8 pr-2 py-1.5 text-xs text-neutral-300 focus:outline-none focus:border-neutral-500 w-full" value={artifactSearch} onChange={e => setArtifactSearch(e.target.value)} /></div>
+                            <div className="h-6 w-px bg-[#1C1C1C] mx-1"></div>
+                            <select className="bg-black border border-[#333] rounded px-2 py-1.5 text-xs text-white outline-none" value={newArtifactType} onChange={(e) => setNewArtifactType(e.target.value as any)}><option value="IP">IP</option><option value="DOMAIN">Domain</option><option value="URL">URL</option><option value="FILE">File</option><option value="HASH">Hash</option><option value="EMAIL">Email</option><option value="TEXT">Text</option></select>
+                            <input type="text" className="flex-1 bg-black border border-[#333] rounded px-3 py-1.5 text-xs text-white focus:border-neutral-500 focus:outline-none min-w-[200px]" placeholder="Enter artifact value..." value={newArtifactVal} onChange={(e) => setNewArtifactVal(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAddArtifact()} />
                             
-                            <div className="flex items-center gap-2 bg-black/40 border border-gray-700 rounded px-2 py-1">
-                                <span className="text-[9px] text-gray-500 font-bold uppercase">Sandbox</span>
-                                <button onClick={() => setAutoSandbox(!autoSandbox)} className="text-cyber-cyan hover:text-white transition-colors">
-                                    {autoSandbox ? <ToggleRight size={18}/> : <ToggleLeft size={18} className="text-gray-600"/>}
+                            <div className="flex items-center gap-2 bg-black/40 border border-[#333] rounded px-2 py-1">
+                                <span className="text-[9px] text-[#888] font-bold uppercase">Sandbox</span>
+                                <button onClick={() => setAutoSandbox(!autoSandbox)} className="text-red-500 hover:text-white transition-colors">
+                                    {autoSandbox ? <ToggleRight size={18}/> : <ToggleLeft size={18} className="text-neutral-600"/>}
                                 </button>
                             </div>
 
-                            <label className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded text-xs font-bold border border-gray-700 flex items-center gap-2 cursor-pointer transition-colors">
+                            <label className="bg-[#151515] hover:bg-[#1C1C1C] text-neutral-300 px-3 py-1.5 rounded text-xs font-bold border border-[#333] flex items-center gap-2 cursor-pointer transition-colors">
                                 {isUploadingSample ? <Loader2 className="animate-spin" size={14}/> : <FileUp size={14}/>}
                                 <span className="hidden sm:inline">SAMPLE</span>
                                 <input type="file" className="hidden" onChange={handleSampleUpload} ref={sampleInputRef} />
                             </label>
 
-                            <button onClick={handleAddArtifact} className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-1.5 rounded text-xs font-bold flex items-center gap-2"><Plus size={14}/> ADD</button>
-                            <button onClick={() => setShowBulkImport(true)} className={`px-4 py-1.5 rounded text-xs font-bold border flex items-center gap-2 transition-all ${showBulkImport ? 'bg-indigo-500 text-white border-indigo-400' : 'bg-gray-800 hover:bg-gray-700 text-gray-300 border-gray-700'}`}><Upload size={14}/> BULK</button>
+                            <button onClick={handleAddArtifact} className="bg-neutral-600 hover:bg-[#151515] text-white px-4 py-1.5 rounded text-xs font-bold flex items-center gap-2"><Plus size={14}/> ADD</button>
+                            <button onClick={() => setShowBulkImport(true)} className={`px-4 py-1.5 rounded text-xs font-bold border flex items-center gap-2 transition-all ${showBulkImport ? 'bg-[#151515] text-white border-neutral-400' : 'bg-[#151515] hover:bg-[#1C1C1C] text-neutral-300 border-[#333]'}`}><Upload size={14}/> BULK</button>
                         </div>
                         
                         {selectedArtifactIds.size > 0 && (
-                            <div className="bg-blue-900/30 border border-blue-500/30 p-3 rounded-lg flex justify-between items-center animate-fade-in shrink-0">
+                            <div className="bg-[#111] border border-neutral-500/30 p-3 rounded-lg flex justify-between items-center animate-fade-in shrink-0">
                                 <div className="flex items-center gap-4">
-                                    <div className="flex items-center gap-2 px-3 py-1 bg-blue-600/20 rounded-full border border-blue-500/50">
-                                        <Layers size={14} className="text-blue-400"/>
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-[#1C1C1C]/20 rounded-full border border-neutral-500/50">
+                                        <Layers size={14} className="text-red-400"/>
                                         <span className="text-xs text-white font-bold">{selectedArtifactIds.size} Artifacts Selected</span>
                                     </div>
-                                    <button onClick={() => setSelectedArtifactIds(new Set())} className="text-[11px] text-gray-400 hover:text-white flex items-center gap-1 transition-colors"><X size={12}/> Clear Selection</button>
+                                    <button onClick={() => setSelectedArtifactIds(new Set())} className="text-[11px] text-[#AAA] hover:text-white flex items-center gap-1 transition-colors"><X size={12}/> Clear Selection</button>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <button onClick={handleBulkEnrich} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs font-bold flex items-center gap-2 shadow-lg transition-all"><Zap size={14}/> DEEP SCAN BATCH</button>
-                                    <button onClick={handleBulkExportArtifacts} className="px-4 py-2 bg-gray-800 text-gray-200 border border-gray-600 rounded text-xs font-bold flex items-center gap-2 hover:bg-gray-700">Export List</button>
+                                    <button onClick={handleBulkEnrich} className="px-4 py-2 bg-neutral-600 hover:bg-[#151515] text-white rounded text-xs font-bold flex items-center gap-2 shadow-lg transition-all"><Zap size={14}/> DEEP SCAN BATCH</button>
+                                    <button onClick={handleBulkExportArtifacts} className="px-4 py-2 bg-[#151515] text-neutral-200 border border-neutral-600 rounded text-xs font-bold flex items-center gap-2 hover:bg-[#1C1C1C]">Export List</button>
                                     <button onClick={handleBulkDeleteArtifacts} className="px-4 py-2 bg-red-600 text-white rounded text-xs font-bold flex items-center gap-2 hover:bg-red-500">Delete</button>
                                 </div>
                             </div>
                         )}
 
-                        <div className="flex-1 overflow-auto custom-scrollbar bg-black/30 border border-gray-800 rounded-lg relative">
+                        <div className="flex-1 overflow-auto custom-scrollbar bg-black/30 border border-[#222] rounded-lg relative">
                             <table className="w-full text-left text-sm">
-                                <thead className="bg-gray-900/80 text-gray-500 uppercase font-bold text-xs sticky top-0 z-10 backdrop-blur-md">
+                                <thead className="bg-[#111] text-[#888] uppercase font-bold text-xs sticky top-0 z-10 backdrop-blur-md">
                                     <tr>
-                                        <th className="p-4 w-10 text-center"><input type="checkbox" className="w-3.5 h-3.5 rounded bg-black border-gray-600 checked:bg-indigo-500 cursor-pointer" checked={filteredArtifacts.length > 0 && filteredArtifacts.every(a => selectedArtifactIds.has(a.id))} onChange={toggleSelectAllArtifacts} /></th>
+                                        <th className="p-4 w-10 text-center"><input type="checkbox" className="w-3.5 h-3.5 rounded bg-black border-neutral-600 checked:bg-[#151515] cursor-pointer" checked={filteredArtifacts.length > 0 && filteredArtifacts.every(a => selectedArtifactIds.has(a.id))} onChange={toggleSelectAllArtifacts} /></th>
                                         <th className="p-4 w-32 cursor-pointer hover:text-white" onClick={() => handleSort('risk')}>Risk Level {sortConfig.key === 'risk' && (sortConfig.direction === 'asc' ? <ArrowUpDown size={10} className="inline rotate-180"/> : <ArrowUpDown size={10} className="inline"/>)}</th>
                                         <th className="p-4 w-48 cursor-pointer hover:text-white" onClick={() => handleSort('value')}>Artifact {sortConfig.key === 'value' && (sortConfig.direction === 'asc' ? <ArrowUpDown size={10} className="inline rotate-180"/> : <ArrowUpDown size={10} className="inline"/>)}</th>
                                         <th className="p-4 w-32 cursor-pointer hover:text-white" onClick={() => handleSort('type')}>Type {sortConfig.key === 'type' && (sortConfig.direction === 'asc' ? <ArrowUpDown size={10} className="inline rotate-180"/> : <ArrowUpDown size={10} className="inline"/>)}</th>
                                         <th className="p-4 w-48">Location / Network</th><th className="p-4">Detections (Tags)</th><th className="p-4 text-right w-24">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-800/50 text-gray-300">
+                                <tbody className="divide-y divide-neutral-800/50 text-neutral-300">
                                     {filteredArtifacts.length > 0 ? filteredArtifacts.map((art) => {
                                         const riskLevel = art.enrichmentData?.risk?.level || 'LOW';
                                         const isLoading = enrichingArtifacts.has(art.id);
                                         const isSelected = selectedArtifactIds.has(art.id);
                                         return (
                                         <tr key={art.id} className={`hover:bg-white/5 transition-colors group cursor-pointer ${selectedArtifact?.id === art.id ? 'bg-white/5' : ''}`} onClick={() => setSelectedArtifact(art)}>
-                                            <td className="p-4 text-center" onClick={(e) => e.stopPropagation()}><input type="checkbox" className="w-3.5 h-3.5 rounded bg-black border-gray-600 checked:bg-indigo-500 cursor-pointer" checked={isSelected} onChange={() => toggleArtifactSelection(art.id)} /></td>
-                                            <td className="p-4"><div className="flex items-center gap-2"><span className={`px-2 py-1 rounded text-[10px] font-bold border ${getRiskColor(riskLevel)}`}>{riskLevel}</span>{isLoading && <Loader2 size={12} className="animate-spin text-cyber-cyan"/>}</div></td>
-                                            <td className="p-4 font-mono text-gray-300 break-all max-w-xs"><div className="font-bold text-white">{art.value}</div><div className="text-[10px] text-gray-500 mt-1">{new Date(art.addedAt).toLocaleString()}</div></td>
-                                            <td className="p-4 text-xs font-mono text-gray-400"><div className="flex items-center gap-2">{React.createElement(ARTIFACT_ICONS[art.type] || Box, { size: 14 })}{art.type}</div></td>
-                                            <td className="p-4 text-xs text-gray-400">{art.enrichmentData?.geo ? (<div><div className="flex items-center gap-2 text-white hover:text-cyber-cyan transition-colors w-fit"><Globe size={12}/> {art.enrichmentData.geo.country_name}</div><div className="text-[10px] text-gray-500 truncate max-w-[150px]">{art.enrichmentData.geo.asn?.name}</div></div>) : <span className="text-gray-600 italic">Pending...</span>}</td>
-                                            <td className="p-4"><div className="flex flex-wrap gap-1">{art.tags?.length ? art.tags.map((t: string, i: number) => <span key={i} className="px-1.5 py-0.5 bg-gray-800 border border-gray-700 rounded text-[10px] text-gray-300 truncate max-w-[150px]" title={t}>{t}</span>) : <span className="text-gray-600 text-xs italic">No tags</span>}</div></td>
-                                            <td className="p-4 text-right"><div className="flex justify-end gap-1"><button onClick={(e) => { e.stopPropagation(); handleEnrichArtifact(art.id, art, true); }} className="p-1.5 hover:bg-gray-800 rounded text-gray-400 hover:text-cyber-cyan transition-colors" title="Deep Scan (API)"><Zap size={14}/></button><button onClick={(e) => { e.stopPropagation(); handleDeleteArtifact(art.id); }} className="p-1.5 hover:bg-red-900/30 rounded text-gray-500 hover:text-red-400"><Trash2 size={14}/></button></div></td>
+                                            <td className="p-4 text-center" onClick={(e) => e.stopPropagation()}><input type="checkbox" className="w-3.5 h-3.5 rounded bg-black border-neutral-600 checked:bg-[#151515] cursor-pointer" checked={isSelected} onChange={() => toggleArtifactSelection(art.id)} /></td>
+                                            <td className="p-4"><div className="flex items-center gap-2"><span className={`px-2 py-1 rounded text-[10px] font-bold border ${getRiskColor(riskLevel)}`}>{riskLevel}</span>{isLoading && <Loader2 size={12} className="animate-spin text-red-500"/>}</div></td>
+                                            <td className="p-4 font-mono text-neutral-300 break-all max-w-xs"><div className="font-bold text-white">{art.value}</div><div className="text-[10px] text-[#888] mt-1">{new Date(art.addedAt).toLocaleString()}</div></td>
+                                            <td className="p-4 text-xs font-mono text-[#AAA]"><div className="flex items-center gap-2">{React.createElement(ARTIFACT_ICONS[art.type] || Box, { size: 14 })}{art.type}</div></td>
+                                            <td className="p-4 text-xs text-[#AAA]">{art.enrichmentData?.geo ? (<div><div className="flex items-center gap-2 text-white hover:text-red-500 transition-colors w-fit"><Globe size={12}/> {art.enrichmentData.geo.country_name}</div><div className="text-[10px] text-[#888] truncate max-w-[150px]">{art.enrichmentData.geo.asn?.name}</div></div>) : <span className="text-neutral-600 italic">Pending...</span>}</td>
+                                            <td className="p-4"><div className="flex flex-wrap gap-1">{art.tags?.length ? art.tags.map((t: string, i: number) => <span key={i} className="px-1.5 py-0.5 bg-[#151515] border border-[#333] rounded text-[10px] text-neutral-300 truncate max-w-[150px]" title={t}>{t}</span>) : <span className="text-neutral-600 text-xs italic">No tags</span>}</div></td>
+                                            <td className="p-4 text-right"><div className="flex justify-end gap-1"><button onClick={(e) => { e.stopPropagation(); handleEnrichArtifact(art.id, art, true); }} className="p-1.5 hover:bg-[#151515] rounded text-[#AAA] hover:text-red-500 transition-colors" title="Deep Scan (API)"><Zap size={14}/></button><button onClick={(e) => { e.stopPropagation(); handleDeleteArtifact(art.id); }} className="p-1.5 hover:bg-red-900/30 rounded text-[#888] hover:text-red-400"><Trash2 size={14}/></button></div></td>
                                         </tr>
-                                    )}) : (<tr><td colSpan={7} className="text-center text-gray-500 text-xs italic py-12">No artifacts found.</td></tr>)}
+                                    )}) : (<tr><td colSpan={7} className="text-center text-[#888] text-xs italic py-12">No artifacts found.</td></tr>)}
                                 </tbody>
                             </table>
                         </div>
@@ -864,19 +865,19 @@ export const InvestigationBenchView: React.FC<InvestigationBenchViewProps> = ({
             {activeTab === 'TIMELINE' && (
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
                      <div className="max-w-4xl mx-auto pl-8">
-                         <div className="relative border-l-2 border-gray-800 space-y-8 py-4">
+                         <div className="relative border-l-2 border-[#222] space-y-8 py-4">
                              {timelineGroups.map((group) => {
                                  const isExpanded = expandedGroups.has(group.id);
                                  if (group.type === 'NOTE') {
                                      const item = group.items[0];
-                                     return (<div key={item.id} className="relative pl-6"><div className="absolute -left-[9px] top-3 w-4 h-4 rounded-full border-2 border-gray-800 bg-black flex items-center justify-center"><div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div></div><div className="bg-gray-900/40 border border-gray-800 rounded-lg p-4 hover:border-blue-500/30 transition-all hover:bg-gray-900/60"><div className="flex justify-between items-start mb-2"><div className="flex items-center gap-2"><MessageSquare size={14} className="text-blue-400"/><span className="text-xs font-bold text-blue-400">ANALYST NOTE</span></div><div className="text-xs text-gray-500 font-mono flex items-center gap-1"><Clock size={10}/> {new Date(item.timestamp).toLocaleString()}</div></div><div className="text-sm text-gray-300 font-mono break-all leading-relaxed bg-black/20 p-2 rounded">{item.text}</div><div className="mt-2 text-[10px] text-gray-500 flex items-center gap-1"><User size={10}/> {item.author}</div></div></div>);
+                                     return (<div key={item.id} className="relative pl-6"><div className="absolute -left-[9px] top-3 w-4 h-4 rounded-full border-2 border-[#222] bg-black flex items-center justify-center"><div className="w-1.5 h-1.5 rounded-full bg-[#151515]"></div></div><div className="bg-[#111] border border-[#222] rounded-lg p-4 hover:border-neutral-500/30 transition-all hover:bg-[#111]"><div className="flex justify-between items-start mb-2"><div className="flex items-center gap-2"><MessageSquare size={14} className="text-red-400"/><span className="text-xs font-bold text-red-400">ANALYST NOTE</span></div><div className="text-xs text-[#888] font-mono flex items-center gap-1"><Clock size={10}/> {new Date(item.timestamp).toLocaleString()}</div></div><div className="text-sm text-neutral-300 font-mono break-all leading-relaxed bg-black/20 p-2 rounded">{item.text}</div><div className="mt-2 text-[10px] text-[#888] flex items-center gap-1"><User size={10}/> {item.author}</div></div></div>);
                                  }
                                  if (group.type === 'BULK') {
                                      const summary = Object.entries(group.items.reduce((acc: any, i: any) => { acc[i.type] = (acc[i.type] || 0) + 1; return acc; }, {})).map(([k,v]) => `${v} ${k}`).join(', ');
-                                     return (<div key={group.id} className="relative pl-6"><div className="absolute -left-[9px] top-3 w-4 h-4 rounded-full border-2 border-gray-800 bg-black flex items-center justify-center"><div className="w-1.5 h-1.5 rounded-full bg-indigo-500"></div></div><div className="bg-gray-900/40 border border-gray-800 rounded-lg overflow-hidden transition-all hover:border-indigo-500/30"><div className="p-4 flex justify-between items-center cursor-pointer hover:bg-gray-800/50" onClick={() => toggleTimelineGroup(group.id)}><div className="flex items-center gap-3"><div className="p-2 bg-indigo-900/20 rounded border border-indigo-500/30 text-indigo-400"><Layers size={16}/></div><div><div className="text-xs font-bold text-white flex items-center gap-2">Bulk Artifact Import <span className="bg-gray-800 text-gray-400 px-1.5 rounded text-[10px]">{group.items.length} Items</span></div><div className="text-[10px] text-gray-500">{summary}</div></div></div><div className="flex items-center gap-4"><div className="text-xs text-gray-500 font-mono flex items-center gap-1"><Clock size={10}/> {new Date(group.timestamp).toLocaleTimeString()}</div><ChevronDown size={16} className={`text-gray-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`}/></div></div>{isExpanded && (<div className="border-t border-gray-800 bg-black/20 p-2 space-y-1">{group.items.map((item: any) => (<div key={item.id} className="flex justify-between items-center p-2 rounded hover:bg-white/5 text-xs"><div className="flex items-center gap-2 overflow-hidden"><span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border bg-gray-800 border-gray-700 text-gray-400 w-12 text-center`}>{item.type}</span><span className="text-gray-300 font-mono truncate">{item.value}</span></div><button onClick={(e) => {e.stopPropagation(); setSelectedArtifact(item);}} className="text-cyber-cyan hover:text-white text-[10px] flex items-center gap-1">View <ArrowRight size={10}/></button></div>))}</div>)}</div></div>);
+                                     return (<div key={group.id} className="relative pl-6"><div className="absolute -left-[9px] top-3 w-4 h-4 rounded-full border-2 border-[#222] bg-black flex items-center justify-center"><div className="w-1.5 h-1.5 rounded-full bg-[#151515]"></div></div><div className="bg-[#111] border border-[#222] rounded-lg overflow-hidden transition-all hover:border-neutral-500/30"><div className="p-4 flex justify-between items-center cursor-pointer hover:bg-[#151515]/50" onClick={() => toggleTimelineGroup(group.id)}><div className="flex items-center gap-3"><div className="p-2 bg-neutral-900/20 rounded border border-neutral-500/30 text-red-400"><Layers size={16}/></div><div><div className="text-xs font-bold text-white flex items-center gap-2">Bulk Artifact Import <span className="bg-[#151515] text-[#AAA] px-1.5 rounded text-[10px]">{group.items.length} Items</span></div><div className="text-[10px] text-[#888]">{summary}</div></div></div><div className="flex items-center gap-4"><div className="text-xs text-[#888] font-mono flex items-center gap-1"><Clock size={10}/> {new Date(group.timestamp).toLocaleTimeString()}</div><ChevronDown size={16} className={`text-[#888] transition-transform ${isExpanded ? 'rotate-180' : ''}`}/></div></div>{isExpanded && (<div className="border-t border-[#222] bg-black/20 p-2 space-y-1">{group.items.map((item: any) => (<div key={item.id} className="flex justify-between items-center p-2 rounded hover:bg-white/5 text-xs"><div className="flex items-center gap-2 overflow-hidden"><span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border bg-[#151515] border-[#333] text-[#AAA] w-12 text-center`}>{item.type}</span><span className="text-neutral-300 font-mono truncate">{item.value}</span></div><button onClick={(e) => {e.stopPropagation(); setSelectedArtifact(item);}} className="text-red-500 hover:text-white text-[10px] flex items-center gap-1">View <ArrowRight size={10}/></button></div>))}</div>)}</div></div>);
                                  }
                                  const item = group.items[0];
-                                 return (<div key={item.id} className="relative pl-6"><div className="absolute -left-[9px] top-3 w-4 h-4 rounded-full border-2 border-gray-800 bg-black flex items-center justify-center"><div className="w-1.5 h-1.5 rounded-full bg-indigo-500"></div></div><div className="bg-gray-900/40 border border-gray-800 rounded-lg p-4 hover:border-indigo-500/30 transition-all hover:bg-gray-900/60 cursor-pointer" onClick={() => setSelectedArtifact(item)}><div className="flex justify-between items-start mb-2"><div className="flex items-center gap-2"><Zap size={14} className="text-indigo-400"/><span className="text-xs font-bold text-indigo-400">ARTIFACT: {item.type}</span></div><div className="text-xs text-gray-500 font-mono flex items-center gap-1"><Clock size={10}/> {new Date(item.timestamp).toLocaleTimeString()}</div></div><div className="text-sm text-gray-300 font-mono break-all leading-relaxed bg-black/20 p-2 rounded border border-gray-800/50">{item.value}</div><div className="mt-2 text-[10px] text-gray-500 flex items-center gap-1"><Activity size={10}/> System Entry</div></div></div>);
+                                 return (<div key={item.id} className="relative pl-6"><div className="absolute -left-[9px] top-3 w-4 h-4 rounded-full border-2 border-[#222] bg-black flex items-center justify-center"><div className="w-1.5 h-1.5 rounded-full bg-[#151515]"></div></div><div className="bg-[#111] border border-[#222] rounded-lg p-4 hover:border-neutral-500/30 transition-all hover:bg-[#111] cursor-pointer" onClick={() => setSelectedArtifact(item)}><div className="flex justify-between items-start mb-2"><div className="flex items-center gap-2"><Zap size={14} className="text-red-400"/><span className="text-xs font-bold text-red-400">ARTIFACT: {item.type}</span></div><div className="text-xs text-[#888] font-mono flex items-center gap-1"><Clock size={10}/> {new Date(item.timestamp).toLocaleTimeString()}</div></div><div className="text-sm text-neutral-300 font-mono break-all leading-relaxed bg-black/20 p-2 rounded border border-[#222]/50">{item.value}</div><div className="mt-2 text-[10px] text-[#888] flex items-center gap-1"><Activity size={10}/> System Entry</div></div></div>);
                              })}
                          </div>
                      </div>
@@ -886,12 +887,12 @@ export const InvestigationBenchView: React.FC<InvestigationBenchViewProps> = ({
             {activeTab === 'COLLAB' && (
                 <div className="flex-1 flex flex-col min-h-0 bg-black/20">
                     <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4">
-                        {activeCase.notes.length === 0 && (<div className="text-center text-gray-500 text-xs italic flex flex-col items-center justify-center h-full opacity-50"><MessageSquare size={48} className="mb-4"/><p>No discussion yet.</p></div>)}
+                        {activeCase.notes.length === 0 && (<div className="text-center text-[#888] text-xs italic flex flex-col items-center justify-center h-full opacity-50"><MessageSquare size={48} className="mb-4"/><p>No discussion yet.</p></div>)}
                         {activeCase.notes.map(note => (
-                            <div key={note.id} className="flex gap-4 group"><div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shrink-0 font-bold text-xs">{note.author.substring(0,2).toUpperCase()}</div><div className="flex-1 max-w-3xl"><div className="flex items-center gap-2 mb-1"><span className="text-xs font-bold text-gray-200">{note.author}</span><span className="text-[10px] text-gray-500">{new Date(note.timestamp).toLocaleString()}</span></div><div className="bg-gray-800 p-3 rounded-lg rounded-tl-none border border-gray-700 text-sm text-gray-300 whitespace-pre-wrap">{note.text}</div></div></div>
+                            <div key={note.id} className="flex gap-4 group"><div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shrink-0 font-bold text-xs">{note.author.substring(0,2).toUpperCase()}</div><div className="flex-1 max-w-3xl"><div className="flex items-center gap-2 mb-1"><span className="text-xs font-bold text-neutral-200">{note.author}</span><span className="text-[10px] text-[#888]">{new Date(note.timestamp).toLocaleString()}</span></div><div className="bg-[#151515] p-3 rounded-lg rounded-tl-none border border-[#333] text-sm text-neutral-300 whitespace-pre-wrap">{note.text}</div></div></div>
                         ))}
                     </div>
-                    <div className="p-4 bg-gray-900 border-t border-gray-800 shrink-0"><div className="flex gap-2 max-w-5xl mx-auto"><textarea className="flex-1 bg-black border border-gray-700 rounded-lg p-3 text-sm text-white focus:border-indigo-500 outline-none resize-none h-14" placeholder="Type notes..." value={newNote} onChange={e => setNewNote(e.target.value)} onKeyDown={e => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleAddNote(); }}} /><button onClick={handleAddNote} disabled={!newNote.trim()} className="px-6 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-bold text-xs flex items-center justify-center transition-all disabled:opacity-50"><ArrowRight size={18}/></button></div></div>
+                    <div className="p-4 bg-[#0A0A0A] border-t border-[#222] shrink-0"><div className="flex gap-2 max-w-5xl mx-auto"><textarea className="flex-1 bg-black border border-[#333] rounded-lg p-3 text-sm text-white focus:border-neutral-500 outline-none resize-none h-14" placeholder="Type notes..." value={newNote} onChange={e => setNewNote(e.target.value)} onKeyDown={e => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleAddNote(); }}} /><button onClick={handleAddNote} disabled={!newNote.trim()} className="px-6 bg-neutral-600 hover:bg-[#151515] text-white rounded-lg font-bold text-xs flex items-center justify-center transition-all disabled:opacity-50"><ArrowRight size={18}/></button></div></div>
                 </div>
             )}
         </div>

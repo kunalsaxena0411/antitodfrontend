@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+const colors = require('tailwindcss/colors');
+
+/** @type {import('tailwindcss').Config} */
 export default {
   content: [
     './index.html',
@@ -20,6 +23,10 @@ export default {
         cyber: ['"Inter"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
       },
       colors: {
+        gray: colors.neutral,
+        slate: colors.neutral,
+        zinc: colors.neutral,
+        stone: colors.neutral,
         at: {
           bg: '#0A0A0A',
           surface: '#151515',

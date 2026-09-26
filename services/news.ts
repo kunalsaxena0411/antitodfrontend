@@ -2,7 +2,7 @@
 
 import { ThreatNewsItem, NewsCategory } from '../types';
 
-const CACHE_KEY = 'xyberah_news_cache';
+const CACHE_KEY = 'xyberah_news_cache_v3';
 const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
 const FEEDS = [
@@ -70,12 +70,18 @@ const fetchRss2Json = async (url: string): Promise<ThreatNewsItem[] | null> => {
              const description = item.description || item.content || "";
              const cleanDesc = sanitizeText(description);
 
+             const timestamp = new Date(item.pubDate).getTime();
+
              return {
                  title,
                  link: item.link,
                  source: data.feed?.title || "Unknown Source",
-                 date: new Date(item.pubDate).toLocaleDateString(),
-                 timestamp: new Date(item.pubDate).getTime(),
+                 published: Number.isNaN(timestamp)
+                     ? new Date().toISOString()
+                     : new Date(timestamp).toISOString(),
+                 timestamp: Number.isNaN(timestamp)
+                     ? Date.now()
+                     : timestamp,
                  description: cleanDesc,
                  category: determineCategory(title, cleanDesc)
              };
@@ -119,14 +125,15 @@ const parseXmlFeed = (xmlText: string, sourceName: string): ThreatNewsItem[] => 
             let pubDateStr = item.querySelector("pubDate")?.textContent || item.querySelector("published")?.textContent || item.querySelector("updated")?.textContent || new Date().toISOString();
             
             const timestamp = new Date(pubDateStr).getTime();
-            const date = new Date(pubDateStr).toLocaleDateString();
             
             items.push({
                 title,
                 link,
                 source: sourceName,
-                date,
-                timestamp: isNaN(timestamp) ? Date.now() : timestamp,
+                published: Number.isNaN(timestamp)
+                    ? new Date().toISOString()
+                    : new Date(timestamp).toISOString(),
+                timestamp: Number.isNaN(timestamp) ? Date.now() : timestamp,
                 description: cleanDesc,
                 category: determineCategory(title, cleanDesc)
             });

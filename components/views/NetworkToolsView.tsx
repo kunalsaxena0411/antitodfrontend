@@ -529,7 +529,7 @@ export const NetworkToolsView: React.FC = () => {
         return (
             <button 
                 onClick={() => setDnsProviderTab(id === 'controld' ? controlDProfile : id)}
-                className={`px-4 py-2 text-xs font-bold flex items-center gap-2 transition-all border-b-2 ${isActive ? 'border-cyber-cyan text-white bg-white/5' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
+                className={`px-4 py-2 text-xs font-bold flex items-center gap-2 transition-all border-b-2 ${isActive ? 'border-red-500 text-white bg-white/5' : 'border-transparent text-[#888] hover:text-neutral-300'}`}
             >
                 {icon && icon} {label}
             </button>
@@ -539,17 +539,17 @@ export const NetworkToolsView: React.FC = () => {
     const renderDnsTable = () => {
         const currentId = dnsProviderTab.startsWith('controld') ? dnsProviderTab : dnsProviderTab;
         const records = dnsResults[currentId] || [];
-        if (records.length === 0) return <div className="p-8 text-center text-gray-500 text-xs italic">No records found. Run a scan to populate.</div>;
+        if (records.length === 0) return <div className="p-8 text-center text-[#888] text-xs italic">No records found. Run a scan to populate.</div>;
         return (
             <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs font-mono">
-                    <thead className="bg-gray-900 text-gray-500 uppercase font-bold">
+                    <thead className="bg-[#0A0A0A] text-[#888] uppercase font-bold">
                         <tr><th className="p-3">Type</th><th className="p-3">Name</th><th className="p-3">TTL</th><th className="p-3">Data</th></tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-800 text-gray-300">
+                    <tbody className="divide-y divide-neutral-800 text-neutral-300">
                         {records.map((rec, idx) => (
                             <tr key={idx} className="hover:bg-white/5 transition-colors">
-                                <td className="p-3 font-bold text-cyber-cyan">{rec.type}</td><td className="p-3">{rec.name}</td><td className="p-3 text-gray-500">{rec.ttl}</td><td className="p-3 break-all">{rec.data}</td>
+                                <td className="p-3 font-bold text-red-500">{rec.type}</td><td className="p-3">{rec.name}</td><td className="p-3 text-[#888]">{rec.ttl}</td><td className="p-3 break-all">{rec.data}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -560,37 +560,37 @@ export const NetworkToolsView: React.FC = () => {
 
     // Helper for rendering My IP results
     const renderMyIpTool = () => {
-        if (!ipWhoIsResult && !isLoading) return <div className="text-gray-500 text-xs italic text-center p-8">No identity data found.</div>;
+        if (!ipWhoIsResult && !isLoading) return <div className="text-[#888] text-xs italic text-center p-8">No identity data found.</div>;
         if (!ipWhoIsResult) return null;
 
         return (
             <div className="space-y-6 animate-fade-in">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-black/40 border border-gray-800 rounded-lg p-5">
+                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
                         <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
-                            <Server size={16} className="text-blue-400"/> My Connection
+                            <Server size={16} className="text-red-400"/> My Connection
                         </h3>
-                        <div className="space-y-2 text-xs font-mono text-gray-300">
-                            <div className="flex justify-between border-b border-gray-800 pb-1"><span>IP Address</span> <span className="text-white font-bold">{ipWhoIsResult.ip}</span></div>
-                            <div className="flex justify-between border-b border-gray-800 pb-1"><span>ISP</span> <span className="text-purple-400">{ipWhoIsResult.connection.isp}</span></div>
-                            <div className="flex justify-between border-b border-gray-800 pb-1"><span>Org</span> <span className="truncate max-w-[200px]">{ipWhoIsResult.connection.org}</span></div>
-                            <div className="flex justify-between border-b border-gray-800 pb-1"><span>ASN</span> <span>AS{ipWhoIsResult.connection.asn}</span></div>
+                        <div className="space-y-2 text-xs font-mono text-neutral-300">
+                            <div className="flex justify-between border-b border-[#222] pb-1"><span>IP Address</span> <span className="text-white font-bold">{ipWhoIsResult.ip}</span></div>
+                            <div className="flex justify-between border-b border-[#222] pb-1"><span>ISP</span> <span className="text-red-400">{ipWhoIsResult.connection.isp}</span></div>
+                            <div className="flex justify-between border-b border-[#222] pb-1"><span>Org</span> <span className="truncate max-w-[200px]">{ipWhoIsResult.connection.org}</span></div>
+                            <div className="flex justify-between border-b border-[#222] pb-1"><span>ASN</span> <span>AS{ipWhoIsResult.connection.asn}</span></div>
                         </div>
                     </div>
-                    <div className="bg-black/40 border border-gray-800 rounded-lg p-5">
+                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
                         <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
-                            <MapIcon size={16} className="text-green-400"/> Physical Location
+                            <MapIcon size={16} className="text-white"/> Physical Location
                         </h3>
-                        <div className="space-y-2 text-xs font-mono text-gray-300">
-                            <div className="flex justify-between border-b border-gray-800 pb-1"><span>City</span> <span>{ipWhoIsResult.city}</span></div>
-                            <div className="flex justify-between border-b border-gray-800 pb-1">
+                        <div className="space-y-2 text-xs font-mono text-neutral-300">
+                            <div className="flex justify-between border-b border-[#222] pb-1"><span>City</span> <span>{ipWhoIsResult.city}</span></div>
+                            <div className="flex justify-between border-b border-[#222] pb-1">
                                 <span>Country</span> 
                                 <span className="flex items-center gap-2">
                                     {ipWhoIsResult.flag?.img && <img src={ipWhoIsResult.flag.img} className="w-4 h-3 rounded-sm" alt="flag"/>}
                                     {ipWhoIsResult.country} ({ipWhoIsResult.country_code})
                                 </span>
                             </div>
-                            <div className="flex justify-between border-b border-gray-800 pb-1"><span>Coordinates</span> <span>{ipWhoIsResult.latitude}, {ipWhoIsResult.longitude}</span></div>
+                            <div className="flex justify-between border-b border-[#222] pb-1"><span>Coordinates</span> <span>{ipWhoIsResult.latitude}, {ipWhoIsResult.longitude}</span></div>
                         </div>
                     </div>
                 </div>
@@ -600,48 +600,48 @@ export const NetworkToolsView: React.FC = () => {
 
     // Helper for rendering Network/Whois tool results
     const renderNetworkTool = () => {
-        if (!ipApiResult && !whoisResult && !isLoading) return <div className="text-gray-500 text-xs italic text-center p-8">No network data found.</div>;
+        if (!ipApiResult && !whoisResult && !isLoading) return <div className="text-[#888] text-xs italic text-center p-8">No network data found.</div>;
 
         return (
             <div className="space-y-6 animate-fade-in">
                 {ipApiResult && (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-black/40 border border-gray-800 rounded-lg p-5">
+                            <div className="bg-black/40 border border-[#222] rounded-lg p-5">
                                 <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
-                                    <Server size={16} className="text-blue-400"/> Network Identity
+                                    <Server size={16} className="text-red-400"/> Network Identity
                                 </h3>
-                                <div className="space-y-2 text-xs font-mono text-gray-300">
-                                    <div className="flex justify-between border-b border-gray-800 pb-1"><span>IP</span> <span className="text-white">{ipApiResult.ip}</span></div>
-                                    <div className="flex justify-between border-b border-gray-800 pb-1"><span>ASN</span> <span className="text-purple-400">AS{ipApiResult.asn.asn}</span></div>
-                                    <div className="flex justify-between border-b border-gray-800 pb-1"><span>Org</span> <span className="truncate max-w-[200px]">{ipApiResult.asn.org}</span></div>
-                                    <div className="flex justify-between border-b border-gray-800 pb-1"><span>Route</span> <span>{ipApiResult.asn.domain}</span></div>
+                                <div className="space-y-2 text-xs font-mono text-neutral-300">
+                                    <div className="flex justify-between border-b border-[#222] pb-1"><span>IP</span> <span className="text-white">{ipApiResult.ip}</span></div>
+                                    <div className="flex justify-between border-b border-[#222] pb-1"><span>ASN</span> <span className="text-red-400">AS{ipApiResult.asn.asn}</span></div>
+                                    <div className="flex justify-between border-b border-[#222] pb-1"><span>Org</span> <span className="truncate max-w-[200px]">{ipApiResult.asn.org}</span></div>
+                                    <div className="flex justify-between border-b border-[#222] pb-1"><span>Route</span> <span>{ipApiResult.asn.domain}</span></div>
                                 </div>
                             </div>
-                            <div className="bg-black/40 border border-gray-800 rounded-lg p-5">
+                            <div className="bg-black/40 border border-[#222] rounded-lg p-5">
                                 <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
-                                    <MapIcon size={16} className="text-green-400"/> Location & Abuse
+                                    <MapIcon size={16} className="text-white"/> Location & Abuse
                                 </h3>
-                                <div className="space-y-2 text-xs font-mono text-gray-300">
-                                    <div className="flex justify-between border-b border-gray-800 pb-1"><span>City</span> <span>{ipApiResult.location.city}</span></div>
-                                    <div className="flex justify-between border-b border-gray-800 pb-1"><span>Country</span> <span>{ipApiResult.location.country} ({ipApiResult.location.country_code})</span></div>
-                                    <div className="flex justify-between border-b border-gray-800 pb-1"><span>Timezone</span> <span>{ipApiResult.location.timezone}</span></div>
+                                <div className="space-y-2 text-xs font-mono text-neutral-300">
+                                    <div className="flex justify-between border-b border-[#222] pb-1"><span>City</span> <span>{ipApiResult.location.city}</span></div>
+                                    <div className="flex justify-between border-b border-[#222] pb-1"><span>Country</span> <span>{ipApiResult.location.country} ({ipApiResult.location.country_code})</span></div>
+                                    <div className="flex justify-between border-b border-[#222] pb-1"><span>Timezone</span> <span>{ipApiResult.location.timezone}</span></div>
                                     {ipApiResult.abuse && (
-                                        <div className="mt-2 pt-2 border-t border-gray-800">
-                                            <div className="text-gray-500 mb-1">Abuse Contact</div>
+                                        <div className="mt-2 pt-2 border-t border-[#222]">
+                                            <div className="text-[#888] mb-1">Abuse Contact</div>
                                             <div className="text-red-400">{ipApiResult.abuse.email}</div>
-                                            <div className="text-gray-500">{ipApiResult.abuse.phone}</div>
+                                            <div className="text-[#888]">{ipApiResult.abuse.phone}</div>
                                         </div>
                                     )}
                                 </div>
                             </div>
                         </div>
                         {ipApiResult.whois.text && (
-                            <div className="bg-black/40 border border-gray-800 rounded-lg p-5">
+                            <div className="bg-black/40 border border-[#222] rounded-lg p-5">
                                 <h3 className="text-sm font-bold text-white mb-2 uppercase flex items-center gap-2">
-                                    <FileText size={16} className="text-gray-400"/> Raw WHOIS
+                                    <FileText size={16} className="text-[#AAA]"/> Raw WHOIS
                                 </h3>
-                                <div className="h-64 overflow-y-auto custom-scrollbar bg-black p-4 rounded border border-gray-800 text-[10px] font-mono text-gray-400 whitespace-pre-wrap">
+                                <div className="h-64 overflow-y-auto custom-scrollbar bg-black p-4 rounded border border-[#222] text-[10px] font-mono text-[#AAA] whitespace-pre-wrap">
                                     {ipApiResult.whois.text}
                                 </div>
                             </div>
@@ -651,37 +651,37 @@ export const NetworkToolsView: React.FC = () => {
 
                 {whoisResult && (
                     <div className="space-y-6">
-                        <div className="bg-black/40 border border-gray-800 rounded-lg p-5">
+                        <div className="bg-black/40 border border-[#222] rounded-lg p-5">
                             <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
-                                <Globe size={16} className="text-blue-400"/> Domain Registration (RDAP)
+                                <Globe size={16} className="text-red-400"/> Domain Registration (RDAP)
                             </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-mono text-gray-300">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-mono text-neutral-300">
                                 <div className="space-y-2">
-                                    <div className="flex justify-between border-b border-gray-800 pb-1"><span>Name</span> <span className="text-white">{whoisResult.name}</span></div>
-                                    <div className="flex justify-between border-b border-gray-800 pb-1"><span>Handle</span> <span>{whoisResult.handle}</span></div>
-                                    <div className="flex justify-between border-b border-gray-800 pb-1"><span>Registrar</span> <span className="text-cyber-cyan">{whoisResult.org}</span></div>
+                                    <div className="flex justify-between border-b border-[#222] pb-1"><span>Name</span> <span className="text-white">{whoisResult.name}</span></div>
+                                    <div className="flex justify-between border-b border-[#222] pb-1"><span>Handle</span> <span>{whoisResult.handle}</span></div>
+                                    <div className="flex justify-between border-b border-[#222] pb-1"><span>Registrar</span> <span className="text-red-500">{whoisResult.org}</span></div>
                                 </div>
                                 <div className="space-y-2">
-                                    <div className="flex justify-between border-b border-gray-800 pb-1"><span>Registered</span> <span>{whoisResult.registrationDate}</span></div>
-                                    <div className="flex justify-between border-b border-gray-800 pb-1"><span>Updated</span> <span>{whoisResult.lastChangedDate}</span></div>
-                                    <div className="flex justify-between border-b border-gray-800 pb-1"><span>Status</span> <span>Active</span></div>
+                                    <div className="flex justify-between border-b border-[#222] pb-1"><span>Registered</span> <span>{whoisResult.registrationDate}</span></div>
+                                    <div className="flex justify-between border-b border-[#222] pb-1"><span>Updated</span> <span>{whoisResult.lastChangedDate}</span></div>
+                                    <div className="flex justify-between border-b border-[#222] pb-1"><span>Status</span> <span>Active</span></div>
                                 </div>
                             </div>
                             {whoisResult.address && whoisResult.address.length > 0 && (
-                                <div className="mt-4 pt-4 border-t border-gray-800">
-                                    <div className="text-gray-500 mb-1">Registrant Address</div>
-                                    <div className="text-gray-400">{whoisResult.address.join(', ')}</div>
+                                <div className="mt-4 pt-4 border-t border-[#222]">
+                                    <div className="text-[#888] mb-1">Registrant Address</div>
+                                    <div className="text-[#AAA]">{whoisResult.address.join(', ')}</div>
                                 </div>
                             )}
                         </div>
                         
-                        <div className="bg-black/40 border border-gray-800 rounded-lg p-5">
+                        <div className="bg-black/40 border border-[#222] rounded-lg p-5">
                             <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
-                                <List size={16} className="text-gray-400"/> Registration Events
+                                <List size={16} className="text-[#AAA]"/> Registration Events
                             </h3>
                             <div className="space-y-1 max-h-48 overflow-y-auto custom-scrollbar">
                                 {whoisResult.events.map((e: any, i: number) => (
-                                    <div key={i} className="flex justify-between text-xs text-gray-400 p-2 hover:bg-white/5 rounded border border-transparent hover:border-gray-800">
+                                    <div key={i} className="flex justify-between text-xs text-[#AAA] p-2 hover:bg-white/5 rounded border border-transparent hover:border-[#222]">
                                         <span className="capitalize">{e.eventAction}</span>
                                         <span className="font-mono text-white">{new Date(e.eventDate).toLocaleDateString()}</span>
                                     </div>
@@ -697,33 +697,33 @@ export const NetworkToolsView: React.FC = () => {
     return (
         <div className="h-[calc(100vh-70px)] bg-cyber-grid flex flex-col relative overflow-hidden">
             {/* Header */}
-            <div className="p-4 border-b border-gray-800 bg-black/40 shrink-0">
+            <div className="p-4 border-b border-[#222] bg-black/40 shrink-0">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-purple-900/20 rounded-lg border border-purple-500/30 text-purple-400">
+                    <div className="p-2 bg-neutral-900/20 rounded-lg border border-neutral-500/30 text-red-400">
                         <HardDrive size={20}/>
                     </div>
                     <div>
                         <h2 className="text-lg font-bold text-white font-cyber flex items-center gap-2">
-                            NETWORK <span className="text-cyber-cyan">UTILITIES</span>
+                            NETWORK <span className="text-red-500">UTILITIES</span>
                         </h2>
-                        <p className="text-xs text-gray-500 font-mono">Diagnostics & Reconnaissance Suite</p>
+                        <p className="text-xs text-[#888] font-mono">Diagnostics & Reconnaissance Suite</p>
                     </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                    <button onClick={() => setActiveCategory('SUPER_SCAN')} className={`px-4 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'SUPER_SCAN' ? 'bg-cyber-cyan/20 border border-cyber-cyan text-cyber-cyan shadow-lg shadow-cyan-900/20' : 'bg-gray-800 text-gray-400 border border-gray-700 hover:text-white'}`}>SUPER SCAN</button>
-                    <button onClick={() => setActiveCategory('DNS')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'DNS' ? 'bg-purple-900/20 border border-purple-500/30 text-purple-400' : 'bg-gray-800 text-gray-400 border border-gray-700 hover:text-white'}`}>DNS LOOKUP</button>
-                    <button onClick={() => setActiveCategory('DNS_SEC')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'DNS_SEC' ? 'bg-red-900/20 border border-red-500/30 text-red-400' : 'bg-gray-800 text-gray-400 border border-gray-700 hover:text-white'}`}>DNS FIREWALL</button>
-                    <button onClick={() => setActiveCategory('NETWORK')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'NETWORK' ? 'bg-blue-900/20 border border-blue-500/30 text-blue-400' : 'bg-gray-800 text-gray-400 border border-gray-700 hover:text-white'}`}>WHOIS/IP</button>
-                    <button onClick={() => setActiveCategory('EMAIL')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'EMAIL' ? 'bg-green-900/20 border border-green-500/30 text-green-400' : 'bg-gray-800 text-gray-400 border border-gray-700 hover:text-white'}`}>EMAIL SEC</button>
-                    <button onClick={() => setActiveCategory('ASN')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'ASN' ? 'bg-indigo-900/20 border border-indigo-500/30 text-indigo-400' : 'bg-gray-800 text-gray-400 border border-gray-700 hover:text-white'}`}>ASN INTEL</button>
-                    <button onClick={() => setActiveCategory('CRT')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'CRT' ? 'bg-orange-900/20 border border-orange-500/30 text-orange-400' : 'bg-gray-800 text-gray-400 border border-gray-700 hover:text-white'}`}>CERT LOGS</button>
-                    <button onClick={() => setActiveCategory('SCAN')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'SCAN' ? 'bg-yellow-900/20 border border-yellow-500/30 text-yellow-400' : 'bg-gray-800 text-gray-400 border border-gray-700 hover:text-white'}`}>PORT SCAN</button>
-                    <div className="h-8 w-px bg-gray-700 mx-2 hidden md:block"></div>
-                    <button onClick={() => setActiveCategory('PING')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'PING' ? 'bg-white text-black' : 'bg-gray-800 text-gray-400 border border-gray-700 hover:text-white'}`}>PING</button>
-                    <button onClick={() => setActiveCategory('TRACE')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'TRACE' ? 'bg-white text-black' : 'bg-gray-800 text-gray-400 border border-gray-700 hover:text-white'}`}>TRACE</button>
-                    <button onClick={() => setActiveCategory('SUBNET')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'SUBNET' ? 'bg-white text-black' : 'bg-gray-800 text-gray-400 border border-gray-700 hover:text-white'}`}>CALC</button>
-                    <button onClick={() => { setActiveCategory('MY_IP'); handleRunTool(); }} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'MY_IP' ? 'bg-white text-black' : 'bg-gray-800 text-gray-400 border border-gray-700 hover:text-white'}`}>MY IP</button>
+                    <button onClick={() => setActiveCategory('SUPER_SCAN')} className={`px-4 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'SUPER_SCAN' ? 'bg-[#1a0f0f] border border-red-500 text-red-500 shadow-lg shadow-red-900/20' : 'bg-[#151515] text-[#888] border border-[#333] hover:text-white'}`}>SUPER SCAN</button>
+                    <button onClick={() => setActiveCategory('DNS')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'DNS' ? 'bg-[#1a0f0f] border border-red-500/30 text-red-500' : 'bg-[#151515] text-[#888] border border-[#333] hover:text-white'}`}>DNS LOOKUP</button>
+                    <button onClick={() => setActiveCategory('DNS_SEC')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'DNS_SEC' ? 'bg-[#1a0f0f] border border-red-500/30 text-red-500' : 'bg-[#151515] text-[#888] border border-[#333] hover:text-white'}`}>DNS FIREWALL</button>
+                    <button onClick={() => setActiveCategory('NETWORK')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'NETWORK' ? 'bg-[#1a0f0f] border border-red-500/30 text-red-500' : 'bg-[#151515] text-[#888] border border-[#333] hover:text-white'}`}>WHOIS/IP</button>
+                    <button onClick={() => setActiveCategory('EMAIL')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'EMAIL' ? 'bg-[#1a0f0f] border border-red-500/30 text-red-500' : 'bg-[#151515] text-[#888] border border-[#333] hover:text-white'}`}>EMAIL SEC</button>
+                    <button onClick={() => setActiveCategory('ASN')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'ASN' ? 'bg-[#1a0f0f] border border-red-500/30 text-red-500' : 'bg-[#151515] text-[#888] border border-[#333] hover:text-white'}`}>ASN INTEL</button>
+                    <button onClick={() => setActiveCategory('CRT')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'CRT' ? 'bg-[#1a0f0f] border border-red-500/30 text-red-500' : 'bg-[#151515] text-[#888] border border-[#333] hover:text-white'}`}>CERT LOGS</button>
+                    <button onClick={() => setActiveCategory('SCAN')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'SCAN' ? 'bg-[#1a0f0f] border border-red-500/30 text-red-500' : 'bg-[#151515] text-[#888] border border-[#333] hover:text-white'}`}>PORT SCAN</button>
+                    <div className="h-8 w-px bg-[#1C1C1C] mx-2 hidden md:block"></div>
+                    <button onClick={() => setActiveCategory('PING')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'PING' ? 'bg-white text-black' : 'bg-[#151515] text-[#888] border border-[#333] hover:text-white'}`}>PING</button>
+                    <button onClick={() => setActiveCategory('TRACE')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'TRACE' ? 'bg-white text-black' : 'bg-[#151515] text-[#888] border border-[#333] hover:text-white'}`}>TRACE</button>
+                    <button onClick={() => setActiveCategory('SUBNET')} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'SUBNET' ? 'bg-white text-black' : 'bg-[#151515] text-[#888] border border-[#333] hover:text-white'}`}>CALC</button>
+                    <button onClick={() => { setActiveCategory('MY_IP'); handleRunTool(); }} className={`px-3 py-2 rounded text-xs font-bold transition-all ${activeCategory === 'MY_IP' ? 'bg-white text-black' : 'bg-[#151515] text-[#888] border border-[#333] hover:text-white'}`}>MY IP</button>
                 </div>
             </div>
 
@@ -733,14 +733,14 @@ export const NetworkToolsView: React.FC = () => {
                 {/* Input Bar */}
                 {activeCategory !== 'MY_IP' && activeCategory !== 'HEADERS' && (
                     <form onSubmit={handleRunTool} className="mb-8 relative group max-w-2xl mx-auto w-full">
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                        <div className="relative flex items-center bg-black border border-gray-700 rounded-lg overflow-hidden shadow-2xl">
-                            <div className="pl-4 text-gray-500">
+                        <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-900 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                        <div className="relative flex items-center bg-black border border-[#333] rounded-lg overflow-hidden shadow-2xl">
+                            <div className="pl-4 text-[#888]">
                                 {isLoading ? <RefreshCw className="animate-spin" size={18}/> : <Terminal size={18}/>}
                             </div>
                             <input 
                                 type="text" 
-                                className="flex-1 bg-transparent border-none text-white px-4 py-3 focus:ring-0 placeholder-gray-600 font-mono text-sm"
+                                className="flex-1 bg-transparent border-none text-white px-4 py-3 focus:ring-0 placeholder-neutral-600 font-mono text-sm"
                                 placeholder={
                                     activeCategory === 'ASN' ? 'Enter ASN (AS13335) or Organization Name...' :
                                     activeCategory === 'SUBNET' ? 'Enter CIDR (192.168.1.0/24)...' :
@@ -753,7 +753,7 @@ export const NetworkToolsView: React.FC = () => {
                             <button 
                                 type="submit"
                                 disabled={isLoading || (!input && activeCategory !== 'PING')} // PING can re-trigger stop
-                                className="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 font-bold text-xs transition-colors border-l border-gray-700 flex items-center gap-2"
+                                className="bg-[#151515] hover:bg-[#1C1C1C] text-white px-6 py-3 font-bold text-xs transition-colors border-l border-[#333] flex items-center gap-2"
                             >
                                 {isPinging ? <Pause size={14}/> : <Play size={14}/>} RUN
                             </button>
@@ -766,20 +766,20 @@ export const NetworkToolsView: React.FC = () => {
 
                         {/* ASN Suggestions Dropdown */}
                         {showAsnSuggestions && asnSuggestions.length > 0 && (
-                            <div className="absolute top-full left-0 right-0 mt-1 bg-gray-900 border border-gray-700 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto custom-scrollbar">
+                            <div className="absolute top-full left-0 right-0 mt-1 bg-[#0A0A0A] border border-[#333] rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto custom-scrollbar">
                                 {asnSuggestions.map((item) => (
                                     <button
                                         key={item.asn}
                                         type="button"
                                         onClick={() => handleSuggestionClick(item)}
-                                        className="w-full text-left px-4 py-2 hover:bg-gray-800 border-b border-gray-800 last:border-0 transition-colors group"
+                                        className="w-full text-left px-4 py-2 hover:bg-[#151515] border-b border-[#222] last:border-0 transition-colors group"
                                     >
                                         <div className="flex justify-between items-center">
-                                            <span className="font-bold text-cyber-cyan text-xs">{item.asn}</span>
-                                            <span className="text-[10px] bg-gray-800 px-1.5 rounded text-gray-400">{item.country_code}</span>
+                                            <span className="font-bold text-red-500 text-xs">{item.asn}</span>
+                                            <span className="text-[10px] bg-[#151515] px-1.5 rounded text-[#AAA]">{item.country_code}</span>
                                         </div>
-                                        <div className="text-xs text-gray-300 truncate font-bold">{item.name}</div>
-                                        <div className="text-[10px] text-gray-500 truncate">{item.description_short}</div>
+                                        <div className="text-xs text-neutral-300 truncate font-bold">{item.name}</div>
+                                        <div className="text-[10px] text-[#888] truncate">{item.description_short}</div>
                                     </button>
                                 ))}
                             </div>
@@ -790,14 +790,14 @@ export const NetworkToolsView: React.FC = () => {
                 {activeCategory === 'HEADERS' && (
                     <div className="flex flex-col gap-4 h-full">
                         <textarea 
-                            className="flex-1 bg-black/50 border border-gray-700 rounded-lg p-4 font-mono text-xs text-gray-300 focus:border-cyber-cyan focus:outline-none resize-none custom-scrollbar"
+                            className="flex-1 bg-black/50 border border-[#333] rounded-lg p-4 font-mono text-xs text-neutral-300 focus:border-red-500 focus:outline-none resize-none custom-scrollbar"
                             placeholder="Paste raw email headers here..."
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                         />
                         <button 
                             onClick={() => handleRunTool()}
-                            className="bg-green-600 hover:bg-green-500 text-white py-3 rounded-lg font-bold text-sm shadow-lg shadow-green-900/20 transition-all"
+                            className="bg-neutral-600 hover:bg-neutral-500 text-white py-3 rounded-lg font-bold text-sm shadow-lg shadow-green-900/20 transition-all"
                         >
                             ANALYZE HEADERS
                         </button>
@@ -812,39 +812,39 @@ export const NetworkToolsView: React.FC = () => {
                             <div className="space-y-6 animate-slide-in-up">
                                 {/* Progress Bar / Status Text */}
                                 {isLoading && (
-                                    <div className="flex items-center gap-3 bg-blue-900/20 border border-blue-500/30 p-3 rounded-lg animate-pulse">
-                                        <Loader2 className="animate-spin text-blue-400" size={18} />
-                                        <span className="text-sm font-mono text-blue-300">{scanStatus}</span>
+                                    <div className="flex items-center gap-3 bg-[#111] border border-red-500/30 p-3 rounded-lg animate-pulse">
+                                        <Loader2 className="animate-spin text-red-400" size={18} />
+                                        <span className="text-sm font-mono text-red-300">{scanStatus}</span>
                                     </div>
                                 )}
 
                                 {/* Summary Card */}
                                 {riskAnalysis && (
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div className="bg-black/40 border border-gray-800 rounded-lg p-5 flex flex-col items-center justify-center text-center">
-                                        <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Composite Risk</div>
+                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5 flex flex-col items-center justify-center text-center">
+                                        <div className="text-xs font-bold text-[#888] uppercase tracking-widest mb-2">Composite Risk</div>
                                         <div className={`text-5xl font-cyber font-bold mb-2 ${
                                             riskAnalysis.level === 'CRITICAL' ? 'text-red-500' : 
-                                            riskAnalysis.level === 'HIGH' ? 'text-orange-500' :
-                                            riskAnalysis.level === 'MEDIUM' ? 'text-yellow-500' : 'text-green-500'
+                                            riskAnalysis.level === 'HIGH' ? 'text-white' :
+                                            riskAnalysis.level === 'MEDIUM' ? 'text-white' : 'text-white'
                                         }`}>
                                             {riskAnalysis.score}
                                         </div>
                                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
                                             riskAnalysis.level === 'CRITICAL' ? 'bg-red-900/20 border-red-500/30 text-red-400' : 
-                                            riskAnalysis.level === 'HIGH' ? 'bg-orange-900/20 border-orange-500/30 text-orange-400' :
-                                            riskAnalysis.level === 'MEDIUM' ? 'bg-yellow-900/20 border-yellow-500/30 text-yellow-400' : 'bg-green-900/20 border-green-500/30 text-green-400'
+                                            riskAnalysis.level === 'HIGH' ? 'bg-neutral-900/20 border-neutral-500/30 text-white' :
+                                            riskAnalysis.level === 'MEDIUM' ? 'bg-neutral-900/20 border-neutral-500/30 text-white' : 'bg-neutral-900/20 border-neutral-500/30 text-white'
                                         }`}>
                                             {riskAnalysis.verdict.toUpperCase()}
                                         </span>
                                     </div>
                                     
-                                    <div className="md:col-span-2 bg-black/40 border border-gray-800 rounded-lg p-5">
+                                    <div className="md:col-span-2 bg-black/40 border border-[#222] rounded-lg p-5">
                                         <div className="flex items-center gap-4 mb-4">
                                             {enrichmentResult?.flag && <img src={enrichmentResult.flag} className="w-8 h-6 rounded shadow-sm" alt="flag"/>}
                                             <div>
                                                 <div className="text-xl font-bold text-white">{input}</div>
-                                                <div className="text-xs text-gray-400">{enrichmentResult?.ip ? `Resolves to: ${enrichmentResult.ip}` : 'Resolving...'}</div>
+                                                <div className="text-xs text-[#AAA]">{enrichmentResult?.ip ? `Resolves to: ${enrichmentResult.ip}` : 'Resolving...'}</div>
                                             </div>
                                         </div>
                                         
@@ -852,7 +852,7 @@ export const NetworkToolsView: React.FC = () => {
                                             {riskAnalysis.factors.map((factor, i) => (
                                                 <div key={i} className={`flex items-center gap-2 text-xs p-1.5 rounded ${
                                                     factor.type === 'NEGATIVE' ? 'bg-red-900/10 text-red-300' : 
-                                                    factor.type === 'POSITIVE' ? 'bg-green-900/10 text-green-300' : 'bg-gray-800 text-gray-400'
+                                                    factor.type === 'POSITIVE' ? 'bg-neutral-900/10 text-white' : 'bg-[#151515] text-[#AAA]'
                                                 }`}>
                                                     {factor.type === 'NEGATIVE' ? <AlertTriangle size={12}/> : factor.type === 'POSITIVE' ? <CheckCircle size={12}/> : <Activity size={12}/>}
                                                     <span>{factor.label}</span>
@@ -867,49 +867,49 @@ export const NetworkToolsView: React.FC = () => {
                                 {/* Detailed Information Grid */}
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                     {/* Domain Info */}
-                                    <div className="bg-black/40 border border-gray-800 rounded-lg p-5">
-                                        <h3 className="text-sm font-bold text-blue-400 uppercase mb-4 flex items-center gap-2">
+                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                                        <h3 className="text-sm font-bold text-red-400 uppercase mb-4 flex items-center gap-2">
                                             <Globe size={16}/> Domain Intelligence
                                         </h3>
                                         {whoisResult ? (
-                                            <div className="space-y-2 text-xs font-mono text-gray-300">
-                                                <div className="flex justify-between border-b border-gray-800 pb-1"><span>Registrar</span> <span className="text-white truncate max-w-[200px]">{whoisResult.org}</span></div>
-                                                <div className="flex justify-between border-b border-gray-800 pb-1"><span>Created</span> <span>{whoisResult.registrationDate}</span></div>
-                                                <div className="flex justify-between border-b border-gray-800 pb-1"><span>Expires</span> <span>{
+                                            <div className="space-y-2 text-xs font-mono text-neutral-300">
+                                                <div className="flex justify-between border-b border-[#222] pb-1"><span>Registrar</span> <span className="text-white truncate max-w-[200px]">{whoisResult.org}</span></div>
+                                                <div className="flex justify-between border-b border-[#222] pb-1"><span>Created</span> <span>{whoisResult.registrationDate}</span></div>
+                                                <div className="flex justify-between border-b border-[#222] pb-1"><span>Expires</span> <span>{
                                                     whoisResult.events?.find((e: any) => e.eventAction === 'expiration')?.eventDate ? new Date(whoisResult.events.find((e: any) => e.eventAction === 'expiration').eventDate).toLocaleDateString() : 'Unknown'
                                                 }</span></div>
                                                 
                                                 {/* Expandable Raw Whois */}
                                                 <div className="mt-4">
-                                                    <div className="text-[10px] text-gray-500 uppercase font-bold mb-1">Raw Whois Data</div>
-                                                    <div className="max-h-32 overflow-y-auto custom-scrollbar bg-black p-2 rounded border border-gray-800 text-[10px] text-gray-500 whitespace-pre-wrap">
+                                                    <div className="text-[10px] text-[#888] uppercase font-bold mb-1">Raw Whois Data</div>
+                                                    <div className="max-h-32 overflow-y-auto custom-scrollbar bg-black p-2 rounded border border-[#222] text-[10px] text-[#888] whitespace-pre-wrap">
                                                         {whoisResult.raw?.handle ? JSON.stringify(whoisResult.raw, null, 2) : "No raw data."}
                                                     </div>
                                                 </div>
                                             </div>
-                                        ) : <div className="text-gray-500 text-xs italic">{isLoading ? "Loading WHOIS..." : "No WHOIS data available."}</div>}
+                                        ) : <div className="text-[#888] text-xs italic">{isLoading ? "Loading WHOIS..." : "No WHOIS data available."}</div>}
                                     </div>
 
                                     {/* Infrastructure & DNS */}
-                                    <div className="bg-black/40 border border-gray-800 rounded-lg p-5">
-                                        <h3 className="text-sm font-bold text-purple-400 uppercase mb-4 flex items-center gap-2">
+                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                                        <h3 className="text-sm font-bold text-red-400 uppercase mb-4 flex items-center gap-2">
                                             <Server size={16}/> Infrastructure & DNS
                                         </h3>
                                         {enrichmentResult ? (
-                                            <div className="space-y-2 text-xs font-mono text-gray-300 mb-4">
-                                                <div className="flex justify-between border-b border-gray-800 pb-1"><span>Hosting Org</span> <span className="text-white truncate max-w-[200px]">{enrichmentResult.asn?.name || 'N/A'}</span></div>
-                                                <div className="flex justify-between border-b border-gray-800 pb-1"><span>ASN</span> <span className="text-cyber-cyan">{enrichmentResult.asn?.asn || 'N/A'}</span></div>
-                                                <div className="flex justify-between border-b border-gray-800 pb-1"><span>Location</span> <span>{enrichmentResult.city}, {enrichmentResult.country_name}</span></div>
-                                                <div className="flex justify-between border-b border-gray-800 pb-1"><span>Type</span> <span>{enrichmentResult.threat.is_datacenter ? 'Datacenter' : 'Residential/ISP'}</span></div>
+                                            <div className="space-y-2 text-xs font-mono text-neutral-300 mb-4">
+                                                <div className="flex justify-between border-b border-[#222] pb-1"><span>Hosting Org</span> <span className="text-white truncate max-w-[200px]">{enrichmentResult.asn?.name || 'N/A'}</span></div>
+                                                <div className="flex justify-between border-b border-[#222] pb-1"><span>ASN</span> <span className="text-red-500">{enrichmentResult.asn?.asn || 'N/A'}</span></div>
+                                                <div className="flex justify-between border-b border-[#222] pb-1"><span>Location</span> <span>{enrichmentResult.city}, {enrichmentResult.country_name}</span></div>
+                                                <div className="flex justify-between border-b border-[#222] pb-1"><span>Type</span> <span>{enrichmentResult.threat.is_datacenter ? 'Datacenter' : 'Residential/ISP'}</span></div>
                                             </div>
-                                        ) : <div className="text-gray-500 text-xs italic mb-4">{isLoading ? "Enriching IP..." : "No infrastructure data."}</div>}
+                                        ) : <div className="text-[#888] text-xs italic mb-4">{isLoading ? "Enriching IP..." : "No infrastructure data."}</div>}
                                         
-                                        <div className="bg-gray-900/30 p-2 rounded border border-gray-800">
-                                            <div className="text-[10px] text-gray-500 uppercase font-bold mb-1">Resolved Records</div>
-                                            <div className="text-[10px] font-mono text-gray-400 space-y-1">
+                                        <div className="bg-[#111] p-2 rounded border border-[#222]">
+                                            <div className="text-[10px] text-[#888] uppercase font-bold mb-1">Resolved Records</div>
+                                            <div className="text-[10px] font-mono text-[#AAA] space-y-1">
                                                 {dnsResults.google?.slice(0, 5).map((r, i) => (
                                                     <div key={i} className="flex gap-2">
-                                                        <span className={`w-8 font-bold ${r.type === 'A' ? 'text-blue-400' : r.type === 'MX' ? 'text-orange-400' : 'text-gray-500'}`}>{r.type}</span>
+                                                        <span className={`w-8 font-bold ${r.type === 'A' ? 'text-red-400' : r.type === 'MX' ? 'text-white' : 'text-[#888]'}`}>{r.type}</span>
                                                         <span className="break-all">{r.data}</span>
                                                     </div>
                                                 ))}
@@ -919,23 +919,23 @@ export const NetworkToolsView: React.FC = () => {
                                     </div>
 
                                     {/* Deep Intelligence (Shodan & IPData) */}
-                                    <div className="bg-black/40 border border-gray-800 rounded-lg p-5">
-                                        <h3 className="text-sm font-bold text-orange-400 uppercase mb-4 flex items-center gap-2">
+                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                                        <h3 className="text-sm font-bold text-white uppercase mb-4 flex items-center gap-2">
                                             <Zap size={16}/> Deep Intelligence (Shodan & IPData)
                                         </h3>
                                         {enrichmentResult ? (
                                             <div className="space-y-4">
                                                 {/* IPData Scores */}
                                                 <div className="grid grid-cols-2 gap-2 text-xs">
-                                                    <div className="bg-gray-900/50 p-2 rounded border border-gray-800">
-                                                        <div className="text-[10px] text-gray-500 uppercase">Threat Score</div>
-                                                        <div className={`font-mono font-bold ${enrichmentResult.threat.scores?.threat_score && enrichmentResult.threat.scores.threat_score > 50 ? 'text-red-400' : 'text-green-400'}`}>
+                                                    <div className="bg-[#111] p-2 rounded border border-[#222]">
+                                                        <div className="text-[10px] text-[#888] uppercase">Threat Score</div>
+                                                        <div className={`font-mono font-bold ${enrichmentResult.threat.scores?.threat_score && enrichmentResult.threat.scores.threat_score > 50 ? 'text-red-400' : 'text-white'}`}>
                                                             {enrichmentResult.threat.scores?.threat_score ?? 0} / 100
                                                         </div>
                                                     </div>
-                                                    <div className="bg-gray-900/50 p-2 rounded border border-gray-800">
-                                                        <div className="text-[10px] text-gray-500 uppercase">Trust Score</div>
-                                                        <div className="font-mono font-bold text-blue-400">
+                                                    <div className="bg-[#111] p-2 rounded border border-[#222]">
+                                                        <div className="text-[10px] text-[#888] uppercase">Trust Score</div>
+                                                        <div className="font-mono font-bold text-red-400">
                                                             {enrichmentResult.threat.scores?.trust_score ?? 0} / 100
                                                         </div>
                                                     </div>
@@ -944,17 +944,17 @@ export const NetworkToolsView: React.FC = () => {
                                                 {/* Shodan Data */}
                                                 {enrichmentResult.shodan ? (
                                                     <div className="space-y-2">
-                                                        <div className="text-[10px] text-gray-500 uppercase font-bold border-b border-gray-800 pb-1">Shodan Exposure</div>
+                                                        <div className="text-[10px] text-[#888] uppercase font-bold border-b border-[#222] pb-1">Shodan Exposure</div>
                                                         
                                                         {enrichmentResult.shodan.ports.length > 0 ? (
                                                             <div className="flex flex-wrap gap-1">
                                                                 {enrichmentResult.shodan.ports.map(p => (
-                                                                    <span key={p} className="text-[10px] bg-gray-800 text-gray-300 px-1.5 py-0.5 rounded border border-gray-700 font-mono">
+                                                                    <span key={p} className="text-[10px] bg-[#151515] text-neutral-300 px-1.5 py-0.5 rounded border border-[#333] font-mono">
                                                                         {p}
                                                                     </span>
                                                                 ))}
                                                             </div>
-                                                        ) : <span className="text-xs text-gray-500 italic">No open ports detected.</span>}
+                                                        ) : <span className="text-xs text-[#888] italic">No open ports detected.</span>}
 
                                                         {enrichmentResult.shodan.vulns.length > 0 && (
                                                             <div className="mt-2">
@@ -972,57 +972,57 @@ export const NetworkToolsView: React.FC = () => {
                                                         {enrichmentResult.shodan.tags && enrichmentResult.shodan.tags.length > 0 && (
                                                             <div className="mt-2 flex flex-wrap gap-1">
                                                                  {enrichmentResult.shodan.tags.map(t => (
-                                                                     <span key={t} className="text-[10px] bg-blue-900/20 text-blue-300 px-1.5 py-0.5 rounded border border-blue-500/30">
+                                                                     <span key={t} className="text-[10px] bg-[#111] text-red-300 px-1.5 py-0.5 rounded border border-red-500/30">
                                                                          {t}
                                                                      </span>
                                                                  ))}
                                                             </div>
                                                         )}
                                                     </div>
-                                                ) : <div className="text-xs text-gray-500 italic">No Shodan data available for this IP.</div>}
+                                                ) : <div className="text-xs text-[#888] italic">No Shodan data available for this IP.</div>}
                                             </div>
-                                        ) : <div className="text-gray-500 text-xs italic">{isLoading ? "Fetching intelligence..." : "No deep intel available."}</div>}
+                                        ) : <div className="text-[#888] text-xs italic">{isLoading ? "Fetching intelligence..." : "No deep intel available."}</div>}
                                     </div>
 
                                     {/* HTTP Security */}
-                                    <div className="bg-black/40 border border-gray-800 rounded-lg p-5">
-                                        <h3 className="text-sm font-bold text-green-400 uppercase mb-4 flex items-center gap-2">
+                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                                        <h3 className="text-sm font-bold text-white uppercase mb-4 flex items-center gap-2">
                                             <Lock size={16}/> Web Security & Headers
                                         </h3>
                                         {httpResult ? (
-                                            <div className="space-y-2 text-xs font-mono text-gray-300">
-                                                <div className="flex justify-between border-b border-gray-800 pb-1"><span>Server</span> <span className="text-white">{httpResult.serverInfo.server || 'Unknown'}</span></div>
-                                                <div className="flex justify-between border-b border-gray-800 pb-1"><span>Status</span> <span className={httpResult.status === 200 ? 'text-green-400' : 'text-yellow-400'}>{httpResult.status} {httpResult.statusText}</span></div>
+                                            <div className="space-y-2 text-xs font-mono text-neutral-300">
+                                                <div className="flex justify-between border-b border-[#222] pb-1"><span>Server</span> <span className="text-white">{httpResult.serverInfo.server || 'Unknown'}</span></div>
+                                                <div className="flex justify-between border-b border-[#222] pb-1"><span>Status</span> <span className={httpResult.status === 200 ? 'text-white' : 'text-white'}>{httpResult.status} {httpResult.statusText}</span></div>
                                                 
                                                 <div className="mt-4">
-                                                    <div className="text-gray-500 mb-2 uppercase font-bold text-[10px]">Response Headers</div>
-                                                    <div className="max-h-32 overflow-y-auto custom-scrollbar bg-black p-2 rounded border border-gray-800 space-y-1">
+                                                    <div className="text-[#888] mb-2 uppercase font-bold text-[10px]">Response Headers</div>
+                                                    <div className="max-h-32 overflow-y-auto custom-scrollbar bg-black p-2 rounded border border-[#222] space-y-1">
                                                         {Object.entries(httpResult.headers).map(([k, v], i) => (
                                                             <div key={i} className="flex gap-2">
-                                                                <span className="text-blue-400 w-1/3 truncate" title={k}>{k}:</span>
-                                                                <span className="text-gray-400 break-all w-2/3">{v}</span>
+                                                                <span className="text-red-400 w-1/3 truncate" title={k}>{k}:</span>
+                                                                <span className="text-[#AAA] break-all w-2/3">{v}</span>
                                                             </div>
                                                         ))}
                                                     </div>
                                                 </div>
                                             </div>
-                                        ) : <div className="text-gray-500 text-xs italic">{isLoading ? "Analyzing headers..." : "HTTP probe failed or not applicable."}</div>}
+                                        ) : <div className="text-[#888] text-xs italic">{isLoading ? "Analyzing headers..." : "HTTP probe failed or not applicable."}</div>}
                                     </div>
 
                                     {/* AlienVault OTX Intelligence */}
-                                    <div className="bg-black/40 border border-gray-800 rounded-lg p-5">
-                                        <h3 className="text-sm font-bold text-cyan-400 uppercase mb-4 flex items-center gap-2">
+                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                                        <h3 className="text-sm font-bold text-red-400 uppercase mb-4 flex items-center gap-2">
                                             <Radar size={16}/> AlienVault OTX Intelligence
                                         </h3>
                                         {otxResult ? (
                                             <div className="space-y-3">
-                                                <div className="flex justify-between items-center p-2 rounded bg-gray-900/30 border border-gray-800">
-                                                    <span className="text-xs text-gray-400 font-mono">Pulse Count</span>
+                                                <div className="flex justify-between items-center p-2 rounded bg-[#111] border border-[#222]">
+                                                    <span className="text-xs text-[#AAA] font-mono">Pulse Count</span>
                                                     <span className="text-white font-bold">{otxResult.pulse_count}</span>
                                                 </div>
                                                 {otxResult.malware_families.length > 0 && (
                                                     <div>
-                                                        <div className="text-[10px] text-gray-500 uppercase font-bold mb-1">Malware Families</div>
+                                                        <div className="text-[10px] text-[#888] uppercase font-bold mb-1">Malware Families</div>
                                                         <div className="flex flex-wrap gap-1">
                                                             {otxResult.malware_families.map((m, i) => (
                                                                 <span key={i} className="text-[10px] bg-red-900/20 text-red-300 px-1.5 py-0.5 rounded border border-red-500/20">{m}</span>
@@ -1032,53 +1032,53 @@ export const NetworkToolsView: React.FC = () => {
                                                 )}
                                                 {otxResult.tags.length > 0 && (
                                                     <div>
-                                                        <div className="text-[10px] text-gray-500 uppercase font-bold mb-1">Tags</div>
+                                                        <div className="text-[10px] text-[#888] uppercase font-bold mb-1">Tags</div>
                                                         <div className="flex flex-wrap gap-1">
                                                             {otxResult.tags.slice(0, 10).map((t, i) => (
-                                                                <span key={i} className="text-[10px] bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded border border-gray-700">{t}</span>
+                                                                <span key={i} className="text-[10px] bg-[#151515] text-[#AAA] px-1.5 py-0.5 rounded border border-[#333]">{t}</span>
                                                             ))}
-                                                            {otxResult.tags.length > 10 && <span className="text-[9px] text-gray-600">+{otxResult.tags.length - 10}</span>}
+                                                            {otxResult.tags.length > 10 && <span className="text-[9px] text-neutral-600">+{otxResult.tags.length - 10}</span>}
                                                         </div>
                                                     </div>
                                                 )}
                                             </div>
                                         ) : (
-                                            <div className="text-gray-500 text-xs italic text-center p-4">
+                                            <div className="text-[#888] text-xs italic text-center p-4">
                                                 {isLoading ? "Querying OTX..." : "No OTX data found."}
                                             </div>
                                         )}
                                     </div>
 
                                     {/* Threat Indicators */}
-                                    <div className="bg-black/40 border border-gray-800 rounded-lg p-5">
+                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
                                         <h3 className="text-sm font-bold text-red-400 uppercase mb-4 flex items-center gap-2">
                                             <ShieldAlert size={16}/> Threat Indicators
                                         </h3>
-                                        <div className="space-y-2 text-xs font-mono text-gray-300 max-h-48 overflow-y-auto custom-scrollbar">
+                                        <div className="space-y-2 text-xs font-mono text-neutral-300 max-h-48 overflow-y-auto custom-scrollbar">
                                             {securityResults.length > 0 ? securityResults.map((s, i) => (
-                                                <div key={i} className="flex justify-between items-center p-1.5 rounded bg-gray-900/30 border border-gray-800">
+                                                <div key={i} className="flex justify-between items-center p-1.5 rounded bg-[#111] border border-[#222]">
                                                     <div className="flex flex-col">
-                                                        <span className="text-gray-400">{s.provider}</span>
-                                                        {s.details && <span className="text-[9px] text-gray-600">{s.details}</span>}
+                                                        <span className="text-[#AAA]">{s.provider}</span>
+                                                        {s.details && <span className="text-[9px] text-neutral-600">{s.details}</span>}
                                                     </div>
-                                                    <span className={`font-bold ${s.status === 'BLOCKED' ? 'text-red-400' : 'text-green-400'}`}>{s.status}</span>
+                                                    <span className={`font-bold ${s.status === 'BLOCKED' ? 'text-red-400' : 'text-white'}`}>{s.status}</span>
                                                 </div>
-                                            )) : <span className="text-gray-500 italic">{isLoading ? "Checking threat feeds..." : "No threat data available."}</span>}
+                                            )) : <span className="text-[#888] italic">{isLoading ? "Checking threat feeds..." : "No threat data available."}</span>}
                                             
                                             {rblStatus && (
-                                                <div className="flex justify-between items-center p-1.5 rounded bg-gray-900/30 border border-gray-800">
-                                                    <span className="text-gray-400">RBL Status</span>
-                                                    <span className={`font-bold ${rblStatus.status === 'LISTED' ? 'text-red-400' : 'text-green-400'}`}>{rblStatus.status}</span>
+                                                <div className="flex justify-between items-center p-1.5 rounded bg-[#111] border border-[#222]">
+                                                    <span className="text-[#AAA]">RBL Status</span>
+                                                    <span className={`font-bold ${rblStatus.status === 'LISTED' ? 'text-red-400' : 'text-white'}`}>{rblStatus.status}</span>
                                                 </div>
                                             )}
                                         </div>
                                         {crtResults.length > 0 && (
-                                            <div className="mt-4 pt-4 border-t border-gray-800">
-                                                <div className="text-[10px] text-gray-500 uppercase font-bold mb-2">Latest SSL Certificate</div>
-                                                <div className="text-xs font-mono bg-gray-900/30 p-2 rounded border border-gray-800">
+                                            <div className="mt-4 pt-4 border-t border-[#222]">
+                                                <div className="text-[10px] text-[#888] uppercase font-bold mb-2">Latest SSL Certificate</div>
+                                                <div className="text-xs font-mono bg-[#111] p-2 rounded border border-[#222]">
                                                     <div className="text-white truncate" title={crtResults[0].common_name}>{crtResults[0].common_name}</div>
-                                                    <div className="text-gray-500">Issued by: {crtResults[0].issuer_name.split(',')[0]}</div>
-                                                    <div className="text-gray-500">Valid until: {new Date(crtResults[0].not_after).toLocaleDateString()}</div>
+                                                    <div className="text-[#888]">Issued by: {crtResults[0].issuer_name.split(',')[0]}</div>
+                                                    <div className="text-[#888]">Valid until: {new Date(crtResults[0].not_after).toLocaleDateString()}</div>
                                                 </div>
                                             </div>
                                         )}
@@ -1087,10 +1087,10 @@ export const NetworkToolsView: React.FC = () => {
                                 
                                 {riskAnalysis && (
                                 <div className="flex justify-center pt-4 gap-2">
-                                    <button onClick={handleExportReport} className="text-xs text-gray-400 hover:text-white flex items-center gap-2 border border-gray-700 hover:border-gray-500 px-4 py-2 rounded-full transition-colors">
+                                    <button onClick={handleExportReport} className="text-xs text-[#AAA] hover:text-white flex items-center gap-2 border border-[#333] hover:border-neutral-500 px-4 py-2 rounded-full transition-colors">
                                         <Download size={14}/> EXPORT TEXT REPORT
                                     </button>
-                                    <button onClick={handleExportPdf} className="text-xs text-gray-400 hover:text-white flex items-center gap-2 border border-gray-700 hover:border-gray-500 px-4 py-2 rounded-full transition-colors">
+                                    <button onClick={handleExportPdf} className="text-xs text-[#AAA] hover:text-white flex items-center gap-2 border border-[#333] hover:border-neutral-500 px-4 py-2 rounded-full transition-colors">
                                         <File size={14}/> EXPORT PDF
                                     </button>
                                 </div>
@@ -1103,50 +1103,50 @@ export const NetworkToolsView: React.FC = () => {
                     {activeCategory === 'ASN' && (
                         <div className="space-y-6 animate-fade-in">
                             {asnResult && (
-                                <div className="bg-black/40 border border-gray-800 rounded-lg p-6 relative overflow-hidden">
+                                <div className="bg-black/40 border border-[#222] rounded-lg p-6 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 p-4 opacity-10">
-                                        <Share2 size={120} className="text-indigo-500"/>
+                                        <Share2 size={120} className="text-white"/>
                                     </div>
                                     <div className="relative z-10">
                                         <div className="flex items-center gap-4 mb-6">
-                                            <div className="bg-indigo-900/20 p-3 rounded-lg border border-indigo-500/30 text-indigo-400">
+                                            <div className="bg-[#111] p-3 rounded-lg border border-neutral-500/30 text-red-400">
                                                 <Share2 size={32}/>
                                             </div>
                                             <div>
                                                 <h2 className="text-3xl font-bold text-white font-mono">{asnResult.asn}</h2>
-                                                <div className="text-sm text-gray-400">{asnResult.name}</div>
+                                                <div className="text-sm text-[#AAA]">{asnResult.name}</div>
                                             </div>
                                             {asnResult.country_code && (
                                                 <img src={`https://flagcdn.com/w80/${asnResult.country_code.toLowerCase()}.png`} className="h-8 rounded shadow-sm ml-auto opacity-80" alt={asnResult.country_code}/>
                                             )}
                                         </div>
 
-                                        <p className="text-sm text-gray-400 mb-6 max-w-2xl leading-relaxed">
+                                        <p className="text-sm text-[#AAA] mb-6 max-w-2xl leading-relaxed">
                                             {asnResult.description}
                                         </p>
 
                                         <div className="grid grid-cols-3 gap-4 mb-8">
-                                            <div className="bg-gray-900/50 p-4 rounded border border-gray-800 text-center">
+                                            <div className="bg-[#111] p-4 rounded border border-[#222] text-center">
                                                 <div className="text-2xl font-bold text-white">{asnResult.peers}</div>
-                                                <div className="text-[10px] text-gray-500 uppercase font-bold">IPv4 Peers</div>
+                                                <div className="text-[10px] text-[#888] uppercase font-bold">IPv4 Peers</div>
                                             </div>
-                                            <div className="bg-gray-900/50 p-4 rounded border border-gray-800 text-center">
+                                            <div className="bg-[#111] p-4 rounded border border-[#222] text-center">
                                                 <div className="text-2xl font-bold text-white">{asnResult.upstreams}</div>
-                                                <div className="text-[10px] text-gray-500 uppercase font-bold">Upstreams</div>
+                                                <div className="text-[10px] text-[#888] uppercase font-bold">Upstreams</div>
                                             </div>
-                                            <div className="bg-gray-900/50 p-4 rounded border border-gray-800 text-center">
+                                            <div className="bg-[#111] p-4 rounded border border-[#222] text-center">
                                                 <div className="text-2xl font-bold text-white">{asnResult.downstreams}</div>
-                                                <div className="text-[10px] text-gray-500 uppercase font-bold">Downstreams</div>
+                                                <div className="text-[10px] text-[#888] uppercase font-bold">Downstreams</div>
                                             </div>
                                         </div>
 
                                         <div>
-                                            <h3 className="text-xs font-bold text-indigo-400 uppercase mb-4 border-b border-indigo-900/50 pb-2">Announced Prefixes (Top 50)</h3>
+                                            <h3 className="text-xs font-bold text-red-400 uppercase mb-4 border-b border-neutral-900/50 pb-2">Announced Prefixes (Top 50)</h3>
                                             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-60 overflow-y-auto custom-scrollbar">
                                                 {asnResult.prefixes.map((p: any, i: number) => (
-                                                    <div key={i} className="text-xs font-mono text-gray-400 bg-gray-900/30 p-2 rounded border border-gray-800 flex justify-between items-center group hover:border-indigo-500/30 transition-colors">
+                                                    <div key={i} className="text-xs font-mono text-[#AAA] bg-[#111] p-2 rounded border border-[#222] flex justify-between items-center group hover:border-red-500/30 transition-colors">
                                                         <span>{p.prefix}</span>
-                                                        <span className="text-[9px] text-gray-600 group-hover:text-indigo-400">{p.description}</span>
+                                                        <span className="text-[9px] text-neutral-600 group-hover:text-red-400">{p.description}</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -1157,21 +1157,21 @@ export const NetworkToolsView: React.FC = () => {
 
                             {asnSearchResults.length > 0 && !asnResult && (
                                 <div>
-                                    <h3 className="text-sm font-bold text-gray-400 mb-4">Search Results ({asnSearchResults.length})</h3>
+                                    <h3 className="text-sm font-bold text-[#AAA] mb-4">Search Results ({asnSearchResults.length})</h3>
                                     <div className="grid grid-cols-1 gap-2">
                                         {asnSearchResults.map((res) => (
                                             <button 
                                                 key={res.asn}
                                                 onClick={() => handleSelectAsn(res.asn)}
-                                                className="flex items-center gap-4 bg-gray-900/40 border border-gray-800 p-3 rounded hover:bg-indigo-900/10 hover:border-indigo-500/30 transition-all text-left group"
+                                                className="flex items-center gap-4 bg-[#111] border border-[#222] p-3 rounded hover:bg-red-900/10 hover:border-red-500/30 transition-all text-left group"
                                             >
-                                                <span className="font-mono text-indigo-400 font-bold w-20">{res.asn}</span>
+                                                <span className="font-mono text-red-400 font-bold w-20">{res.asn}</span>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="text-sm font-bold text-white truncate">{res.name}</div>
-                                                    <div className="text-xs text-gray-500 truncate">{res.description_short}</div>
+                                                    <div className="text-xs text-[#888] truncate">{res.description_short}</div>
                                                 </div>
-                                                <span className="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded">{res.country_code}</span>
-                                                <ArrowRight size={16} className="text-gray-600 group-hover:text-indigo-400"/>
+                                                <span className="text-xs text-[#AAA] bg-[#151515] px-2 py-1 rounded">{res.country_code}</span>
+                                                <ArrowRight size={16} className="text-neutral-600 group-hover:text-red-400"/>
                                             </button>
                                         ))}
                                     </div>
@@ -1183,14 +1183,14 @@ export const NetworkToolsView: React.FC = () => {
                     {/* DNS TOOL */}
                     {activeCategory === 'DNS' && (
                         <div className="space-y-4">
-                            <div className="flex bg-gray-900/50 p-1 rounded-lg overflow-x-auto custom-scrollbar gap-1 border border-gray-800">
+                            <div className="flex bg-[#111] p-1 rounded-lg overflow-x-auto custom-scrollbar gap-1 border border-[#222]">
                                 {renderDnsTab('google', 'Google')}
                                 {renderDnsTab('cloudflare', 'Cloudflare')}
                                 {renderDnsTab('quad9', 'Quad9')}
                                 {renderDnsTab('dns0', 'DNS0.eu')}
                                 {renderDnsTab('cira', 'CIRA')}
                             </div>
-                            <div className="bg-black/40 border border-gray-800 rounded-lg p-4 min-h-[300px]">
+                            <div className="bg-black/40 border border-[#222] rounded-lg p-4 min-h-[300px]">
                                 {renderDnsTable()}
                             </div>
                         </div>
@@ -1200,26 +1200,26 @@ export const NetworkToolsView: React.FC = () => {
                     {activeCategory === 'DNS_SEC' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
                             {securityResults.length > 0 ? securityResults.map((res, i) => (
-                                <div key={i} className="bg-gray-900/40 border border-gray-800 p-4 rounded-lg flex items-center justify-between">
+                                <div key={i} className="bg-[#111] border border-[#222] p-4 rounded-lg flex items-center justify-between">
                                     <div>
                                         <div className="text-sm font-bold text-white">{res.provider}</div>
-                                        <div className="text-xs text-gray-500">{res.filterType} Filter</div>
+                                        <div className="text-xs text-[#888]">{res.filterType} Filter</div>
                                     </div>
                                     <div className="text-right">
-                                        <div className={`text-lg font-bold ${res.status === 'BLOCKED' ? 'text-red-500' : res.status === 'FAILED' ? 'text-gray-500' : 'text-green-500'}`}>
+                                        <div className={`text-lg font-bold ${res.status === 'BLOCKED' ? 'text-red-500' : res.status === 'FAILED' ? 'text-[#888]' : 'text-white'}`}>
                                             {res.status}
                                         </div>
-                                        <div className="text-[10px] text-gray-400">{res.details}</div>
+                                        <div className="text-[10px] text-[#AAA]">{res.details}</div>
                                     </div>
                                 </div>
-                            )) : <div className="text-center text-gray-500 p-10 col-span-2">No security checks run.</div>}
+                            )) : <div className="text-center text-[#888] p-10 col-span-2">No security checks run.</div>}
                             
                             {dgaResult && (
-                                <div className="col-span-2 bg-gray-900/40 border border-gray-800 p-4 rounded-lg mt-4">
-                                    <h3 className="text-sm font-bold text-orange-400 uppercase mb-2">Heuristic Analysis</h3>
+                                <div className="col-span-2 bg-[#111] border border-[#222] p-4 rounded-lg mt-4">
+                                    <h3 className="text-sm font-bold text-white uppercase mb-2">Heuristic Analysis</h3>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-400 text-xs">Entropy Score: <span className="text-white font-mono">{dgaResult.entropy.toFixed(2)}</span></span>
-                                        <span className={`text-xs font-bold px-2 py-1 rounded ${dgaResult.isDga ? 'bg-red-900/20 text-red-400 border border-red-500/30' : 'bg-green-900/20 text-green-400 border-green-500/30'}`}>
+                                        <span className="text-[#AAA] text-xs">Entropy Score: <span className="text-white font-mono">{dgaResult.entropy.toFixed(2)}</span></span>
+                                        <span className={`text-xs font-bold px-2 py-1 rounded ${dgaResult.isDga ? 'bg-red-900/20 text-red-400 border border-red-500/30' : 'bg-neutral-900/20 text-white border-neutral-500/30'}`}>
                                             {dgaResult.isDga ? 'POSSIBLE DGA' : 'BENIGN PATTERN'}
                                         </span>
                                     </div>
@@ -1230,24 +1230,24 @@ export const NetworkToolsView: React.FC = () => {
 
                     {/* SUBNET CALC */}
                     {activeCategory === 'SUBNET' && subnetResult && (
-                        <div className="bg-black/40 border border-gray-800 rounded-lg p-6 animate-fade-in">
+                        <div className="bg-black/40 border border-[#222] rounded-lg p-6 animate-fade-in">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-lg font-bold text-white font-mono">{subnetResult.ip}/{subnetResult.cidr}</h3>
-                                <div className="text-xs text-gray-500">
+                                <div className="text-xs text-[#888]">
                                     <span className="text-white font-bold">{subnetResult.usableHosts.toLocaleString()}</span> Usable Hosts
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-xs font-mono text-gray-300">
-                                <div><div className="text-gray-500 mb-1">Netmask</div>{subnetResult.netmask}</div>
-                                <div><div className="text-gray-500 mb-1">Network</div>{subnetResult.networkAddress}</div>
-                                <div><div className="text-gray-500 mb-1">Broadcast</div>{subnetResult.broadcastAddress}</div>
-                                <div><div className="text-gray-500 mb-1">Host Range</div>{subnetResult.firstHost} - {subnetResult.lastHost}</div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-xs font-mono text-neutral-300">
+                                <div><div className="text-[#888] mb-1">Netmask</div>{subnetResult.netmask}</div>
+                                <div><div className="text-[#888] mb-1">Network</div>{subnetResult.networkAddress}</div>
+                                <div><div className="text-[#888] mb-1">Broadcast</div>{subnetResult.broadcastAddress}</div>
+                                <div><div className="text-[#888] mb-1">Host Range</div>{subnetResult.firstHost} - {subnetResult.lastHost}</div>
                             </div>
-                            <div className="mt-6 pt-6 border-t border-gray-800">
-                                <div className="text-gray-500 text-[10px] mb-2 uppercase font-bold">Binary Representation</div>
+                            <div className="mt-6 pt-6 border-t border-[#222]">
+                                <div className="text-[#888] text-[10px] mb-2 uppercase font-bold">Binary Representation</div>
                                 <div className="font-mono text-xs space-y-1">
-                                    <div className="flex gap-4"><span className="w-16 text-gray-600">IP</span> <span className="text-blue-400">{subnetResult.binaryIp}</span></div>
-                                    <div className="flex gap-4"><span className="w-16 text-gray-600">Mask</span> <span className="text-orange-400">{subnetResult.binaryNetmask}</span></div>
+                                    <div className="flex gap-4"><span className="w-16 text-neutral-600">IP</span> <span className="text-red-400">{subnetResult.binaryIp}</span></div>
+                                    <div className="flex gap-4"><span className="w-16 text-neutral-600">Mask</span> <span className="text-white">{subnetResult.binaryNetmask}</span></div>
                                 </div>
                             </div>
                         </div>
@@ -1257,40 +1257,40 @@ export const NetworkToolsView: React.FC = () => {
                     {activeCategory === 'EMAIL' && (
                         <div className="space-y-6 animate-fade-in">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className={`p-4 rounded border bg-black/40 ${spfResult?.valid ? 'border-green-500/30' : 'border-red-500/30'}`}>
-                                    <div className="text-xs font-bold text-gray-500 uppercase mb-2">SPF Record</div>
-                                    <div className={`text-xl font-bold mb-1 ${spfResult?.valid ? 'text-green-400' : 'text-red-400'}`}>{spfResult?.valid ? 'VALID' : 'INVALID/MISSING'}</div>
-                                    <div className="text-[10px] font-mono text-gray-400 break-all">{spfResult?.raw}</div>
+                                <div className={`p-4 rounded border bg-black/40 ${spfResult?.valid ? 'border-neutral-500/30' : 'border-red-500/30'}`}>
+                                    <div className="text-xs font-bold text-[#888] uppercase mb-2">SPF Record</div>
+                                    <div className={`text-xl font-bold mb-1 ${spfResult?.valid ? 'text-white' : 'text-red-400'}`}>{spfResult?.valid ? 'VALID' : 'INVALID/MISSING'}</div>
+                                    <div className="text-[10px] font-mono text-[#AAA] break-all">{spfResult?.raw}</div>
                                 </div>
-                                <div className={`p-4 rounded border bg-black/40 ${dmarcResult?.valid ? 'border-green-500/30' : 'border-red-500/30'}`}>
-                                    <div className="text-xs font-bold text-gray-500 uppercase mb-2">DMARC Policy</div>
-                                    <div className={`text-xl font-bold mb-1 ${dmarcResult?.policy === 'reject' ? 'text-green-400' : dmarcResult?.policy === 'quarantine' ? 'text-yellow-400' : 'text-red-400'}`}>{dmarcResult?.policy?.toUpperCase() || 'NONE'}</div>
-                                    <div className="text-[10px] text-gray-400">Pct: {dmarcResult?.percentage}% | Mail: {dmarcResult?.email}</div>
+                                <div className={`p-4 rounded border bg-black/40 ${dmarcResult?.valid ? 'border-neutral-500/30' : 'border-red-500/30'}`}>
+                                    <div className="text-xs font-bold text-[#888] uppercase mb-2">DMARC Policy</div>
+                                    <div className={`text-xl font-bold mb-1 ${dmarcResult?.policy === 'reject' ? 'text-white' : dmarcResult?.policy === 'quarantine' ? 'text-white' : 'text-red-400'}`}>{dmarcResult?.policy?.toUpperCase() || 'NONE'}</div>
+                                    <div className="text-[10px] text-[#AAA]">Pct: {dmarcResult?.percentage}% | Mail: {dmarcResult?.email}</div>
                                 </div>
-                                <div className="p-4 rounded border bg-black/40 border-gray-800">
-                                    <div className="text-xs font-bold text-gray-500 uppercase mb-2">Mail Servers</div>
+                                <div className="p-4 rounded border bg-black/40 border-[#222]">
+                                    <div className="text-xs font-bold text-[#888] uppercase mb-2">Mail Servers</div>
                                     <div className="text-xl font-bold text-white mb-1">{mxRecords.length} MX Records</div>
-                                    <div className="text-[10px] text-gray-400">Primary: {mxRecords[0]?.name || 'N/A'}</div>
+                                    <div className="text-[10px] text-[#AAA]">Primary: {mxRecords[0]?.name || 'N/A'}</div>
                                 </div>
                             </div>
 
                             {/* Mail Server Reputation */}
                             {mailServerReputation.length > 0 && (
-                                <div className="bg-black/40 border border-gray-800 rounded-lg p-4">
+                                <div className="bg-black/40 border border-[#222] rounded-lg p-4">
                                     <h3 className="text-sm font-bold text-white mb-4 uppercase">MX Infrastructure Reputation</h3>
                                     <div className="space-y-2">
                                         {mailServerReputation.map((server, i) => (
-                                            <div key={i} className="flex justify-between items-center p-2 rounded bg-gray-900/30 border border-gray-800 text-xs">
+                                            <div key={i} className="flex justify-between items-center p-2 rounded bg-[#111] border border-[#222] text-xs">
                                                 <div className="flex items-center gap-3">
                                                     {server.flag && <img src={server.flag} className="w-4 h-3 rounded-sm"/>}
-                                                    <span className="font-mono text-gray-300">{server.hostname}</span>
-                                                    <span className="text-gray-600">({server.ip})</span>
+                                                    <span className="font-mono text-neutral-300">{server.hostname}</span>
+                                                    <span className="text-neutral-600">({server.ip})</span>
                                                 </div>
                                                 <div className="flex gap-2">
-                                                    <span className={`px-2 py-0.5 rounded font-bold ${server.rbl === 'LISTED' ? 'bg-red-900/20 text-red-400' : 'bg-green-900/20 text-green-400'}`}>
+                                                    <span className={`px-2 py-0.5 rounded font-bold ${server.rbl === 'LISTED' ? 'bg-red-900/20 text-red-400' : 'bg-neutral-900/20 text-white'}`}>
                                                         {server.rbl === 'LISTED' ? 'BLACKLISTED' : 'CLEAN RBL'}
                                                     </span>
-                                                    <span className={`px-2 py-0.5 rounded font-bold border ${server.score > 50 ? 'border-red-500/30 text-red-400' : 'border-blue-500/30 text-blue-400'}`}>
+                                                    <span className={`px-2 py-0.5 rounded font-bold border ${server.score > 50 ? 'border-red-500/30 text-red-400' : 'border-red-500/30 text-red-400'}`}>
                                                         Risk: {server.score}
                                                     </span>
                                                 </div>
@@ -1304,27 +1304,27 @@ export const NetworkToolsView: React.FC = () => {
 
                     {/* HTTP HEADERS */}
                     {activeCategory === 'HTTP' && httpResult && (
-                        <div className="bg-black/40 border border-gray-800 rounded-lg p-6 animate-fade-in font-mono text-xs">
-                            <div className="flex justify-between mb-4 pb-4 border-b border-gray-800">
+                        <div className="bg-black/40 border border-[#222] rounded-lg p-6 animate-fade-in font-mono text-xs">
+                            <div className="flex justify-between mb-4 pb-4 border-b border-[#222]">
                                 <div className="text-xl font-bold text-white">{httpResult.status} {httpResult.statusText}</div>
-                                <div className="text-cyber-cyan">{httpResult.serverInfo.server || 'Unknown Server'}</div>
+                                <div className="text-red-500">{httpResult.serverInfo.server || 'Unknown Server'}</div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div>
-                                    <h4 className="text-gray-500 font-bold mb-2 uppercase">Response Headers</h4>
-                                    <div className="space-y-1 text-gray-400">
+                                    <h4 className="text-[#888] font-bold mb-2 uppercase">Response Headers</h4>
+                                    <div className="space-y-1 text-[#AAA]">
                                         {Object.entries(httpResult.headers).map(([k, v], i) => (
-                                            <div key={i} className="break-all"><span className="text-blue-400">{k}:</span> {v}</div>
+                                            <div key={i} className="break-all"><span className="text-red-400">{k}:</span> {v}</div>
                                         ))}
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 className="text-gray-500 font-bold mb-2 uppercase">Security Policy</h4>
+                                    <h4 className="text-[#888] font-bold mb-2 uppercase">Security Policy</h4>
                                     <div className="space-y-2">
                                         {httpResult.security.map((sec, i) => (
-                                            <div key={i} className="flex justify-between items-center p-2 rounded bg-gray-900/50">
-                                                <span className="text-gray-300">{sec.name}</span>
-                                                {sec.valid ? <CheckCircle size={14} className="text-green-500"/> : <XCircle size={14} className="text-red-500"/>}
+                                            <div key={i} className="flex justify-between items-center p-2 rounded bg-[#111]">
+                                                <span className="text-neutral-300">{sec.name}</span>
+                                                {sec.valid ? <CheckCircle size={14} className="text-white"/> : <XCircle size={14} className="text-red-500"/>}
                                             </div>
                                         ))}
                                     </div>
@@ -1341,18 +1341,18 @@ export const NetworkToolsView: React.FC = () => {
 
                     {/* TRACE / PING */}
                     {(activeCategory === 'PING' || activeCategory === 'TRACE') && (
-                        <div className="bg-black border border-gray-800 rounded-lg p-4 font-mono text-xs h-[400px] overflow-y-auto custom-scrollbar text-green-400">
+                        <div className="bg-black border border-[#222] rounded-lg p-4 font-mono text-xs h-[400px] overflow-y-auto custom-scrollbar text-white">
                             {activeCategory === 'PING' && pingResults.map((p, i) => (
                                 <div key={i} className="mb-1">
-                                    <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span> 64 bytes from {p.ip}: seq={p.seq} time={p.time}ms status={p.status}
+                                    <span className="text-[#888]">[{new Date().toLocaleTimeString()}]</span> 64 bytes from {p.ip}: seq={p.seq} time={p.time}ms status={p.status}
                                 </div>
                             ))}
                             {activeCategory === 'TRACE' && traceResults.map((h, i) => (
-                                <div key={i} className="mb-1 flex gap-4 border-b border-gray-800/30 pb-1">
-                                    <span className="w-6 text-gray-500">{h.hop}</span>
-                                    <span className="w-32 text-blue-400">{h.ip}</span>
-                                    <span className="w-16 text-yellow-400">{h.time}ms</span>
-                                    <span className="text-gray-400">{h.details}</span>
+                                <div key={i} className="mb-1 flex gap-4 border-b border-[#222]/30 pb-1">
+                                    <span className="w-6 text-[#888]">{h.hop}</span>
+                                    <span className="w-32 text-red-400">{h.ip}</span>
+                                    <span className="w-16 text-white">{h.time}ms</span>
+                                    <span className="text-[#AAA]">{h.details}</span>
                                 </div>
                             ))}
                             {isPinging && <div className="animate-pulse mt-2">_</div>}
@@ -1361,17 +1361,17 @@ export const NetworkToolsView: React.FC = () => {
 
                     {/* CRT LOGS */}
                     {activeCategory === 'CRT' && (
-                        <div className="bg-black/40 border border-gray-800 rounded-lg overflow-hidden animate-fade-in">
+                        <div className="bg-black/40 border border-[#222] rounded-lg overflow-hidden animate-fade-in">
                             <table className="w-full text-left text-xs font-mono">
-                                <thead className="bg-gray-900 text-gray-500 uppercase font-bold">
+                                <thead className="bg-[#0A0A0A] text-[#888] uppercase font-bold">
                                     <tr><th className="p-3">Logged At</th><th className="p-3">Common Name</th><th className="p-3">Issuer</th></tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-800 text-gray-300">
+                                <tbody className="divide-y divide-neutral-800 text-neutral-300">
                                     {crtResults.map((crt, i) => (
                                         <tr key={i} className="hover:bg-white/5">
                                             <td className="p-3">{new Date(crt.entry_timestamp).toLocaleDateString()}</td>
-                                            <td className="p-3 text-cyber-cyan">{crt.common_name}</td>
-                                            <td className="p-3 text-gray-500">{crt.issuer_name.split(',')[0]}</td>
+                                            <td className="p-3 text-red-500">{crt.common_name}</td>
+                                            <td className="p-3 text-[#888]">{crt.issuer_name.split(',')[0]}</td>
                                         </tr>
                                     ))}
                                 </tbody>

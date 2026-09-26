@@ -516,41 +516,41 @@ ${originalDomain}`;
     return (
         <div className="h-[calc(100vh-70px)] bg-cyber-grid flex flex-col relative">
             {/* Header */}
-            <div className="bg-black/40 border-b border-gray-800 p-4 shrink-0 flex items-center justify-between">
+            <div className="bg-black/40 border-b border-[#222] p-4 shrink-0 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-pink-900/20 rounded-lg border border-pink-500/30 text-pink-400">
+                    <div className="p-2 bg-red-900/20 rounded-lg border border-red-500/30 text-red-400">
                         <Shield size={20}/>
                     </div>
                     <div>
                         <h2 className="text-lg font-bold text-white font-cyber flex items-center gap-2">
-                            BRAND <span className="text-pink-500">INTEL</span>
+                            BRAND <span className="text-red-500">INTEL</span>
                         </h2>
-                        <p className="text-xs text-gray-500 font-mono">Impersonation & Reputation Monitor</p>
+                        <p className="text-xs text-[#888] font-mono">Impersonation & Reputation Monitor</p>
                     </div>
                 </div>
 
-                <div className="flex bg-gray-900 rounded-lg p-1 border border-gray-800 gap-1">
+                <div className="flex bg-[#0A0A0A] rounded-lg p-1 border border-[#1C1C1C] gap-1">
                     <button 
                         onClick={() => setActiveTab('LIVE')}
-                        className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'LIVE' ? 'bg-pink-900/40 text-white shadow-md border border-pink-500/30' : 'text-gray-500 hover:text-gray-300'}`}
+                        className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'LIVE' ? 'bg-[#1a0f0f] text-white shadow-md border border-red-500/30' : 'text-[#888] hover:text-white'}`}
                     >
                         <Radio size={14} className={activeTab === 'LIVE' ? 'animate-pulse' : ''}/> LIVE FEED
                     </button>
                     <button 
                         onClick={() => setActiveTab('SCANNER')}
-                        className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'SCANNER' ? 'bg-blue-900/40 text-white shadow-md border border-blue-500/30' : 'text-gray-500 hover:text-gray-300'}`}
+                        className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'SCANNER' ? 'bg-[#151515] text-white shadow-md border border-[#222]' : 'text-[#888] hover:text-white'}`}
                     >
                         <Search size={14}/> ADVANCED SCAN
                     </button>
                     <button 
                         onClick={() => setActiveTab('REPUTATION')}
-                        className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'REPUTATION' ? 'bg-purple-900/40 text-white shadow-md border border-purple-500/30' : 'text-gray-500 hover:text-gray-300'}`}
+                        className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'REPUTATION' ? 'bg-[#1a0f0f] text-white shadow-md border border-red-500/30' : 'text-[#888] hover:text-white'}`}
                     >
                         <Siren size={14}/> REPUTATION
                     </button>
                     <button 
                         onClick={() => setActiveTab('CONFIG')}
-                        className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'CONFIG' ? 'bg-gray-700/40 text-white shadow-md border border-gray-500/30' : 'text-gray-500 hover:text-gray-300'}`}
+                        className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'CONFIG' ? 'bg-[#151515] text-white shadow-md border border-[#222]' : 'text-[#888] hover:text-white'}`}
                     >
                         <Settings size={14}/> CONFIG
                     </button>
@@ -563,49 +563,49 @@ ${originalDomain}`;
                 {activeTab === 'LIVE' && (
                     <div className="h-full flex flex-col gap-4 p-6">
                         <div className="flex justify-between items-center mb-2">
-                            <div className="text-xs text-gray-400">
+                            <div className="text-xs text-[#AAA]">
                                 Monitoring <span className="text-white font-bold">{keywords.length}</span> brand keywords in real-time global SSL stream.
-                                <span className="ml-2 bg-gray-800 px-2 py-0.5 rounded text-[10px] text-gray-500">Phonetic Matching Active</span>
+                                <span className="ml-2 bg-[#151515] px-2 py-0.5 rounded text-[10px] text-[#888]">Phonetic Matching Active</span>
                             </div>
                             <div className="flex gap-2">
-                                <button onClick={() => setIsStreamPaused(!isStreamPaused)} className="p-1.5 bg-gray-800 hover:bg-gray-700 rounded text-gray-300 transition-colors">
+                                <button onClick={() => setIsStreamPaused(!isStreamPaused)} className="p-1.5 bg-[#151515] hover:bg-[#1C1C1C] rounded text-neutral-300 transition-colors">
                                     {isStreamPaused ? <Play size={14}/> : <Pause size={14}/>}
                                 </button>
-                                <button onClick={() => setCertStream([])} className="p-1.5 bg-gray-800 hover:bg-gray-700 rounded text-gray-300 transition-colors">
+                                <button onClick={() => setCertStream([])} className="p-1.5 bg-[#151515] hover:bg-[#1C1C1C] rounded text-neutral-300 transition-colors">
                                     <RefreshCw size={14}/>
                                 </button>
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto custom-scrollbar bg-black/20 border border-gray-800 rounded-lg">
+                        <div className="flex-1 overflow-y-auto custom-scrollbar bg-black/20 border border-[#222] rounded-lg">
                             {certStream.length === 0 ? (
-                                <div className="h-full flex flex-col items-center justify-center text-gray-600 gap-4">
+                                <div className="h-full flex flex-col items-center justify-center text-neutral-600 gap-4">
                                     <Radio size={48} className="opacity-20 animate-pulse"/>
                                     <p className="text-xs font-mono">Listening to Certificate Transparency Logs...</p>
                                 </div>
                             ) : (
-                                <div className="divide-y divide-gray-800">
+                                <div className="divide-y divide-neutral-800">
                                     {certStream.map(cert => (
                                         <div key={cert.id} className="p-4 hover:bg-white/5 transition-colors animate-fade-in-up group">
                                             <div className="flex justify-between items-start mb-2">
                                                 <div className="flex items-center gap-3">
-                                                    <AlertTriangle size={16} className="text-pink-500"/>
+                                                    <AlertTriangle size={16} className="text-red-500"/>
                                                     <span className="text-sm font-bold text-white font-mono truncate max-w-md">{cert.domain}</span>
                                                 </div>
-                                                <span className="text-[10px] text-gray-500 font-mono">{new Date(cert.timestamp).toLocaleTimeString()}</span>
+                                                <span className="text-[10px] text-[#888] font-mono">{new Date(cert.timestamp).toLocaleTimeString()}</span>
                                             </div>
                                             <div className="flex items-center justify-between text-xs">
-                                                <div className="flex gap-4 text-gray-400">
-                                                    <span>Match: <span className="text-pink-400 font-bold">{cert.keywordMatched}</span></span>
-                                                    <span>Issuer: <span className="text-gray-300">{cert.issuer}</span></span>
+                                                <div className="flex gap-4 text-[#AAA]">
+                                                    <span>Match: <span className="text-red-400 font-bold">{cert.keywordMatched}</span></span>
+                                                    <span>Issuer: <span className="text-neutral-300">{cert.issuer}</span></span>
                                                 </div>
                                                 <div className="flex gap-2">
-                                                    <span className="px-2 py-0.5 bg-gray-800 rounded text-[10px] border border-gray-700">Score: {cert.score}</span>
+                                                    <span className="px-2 py-0.5 bg-[#151515] rounded text-[10px] border border-[#333]">Score: {cert.score}</span>
                                                     <a 
                                                         href={`https://${cert.domain}`} 
                                                         target="_blank" 
                                                         rel="noopener noreferrer" 
-                                                        className="px-2 py-0.5 bg-blue-900/20 text-blue-400 border border-blue-500/30 rounded text-[10px] hover:bg-blue-900/40 flex items-center gap-1"
+                                                        className="px-2 py-0.5 bg-[#111] text-[#AAA] border border-neutral-500/30 rounded text-[10px] hover:bg-[#111] flex items-center gap-1"
                                                     >
                                                         VISIT <ExternalLink size={8}/>
                                                     </a>
@@ -622,34 +622,34 @@ ${originalDomain}`;
                 {/* SCANNER TAB */}
                 {activeTab === 'SCANNER' && (
                     <div className="h-full flex flex-col gap-6 p-6 relative">
-                        <div className="bg-black/40 border border-gray-800 rounded-lg p-6 flex flex-col gap-4">
+                        <div className="bg-black/40 border border-[#222] rounded-lg p-6 flex flex-col gap-4">
                             <div className="flex justify-between items-center">
                                 <h3 className="text-sm font-bold text-white uppercase flex items-center gap-2">
-                                    <Search size={16} className="text-blue-400"/> Domain Typosquatting Scanner
+                                    <Search size={16} className="text-[#AAA]"/> Domain Typosquatting Scanner
                                 </h3>
                                 
                                 {/* Result Search & Filter */}
                                 {scanResults.length > 0 && (
                                     <div className="relative group w-64">
-                                        <Search className="absolute left-3 top-2 text-gray-500 w-3.5 h-3.5" />
+                                        <Search className="absolute left-3 top-2 text-[#888] w-3.5 h-3.5" />
                                         <input 
                                             type="text" 
                                             placeholder="Filter results..." 
-                                            className="w-full bg-gray-900 border border-gray-700 text-xs rounded-full pl-9 pr-4 py-1.5 focus:outline-none focus:border-blue-500 text-white transition-colors"
+                                            className="w-full bg-[#0A0A0A] border border-[#333] text-xs rounded-full pl-9 pr-4 py-1.5 focus:outline-none focus:border-neutral-500 text-white transition-colors"
                                             value={searchQuery}
                                             onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(true); }}
                                             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                                         />
                                         {showSuggestions && suggestions.length > 0 && (
-                                            <div className="absolute top-full left-0 right-0 mt-2 bg-gray-900 border border-gray-700 rounded-lg shadow-xl overflow-hidden z-20">
+                                            <div className="absolute top-full left-0 right-0 mt-2 bg-[#0A0A0A] border border-[#333] rounded-lg shadow-xl overflow-hidden z-20">
                                                 {suggestions.map((s, i) => (
                                                     <button 
                                                         key={i}
-                                                        className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:bg-blue-900/20 hover:text-blue-400 flex justify-between items-center"
+                                                        className="w-full text-left px-4 py-2 text-xs text-neutral-300 hover:bg-[#111] hover:text-[#AAA] flex justify-between items-center"
                                                         onClick={() => setSearchQuery(s.label || '')}
                                                     >
                                                         <span>{s.label}</span>
-                                                        <span className="text-[9px] text-gray-500 uppercase">{s.type}</span>
+                                                        <span className="text-[9px] text-[#888] uppercase">{s.type}</span>
                                                     </button>
                                                 ))}
                                             </div>
@@ -661,7 +661,7 @@ ${originalDomain}`;
                             <div className="flex gap-2">
                                 <input 
                                     type="text" 
-                                    className="flex-1 bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:border-blue-500 focus:outline-none font-mono"
+                                    className="flex-1 bg-[#111] border border-[#333] rounded-lg px-4 py-2 text-sm text-white focus:border-neutral-500 focus:outline-none font-mono"
                                     placeholder="Enter official domain (e.g. facebook.com)..."
                                     value={scanTarget}
                                     onChange={(e) => setScanTarget(e.target.value)}
@@ -670,23 +670,23 @@ ${originalDomain}`;
                                 <button 
                                     onClick={handleScan}
                                     disabled={!scanTarget || isScanning}
-                                    className="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs flex items-center gap-2 disabled:opacity-50"
+                                    className="px-6 py-2 bg-neutral-600 hover:bg-neutral-500 text-white font-bold rounded-lg text-xs flex items-center gap-2 disabled:opacity-50"
                                 >
                                     {isScanning ? <RefreshCw className="animate-spin" size={14}/> : <Search size={14}/>} 
                                     {isScanning ? 'SCANNING...' : 'SCAN'}
                                 </button>
                             </div>
                             {isScanning && (
-                                <div className="w-full bg-gray-800 h-1 rounded-full overflow-hidden">
-                                    <div className="h-full bg-blue-500 transition-all duration-300" style={{width: `${scanProgress}%`}}></div>
+                                <div className="w-full bg-[#151515] h-1 rounded-full overflow-hidden">
+                                    <div className="h-full bg-neutral-500 transition-all duration-300" style={{width: `${scanProgress}%`}}></div>
                                 </div>
                             )}
                         </div>
 
                         {/* Updated Grid Layout */}
-                        <div className="flex-1 overflow-y-auto custom-scrollbar bg-black/20 border border-gray-800 rounded-lg p-4">
+                        <div className="flex-1 overflow-y-auto custom-scrollbar bg-black/20 border border-[#222] rounded-lg p-4">
                             {scanResults.length === 0 && !isScanning ? (
-                                <div className="flex flex-col items-center justify-center text-gray-500 h-full gap-4">
+                                <div className="flex flex-col items-center justify-center text-[#888] h-full gap-4">
                                     <Globe size={48} className="opacity-20"/>
                                     <p className="text-xs font-mono">No active typosquats detected yet. Run a scan to generate permutations.</p>
                                 </div>
@@ -698,24 +698,24 @@ ${originalDomain}`;
                                             return (
                                                 <div 
                                                     key={i} 
-                                                    className="bg-gray-900/40 border border-gray-800 rounded-lg overflow-hidden group hover:border-blue-500/30 transition-colors animate-fade-in flex flex-col h-auto cursor-pointer"
+                                                    className="bg-[#111] border border-[#222] rounded-lg overflow-hidden group hover:border-neutral-500/30 transition-colors animate-fade-in flex flex-col h-auto cursor-pointer"
                                                     onClick={() => handleInspect(res)}
                                                 >
                                                     <div className="h-32 bg-black relative overflow-hidden shrink-0">
                                                         {res.screenshotUrl ? (
                                                             <img src={res.screenshotUrl} alt="Preview" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity"/>
                                                         ) : (
-                                                            <div className="flex items-center justify-center h-full text-gray-700 bg-gray-900"><Eye size={24}/></div>
+                                                            <div className="flex items-center justify-center h-full text-neutral-700 bg-[#0A0A0A]"><Eye size={24}/></div>
                                                         )}
                                                         <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
                                                             <span className="bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-lg">ACTIVE</span>
                                                             {res.logoMatchScore !== undefined && res.logoMatchScore > 70 && (
-                                                                <span className="bg-purple-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-lg flex items-center gap-1 animate-pulse">
+                                                                <span className="bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-lg flex items-center gap-1 animate-pulse">
                                                                     <Camera size={8}/> {res.logoMatchScore}% LOGO
                                                                 </span>
                                                             )}
                                                             {res.hasMx && (
-                                                                <span className="bg-orange-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-lg flex items-center gap-1" title="Active Mail Server">
+                                                                <span className="bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-lg flex items-center gap-1" title="Active Mail Server">
                                                                     <Mail size={8}/> MX
                                                                 </span>
                                                             )}
@@ -724,9 +724,9 @@ ${originalDomain}`;
                                                     <div className="p-3 flex-1 flex flex-col">
                                                         <div className="flex justify-between items-start mb-2">
                                                             <div className="font-mono font-bold text-white text-sm truncate w-2/3" title={res.variation}>{res.variation}</div>
-                                                            <span className="text-[9px] text-gray-500 bg-gray-800 px-1.5 py-0.5 rounded border border-gray-700 border-dashed">{res.type}</span>
+                                                            <span className="text-[9px] text-[#888] bg-[#151515] px-1.5 py-0.5 rounded border border-[#333] border-dashed">{res.type}</span>
                                                         </div>
-                                                        <div className="grid grid-cols-2 gap-2 text-[10px] text-gray-400 mb-3">
+                                                        <div className="grid grid-cols-2 gap-2 text-[10px] text-[#AAA] mb-3">
                                                             <div className="flex items-center gap-1 truncate" title={res.country || 'Unknown'}>
                                                                 <Globe size={10}/> {res.country || 'Unknown'}
                                                             </div>
@@ -735,12 +735,12 @@ ${originalDomain}`;
                                                             </div>
                                                         </div>
                                                         
-                                                        <div className="mt-auto pt-2 border-t border-gray-800/50 flex justify-between items-center">
+                                                        <div className="mt-auto pt-2 border-t border-[#222]/50 flex justify-between items-center">
                                                             <div className="flex items-center gap-1" title="Similarity Risk Score">
-                                                                <AlertTriangle size={10} className={riskScore > 80 ? 'text-red-500' : 'text-yellow-500'}/>
-                                                                <span className={`text-[10px] font-bold ${riskScore > 80 ? 'text-red-400' : 'text-yellow-400'}`}>{riskScore}% Risk</span>
+                                                                <AlertTriangle size={10} className={riskScore > 80 ? 'text-red-500' : 'text-red-500'}/>
+                                                                <span className={`text-[10px] font-bold ${riskScore > 80 ? 'text-red-400' : 'text-red-400'}`}>{riskScore}% Risk</span>
                                                             </div>
-                                                            <span className="text-[10px] text-blue-400 hover:text-white flex items-center gap-1">
+                                                            <span className="text-[10px] text-[#AAA] hover:text-white flex items-center gap-1">
                                                                 Investigate <ExternalLink size={8}/>
                                                             </span>
                                                         </div>
@@ -754,7 +754,7 @@ ${originalDomain}`;
                                         <div className="flex justify-center py-4">
                                             <button 
                                                 onClick={() => setResultLimit(prev => prev + 20)}
-                                                className="px-6 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-full text-xs font-bold flex items-center gap-2 transition-colors border border-gray-700"
+                                                className="px-6 py-2 bg-[#151515] hover:bg-[#1C1C1C] text-neutral-300 rounded-full text-xs font-bold flex items-center gap-2 transition-colors border border-[#333]"
                                             >
                                                 <ArrowDown size={14}/> LOAD MORE ({filteredScanResults.length - resultLimit} remaining)
                                             </button>
@@ -767,8 +767,8 @@ ${originalDomain}`;
                         {/* Investigation Modal */}
                         {selectedTyposquat && (
                             <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in" onClick={() => setSelectedTyposquat(null)}>
-                                <div className="bg-gray-900 border border-gray-700 w-full max-w-4xl rounded-xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
-                                    <div className="p-4 bg-black/40 border-b border-gray-800 flex justify-between items-start">
+                                <div className="bg-[#0A0A0A] border border-[#333] w-full max-w-4xl rounded-xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+                                    <div className="p-4 bg-black/40 border-b border-[#222] flex justify-between items-start">
                                         <div className="flex items-start gap-4">
                                             <div className="p-3 bg-red-900/20 border border-red-500/30 rounded text-red-500">
                                                 <ShieldAlert size={32}/>
@@ -777,24 +777,24 @@ ${originalDomain}`;
                                                 <h3 className="text-xl font-bold text-white font-mono">{selectedTyposquat.variation}</h3>
                                                 <div className="flex gap-2 mt-1">
                                                     <span className="text-xs bg-red-600 text-white px-2 py-0.5 rounded font-bold uppercase">Active Threat</span>
-                                                    <span className="text-xs bg-gray-800 text-gray-300 px-2 py-0.5 rounded border border-gray-700">Type: {selectedTyposquat.type}</span>
-                                                    {selectedTyposquat.hasMx && <span className="text-xs bg-orange-900/40 text-orange-400 px-2 py-0.5 rounded border border-orange-500/30 flex items-center gap-1"><Mail size={10}/> Mail Server Active</span>}
+                                                    <span className="text-xs bg-[#151515] text-neutral-300 px-2 py-0.5 rounded border border-[#333]">Type: {selectedTyposquat.type}</span>
+                                                    {selectedTyposquat.hasMx && <span className="text-xs bg-red-900/40 text-red-400 px-2 py-0.5 rounded border border-red-500/30 flex items-center gap-1"><Mail size={10}/> Mail Server Active</span>}
                                                 </div>
                                             </div>
                                         </div>
-                                        <button onClick={() => setSelectedTyposquat(null)} className="text-gray-500 hover:text-white"><X size={20}/></button>
+                                        <button onClick={() => setSelectedTyposquat(null)} className="text-[#888] hover:text-white"><X size={20}/></button>
                                     </div>
 
-                                    <div className="flex bg-gray-900 border-b border-gray-800 px-4">
+                                    <div className="flex bg-[#0A0A0A] border-b border-[#222] px-4">
                                         <button 
                                             onClick={() => setInvestigationTab('INTEL')}
-                                            className={`py-3 px-4 text-xs font-bold border-b-2 transition-colors flex items-center gap-2 ${investigationTab === 'INTEL' ? 'border-blue-500 text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
+                                            className={`py-3 px-4 text-xs font-bold border-b-2 transition-colors flex items-center gap-2 ${investigationTab === 'INTEL' ? 'border-neutral-500 text-white' : 'border-transparent text-[#888] hover:text-neutral-300'}`}
                                         >
                                             <FileText size={14}/> INTELLIGENCE
                                         </button>
                                         <button 
                                             onClick={() => setInvestigationTab('TAKEDOWN')}
-                                            className={`py-3 px-4 text-xs font-bold border-b-2 transition-colors flex items-center gap-2 ${investigationTab === 'TAKEDOWN' ? 'border-red-500 text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
+                                            className={`py-3 px-4 text-xs font-bold border-b-2 transition-colors flex items-center gap-2 ${investigationTab === 'TAKEDOWN' ? 'border-red-500 text-white' : 'border-transparent text-[#888] hover:text-neutral-300'}`}
                                         >
                                             <Gavel size={14}/> TAKEDOWN
                                         </button>
@@ -802,8 +802,8 @@ ${originalDomain}`;
 
                                     <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-black/20">
                                         {enrichmentLoading ? (
-                                            <div className="flex flex-col items-center justify-center h-48 text-gray-500 gap-2">
-                                                <Loader2 className="animate-spin text-blue-500" size={32}/>
+                                            <div className="flex flex-col items-center justify-center h-48 text-[#888] gap-2">
+                                                <Loader2 className="animate-spin text-[#888]" size={32}/>
                                                 <span className="text-xs font-mono">Gathering WHOIS, Certificate & CERT Data...</span>
                                             </div>
                                         ) : (
@@ -811,61 +811,61 @@ ${originalDomain}`;
                                                 <div className="space-y-6">
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                         {/* Registrar Info */}
-                                                        <div className="bg-gray-900/40 border border-gray-800 rounded-lg p-4">
-                                                            <h4 className="text-sm font-bold text-orange-400 uppercase mb-3 flex items-center gap-2">
+                                                        <div className="bg-[#111] border border-[#222] rounded-lg p-4">
+                                                            <h4 className="text-sm font-bold text-red-400 uppercase mb-3 flex items-center gap-2">
                                                                 <FileText size={16}/> Registrar Information
                                                             </h4>
-                                                            <div className="space-y-2 text-xs font-mono text-gray-300">
-                                                                <div className="flex justify-between border-b border-gray-800 pb-1">
-                                                                    <span className="text-gray-500">Registrar</span>
+                                                            <div className="space-y-2 text-xs font-mono text-neutral-300">
+                                                                <div className="flex justify-between border-b border-[#222] pb-1">
+                                                                    <span className="text-[#888]">Registrar</span>
                                                                     <span className="text-white">{whoisData?.org || 'Unknown'}</span>
                                                                 </div>
-                                                                <div className="flex justify-between border-b border-gray-800 pb-1">
-                                                                    <span className="text-gray-500">Abuse Email</span>
-                                                                    <span className="text-blue-400">{getAbuseEmail()}</span>
+                                                                <div className="flex justify-between border-b border-[#222] pb-1">
+                                                                    <span className="text-[#888]">Abuse Email</span>
+                                                                    <span className="text-[#AAA]">{getAbuseEmail()}</span>
                                                                 </div>
-                                                                <div className="flex justify-between border-b border-gray-800 pb-1">
-                                                                    <span className="text-gray-500">Created On</span>
+                                                                <div className="flex justify-between border-b border-[#222] pb-1">
+                                                                    <span className="text-[#888]">Created On</span>
                                                                     <span className="text-white">{whoisData?.registrationDate || 'Unknown'}</span>
                                                                 </div>
-                                                                <div className="flex justify-between border-b border-gray-800 pb-1">
-                                                                    <span className="text-gray-500">Expires</span>
+                                                                <div className="flex justify-between border-b border-[#222] pb-1">
+                                                                    <span className="text-[#888]">Expires</span>
                                                                     <span className="text-white">
                                                                         {whoisData?.events?.find((e: any) => e.eventAction === 'expiration')?.eventDate ? 
                                                                             new Date(whoisData.events.find((e: any) => e.eventAction === 'expiration').eventDate).toLocaleDateString() : 
                                                                             'Unknown'}
                                                                     </span>
                                                                 </div>
-                                                                <div className="flex justify-between border-b border-gray-800 pb-1">
-                                                                    <span className="text-gray-500">Domain Age</span>
-                                                                    <span className="text-green-400">{getDomainAge()}</span>
+                                                                <div className="flex justify-between border-b border-[#222] pb-1">
+                                                                    <span className="text-[#888]">Domain Age</span>
+                                                                    <span className="text-red-400">{getDomainAge()}</span>
                                                                 </div>
                                                             </div>
                                                         </div>
 
                                                         {/* Technical Info */}
-                                                        <div className="bg-gray-900/40 border border-gray-800 rounded-lg p-4">
-                                                            <h4 className="text-sm font-bold text-blue-400 uppercase mb-3 flex items-center gap-2">
+                                                        <div className="bg-[#111] border border-[#222] rounded-lg p-4">
+                                                            <h4 className="text-sm font-bold text-[#AAA] uppercase mb-3 flex items-center gap-2">
                                                                 <Server size={16}/> Technical Details
                                                             </h4>
-                                                            <div className="space-y-2 text-xs font-mono text-gray-300">
-                                                                <div className="flex justify-between border-b border-gray-800 pb-1">
-                                                                    <span className="text-gray-500">IP Address</span>
+                                                            <div className="space-y-2 text-xs font-mono text-neutral-300">
+                                                                <div className="flex justify-between border-b border-[#222] pb-1">
+                                                                    <span className="text-[#888]">IP Address</span>
                                                                     <span className="text-white">{selectedTyposquat.ip || 'N/A'}</span>
                                                                 </div>
-                                                                <div className="flex justify-between border-b border-gray-800 pb-1">
-                                                                    <span className="text-gray-500">Location</span>
+                                                                <div className="flex justify-between border-b border-[#222] pb-1">
+                                                                    <span className="text-[#888]">Location</span>
                                                                     <span className="text-white">{selectedTyposquat.country || 'Unknown'}</span>
                                                                 </div>
-                                                                <div className="flex justify-between border-b border-gray-800 pb-1">
-                                                                    <span className="text-gray-500">Visual Risk</span>
-                                                                    <span className={selectedTyposquat.logoMatchScore && selectedTyposquat.logoMatchScore > 50 ? 'text-red-400' : 'text-green-400'}>
+                                                                <div className="flex justify-between border-b border-[#222] pb-1">
+                                                                    <span className="text-[#888]">Visual Risk</span>
+                                                                    <span className={selectedTyposquat.logoMatchScore && selectedTyposquat.logoMatchScore > 50 ? 'text-red-400' : 'text-red-400'}>
                                                                         {selectedTyposquat.logoMatchScore || 0}% Match
                                                                     </span>
                                                                 </div>
-                                                                <div className="flex justify-between border-b border-gray-800 pb-1">
-                                                                    <span className="text-gray-500">Phonetic Similarity</span>
-                                                                    <span className={selectedTyposquat.phoneticMatch ? 'text-red-400 font-bold' : 'text-gray-500'}>
+                                                                <div className="flex justify-between border-b border-[#222] pb-1">
+                                                                    <span className="text-[#888]">Phonetic Similarity</span>
+                                                                    <span className={selectedTyposquat.phoneticMatch ? 'text-red-400 font-bold' : 'text-[#888]'}>
                                                                         {selectedTyposquat.phoneticMatch ? 'DETECTED' : 'NONE'}
                                                                     </span>
                                                                 </div>
@@ -875,58 +875,58 @@ ${originalDomain}`;
 
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                         {/* Certificate Info */}
-                                                        <div className="bg-gray-900/40 border border-gray-800 rounded-lg p-4">
-                                                            <h4 className="text-sm font-bold text-purple-400 uppercase mb-3 flex items-center gap-2">
+                                                        <div className="bg-[#111] border border-[#222] rounded-lg p-4">
+                                                            <h4 className="text-sm font-bold text-red-400 uppercase mb-3 flex items-center gap-2">
                                                                 <Lock size={16}/> SSL Certificate History
                                                             </h4>
                                                             {crtData.length > 0 ? (
                                                                 <div className="overflow-x-auto">
                                                                     <table className="w-full text-left text-xs font-mono">
-                                                                        <thead className="text-gray-500">
+                                                                        <thead className="text-[#888]">
                                                                             <tr>
                                                                                 <th className="pb-2">Date</th>
                                                                                 <th className="pb-2">Issuer</th>
                                                                                 <th className="pb-2">CN</th>
                                                                             </tr>
                                                                         </thead>
-                                                                        <tbody className="text-gray-300 divide-y divide-gray-800">
+                                                                        <tbody className="text-neutral-300 divide-y divide-neutral-800">
                                                                             {crtData.slice(0, 5).map((crt, i) => (
                                                                                 <tr key={i}>
                                                                                     <td className="py-1">{new Date(crt.entry_timestamp).toLocaleDateString()}</td>
-                                                                                    <td className="py-1 text-purple-300">{crt.issuer_name.split(',')[0]}</td>
+                                                                                    <td className="py-1 text-red-300">{crt.issuer_name.split(',')[0]}</td>
                                                                                     <td className="py-1">{crt.common_name}</td>
                                                                                 </tr>
                                                                             ))}
                                                                         </tbody>
                                                                     </table>
                                                                 </div>
-                                                            ) : <div className="text-gray-500 text-xs italic">No certificate history found.</div>}
+                                                            ) : <div className="text-[#888] text-xs italic">No certificate history found.</div>}
                                                         </div>
 
                                                         {/* CERT Info */}
-                                                        <div className="bg-gray-900/40 border border-gray-800 rounded-lg p-4">
-                                                            <h4 className="text-sm font-bold text-green-400 uppercase mb-3 flex items-center gap-2">
+                                                        <div className="bg-[#111] border border-[#222] rounded-lg p-4">
+                                                            <h4 className="text-sm font-bold text-red-400 uppercase mb-3 flex items-center gap-2">
                                                                 <Flag size={16}/> National CERT / CSIRT
                                                             </h4>
                                                             {certContact ? (
-                                                                <div className="space-y-3 text-xs font-mono text-gray-300">
-                                                                    <div className="bg-green-900/20 p-2 rounded border border-green-500/30 text-center">
-                                                                        <div className="font-bold text-green-400 text-lg mb-1">{certContact.name}</div>
-                                                                        <div className="text-[10px] text-gray-400">{certContact.country}</div>
+                                                                <div className="space-y-3 text-xs font-mono text-neutral-300">
+                                                                    <div className="bg-red-900/20 p-2 rounded border border-red-500/30 text-center">
+                                                                        <div className="font-bold text-red-400 text-lg mb-1">{certContact.name}</div>
+                                                                        <div className="text-[10px] text-[#AAA]">{certContact.country}</div>
                                                                     </div>
                                                                     <div className="space-y-2">
-                                                                        <div className="flex justify-between border-b border-gray-800 pb-1">
-                                                                            <span className="text-gray-500">Email</span>
-                                                                            <span className="text-blue-400 select-all">{certContact.email}</span>
+                                                                        <div className="flex justify-between border-b border-[#222] pb-1">
+                                                                            <span className="text-[#888]">Email</span>
+                                                                            <span className="text-[#AAA] select-all">{certContact.email}</span>
                                                                         </div>
-                                                                        <div className="flex justify-between border-b border-gray-800 pb-1">
-                                                                            <span className="text-gray-500">Website</span>
-                                                                            <a href={certContact.website} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-white truncate max-w-[150px] block">{certContact.website}</a>
+                                                                        <div className="flex justify-between border-b border-[#222] pb-1">
+                                                                            <span className="text-[#888]">Website</span>
+                                                                            <a href={certContact.website} target="_blank" rel="noopener noreferrer" className="text-[#AAA] hover:text-white truncate max-w-[150px] block">{certContact.website}</a>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             ) : (
-                                                                <div className="text-gray-500 text-xs italic flex flex-col items-center justify-center h-24">
+                                                                <div className="text-[#888] text-xs italic flex flex-col items-center justify-center h-24">
                                                                     <p>No specific CERT found for {selectedTyposquat.country || 'this region'}.</p>
                                                                     <p className="mt-1">Try FIRST.org for global teams.</p>
                                                                 </div>
@@ -939,21 +939,21 @@ ${originalDomain}`;
                                                     <div className="bg-red-900/10 border border-red-500/20 p-4 rounded text-sm text-red-200">
                                                         <div className="font-bold flex items-center gap-2 mb-1"><AlertTriangle size={16}/> LEGAL NOTICE</div>
                                                         This template is generated automatically based on WHOIS data. Verify all details before sending.
-                                                        {certContact && <div className="mt-2 text-xs text-green-400 border-t border-red-500/30 pt-2 font-mono">✓ National CERT ({certContact.name}) added to CC.</div>}
+                                                        {certContact && <div className="mt-2 text-xs text-red-400 border-t border-red-500/30 pt-2 font-mono">✓ National CERT ({certContact.name}) added to CC.</div>}
                                                     </div>
                                                     
                                                     <div className="flex-1 flex flex-col gap-2">
                                                         <div className="flex justify-between items-center">
-                                                            <label className="text-xs font-bold text-gray-500 uppercase">Generated Email Template</label>
+                                                            <label className="text-xs font-bold text-[#888] uppercase">Generated Email Template</label>
                                                             <button 
                                                                 onClick={() => navigator.clipboard.writeText(getTakedownTemplate())}
-                                                                className="text-xs flex items-center gap-1 text-blue-400 hover:text-white"
+                                                                className="text-xs flex items-center gap-1 text-[#AAA] hover:text-white"
                                                             >
                                                                 <Copy size={12}/> Copy to Clipboard
                                                             </button>
                                                         </div>
                                                         <textarea 
-                                                            className="flex-1 bg-black border border-gray-700 rounded p-4 text-xs font-mono text-gray-300 resize-none focus:outline-none focus:border-red-500"
+                                                            className="flex-1 bg-black border border-[#333] rounded p-4 text-xs font-mono text-neutral-300 resize-none focus:outline-none focus:border-red-500"
                                                             value={getTakedownTemplate()}
                                                             readOnly
                                                         />
@@ -981,15 +981,15 @@ ${originalDomain}`;
                 {activeTab === 'REPUTATION' && (
                     <div className="h-full p-6 flex flex-col gap-6">
                         {/* Input Area */}
-                        <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
+                        <div className="bg-black/40 border border-[#222] rounded-lg p-6">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-sm font-bold text-white uppercase flex items-center gap-2">
-                                    <Siren size={16} className="text-purple-400"/> Reputation Monitor
+                                    <Siren size={16} className="text-red-400"/> Reputation Monitor
                                 </h3>
                                 <button 
                                     onClick={handleCheckAllAssets} 
                                     disabled={isCheckingReputation || monitoredAssets.length === 0}
-                                    className="px-4 py-2 bg-purple-900/20 text-purple-400 border border-purple-500/30 rounded text-xs font-bold hover:bg-purple-900/40 transition-colors flex items-center gap-2 disabled:opacity-50"
+                                    className="px-4 py-2 bg-red-900/20 text-red-400 border border-red-500/30 rounded text-xs font-bold hover:bg-red-900/40 transition-colors flex items-center gap-2 disabled:opacity-50"
                                 >
                                     {isCheckingReputation ? <RefreshCw className="animate-spin" size={14}/> : <RefreshCw size={14}/>} CHECK ALL
                                 </button>
@@ -997,7 +997,7 @@ ${originalDomain}`;
                             
                             <div className="flex gap-2 items-center">
                                 <select 
-                                    className="bg-gray-900 border border-gray-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-purple-500"
+                                    className="bg-[#0A0A0A] border border-[#333] rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500"
                                     value={newAssetType}
                                     onChange={(e) => setNewAssetType(e.target.value as any)}
                                 >
@@ -1007,7 +1007,7 @@ ${originalDomain}`;
                                 </select>
                                 <input 
                                     type="text" 
-                                    className="flex-1 bg-gray-900/50 border border-gray-700 rounded px-4 py-2 text-sm text-white focus:border-purple-500 focus:outline-none font-mono"
+                                    className="flex-1 bg-[#111] border border-[#333] rounded px-4 py-2 text-sm text-white focus:border-red-500 focus:outline-none font-mono"
                                     placeholder={newAssetType === 'DOMAIN' ? 'example.com' : newAssetType === 'IP' ? '1.2.3.4' : 'admin@example.com'}
                                     value={newAssetValue}
                                     onChange={(e) => setNewAssetValue(e.target.value)}
@@ -1016,7 +1016,7 @@ ${originalDomain}`;
                                 <button 
                                     onClick={handleAddAsset}
                                     disabled={!newAssetValue}
-                                    className="px-6 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded text-xs flex items-center gap-2 disabled:opacity-50"
+                                    className="px-6 py-2 bg-red-600 hover:bg-red-500 text-white font-bold rounded text-xs flex items-center gap-2 disabled:opacity-50"
                                 >
                                     <Plus size={14}/> ADD ASSET
                                 </button>
@@ -1026,33 +1026,33 @@ ${originalDomain}`;
                         {/* Assets List */}
                         <div className="flex-1 overflow-y-auto custom-scrollbar">
                             {monitoredAssets.length === 0 ? (
-                                <div className="text-center text-gray-500 text-xs italic mt-10">
+                                <div className="text-center text-[#888] text-xs italic mt-10">
                                     No assets monitored. Add a domain, IP, or email to check reputation.
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
                                     {monitoredAssets.map(asset => (
-                                        <div key={asset.id} className="bg-gray-900/40 border border-gray-800 rounded-lg p-4 hover:border-purple-500/30 transition-colors group">
+                                        <div key={asset.id} className="bg-[#111] border border-[#222] rounded-lg p-4 hover:border-red-500/30 transition-colors group">
                                             <div className="flex justify-between items-start mb-2">
                                                 <div className="flex items-center gap-2">
-                                                    {asset.type === 'DOMAIN' ? <Globe size={14} className="text-blue-400"/> : asset.type === 'IP' ? <Layers size={14} className="text-orange-400"/> : <Mail size={14} className="text-green-400"/>}
-                                                    <span className="text-xs font-bold text-gray-500 bg-black/40 px-1.5 rounded border border-gray-700">{asset.type}</span>
+                                                    {asset.type === 'DOMAIN' ? <Globe size={14} className="text-[#AAA]"/> : asset.type === 'IP' ? <Layers size={14} className="text-red-400"/> : <Mail size={14} className="text-red-400"/>}
+                                                    <span className="text-xs font-bold text-[#888] bg-black/40 px-1.5 rounded border border-[#333]">{asset.type}</span>
                                                 </div>
-                                                <button onClick={() => handleRemoveAsset(asset.id)} className="text-gray-600 hover:text-red-400"><Trash2 size={14}/></button>
+                                                <button onClick={() => handleRemoveAsset(asset.id)} className="text-neutral-600 hover:text-red-400"><Trash2 size={14}/></button>
                                             </div>
                                             
                                             <div className="text-sm font-bold text-white font-mono truncate mb-3" title={asset.value}>{asset.value}</div>
                                             
                                             <div className="flex justify-between items-center mb-3">
                                                 <div className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
-                                                    asset.status === 'CLEAN' ? 'bg-green-900/20 text-green-400 border-green-500/30' :
+                                                    asset.status === 'CLEAN' ? 'bg-red-900/20 text-red-400 border-red-500/30' :
                                                     asset.status === 'ALERT' ? 'bg-red-900/20 text-red-400 border-red-500/30' :
-                                                    asset.status === 'CHECKING' ? 'bg-blue-900/20 text-blue-400 border-blue-500/30' :
-                                                    'bg-gray-800 text-gray-400 border-gray-700'
+                                                    asset.status === 'CHECKING' ? 'bg-[#111] text-[#AAA] border-neutral-500/30' :
+                                                    'bg-[#151515] text-[#AAA] border-[#333]'
                                                 }`}>
                                                     {asset.status === 'CHECKING' ? <span className="flex items-center gap-1"><RefreshCw size={8} className="animate-spin"/> CHECKING</span> : asset.status}
                                                 </div>
-                                                <span className="text-[9px] text-gray-600">
+                                                <span className="text-[9px] text-neutral-600">
                                                     {asset.lastChecked ? new Date(asset.lastChecked).toLocaleTimeString() : 'Never Checked'}
                                                 </span>
                                             </div>
@@ -1066,7 +1066,7 @@ ${originalDomain}`;
                                             <button 
                                                 onClick={() => handleCheckAsset(asset.id)}
                                                 disabled={asset.status === 'CHECKING'}
-                                                className="w-full mt-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded text-[10px] font-bold transition-colors"
+                                                className="w-full mt-3 py-1.5 bg-[#151515] hover:bg-[#1C1C1C] text-neutral-300 rounded text-[10px] font-bold transition-colors"
                                             >
                                                 RE-CHECK
                                             </button>
@@ -1083,26 +1083,26 @@ ${originalDomain}`;
                     <div className="h-full overflow-y-auto custom-scrollbar p-6">
                         <div className="max-w-4xl mx-auto space-y-6 animate-fade-in pb-10">
                             {/* Keyword Management */}
-                            <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
+                            <div className="bg-black/40 border border-[#222] rounded-lg p-6">
                                 <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
-                                    <Layers size={16} className="text-gray-400"/> Monitored Keywords
+                                    <Layers size={16} className="text-[#AAA]"/> Monitored Keywords
                                 </h3>
                                 <div className="flex gap-2 mb-4">
                                     <input 
                                         type="text" 
-                                        className="flex-1 bg-gray-900/50 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:border-pink-500 focus:outline-none"
+                                        className="flex-1 bg-[#111] border border-[#333] rounded px-3 py-2 text-sm text-white focus:border-red-500 focus:outline-none"
                                         placeholder="Add brand keyword (e.g. brandname)..."
                                         value={newKeyword}
                                         onChange={(e) => setNewKeyword(e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && handleAddKeyword()}
                                     />
-                                    <button onClick={handleAddKeyword} className="px-4 bg-gray-800 hover:bg-gray-700 text-white rounded font-bold text-xs border border-gray-600">
+                                    <button onClick={handleAddKeyword} className="px-4 bg-[#151515] hover:bg-[#1C1C1C] text-white rounded font-bold text-xs border border-neutral-600">
                                         ADD
                                     </button>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                     {keywords.map(k => (
-                                        <div key={k} className="px-3 py-1 bg-gray-800 border border-gray-700 rounded-full flex items-center gap-2 text-sm text-gray-300">
+                                        <div key={k} className="px-3 py-1 bg-[#151515] border border-[#333] rounded-full flex items-center gap-2 text-sm text-neutral-300">
                                             {k}
                                             <button onClick={() => handleRemoveKeyword(k)} className="hover:text-red-400"><XCircle size={14}/></button>
                                         </div>
@@ -1111,26 +1111,26 @@ ${originalDomain}`;
                             </div>
 
                             {/* Official Domains */}
-                            <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
+                            <div className="bg-black/40 border border-[#222] rounded-lg p-6">
                                 <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
-                                    <Globe size={16} className="text-blue-400"/> Official Domains (Whitelist)
+                                    <Globe size={16} className="text-[#AAA]"/> Official Domains (Whitelist)
                                 </h3>
                                 <div className="flex gap-2 mb-4">
                                     <input 
                                         type="text" 
-                                        className="flex-1 bg-gray-900/50 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:border-blue-500 focus:outline-none"
+                                        className="flex-1 bg-[#111] border border-[#333] rounded px-3 py-2 text-sm text-white focus:border-neutral-500 focus:outline-none"
                                         placeholder="Add official domain (e.g. example.com)..."
                                         value={newDomain}
                                         onChange={(e) => setNewDomain(e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && handleAddDomain()}
                                     />
-                                    <button onClick={handleAddDomain} className="px-4 bg-gray-800 hover:bg-gray-700 text-white rounded font-bold text-xs border border-gray-600">
+                                    <button onClick={handleAddDomain} className="px-4 bg-[#151515] hover:bg-[#1C1C1C] text-white rounded font-bold text-xs border border-neutral-600">
                                         ADD
                                     </button>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                     {officialDomains.map(d => (
-                                        <div key={d} className="px-3 py-1 bg-blue-900/20 border border-blue-500/30 rounded-full flex items-center gap-2 text-sm text-blue-300">
+                                        <div key={d} className="px-3 py-1 bg-[#111] border border-neutral-500/30 rounded-full flex items-center gap-2 text-sm text-neutral-300">
                                             {d}
                                             <button onClick={() => handleRemoveDomain(d)} className="hover:text-white"><XCircle size={14}/></button>
                                         </div>
@@ -1140,22 +1140,22 @@ ${originalDomain}`;
 
                             {/* Visual Identity & Thresholds */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
+                                <div className="bg-black/40 border border-[#222] rounded-lg p-6">
                                     <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
-                                        <Image size={16} className="text-purple-400"/> Brand Logo
+                                        <Image size={16} className="text-red-400"/> Brand Logo
                                     </h3>
                                     <div className="flex items-center gap-4">
-                                        <div className="w-20 h-20 bg-black/60 border border-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
+                                        <div className="w-20 h-20 bg-black/60 border border-[#333] rounded-lg flex items-center justify-center overflow-hidden">
                                             {officialLogo ? (
                                                 <img src={officialLogo} alt="Logo" className="max-w-full max-h-full object-contain"/>
                                             ) : (
-                                                <Image size={32} className="text-gray-600 opacity-50"/>
+                                                <Image size={32} className="text-neutral-600 opacity-50"/>
                                             )}
                                         </div>
                                         <div className="flex-1">
-                                            <p className="text-xs text-gray-500 mb-2">Upload official logo for visual similarity detection using TensorFlow.js</p>
+                                            <p className="text-xs text-[#888] mb-2">Upload official logo for visual similarity detection using TensorFlow.js</p>
                                             <div className="flex gap-2">
-                                                <label className="px-3 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded text-xs text-white cursor-pointer flex items-center gap-2">
+                                                <label className="px-3 py-2 bg-[#151515] hover:bg-[#1C1C1C] border border-neutral-600 rounded text-xs text-white cursor-pointer flex items-center gap-2">
                                                     <Upload size={12}/> Upload
                                                     <input type="file" className="hidden" accept="image/*" onChange={handleLogoUpload}/>
                                                 </label>
@@ -1169,14 +1169,14 @@ ${originalDomain}`;
                                     </div>
                                 </div>
 
-                                <div className="bg-black/40 border border-gray-800 rounded-lg p-6">
+                                <div className="bg-black/40 border border-[#222] rounded-lg p-6">
                                     <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
-                                        <Settings size={16} className="text-orange-400"/> Sensitivity Config
+                                        <Settings size={16} className="text-red-400"/> Sensitivity Config
                                     </h3>
                                     <div className="space-y-4">
                                         <div>
                                             <div className="flex justify-between text-xs mb-1">
-                                                <span className="text-gray-400">Fuzzy Match Threshold</span>
+                                                <span className="text-[#AAA]">Fuzzy Match Threshold</span>
                                                 <span className="text-white font-mono">{fuzzyThreshold}%</span>
                                             </div>
                                             <input 
@@ -1185,9 +1185,9 @@ ${originalDomain}`;
                                                 max="100" 
                                                 value={fuzzyThreshold} 
                                                 onChange={(e) => setFuzzyThreshold(parseInt(e.target.value))}
-                                                className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                                                className="w-full h-1 bg-[#1C1C1C] rounded-lg appearance-none cursor-pointer accent-red-500"
                                             />
-                                            <p className="text-[10px] text-gray-500 mt-1">
+                                            <p className="text-[10px] text-[#888] mt-1">
                                                 Lower values detect more variations but increase false positives.
                                             </p>
                                         </div>

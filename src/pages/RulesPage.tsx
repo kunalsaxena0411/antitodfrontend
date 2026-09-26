@@ -99,7 +99,7 @@ const statusDotClass = (status: RuleStatus) => {
     case 'active':
       return 'bg-emerald-500';
     case 'testing':
-      return 'bg-amber-500';
+      return 'bg-neutral-500';
     default:
       return 'bg-at-disabled';
   }
@@ -110,7 +110,7 @@ const statusTextClass = (status: RuleStatus) => {
     case 'active':
       return 'text-emerald-500';
     case 'testing':
-      return 'text-amber-500';
+      return 'text-white';
     default:
       return 'text-at-muted';
   }
@@ -552,7 +552,7 @@ note:
                   event.target.value as 'all' | RuleSeverity,
                 )
               }
-              className="at-input h-8 text-[11px] w-auto min-w-[110px]"
+              className="bg-black/50 border border-[#333] text-white rounded px-2 h-8 text-[11px] min-w-[110px] focus:outline-none focus:border-red-500 cursor-pointer"
               aria-label="Filter by severity"
             >
               <option value="all">All severities</option>
@@ -567,7 +567,7 @@ note:
               onChange={(event) =>
                 setStatusFilter(event.target.value as 'all' | RuleStatus)
               }
-              className="at-input h-8 text-[11px] w-auto min-w-[110px]"
+              className="bg-black/50 border border-[#333] text-white rounded px-2 h-8 text-[11px] min-w-[110px] focus:outline-none focus:border-red-500 cursor-pointer"
               aria-label="Filter by status"
             >
               <option value="all">All statuses</option>
@@ -581,7 +581,7 @@ note:
               onChange={(event) =>
                 setFormatFilter(event.target.value as 'all' | RuleFormat)
               }
-              className="at-input h-8 text-[11px] w-auto min-w-[100px]"
+              className="bg-black/50 border border-[#333] text-white rounded px-2 h-8 text-[11px] min-w-[110px] focus:outline-none focus:border-red-500 cursor-pointer"
               aria-label="Filter by format"
             >
               <option value="all">All formats</option>

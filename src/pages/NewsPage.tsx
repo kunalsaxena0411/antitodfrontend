@@ -22,44 +22,30 @@ import { useAppData } from '../contexts/AppDataContext';
 
 import PageHeader from '../components/layout/PageHeader';
 
-function formatDate(
-  value: string
-) {
-  return new Date(value).toLocaleDateString(
-    'en-US',
-    {
-      month: 'short',
-      day: '2-digit',
-      year: 'numeric',
+function formatNewsDate(timestamp?: number) {
+    if (!timestamp || Number.isNaN(timestamp)) {
+        return 'Unknown date';
     }
-  );
+
+    return new Date(timestamp).toLocaleDateString('en-US', {
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric',
+    });
 }
 
-function formatDateTime(
-  value: string
-) {
-  return new Date(value).toLocaleString(
-    'en-US',
-    {
-      month: 'short',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
+function formatNewsDateTime(timestamp?: number) {
+    if (!timestamp || Number.isNaN(timestamp)) {
+        return 'Unknown date';
     }
-  );
-}
 
-/*
- * The original prototype uses a visual relevance bar with a random
- * percentage. We retain that exact prototype behavior here, but
- * keep it visually subordinate to the actual article metadata.
- */
-function getRelevance(index: number) {
-  const seed =
-    ((index + 3) * 17) % 61;
-
-  return 40 + seed;
+    return new Date(timestamp).toLocaleString('en-US', {
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+    });
 }
 
 export default function NewsPage() {
@@ -73,6 +59,20 @@ export default function NewsPage() {
 
   const [activeFilters, setActiveFilters] =
     useState<string[]>([]);
+
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  const categories = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          MOCK_NEWS.map(
+            (news) => news.category
+          )
+        )
+      ).sort(),
+    [MOCK_NEWS]
+  );
 
   const [selectedNewsId, setSelectedNewsId] =
     useState<string | null>(null);
@@ -111,10 +111,17 @@ export default function NewsPage() {
             .toLowerCase()
             .includes(query);
 
-        return matchSearch;
+        const matchFilters =
+          activeFilters.length === 0 ||
+          activeFilters.includes(news.category);
+
+        return (
+          matchSearch &&
+          matchFilters
+        );
       }
     );
-  }, [search]);
+  }, [search, activeFilters]);
 
   const sourceCount =
     new Set(
@@ -136,15 +143,7 @@ export default function NewsPage() {
     MOCK_NEWS.length > 0
       ? MOCK_NEWS.reduce(
         (latest, news) =>
-          new Date(
-            news.published
-          ).getTime() >
-            new Date(
-              latest
-                .published
-            ).getTime()
-            ? news
-            : latest,
+          news.timestamp > latest.timestamp ? news : latest,
         MOCK_NEWS[0]
       )
       : null;
@@ -164,6 +163,71 @@ export default function NewsPage() {
   const clearAll = () => {
     setSearch('');
     setActiveFilters([]);
+  };
+
+  const toggleCategoryFilter = (
+    category: string
+  ) => {
+    setActiveFilters((current) =>
+      current.includes(category)
+        ? current.filter(
+            (value) => value !== category
+          )
+        : [...current, category]
+    );
+  };
+
+  const handleExportReport = () => {
+    const header = [
+      'Published',
+      'Headline',
+      'Source',
+      'Category',
+    ];
+
+    const rows = filtered.map(
+      (news) =>
+        [
+          news.timestamp,
+          news.title,
+          news.source,
+          news.category,
+        ]
+          .map(
+            (value) =>
+              `"${String(value).replace(
+                /"/g,
+                '""'
+              )}"`
+          )
+          .join(',')
+    );
+
+    const csv = [
+      header.join(','),
+      ...rows,
+    ].join('\n');
+
+    const blob = new Blob(
+      [csv],
+      { type: 'text/csv;charset=utf-8;' }
+    );
+
+    const url =
+      URL.createObjectURL(blob);
+
+    const anchor =
+      document.createElement('a');
+
+    anchor.href = url;
+    anchor.download =
+      `intel-feed-${new Date()
+        .toISOString()
+        .slice(0, 10)}.csv`;
+
+    anchor.click();
+
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -188,6 +252,7 @@ export default function NewsPage() {
           <button
             type="button"
             className="at-btn at-btn-secondary at-btn-sm"
+            onClick={handleExportReport}
           >
             <Download size={13} />
             Export Report
@@ -212,7 +277,7 @@ export default function NewsPage() {
             </strong>
 
             <span>
-              indexed articles
+              {' '}indexed articles
             </span>
           </div>
         </div>
@@ -231,7 +296,7 @@ export default function NewsPage() {
             </strong>
 
             <small>
-              sources
+              {' '}sources
             </small>
           </div>
 
@@ -249,7 +314,7 @@ export default function NewsPage() {
             </strong>
 
             <small>
-              categories
+              {' '}categories
             </small>
           </div>
 
@@ -263,8 +328,8 @@ export default function NewsPage() {
 
           <strong>
             {latestPublished
-              ? formatDateTime(
-                latestPublished.published
+              ? formatNewsDateTime(
+                latestPublished.timestamp
               )
               : '—'}
           </strong>
@@ -384,12 +449,44 @@ export default function NewsPage() {
               </button>
             )}
 
-          <button
-            type="button"
-            className="at-news-filter-placeholder"
-          >
-            + Filter
-          </button>
+          <div className="relative">
+            <button
+              type="button"
+              className="at-news-filter-placeholder"
+              onClick={() =>
+                setFilterOpen(
+                  (open) => !open
+                )
+              }
+            >
+              + Filter
+            </button>
+
+            {filterOpen && (
+              <div className="at-news-filter-panel">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    type="button"
+                    className={
+                      activeFilters.includes(
+                        category
+                      )
+                        ? 'active'
+                        : ''
+                    }
+                    onClick={() =>
+                      toggleCategoryFilter(
+                        category
+                      )
+                    }
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
         </div>
 
@@ -450,10 +547,6 @@ export default function NewsPage() {
                     Category
                   </th>
 
-                  <th>
-                    Relevance
-                  </th>
-
                   <th />
                 </tr>
               </thead>
@@ -501,11 +594,6 @@ export default function NewsPage() {
                         selectedNewsId ===
                         news.id;
 
-                      const relevance =
-                        getRelevance(
-                          index
-                        );
-
                       return (
                         <tr
                           key={news.id}
@@ -528,8 +616,8 @@ export default function NewsPage() {
                                 size={11}
                               />
 
-                              {formatDate(
-                                news.published
+                              {formatNewsDate(
+                                news.timestamp
                               )}
 
                             </span>
@@ -582,29 +670,6 @@ export default function NewsPage() {
                                 news.category
                               }
                             </span>
-
-                          </td>
-
-                          <td>
-
-                            <div className="at-news-relevance">
-
-                              <div className="at-news-relevance-track">
-                                <i
-                                  style={{
-                                    width: `${relevance}%`,
-                                  }}
-                                />
-                              </div>
-
-                              <span>
-                                {
-                                  relevance
-                                }
-                                %
-                              </span>
-
-                            </div>
 
                           </td>
 
@@ -694,8 +759,8 @@ export default function NewsPage() {
                   size={10}
                 />
 
-                {formatDateTime(
-                  selectedNews.published
+                {formatNewsDateTime(
+                  selectedNews.timestamp
                 )}
               </span>
 
@@ -795,8 +860,8 @@ export default function NewsPage() {
                       </div>
 
                       <code className="at-news-published">
-                        {formatDateTime(
-                          selectedNews.published
+                        {formatNewsDateTime(
+                          selectedNews.timestamp
                         )}
                       </code>
 

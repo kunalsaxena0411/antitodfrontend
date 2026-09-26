@@ -8,7 +8,7 @@ import { enrichIP } from '../../services/dns';
 // --- Components ---
 
 const TabBar = ({ tabs, activeId, onActivate, onClose, onNew }: { tabs: SandboxTab[], activeId: string, onActivate: (id: string) => void, onClose: (id: string) => void, onNew: () => void }) => (
-    <div className="flex items-center bg-black border-b border-gray-800 px-2 pt-2 gap-1 overflow-x-auto custom-scrollbar">
+    <div className="flex items-center bg-black border-b border-[#222] px-2 pt-2 gap-1 overflow-x-auto custom-scrollbar">
         {tabs.map(tab => (
             <div 
                 key={tab.id}
@@ -16,11 +16,11 @@ const TabBar = ({ tabs, activeId, onActivate, onClose, onNew }: { tabs: SandboxT
                 className={`
                     flex items-center gap-2 px-3 py-2 rounded-t-lg cursor-pointer min-w-[120px] max-w-[200px] border-t border-x transition-all group
                     ${tab.id === activeId 
-                        ? 'bg-gray-900 border-gray-700 text-white' 
-                        : 'bg-gray-900/40 border-transparent text-gray-500 hover:bg-gray-800'}
+                        ? 'bg-[#0A0A0A] border-[#333] text-white' 
+                        : 'bg-[#111] border-transparent text-[#888] hover:bg-[#151515]'}
                 `}
             >
-                {tab.isDarkweb ? <LockKeyhole size={12} className="text-purple-500"/> : <Globe size={12} className={tab.threatCategory === 'MALICIOUS' ? 'text-red-500' : 'text-blue-400'}/>}
+                {tab.isDarkweb ? <LockKeyhole size={12} className="text-red-500"/> : <Globe size={12} className={tab.threatCategory === 'MALICIOUS' ? 'text-red-500' : 'text-red-400'}/>}
                 <span className="text-xs font-bold truncate flex-1">{tab.title || 'New Tab'}</span>
                 <button 
                     onClick={(e) => { e.stopPropagation(); onClose(tab.id); }}
@@ -30,35 +30,35 @@ const TabBar = ({ tabs, activeId, onActivate, onClose, onNew }: { tabs: SandboxT
                 </button>
             </div>
         ))}
-        <button onClick={onNew} className="p-2 text-gray-500 hover:text-white transition-colors"><Plus size={16}/></button>
+        <button onClick={onNew} className="p-2 text-[#888] hover:text-white transition-colors"><Plus size={16}/></button>
     </div>
 );
 
 const AddressBar = ({ url, loading, score, category, onNavigate, onChange }: { url: string, loading: boolean, score: number, category: string, onNavigate: () => void, onChange: (val: string) => void }) => {
     const getRiskColor = () => {
         if (category === 'MALICIOUS') return 'text-red-500 border-red-500/30 bg-red-900/20';
-        if (category === 'SUSPICIOUS') return 'text-orange-500 border-orange-500/30 bg-orange-900/20';
-        return 'text-green-500 border-green-500/30 bg-green-900/20';
+        if (category === 'SUSPICIOUS') return 'text-white border-[#333] bg-[#151515]';
+        return 'text-[#888] border-[#333] bg-[#151515]';
     };
 
     return (
-        <div className="h-12 bg-gray-900 border-b border-gray-800 flex items-center px-4 gap-4">
+        <div className="h-12 bg-[#0A0A0A] border-b border-[#222] flex items-center px-4 gap-4">
             <div className="flex gap-2">
-                <button className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded"><RotateCcw size={14}/></button>
-                <button className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded"><Lock size={14}/></button>
+                <button className="p-1.5 text-[#AAA] hover:text-white hover:bg-[#151515] rounded"><RotateCcw size={14}/></button>
+                <button className="p-1.5 text-[#AAA] hover:text-white hover:bg-[#151515] rounded"><Lock size={14}/></button>
             </div>
             
             <div className="flex-1 relative group">
                 <input 
                     type="text" 
-                    className="w-full bg-black border border-gray-700 rounded-lg py-1.5 pl-10 pr-20 text-sm text-gray-300 focus:border-cyber-cyan focus:outline-none font-mono transition-all"
+                    className="w-full bg-black border border-[#333] rounded-lg py-1.5 pl-10 pr-20 text-sm text-neutral-300 focus:border-red-500 focus:outline-none font-mono transition-all"
                     placeholder="Enter URL or .onion address..."
                     value={url}
                     onChange={(e) => onChange(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && onNavigate()}
                 />
-                <div className="absolute left-3 top-2 text-gray-500">
-                    {loading ? <Activity size={14} className="animate-spin text-cyber-cyan"/> : <Search size={14}/>}
+                <div className="absolute left-3 top-2 text-[#888]">
+                    {loading ? <Activity size={14} className="animate-spin text-red-500"/> : <Search size={14}/>}
                 </div>
                 {score > 0 && (
                     <div className={`absolute right-2 top-1.5 px-2 py-0.5 rounded text-[10px] font-bold border flex items-center gap-1 ${getRiskColor()}`}>
@@ -69,7 +69,7 @@ const AddressBar = ({ url, loading, score, category, onNavigate, onChange }: { u
 
             <button 
                 onClick={onNavigate}
-                className="px-4 py-1.5 bg-cyber-cyan/20 hover:bg-cyber-cyan/30 text-cyber-cyan border border-cyber-cyan/50 rounded text-xs font-bold flex items-center gap-2 transition-colors"
+                className="px-4 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-500 border border-red-500/50 rounded text-xs font-bold flex items-center gap-2 transition-colors"
             >
                 GO <ArrowRight size={12}/>
             </button>
@@ -79,7 +79,7 @@ const AddressBar = ({ url, loading, score, category, onNavigate, onChange }: { u
 
 const NetworkLogPanel = ({ logs, alerts, ipThreats }: { logs: SandboxNetworkLog[], alerts: string[], ipThreats: Record<string, any> }) => (
     <div className="flex-1 overflow-hidden flex flex-col">
-        <div className="px-4 py-2 bg-gray-900 border-b border-gray-800 text-[10px] font-bold text-gray-500 uppercase flex items-center justify-between">
+        <div className="px-4 py-2 bg-[#0A0A0A] border-b border-[#222] text-[10px] font-bold text-[#888] uppercase flex items-center justify-between">
             <div className="flex gap-4">
                 <span>Network Traffic</span>
                 {alerts.length > 0 && (
@@ -88,7 +88,7 @@ const NetworkLogPanel = ({ logs, alerts, ipThreats }: { logs: SandboxNetworkLog[
                     </span>
                 )}
             </div>
-            <span className="bg-gray-800 px-2 py-0.5 rounded text-gray-300">{logs.length} Requests</span>
+            <span className="bg-[#151515] px-2 py-0.5 rounded text-neutral-300">{logs.length} Requests</span>
         </div>
         
         {alerts.length > 0 && (
@@ -103,7 +103,7 @@ const NetworkLogPanel = ({ logs, alerts, ipThreats }: { logs: SandboxNetworkLog[
 
         <div className="flex-1 overflow-auto custom-scrollbar bg-black font-mono text-xs">
             <table className="w-full text-left">
-                <thead className="bg-gray-900 text-gray-500 sticky top-0">
+                <thead className="bg-[#0A0A0A] text-[#888] sticky top-0">
                     <tr>
                         <th className="p-2">Status</th>
                         <th className="p-2">Method</th>
@@ -112,7 +112,7 @@ const NetworkLogPanel = ({ logs, alerts, ipThreats }: { logs: SandboxNetworkLog[
                         <th className="p-2 text-right">Size</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-800">
+                <tbody className="divide-y divide-neutral-800">
                     {logs.map(log => {
                         let host = '';
                         try { host = new URL(log.url).hostname; } catch(e) {}
@@ -120,16 +120,16 @@ const NetworkLogPanel = ({ logs, alerts, ipThreats }: { logs: SandboxNetworkLog[
                         const isThreat = threat && (threat.is_known_attacker || threat.is_threat || threat.is_bot);
 
                         return (
-                            <tr key={log.id} className={`hover:bg-gray-900 transition-colors ${isThreat ? 'bg-red-900/20' : ''}`}>
+                            <tr key={log.id} className={`hover:bg-[#0A0A0A] transition-colors ${isThreat ? 'bg-red-900/20' : ''}`}>
                                 <td className="p-2">
                                     {log.blocked ? (
                                         <span className="text-red-500 flex items-center gap-1"><XCircle size={10}/> BLK</span>
                                     ) : (
-                                        <span className={log.status >= 400 ? 'text-red-400' : 'text-green-400'}>{log.status}</span>
+                                        <span className={log.status >= 400 ? 'text-red-400' : 'text-white'}>{log.status}</span>
                                     )}
                                 </td>
-                                <td className="p-2 text-purple-400">{log.method}</td>
-                                <td className="p-2 text-gray-300 truncate max-w-[200px]" title={log.url}>
+                                <td className="p-2 text-red-400">{log.method}</td>
+                                <td className="p-2 text-neutral-300 truncate max-w-[200px]" title={log.url}>
                                     {log.url}
                                     {isThreat && (
                                         <span className="ml-2 px-1.5 py-0.5 rounded bg-red-500 text-white text-[9px] font-bold border border-red-400 flex inline-flex items-center gap-1">
@@ -137,8 +137,8 @@ const NetworkLogPanel = ({ logs, alerts, ipThreats }: { logs: SandboxNetworkLog[
                                         </span>
                                     )}
                                 </td>
-                                <td className="p-2 text-gray-500">{log.type}</td>
-                                <td className="p-2 text-right text-gray-600">{(log.size / 1024).toFixed(1)} KB</td>
+                                <td className="p-2 text-[#888]">{log.type}</td>
+                                <td className="p-2 text-right text-neutral-600">{(log.size / 1024).toFixed(1)} KB</td>
                             </tr>
                         );
                     })}
@@ -149,19 +149,19 @@ const NetworkLogPanel = ({ logs, alerts, ipThreats }: { logs: SandboxNetworkLog[
 );
 
 const DomMutationPanel = ({ logs }: { logs: DomMutationLog[] }) => (
-    <div className="flex-1 overflow-hidden flex flex-col border-l border-gray-800">
-        <div className="px-4 py-2 bg-gray-900 border-b border-gray-800 text-[10px] font-bold text-gray-500 uppercase flex items-center justify-between">
+    <div className="flex-1 overflow-hidden flex flex-col border-l border-[#222]">
+        <div className="px-4 py-2 bg-[#0A0A0A] border-b border-[#222] text-[10px] font-bold text-[#888] uppercase flex items-center justify-between">
             <span>DOM Sanitizer</span>
-            <span className="bg-gray-800 px-2 py-0.5 rounded text-gray-300">{logs.length} Actions</span>
+            <span className="bg-[#151515] px-2 py-0.5 rounded text-neutral-300">{logs.length} Actions</span>
         </div>
         <div className="flex-1 overflow-auto custom-scrollbar bg-black font-mono text-xs p-2 space-y-1">
             {logs.map(log => (
                 <div key={log.id} className="flex items-start gap-2 p-1 hover:bg-white/5 rounded">
-                    <div className={`mt-0.5 w-1.5 h-1.5 rounded-full shrink-0 ${log.type === 'REMOVE' ? 'bg-red-500' : log.type === 'MODIFY' ? 'bg-orange-500' : 'bg-green-500'}`}></div>
+                    <div className={`mt-0.5 w-1.5 h-1.5 rounded-full shrink-0 ${log.type === 'REMOVE' ? 'bg-red-500' : log.type === 'MODIFY' ? 'bg-[#666]' : 'bg-white'}`}></div>
                     <div>
-                        <span className={`font-bold mr-2 ${log.type === 'REMOVE' ? 'text-red-400' : 'text-orange-400'}`}>{log.type}</span>
-                        <span className="text-gray-400 mr-2">[{log.target}]</span>
-                        <span className="text-gray-500">{log.detail}</span>
+                        <span className={`font-bold mr-2 ${log.type === 'REMOVE' ? 'text-red-400' : 'text-white'}`}>{log.type}</span>
+                        <span className="text-[#AAA] mr-2">[{log.target}]</span>
+                        <span className="text-[#888]">{log.detail}</span>
                     </div>
                 </div>
             ))}
@@ -217,33 +217,33 @@ const SecureConnectionLoader = ({ isDarkweb }: { isDarkweb: boolean }) => {
     }, []);
 
     return (
-        <div className="absolute inset-0 z-50 bg-[#0d1117] flex flex-col items-center justify-center font-mono">
-            <div className="w-96 p-6 bg-black/50 border border-gray-800 rounded-xl backdrop-blur-md shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyber-cyan to-transparent animate-scan"></div>
+        <div className="absolute inset-0 z-50 bg-[#0A0A0A] flex flex-col items-center justify-center font-mono">
+            <div className="w-96 p-6 bg-black/50 border border-[#222] rounded-xl backdrop-blur-md shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent animate-scan"></div>
                 
                 <h3 className="text-white font-bold mb-6 flex items-center gap-2 text-sm tracking-wider">
-                    <Activity className="text-cyber-cyan animate-pulse" size={16}/> SECURE CONNECTION SEQUENCE
+                    <Activity className="text-red-500 animate-pulse" size={16}/> SECURE CONNECTION SEQUENCE
                 </h3>
 
                 <div className="space-y-4 mb-6">
                     {steps.map((s, i) => (
                         <div key={i} className={`flex items-center gap-3 transition-all duration-300 ${i <= step ? 'opacity-100 translate-x-0' : 'opacity-30 -translate-x-2'}`}>
-                            <div className={`p-1.5 rounded-full ${i < step ? 'bg-green-500/20 text-green-500' : i === step ? 'bg-cyber-cyan/20 text-cyber-cyan animate-pulse' : 'bg-gray-800 text-gray-600'}`}>
+                            <div className={`p-1.5 rounded-full ${i < step ? 'bg-[#151515] text-white' : i === step ? 'bg-red-500/20 text-red-500 animate-pulse' : 'bg-[#151515] text-neutral-600'}`}>
                                 {i < step ? <CheckCircle size={12}/> : <s.icon size={12}/>}
                             </div>
-                            <span className={`text-xs ${i === step ? 'text-white font-bold' : 'text-gray-500'}`}>{s.label}</span>
-                            {i === step && <span className="ml-auto text-[10px] text-cyber-cyan animate-pulse">PROCESSING</span>}
+                            <span className={`text-xs ${i === step ? 'text-white font-bold' : 'text-[#888]'}`}>{s.label}</span>
+                            {i === step && <span className="ml-auto text-[10px] text-red-500 animate-pulse">PROCESSING</span>}
                         </div>
                     ))}
                 </div>
 
-                <div className="bg-black/80 rounded border border-gray-800 p-2 h-24 overflow-hidden relative">
-                    <div className="absolute inset-0 bg-green-500/5 pointer-events-none"></div>
+                <div className="bg-black/80 rounded border border-[#222] p-2 h-24 overflow-hidden relative">
+                    <div className="absolute inset-0 bg-[#0A0A0A] pointer-events-none"></div>
                     <div className="space-y-1">
                         {log.map((l, i) => (
-                            <div key={i} className="text-[9px] text-green-400/80 truncate">{l}</div>
+                            <div key={i} className="text-[9px] text-[#888] truncate">{l}</div>
                         ))}
-                        <div className="w-2 h-4 bg-green-500 animate-pulse"></div>
+                        <div className="w-2 h-4 bg-white animate-pulse"></div>
                     </div>
                 </div>
             </div>
@@ -519,32 +519,32 @@ export const SandboxBrowserView: React.FC = () => {
     };
 
     return (
-        <div className="h-[calc(100vh-70px)] flex bg-[#020617] text-gray-300 font-sans overflow-hidden">
+        <div className="h-[calc(100vh-70px)] flex bg-[#0A0A0A] text-neutral-300 font-sans overflow-hidden">
             {/* Left Sidebar */}
-            <div className="w-64 bg-black/40 border-r border-gray-800 flex flex-col">
-                <div className="p-4 border-b border-gray-800">
+            <div className="w-64 bg-black/40 border-r border-[#222] flex flex-col">
+                <div className="p-4 border-b border-[#222]">
                     <h2 className="text-lg font-cyber font-bold text-white flex items-center gap-2">
-                        <Shield className="text-cyber-cyan"/> SECURE <span className="text-gray-500">BOX</span>
+                        <Shield className="text-red-500"/> SECURE <span className="text-[#888]">BOX</span>
                     </h2>
-                    <p className="text-[10px] text-gray-500 font-mono mt-1">Isolated Environment v1.0</p>
+                    <p className="text-[10px] text-[#888] font-mono mt-1">Isolated Environment v1.0</p>
                 </div>
 
                 <div className="p-4 space-y-6 overflow-y-auto custom-scrollbar flex-1">
-                    <div className={`p-4 rounded-lg border ${activeTab.threatCategory === 'MALICIOUS' ? 'bg-red-900/20 border-red-500/30' : activeTab.threatCategory === 'SUSPICIOUS' ? 'bg-orange-900/20 border-orange-500/30' : 'bg-green-900/20 border-green-500/30'}`}>
-                        <div className="text-[10px] uppercase font-bold text-gray-400 mb-1">Current Threat Level</div>
-                        <div className={`text-2xl font-bold ${activeTab.threatCategory === 'MALICIOUS' ? 'text-red-500' : activeTab.threatCategory === 'SUSPICIOUS' ? 'text-orange-500' : 'text-green-500'}`}>
+                    <div className={`p-4 rounded-lg border ${activeTab.threatCategory === 'MALICIOUS' ? 'bg-red-900/20 border-red-500/30' : activeTab.threatCategory === 'SUSPICIOUS' ? 'bg-[#151515] border-[#333]' : 'bg-[#151515] border-[#333]'}`}>
+                        <div className="text-[10px] uppercase font-bold text-[#AAA] mb-1">Current Threat Level</div>
+                        <div className={`text-2xl font-bold ${activeTab.threatCategory === 'MALICIOUS' ? 'text-red-500' : activeTab.threatCategory === 'SUSPICIOUS' ? 'text-white' : 'text-white'}`}>
                             {activeTab.threatCategory}
                         </div>
-                        <div className="w-full bg-gray-800 h-1 mt-2 rounded-full overflow-hidden">
+                        <div className="w-full bg-[#151515] h-1 mt-2 rounded-full overflow-hidden">
                             <div 
-                                className={`h-full ${activeTab.threatCategory === 'MALICIOUS' ? 'bg-red-500' : activeTab.threatCategory === 'SUSPICIOUS' ? 'bg-orange-500' : 'bg-green-500'}`} 
+                                className={`h-full ${activeTab.threatCategory === 'MALICIOUS' ? 'bg-red-500' : activeTab.threatCategory === 'SUSPICIOUS' ? 'bg-[#666]' : 'bg-white'}`} 
                                 style={{ width: `${activeTab.threatScore}%` }}
                             ></div>
                         </div>
                         
                         {activeTab.threatSignatures && activeTab.threatSignatures.length > 0 && (
                             <div className="mt-4 space-y-1">
-                                <div className="text-[10px] font-bold text-gray-500 uppercase">Detected Heuristics</div>
+                                <div className="text-[10px] font-bold text-[#888] uppercase">Detected Heuristics</div>
                                 {activeTab.threatSignatures.map((sig, i) => (
                                     <div key={i} className="text-[10px] text-red-300 bg-red-900/20 border border-red-500/20 px-2 py-1 rounded flex items-center gap-2">
                                         <AlertTriangle size={10} className="flex-shrink-0" /> {sig}
@@ -556,41 +556,41 @@ export const SandboxBrowserView: React.FC = () => {
 
                     <div className="space-y-4">
                         <label className="flex items-center justify-between cursor-pointer group">
-                            <span className="text-xs font-bold text-gray-400 group-hover:text-white">JavaScript Execution</span>
-                            <div className={`w-8 h-4 rounded-full relative transition-colors ${jsEnabled ? 'bg-red-500' : 'bg-gray-600'}`} onClick={() => setJsEnabled(!jsEnabled)}>
+                            <span className="text-xs font-bold text-[#AAA] group-hover:text-white">JavaScript Execution</span>
+                            <div className={`w-8 h-4 rounded-full relative transition-colors ${jsEnabled ? 'bg-red-500' : 'bg-[#333]'}`} onClick={() => setJsEnabled(!jsEnabled)}>
                                 <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all ${jsEnabled ? 'left-4.5' : 'left-0.5'}`}></div>
                             </div>
                         </label>
                         <label className="flex items-center justify-between cursor-pointer group">
-                            <span className="text-xs font-bold text-gray-400 group-hover:text-white">Accelerated Proxy</span>
-                            <div className={`w-8 h-4 rounded-full relative transition-colors ${proxyMode ? 'bg-cyber-cyan' : 'bg-gray-600'}`} onClick={() => setProxyMode(!proxyMode)}>
+                            <span className="text-xs font-bold text-[#AAA] group-hover:text-white">Accelerated Proxy</span>
+                            <div className={`w-8 h-4 rounded-full relative transition-colors ${proxyMode ? 'bg-red-500' : 'bg-[#333]'}`} onClick={() => setProxyMode(!proxyMode)}>
                                 <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all ${proxyMode ? 'left-4.5' : 'left-0.5'}`}></div>
                             </div>
                         </label>
                         <label className="flex items-center justify-between cursor-pointer group">
-                            <span className="text-xs font-bold text-gray-400 group-hover:text-white">DevTools Panel</span>
-                            <div className={`w-8 h-4 rounded-full relative transition-colors ${showPanels ? 'bg-purple-500' : 'bg-gray-600'}`} onClick={() => setShowPanels(!showPanels)}>
+                            <span className="text-xs font-bold text-[#AAA] group-hover:text-white">DevTools Panel</span>
+                            <div className={`w-8 h-4 rounded-full relative transition-colors ${showPanels ? 'bg-red-500' : 'bg-[#333]'}`} onClick={() => setShowPanels(!showPanels)}>
                                 <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all ${showPanels ? 'left-4.5' : 'left-0.5'}`}></div>
                             </div>
                         </label>
                     </div>
 
-                    <div className="text-[10px] text-gray-500 bg-gray-900/50 p-3 rounded border border-gray-800 space-y-2">
+                    <div className="text-[10px] text-[#888] bg-[#111] p-3 rounded border border-[#222] space-y-2">
                         {activeTab.isDarkweb ? (
-                            <div className="flex items-center gap-2"><CheckCircle size={10} className="text-purple-500"/> TOR Circuit Active</div>
+                            <div className="flex items-center gap-2"><CheckCircle size={10} className="text-red-500"/> TOR Circuit Active</div>
                         ) : (
                             <>
-                                <div className="flex items-center gap-2"><CheckCircle size={10} className="text-green-500"/> iframe Sandbox Active</div>
-                                <div className="flex items-center gap-2"><CheckCircle size={10} className="text-green-500"/> CSP Enforced</div>
+                                <div className="flex items-center gap-2"><CheckCircle size={10} className="text-white"/> iframe Sandbox Active</div>
+                                <div className="flex items-center gap-2"><CheckCircle size={10} className="text-white"/> CSP Enforced</div>
                             </>
                         )}
-                        <div className="flex items-center gap-2"><CheckCircle size={10} className="text-green-500"/> DOM Sanitizer On</div>
+                        <div className="flex items-center gap-2"><CheckCircle size={10} className="text-white"/> DOM Sanitizer On</div>
                     </div>
                 </div>
             </div>
 
             {/* Main Browser Area */}
-            <div className="flex-1 flex flex-col min-w-0 relative bg-gray-900/20">
+            <div className="flex-1 flex flex-col min-w-0 relative bg-[#111]">
                 <TabBar tabs={tabs} activeId={activeTabId} onActivate={setActiveTabId} onClose={handleCloseTab} onNew={handleNewTab} />
                 
                 <AddressBar 
@@ -607,25 +607,25 @@ export const SandboxBrowserView: React.FC = () => {
                         <SecureConnectionLoader isDarkweb={activeTab.isDarkweb} />
                     ) : activeTab.isDarkweb && darkwebData && !iframeSrc ? (
                         // Fallback Darkweb Viewer (Screenshot)
-                        <div className="absolute inset-0 bg-gray-900 flex flex-col items-center justify-center p-8 overflow-auto custom-scrollbar">
-                            <div className="max-w-4xl w-full bg-black border border-gray-800 rounded-xl overflow-hidden shadow-2xl">
-                                <div className="p-4 bg-purple-900/20 border-b border-purple-500/30 flex items-center justify-between">
-                                    <h3 className="text-purple-400 font-bold flex items-center gap-2"><EyeOff size={16}/> TOR NETWORK PREVIEW</h3>
+                        <div className="absolute inset-0 bg-[#0A0A0A] flex flex-col items-center justify-center p-8 overflow-auto custom-scrollbar">
+                            <div className="max-w-4xl w-full bg-black border border-[#222] rounded-xl overflow-hidden shadow-2xl">
+                                <div className="p-4 bg-neutral-900/20 border-b border-neutral-500/30 flex items-center justify-between">
+                                    <h3 className="text-red-400 font-bold flex items-center gap-2"><EyeOff size={16}/> TOR NETWORK PREVIEW</h3>
                                     <div className="flex items-center gap-3">
-                                        <span className="text-xs text-gray-500 font-mono border border-purple-500/30 px-2 py-0.5 rounded bg-purple-900/10">SAFE MODE: SCREENSHOT ONLY</span>
-                                        <button onClick={() => handleNavigate()} className="p-1 hover:text-white text-gray-500 hover:bg-white/10 rounded transition-colors" title="Refresh Screenshot"><RotateCcw size={14}/></button>
+                                        <span className="text-xs text-[#888] font-mono border border-neutral-500/30 px-2 py-0.5 rounded bg-neutral-900/10">SAFE MODE: SCREENSHOT ONLY</span>
+                                        <button onClick={() => handleNavigate()} className="p-1 hover:text-white text-[#888] hover:bg-white/10 rounded transition-colors" title="Refresh Screenshot"><RotateCcw size={14}/></button>
                                     </div>
                                 </div>
-                                <div className="relative border-b border-gray-800">
+                                <div className="relative border-b border-[#222]">
                                     <img src={darkwebData.imageBase64} alt="Darkweb Screenshot" className="w-full object-contain bg-[#111]"/>
                                     <div className="absolute top-4 right-4 flex flex-col gap-2">
                                         <span className="bg-red-500/90 text-white text-[10px] font-bold px-2 py-1 rounded shadow-lg border border-red-400">JAVASCRIPT DISABLED</span>
-                                        <span className="bg-black/80 text-gray-300 text-[10px] font-bold px-2 py-1 rounded shadow-lg border border-gray-700">REMOTE RENDER</span>
+                                        <span className="bg-black/80 text-neutral-300 text-[10px] font-bold px-2 py-1 rounded shadow-lg border border-[#333]">REMOTE RENDER</span>
                                     </div>
                                 </div>
                                 <div className="p-4 bg-[#0a0a0a]">
-                                    <h4 className="text-xs font-bold text-gray-500 uppercase mb-2 flex items-center gap-2"><FileCode size={12}/> Extracted Text Content</h4>
-                                    <div className="text-xs font-mono text-green-400 whitespace-pre-wrap bg-black p-3 rounded border border-gray-800 h-48 overflow-y-auto custom-scrollbar border-l-2 border-l-green-500/50">
+                                    <h4 className="text-xs font-bold text-[#888] uppercase mb-2 flex items-center gap-2"><FileCode size={12}/> Extracted Text Content</h4>
+                                    <div className="text-xs font-mono text-white whitespace-pre-wrap bg-black p-3 rounded border border-[#222] h-48 overflow-y-auto custom-scrollbar border-l-2 border-l-green-500/50">
                                         {darkwebData.extractedText}
                                     </div>
                                 </div>
@@ -643,9 +643,9 @@ export const SandboxBrowserView: React.FC = () => {
                         />
                     ) : (
                         // Empty State
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d1117] text-gray-600">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0A0A0A] text-neutral-600">
                             <Shield size={64} className="mb-4 opacity-20"/>
-                            <h3 className="text-xl font-bold text-gray-500 mb-2">Secure Browsing Environment</h3>
+                            <h3 className="text-xl font-bold text-[#888] mb-2">Secure Browsing Environment</h3>
                             <p className="text-sm text-center max-w-md">
                                 Enter a URL to browse safely. All content is proxied, sanitized, and stripped of malicious scripts before rendering.
                             </p>
@@ -655,7 +655,7 @@ export const SandboxBrowserView: React.FC = () => {
 
                 {/* DevTools Panel */}
                 {showPanels && (
-                    <div className="h-48 bg-black border-t border-gray-800 flex">
+                    <div className="h-48 bg-black border-t border-[#222] flex">
                         <NetworkLogPanel logs={networkLogs} alerts={networkAlerts} ipThreats={ipThreats} />
                         <DomMutationPanel logs={domLogs} />
                     </div>

@@ -47,13 +47,13 @@ interface BigScreenViewProps {
 const getTagStyle = (category: string) => {
     switch(category?.toUpperCase()) {
         case 'RANSOMWARE': return 'bg-red-950/60 text-red-400 border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.2)]';
-        case 'VULNERABILITY': return 'bg-orange-950/60 text-orange-400 border-orange-500/50';
-        case 'APT': return 'bg-purple-950/60 text-purple-400 border-purple-500/50 shadow-[0_0_10px_rgba(168,85,247,0.2)]';
-        case 'PHISHING': return 'bg-blue-950/60 text-blue-400 border-blue-500/50';
-        case 'BREACH': return 'bg-yellow-950/60 text-yellow-400 border-yellow-500/50';
-        case 'MALWARE': return 'bg-pink-950/60 text-pink-400 border-pink-500/50';
-        case 'CYBERCRIME': return 'bg-cyan-950/60 text-cyan-400 border-cyan-500/50';
-        default: return 'bg-gray-800 text-gray-400 border-gray-600';
+        case 'VULNERABILITY': return 'bg-neutral-900/60 text-neutral-300 border-neutral-500/50';
+        case 'APT': return 'bg-neutral-900/60 text-red-400 border-neutral-500/50 shadow-[0_0_10px_rgba(255,255,255,0.1)]';
+        case 'PHISHING': return 'bg-neutral-900/60 text-red-400 border-neutral-500/50';
+        case 'BREACH': return 'bg-neutral-900/60 text-white border-neutral-500/50';
+        case 'MALWARE': return 'bg-neutral-950/60 text-white border-neutral-500/50';
+        case 'CYBERCRIME': return 'bg-neutral-950/60 text-red-400 border-neutral-500/50';
+        default: return 'bg-[#151515] text-[#AAA] border-neutral-600';
     }
 };
 
@@ -81,7 +81,7 @@ const NewsTicker = ({ items }: { items: ThreatNewsItem[] }) => {
 
     return (
         <div className="at-soc-news-ticker">
-            <div className="absolute left-0 bg-[#050b1a] px-4 z-20 h-full flex items-center border-r border-red-500/30 shadow-[5px_0_15px_rgba(0,0,0,0.8)]">
+            <div className="absolute left-0 bg-[#0A0A0A] px-4 z-20 h-full flex items-center border-r border-red-500/30 shadow-[5px_0_15px_rgba(0,0,0,0.8)]">
                 <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest flex items-center gap-2 animate-pulse">
                     <Rss size={12} /> CYBER INTEL
                 </span>
@@ -89,10 +89,10 @@ const NewsTicker = ({ items }: { items: ThreatNewsItem[] }) => {
             <div className="flex animate-marquee whitespace-nowrap hover:[animation-play-state:paused] items-center pl-4" style={{ animationDuration: '160s' }}>
                 {displayItems.map((item, i) => (
                     <div key={`${item.link}-${i}`} className="flex items-center mx-8 group cursor-default">
-                        <span className="text-[10px] text-gray-500 font-mono mr-2 group-hover:text-cyber-cyan transition-colors">
+                        <span className="text-[10px] text-[#888] font-mono mr-2 group-hover:text-red-500 transition-colors">
                             [{new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}]
                         </span>
-                        <span className="text-[11px] text-gray-300 font-bold uppercase tracking-wide group-hover:text-white transition-colors">
+                        <span className="text-[11px] text-neutral-300 font-bold uppercase tracking-wide group-hover:text-white transition-colors">
                             {item.title}
                         </span>
                         <span className="ml-8 text-red-900/40 text-[10px] tracking-widest font-mono">///</span>
@@ -173,9 +173,9 @@ const IocStatTile = ({
 
     return (
         <div className="h-full flex flex-col p-3 bg-transparent relative overflow-hidden">
-             <div className="flex justify-between items-start mb-4 border-b border-gray-800 pb-2">
+             <div className="flex justify-between items-start mb-4 border-b border-[#222] pb-2">
                 <div>
-                    <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Total Indicators</div>
+                    <div className="text-[10px] font-bold text-[#888] uppercase tracking-widest mb-1">Total Indicators</div>
                     <div className="text-2xl font-semibold text-[#d7d9de]">{total.toLocaleString()}</div>
                 </div>
                 <div className="p-2 rounded-lg bg-[#171a20] border border-[#30343d]">
@@ -185,11 +185,11 @@ const IocStatTile = ({
 
              <div className="flex-1 overflow-hidden relative">
                  <div className={`absolute inset-0 flex flex-col transition-opacity duration-500 ${tab === 'OVERVIEW' ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}>
-                    <div className="text-[10px] text-gray-500 font-bold mb-2 uppercase flex items-center gap-2"><Globe size={10}/> Feed Sources</div>
+                    <div className="text-[10px] text-[#888] font-bold mb-2 uppercase flex items-center gap-2"><Globe size={10}/> Feed Sources</div>
                     <div className="grid grid-cols-2 gap-2 overflow-y-auto custom-scrollbar pb-2">
                         {counts.map((c, i) => (
-                            <div key={i} className="bg-black/40 border border-gray-800 p-2 rounded flex flex-col justify-center">
-                                <div className="text-[9px] text-gray-500 uppercase font-bold truncate" title={c.label}>{c.label}</div>
+                            <div key={i} className="bg-black/40 border border-[#222] p-2 rounded flex flex-col justify-center">
+                                <div className="text-[9px] text-[#888] uppercase font-bold truncate" title={c.label}>{c.label}</div>
                                 <div className={`text-sm font-mono font-bold ${
                                     c.tone === 'danger' ? 'text-[#e56d72]' : 
                                     c.tone === 'warning' ? 'text-[#d49b45]' : 
@@ -202,7 +202,7 @@ const IocStatTile = ({
                  </div>
 
                  <div className={`absolute inset-0 flex flex-col transition-opacity duration-500 ${tab === 'MALWARE' ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}>
-                    <div className="text-[10px] text-gray-500 font-bold mb-2 uppercase flex items-center gap-2"><Bug size={10}/> Active Campaigns</div>
+                    <div className="text-[10px] text-[#888] font-bold mb-2 uppercase flex items-center gap-2"><Bug size={10}/> Active Campaigns</div>
                     <div className="space-y-1 overflow-y-auto custom-scrollbar pb-2">
                         {stats.malware.slice(0, 6).map((m, i) => (
                             <div key={i} className="flex justify-between items-center p-1.5 bg-red-900/10 border border-red-500/20 rounded">
@@ -214,11 +214,11 @@ const IocStatTile = ({
                  </div>
 
                  <div className={`absolute inset-0 flex flex-col transition-opacity duration-500 ${tab === 'ASNS' ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}>
-                    <div className="text-[10px] text-gray-500 font-bold mb-2 uppercase flex items-center gap-2"><Server size={10}/> Malicious Infrastructure</div>
+                    <div className="text-[10px] text-[#888] font-bold mb-2 uppercase flex items-center gap-2"><Server size={10}/> Malicious Infrastructure</div>
                     <div className="space-y-1 overflow-y-auto custom-scrollbar pb-2">
                         {stats.asns.slice(0, 6).map((a, i) => (
-                            <div key={i} className="flex justify-between items-center p-1.5 bg-orange-900/10 border border-orange-500/20 rounded">
-                                <span className="text-[10px] text-orange-300 font-mono truncate w-2/3">{a.label}</span>
+                            <div key={i} className="flex justify-between items-center p-1.5 bg-neutral-900/10 border border-neutral-500/20 rounded">
+                                <span className="text-[10px] text-neutral-300 font-mono truncate w-2/3">{a.label}</span>
                                 <span className="text-[10px] font-bold text-white">{a.count}</span>
                             </div>
                         ))}
@@ -227,9 +227,9 @@ const IocStatTile = ({
              </div>
 
              <div className="flex justify-center gap-1 mt-2">
-                 <div className={`w-1.5 h-1.5 rounded-full transition-colors ${tab === 'OVERVIEW' ? 'bg-purple-500' : 'bg-gray-700'}`}></div>
-                 <div className={`w-1.5 h-1.5 rounded-full transition-colors ${tab === 'MALWARE' ? 'bg-purple-500' : 'bg-gray-700'}`}></div>
-                 <div className={`w-1.5 h-1.5 rounded-full transition-colors ${tab === 'ASNS' ? 'bg-purple-500' : 'bg-gray-700'}`}></div>
+                 <div className={`w-1.5 h-1.5 rounded-full transition-colors ${tab === 'OVERVIEW' ? 'bg-red-500' : 'bg-[#1C1C1C]'}`}></div>
+                 <div className={`w-1.5 h-1.5 rounded-full transition-colors ${tab === 'MALWARE' ? 'bg-red-500' : 'bg-[#1C1C1C]'}`}></div>
+                 <div className={`w-1.5 h-1.5 rounded-full transition-colors ${tab === 'ASNS' ? 'bg-red-500' : 'bg-[#1C1C1C]'}`}></div>
              </div>
         </div>
     );
@@ -267,30 +267,30 @@ const VulnAnalyticsTile = ({
                     </div>
                 </div>
                 
-                <div className="bg-amber-950/25 rounded-lg p-2 border border-orange-500/30 flex flex-col justify-between relative overflow-hidden group">
+                <div className="bg-neutral-950/25 rounded-lg p-2 border border-neutral-500/30 flex flex-col justify-between relative overflow-hidden group">
                     <div className="flex justify-between items-start z-10">
-                        <div className="text-[9px] text-orange-300 font-bold uppercase">ZDI Upcoming</div>
-                        <Bug size={12} className="text-orange-400"/>
+                        <div className="text-[9px] text-neutral-300 font-bold uppercase">ZDI Upcoming</div>
+                        <Bug size={12} className="text-neutral-400"/>
                     </div>
                     <div className="text-2xl font-bold text-white z-10">{zdiCount}</div>
                     <div className="absolute right-0 bottom-0 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Bug size={48} className="text-orange-500"/>
+                        <Bug size={48} className="text-neutral-500"/>
                     </div>
                 </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-                <div className="bg-gray-900/50 rounded-lg p-2 border border-gray-800 flex flex-col justify-between">
+                <div className="bg-[#111] rounded-lg p-2 border border-[#222] flex flex-col justify-between">
                     <div className="flex justify-between items-start">
-                        <div className="text-[9px] text-gray-500 font-bold uppercase">Known Exploits</div>
-                        <Zap size={12} className="text-yellow-500"/>
+                        <div className="text-[9px] text-[#888] font-bold uppercase">Known Exploits</div>
+                        <Zap size={12} className="text-white"/>
                     </div>
                     <div className="text-xl font-mono text-white">{exploitCount}</div>
                 </div>
-                <div className="bg-gray-900/50 rounded-lg p-2 border border-gray-800 flex flex-col justify-between">
+                <div className="bg-[#111] rounded-lg p-2 border border-[#222] flex flex-col justify-between">
                     <div className="flex justify-between items-start">
-                        <div className="text-[9px] text-gray-500 font-bold uppercase">Total CVEs</div>
-                        <Database size={12} className="text-blue-500"/>
+                        <div className="text-[9px] text-[#888] font-bold uppercase">Total CVEs</div>
+                        <Database size={12} className="text-red-500"/>
                     </div>
                     <div className="text-xl font-mono text-white">{totalCves}</div>
                 </div>
@@ -302,7 +302,7 @@ const VulnAnalyticsTile = ({
                         <Flame size={10}/> LATEST CRITICAL
                     </div>
                     <div className="text-xs text-white font-bold mb-1">{criticalCve.id}</div>
-                    <div className="text-[9px] text-gray-400 line-clamp-2 leading-tight">
+                    <div className="text-[9px] text-[#AAA] line-clamp-2 leading-tight">
                         {criticalCve.description}
                     </div>
                 </div>
@@ -455,7 +455,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
     const ransomVictims = ransomwarePosts.length;
 
     const scrollingNews = useMemo(() => {
-        return [...newsItems, ...newsItems];
+        return newsItems;
     }, [newsItems]);
 
     const [time, setTime] = useState(new Date());
@@ -519,7 +519,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                     </div>
                 </div>
 
-                <div className="flex items-center bg-gray-900 rounded-lg p-1 border border-gray-800 gap-1">
+                <div className="flex items-center bg-[#0A0A0A] rounded-lg p-1 border border-[#222] gap-1">
                     {[
                         { id: 'OPS', icon: MonitorPlay, label: 'OPS' },
                         { id: 'LIVE', icon: Zap, label: 'LIVE' },
@@ -541,14 +541,14 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                     <div className="flex items-center gap-2">
                         <button 
                             onClick={() => setIsAutoCarousel(!isAutoCarousel)}
-                            className={`text-[10px] font-bold px-3 py-1 rounded-l border transition-colors flex items-center gap-2 ${isAutoCarousel ? 'bg-green-900/40 border-green-500 text-green-300' : 'bg-gray-800 border-gray-700 text-gray-500'}`}
+                            className={`text-[10px] font-bold px-3 py-1 rounded-l border transition-colors flex items-center gap-2 ${isAutoCarousel ? 'bg-red-900/40 border-red-500 text-red-300' : 'bg-[#151515] border-[#333] text-[#888]'}`}
                         >
                             {isAutoCarousel ? <PauseCircle size={14}/> : <PlayCircle size={14}/>} ROTATION
                         </button>
                         <select 
                             value={rotationInterval}
                             onChange={(e) => setRotationInterval(Number(e.target.value))}
-                            className="bg-gray-900 border border-gray-700 text-xs rounded-r px-2 py-1 text-gray-300 outline-none h-full border-l-0"
+                            className="bg-[#0A0A0A] border border-[#333] text-xs rounded-r px-2 py-1 text-neutral-300 outline-none h-full border-l-0"
                         >
                             <option value={10000}>10s</option>
                             <option value={30000}>30s</option>
@@ -558,20 +558,20 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                     </div>
 
                     <div className="text-right hidden md:block">
-                        <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">System Status</div>
-                        <div className="text-green-400 font-mono text-sm flex items-center justify-end gap-2">
-                            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_5px_#22c55e]"></span> OPERATIONAL
+                        <div className="text-[10px] text-[#888] font-bold uppercase tracking-widest">System Status</div>
+                        <div className="text-white font-mono text-sm flex items-center justify-end gap-2">
+                            <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_5px_#ef4444]"></span> OPERATIONAL
                         </div>
                     </div>
                     <div className="text-right">
                         <div className="text-3xl font-mono font-bold leading-none">{time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-                        <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{time.toLocaleDateString()}</div>
+                        <div className="text-[10px] text-[#888] font-bold uppercase tracking-widest">{time.toLocaleDateString()}</div>
                     </div>
                     <div className="flex gap-2">
-                        <button onClick={toggleFullscreen} className="p-2 hover:bg-white/10 rounded text-gray-500 hover:text-white transition-colors">
+                        <button onClick={toggleFullscreen} className="p-2 hover:bg-white/10 rounded text-[#888] hover:text-white transition-colors">
                             <Maximize size={24}/>
                         </button>
-                        <button onClick={onExit} className="p-2 hover:bg-white/10 rounded text-gray-500 hover:text-white transition-colors">
+                        <button onClick={onExit} className="p-2 hover:bg-white/10 rounded text-[#888] hover:text-white transition-colors">
                             <XCircle size={24}/>
                         </button>
                     </div>
@@ -695,11 +695,11 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
 
                 {activeTab === 'LIVE' && (
                     <div className="absolute inset-4 z-20 flex gap-4 animate-fade-in">
-                        <div className="w-1/2 h-full bg-black/60 backdrop-blur-md border border-gray-800 rounded-xl overflow-hidden shadow-2xl p-6 flex flex-col">
+                        <div className="w-1/2 h-full bg-black/60 backdrop-blur-md border border-[#222] rounded-xl overflow-hidden shadow-2xl p-6 flex flex-col">
                             <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2 font-cyber">
-                                <Zap className="text-yellow-400" size={24}/> THREAT STREAM
+                                <Zap className="text-white" size={24}/> THREAT STREAM
                             </h3>
-                            <div className="flex-1 overflow-hidden rounded-lg border border-gray-700 bg-black/40">
+                            <div className="flex-1 overflow-hidden rounded-lg border border-[#333] bg-black/40">
                                 <LiveThreatFeed 
                                     ransomwarePosts={ransomwarePosts}
                                     threatFoxItems={threatFoxItems}
@@ -708,18 +708,18 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                             </div>
                         </div>
                         <div className="w-1/2 h-full flex flex-col gap-4">
-                            <div className="flex-1 bg-black/60 backdrop-blur-md border border-gray-800 rounded-xl p-6">
+                            <div className="flex-1 bg-black/60 backdrop-blur-md border border-[#222] rounded-xl p-6">
                                 <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2 uppercase tracking-wider">
-                                    <Activity className="text-green-400" size={20}/> Recent Operations
+                                    <Activity className="text-white" size={20}/> Recent Operations
                                 </h3>
                                 <div className="space-y-3">
                                     {results.slice(0, 8).map((host, i) => (
-                                        <div key={i} className="flex justify-between items-center p-3 bg-gray-900/40 border border-gray-800 rounded hover:border-gray-600 transition-colors">
+                                        <div key={i} className="flex justify-between items-center p-3 bg-[#111] border border-[#222] rounded hover:border-neutral-600 transition-colors">
                                             <div className="flex items-center gap-3">
-                                                <span className={`w-2 h-2 rounded-full ${host.riskLevel === 'CRITICAL' ? 'bg-red-500 animate-pulse' : host.riskLevel === 'HIGH' ? 'bg-orange-500' : 'bg-blue-500'}`}></span>
-                                                <span className="font-mono text-sm text-gray-300">{host.ip}</span>
+                                                <span className={`w-2 h-2 rounded-full ${host.riskLevel === 'CRITICAL' ? 'bg-red-500 animate-pulse' : host.riskLevel === 'HIGH' ? 'bg-red-700' : 'bg-[#151515]'}`}></span>
+                                                <span className="font-mono text-sm text-neutral-300">{host.ip}</span>
                                             </div>
-                                            <span className="text-xs text-gray-500">{host.country}</span>
+                                            <span className="text-xs text-[#888]">{host.country}</span>
                                             <span className="text-xs font-bold text-white">{host.signatures.length} Sigs</span>
                                         </div>
                                     ))}
@@ -730,7 +730,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                 )}
 
                 {activeTab === 'VULN' && (
-                    <div className="absolute inset-4 z-20 bg-black/80 backdrop-blur-md border border-gray-800 rounded-xl p-8 animate-fade-in flex flex-col gap-6">
+                    <div className="absolute inset-4 z-20 bg-black/80 backdrop-blur-md border border-[#222] rounded-xl p-8 animate-fade-in flex flex-col gap-6">
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 shrink-0">
                             <div className="bg-black/60 border border-red-500/30 rounded-lg p-4 flex items-center gap-4 hover:bg-red-900/10 transition-colors">
                                 <div className="p-3 bg-red-900/20 rounded-full border border-red-500/30 text-red-500 animate-pulse"><Flame size={24}/></div>
@@ -739,24 +739,24 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                                     <div className="text-3xl font-mono font-bold text-white">{vulnStats.critical.toLocaleString()}</div>
                                 </div>
                             </div>
-                            <div className="bg-black/60 border border-orange-500/30 rounded-lg p-4 flex items-center gap-4 hover:bg-orange-900/10 transition-colors">
-                                <div className="p-3 bg-orange-900/20 rounded-full border border-orange-500/30 text-orange-500"><AlertCircle size={24}/></div>
+                            <div className="bg-black/60 border border-white/20 rounded-lg p-4 flex items-center gap-4 hover:bg-white/5 transition-colors">
+                                <div className="p-3 bg-white/10 rounded-full border border-white/20 text-white"><AlertCircle size={24}/></div>
                                 <div>
-                                    <div className="text-[10px] text-orange-400 font-bold uppercase tracking-widest">Known Exploited</div>
+                                    <div className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">Known Exploited</div>
                                     <div className="text-3xl font-mono font-bold text-white">{vulnStats.kev.toLocaleString()}</div>
                                 </div>
                             </div>
-                            <div className="bg-black/60 border border-blue-500/30 rounded-lg p-4 flex items-center gap-4 hover:bg-blue-900/10 transition-colors">
-                                <div className="p-3 bg-blue-900/20 rounded-full border border-blue-500/30 text-blue-500"><BarChart3 size={24}/></div>
+                            <div className="bg-black/60 border border-white/20 rounded-lg p-4 flex items-center gap-4 hover:bg-[#111] transition-colors">
+                                <div className="p-3 bg-[#111] rounded-full border border-white/20 text-white"><BarChart3 size={24}/></div>
                                 <div>
-                                    <div className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Avg Severity</div>
+                                    <div className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">Avg Severity</div>
                                     <div className="text-3xl font-mono font-bold text-white">{vulnStats.avgScore}</div>
                                 </div>
                             </div>
-                            <div className="bg-black/60 border border-yellow-500/30 rounded-lg p-4 flex items-center gap-4 hover:bg-yellow-900/10 transition-colors">
-                                <div className="p-3 bg-yellow-900/20 rounded-full border border-yellow-500/30 text-yellow-500"><Zap size={24}/></div>
+                            <div className="bg-black/60 border border-white/20 rounded-lg p-4 flex items-center gap-4 hover:bg-white/5 transition-colors">
+                                <div className="p-3 bg-white/10 rounded-full border border-white/20 text-white"><Zap size={24}/></div>
                                 <div>
-                                    <div className="text-[10px] text-yellow-400 font-bold uppercase tracking-widest">Public Exploits</div>
+                                    <div className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">Public Exploits</div>
                                     <div className="text-3xl font-mono font-bold text-white">{exploitData.length.toLocaleString()}</div>
                                 </div>
                             </div>
@@ -764,12 +764,12 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
 
                         {/* Additional Stats Row (New) */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-32 shrink-0">
-                             <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4 flex items-center justify-between">
+                             <div className="bg-[#111] border border-[#222] rounded-lg p-4 flex items-center justify-between">
                                  <div>
-                                     <h3 className="text-xs font-bold text-purple-400 uppercase mb-2 flex items-center gap-2">
+                                     <h3 className="text-xs font-bold text-red-400 uppercase mb-2 flex items-center gap-2">
                                          <Network size={14}/> Attack Vectors
                                      </h3>
-                                     <div className="flex gap-4 text-xs font-mono text-gray-400">
+                                     <div className="flex gap-4 text-xs font-mono text-[#AAA]">
                                          <div>NET: <span className="text-white">{vulnStats.vectors.NETWORK}</span></div>
                                          <div>ADJ: <span className="text-white">{vulnStats.vectors.ADJACENT}</span></div>
                                          <div>LOC: <span className="text-white">{vulnStats.vectors.LOCAL}</span></div>
@@ -778,23 +778,23 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                                  </div>
                                  <div className="h-full w-48 flex items-end gap-1">
                                      {['NETWORK', 'ADJACENT', 'LOCAL', 'PHYSICAL'].map((v, i) => (
-                                         <div key={v} className="w-1/4 bg-purple-900/30 h-full relative rounded-t">
-                                             <div className="absolute bottom-0 left-0 right-0 bg-purple-500/50 hover:bg-purple-400 transition-colors" style={{ height: `${(vulnStats.vectors[v] / Math.max(1, vulnStats.total)) * 100}%` }}></div>
+                                         <div key={v} className="w-1/4 bg-white/10 h-full relative rounded-t">
+                                             <div className="absolute bottom-0 left-0 right-0 bg-white/40 hover:bg-white/60 transition-colors" style={{ height: `${(vulnStats.vectors[v] / Math.max(1, vulnStats.total)) * 100}%` }}></div>
                                          </div>
                                      ))}
                                  </div>
                              </div>
                              
-                             <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4 flex flex-col relative overflow-hidden">
+                             <div className="bg-[#111] border border-[#222] rounded-lg p-4 flex flex-col relative overflow-hidden">
                                  <h3 className="text-xs font-bold text-red-400 uppercase mb-2 flex items-center gap-2 z-10">
                                      <Siren size={14}/> Recent KEV Additions
                                  </h3>
                                  <div className="flex-1 overflow-hidden relative z-10">
                                      <div className="animate-vertical-scroll space-y-2">
                                          {[...vulnStats.kevList, ...vulnStats.kevList].map((k, i) => (
-                                             <div key={i} className="flex justify-between text-[10px] border-b border-gray-800 pb-1">
+                                             <div key={i} className="flex justify-between text-[10px] border-b border-[#222] pb-1">
                                                  <span className="font-bold text-red-300">{k.id}</span>
-                                                 <span className="text-gray-500 truncate max-w-[200px]">{k.product}</span>
+                                                 <span className="text-[#888] truncate max-w-[200px]">{k.product}</span>
                                              </div>
                                          ))}
                                      </div>
@@ -807,21 +807,21 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1 min-h-0">
                             <div className="col-span-1 space-y-6">
-                                <div className="bg-gray-900/50 border border-gray-800 p-6 rounded-lg h-full flex flex-col">
-                                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><BarChart3 className="text-blue-400"/> SEVERITY DISTRIBUTION</h3>
+                                <div className="bg-[#111] border border-[#222] p-6 rounded-lg h-full flex flex-col">
+                                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><BarChart3 className="text-red-400"/> SEVERITY DISTRIBUTION</h3>
                                     <div className="flex-1 flex items-center justify-center gap-4">
                                         {[
-                                            { label: 'CRITICAL', count: vulnStats.critical, color: 'bg-red-500', text: 'text-red-500' },
-                                            { label: 'HIGH', count: vulnStats.high, color: 'bg-orange-500', text: 'text-orange-500' },
-                                            { label: 'MEDIUM', count: vulnStats.medium, color: 'bg-yellow-500', text: 'text-yellow-500' },
-                                            { label: 'LOW', count: vulnStats.low, color: 'bg-green-500', text: 'text-green-500' }
+                                            { label: 'CRITICAL', count: vulnStats.critical, color: 'bg-red-600', text: 'text-red-500' },
+                                            { label: 'HIGH', count: vulnStats.high, color: 'bg-red-800', text: 'text-red-400' },
+                                            { label: 'MEDIUM', count: vulnStats.medium, color: 'bg-neutral-400', text: 'text-neutral-400' },
+                                            { label: 'LOW', count: vulnStats.low, color: 'bg-neutral-600', text: 'text-neutral-600' }
                                         ].map((sev, i) => (
                                             <div key={i} className="flex flex-col items-center gap-2">
-                                                <div className="w-12 bg-gray-800 rounded-t relative overflow-hidden h-32 flex items-end">
+                                                <div className="w-12 bg-[#151515] rounded-t relative overflow-hidden h-32 flex items-end">
                                                     <div className={`w-full ${sev.color} transition-all duration-1000`} style={{ height: `${(sev.count / vulnStats.total) * 100}%` }}></div>
                                                 </div>
                                                 <div className={`text-xs font-bold ${sev.text}`}>{sev.count}</div>
-                                                <div className="text-[8px] text-gray-500 uppercase">{sev.label}</div>
+                                                <div className="text-[8px] text-[#888] uppercase">{sev.label}</div>
                                             </div>
                                         ))}
                                     </div>
@@ -829,14 +829,14 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                             </div>
 
                             <div className="col-span-1 space-y-6">
-                                <div className="bg-gray-900/50 border border-gray-800 p-6 rounded-lg h-full flex flex-col">
-                                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Bug className="text-purple-500"/> TOP WEAKNESSES (CWE)</h3>
+                                <div className="bg-[#111] border border-[#222] p-6 rounded-lg h-full flex flex-col">
+                                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Bug className="text-red-500"/> TOP WEAKNESSES (CWE)</h3>
                                     <div className="space-y-3 overflow-y-auto custom-scrollbar flex-1">
                                         {vulnStats.topCwes.map((cwe, i) => (
                                             <div key={i} className="flex items-center gap-2">
-                                                <div className="flex-1 text-sm text-gray-300 font-mono">{cwe.label}</div>
-                                                <div className="w-1/2 bg-gray-800 h-2 rounded-full overflow-hidden">
-                                                    <div className="bg-purple-500 h-full" style={{width: `${(cwe.count / vulnStats.topCwes[0].count) * 100}%`}}></div>
+                                                <div className="flex-1 text-sm text-neutral-300 font-mono">{cwe.label}</div>
+                                                <div className="w-1/2 bg-[#151515] h-2 rounded-full overflow-hidden">
+                                                    <div className="bg-red-500 h-full" style={{width: `${(cwe.count / vulnStats.topCwes[0].count) * 100}%`}}></div>
                                                 </div>
                                                 <div className="text-xs font-mono text-white w-8 text-right">{cwe.count}</div>
                                             </div>
@@ -846,14 +846,14 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                             </div>
 
                             <div className="col-span-1 space-y-6">
-                                <div className="bg-gray-900/50 border border-gray-800 p-6 rounded-lg h-full flex flex-col">
-                                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Target className="text-orange-500"/> TOP VULNERABLE VENDORS</h3>
+                                <div className="bg-[#111] border border-[#222] p-6 rounded-lg h-full flex flex-col">
+                                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Target className="text-white"/> TOP VULNERABLE VENDORS</h3>
                                     <div className="space-y-3 overflow-y-auto custom-scrollbar flex-1">
                                         {topVendors.map((v, i) => (
                                             <div key={i} className="flex items-center gap-2">
-                                                <div className="flex-1 text-sm text-gray-300">{v.label}</div>
-                                                <div className="w-1/2 bg-gray-800 h-2 rounded-full overflow-hidden">
-                                                    <div className="bg-orange-500 h-full" style={{width: `${(v.count / topVendors[0].count) * 100}%`}}></div>
+                                                <div className="flex-1 text-sm text-neutral-300">{v.label}</div>
+                                                <div className="w-1/2 bg-[#151515] h-2 rounded-full overflow-hidden">
+                                                    <div className="bg-red-700 h-full" style={{width: `${(v.count / topVendors[0].count) * 100}%`}}></div>
                                                 </div>
                                                 <div className="text-xs font-mono text-white w-8 text-right">{v.count}</div>
                                             </div>
@@ -866,24 +866,24 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                 )}
 
                 {activeTab === 'IOC' && (
-                    <div className="absolute inset-4 z-20 bg-black/80 backdrop-blur-md border border-gray-800 rounded-xl p-8 animate-fade-in flex flex-col gap-6">
+                    <div className="absolute inset-4 z-20 bg-black/80 backdrop-blur-md border border-[#222] rounded-xl p-8 animate-fade-in flex flex-col gap-6">
                         <div className="flex justify-between items-center mb-2">
-                            <h3 className="text-2xl font-bold text-white flex items-center gap-2 font-cyber"><Database className="text-purple-500"/> INDICATOR ANALYTICS</h3>
-                            <div className="text-xs font-mono text-gray-500 animate-pulse flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-green-500"></span> LIVE INGEST ACTIVE
+                            <h3 className="text-2xl font-bold text-white flex items-center gap-2 font-cyber"><Database className="text-red-500"/> INDICATOR ANALYTICS</h3>
+                            <div className="text-xs font-mono text-[#888] animate-pulse flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-red-500"></span> LIVE INGEST ACTIVE
                             </div>
                         </div>
 
                         {/* Recent IOC Ticker (New) */}
-                        <div className="bg-gray-900/50 border-y border-gray-800 py-2 overflow-hidden flex items-center gap-4">
-                            <div className="text-[10px] font-bold text-gray-500 uppercase px-4 border-r border-gray-700">Recent Ingest</div>
+                        <div className="bg-[#111] border-y border-[#222] py-2 overflow-hidden flex items-center gap-4">
+                            <div className="text-[10px] font-bold text-[#888] uppercase px-4 border-r border-[#333]">Recent Ingest</div>
                             <div className="flex-1 overflow-hidden">
                                 <div className="flex gap-8 animate-marquee whitespace-nowrap">
                                     {[...latestIocs, ...latestIocs].map((item, i) => (
-                                        <div key={i} className="flex items-center gap-2 text-xs font-mono text-gray-400">
-                                            <span className={`text-[9px] px-1.5 rounded font-bold ${item.src === 'FEODO' ? 'bg-red-900/20 text-red-400' : 'bg-blue-900/20 text-blue-400'}`}>{item.src}</span>
+                                        <div key={i} className="flex items-center gap-2 text-xs font-mono text-[#AAA]">
+                                            <span className={`text-[9px] px-1.5 rounded font-bold ${item.src === 'FEODO' ? 'bg-red-900/20 text-red-400' : 'bg-[#111] text-red-400'}`}>{item.src}</span>
                                             <span className="text-white">{item.val}</span>
-                                            <span className="text-gray-600">[{item.threat}]</span>
+                                            <span className="text-neutral-600">[{item.threat}]</span>
                                         </div>
                                     ))}
                                 </div>
@@ -892,7 +892,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
 
                         <div className="grid grid-cols-4 gap-6 pb-4">
                             {iocCounts.map((ioc, idx) => (
-                                <div key={idx} className="bg-gray-900/50 border border-gray-800 p-4 rounded-lg flex flex-col items-center justify-center relative overflow-hidden group">
+                                <div key={idx} className="bg-[#111] border border-[#222] p-4 rounded-lg flex flex-col items-center justify-center relative overflow-hidden group">
                                     <div className="absolute inset-0 bg-gradient-to-br from-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                     <div className="text-3xl font-bold text-white mb-2 relative z-10">{ioc.value.toLocaleString()}</div>
                                     <div className={`text-xs font-bold uppercase relative z-10 ${ioc.color}`}>{ioc.label}</div>
@@ -902,14 +902,14 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                         </div>
 
                         <div className="grid grid-cols-2 gap-6 flex-1 min-h-0">
-                            <div className="col-span-1 bg-gray-900/50 border border-gray-800 p-6 rounded-lg flex flex-col">
-                                <h4 className="text-sm font-bold text-gray-400 uppercase mb-4">Top Malware Families</h4>
+                            <div className="col-span-1 bg-[#111] border border-[#222] p-6 rounded-lg flex flex-col">
+                                <h4 className="text-sm font-bold text-[#AAA] uppercase mb-4">Top Malware Families</h4>
                                 <div className="space-y-2 flex-1 overflow-y-auto custom-scrollbar">
                                     {iocStats.malware.slice(0, 10).map((m, i) => (
                                         <div key={i} className="flex justify-between items-center group hover:bg-white/5 p-1 rounded">
-                                            <span className="text-sm text-gray-300 font-mono truncate w-1/3 group-hover:text-white transition-colors">{m.label}</span>
-                                            <div className="flex-1 mx-4 h-1 bg-gray-800 rounded-full overflow-hidden">
-                                                <div className="bg-purple-500 h-full shadow-[0_0_5px_#a855f7]" style={{width: `${(m.count / iocStats.malware[0].count) * 100}%`}}></div>
+                                            <span className="text-sm text-neutral-300 font-mono truncate w-1/3 group-hover:text-white transition-colors">{m.label}</span>
+                                            <div className="flex-1 mx-4 h-1 bg-[#151515] rounded-full overflow-hidden">
+                                                <div className="bg-red-500 h-full shadow-[0_0_5px_#ef4444]" style={{width: `${(m.count / iocStats.malware[0].count) * 100}%`}}></div>
                                             </div>
                                             <span className="text-sm font-bold text-white">{m.count}</span>
                                         </div>
@@ -917,14 +917,14 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                                 </div>
                             </div>
 
-                            <div className="col-span-1 bg-gray-900/50 border border-gray-800 p-6 rounded-lg flex flex-col">
-                                <h4 className="text-sm font-bold text-gray-400 uppercase mb-4">Bad Infrastructure (ASN)</h4>
+                            <div className="col-span-1 bg-[#111] border border-[#222] p-6 rounded-lg flex flex-col">
+                                <h4 className="text-sm font-bold text-[#AAA] uppercase mb-4">Bad Infrastructure (ASN)</h4>
                                 <div className="space-y-2 flex-1 overflow-y-auto custom-scrollbar">
                                     {iocStats.asns.slice(0, 10).map((a, i) => (
                                         <div key={i} className="flex justify-between items-center group hover:bg-white/5 p-1 rounded">
-                                            <span className="text-sm text-gray-300 font-mono truncate max-w-[200px] w-1/3 group-hover:text-white">{a.label}</span>
-                                            <div className="flex-1 mx-4 h-1 bg-gray-800 rounded-full overflow-hidden">
-                                                <div className="bg-orange-500 h-full shadow-[0_0_5px_#f97316]" style={{width: `${(a.count / iocStats.asns[0].count) * 100}%`}}></div>
+                                            <span className="text-sm text-neutral-300 font-mono truncate max-w-[200px] w-1/3 group-hover:text-white">{a.label}</span>
+                                            <div className="flex-1 mx-4 h-1 bg-[#151515] rounded-full overflow-hidden">
+                                                <div className="bg-red-700 h-full shadow-[0_0_5px_#b91c1c]" style={{width: `${(a.count / iocStats.asns[0].count) * 100}%`}}></div>
                                             </div>
                                             <span className="text-sm font-bold text-white">{a.count}</span>
                                         </div>
@@ -932,29 +932,29 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                                 </div>
                             </div>
 
-                            <div className="col-span-1 bg-gray-900/50 border border-gray-800 p-6 rounded-lg">
-                                <h4 className="text-sm font-bold text-gray-400 uppercase mb-4">IOC Distribution by Type</h4>
+                            <div className="col-span-1 bg-[#111] border border-[#222] p-6 rounded-lg">
+                                <h4 className="text-sm font-bold text-[#AAA] uppercase mb-4">IOC Distribution by Type</h4>
                                 <div className="flex items-center justify-around h-full">
                                     {iocStats.types.map((t, i) => (
                                         <div key={i} className="flex flex-col items-center gap-2">
-                                            <div className="h-32 w-10 bg-gray-800 rounded-t relative overflow-hidden flex items-end">
-                                                <div className="w-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" style={{ height: `${(t.count / Math.max(1, iocStats.types[0].count)) * 100}%` }}></div>
+                                            <div className="h-32 w-10 bg-[#151515] rounded-t relative overflow-hidden flex items-end">
+                                                <div className="w-full bg-[#151515] shadow-[0_0_10px_#3b82f6]" style={{ height: `${(t.count / Math.max(1, iocStats.types[0].count)) * 100}%` }}></div>
                                             </div>
                                             <div className="mt-1 text-xs font-bold text-white">{t.count}</div>
-                                            <div className="text-[10px] text-gray-500 uppercase">{t.label}</div>
+                                            <div className="text-[10px] text-[#888] uppercase">{t.label}</div>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            <div className="col-span-1 bg-gray-900/50 border border-gray-800 p-6 rounded-lg flex flex-col">
-                                <h4 className="text-sm font-bold text-gray-400 uppercase mb-4">Top C2 Countries (Feodo)</h4>
+                            <div className="col-span-1 bg-[#111] border border-[#222] p-6 rounded-lg flex flex-col">
+                                <h4 className="text-sm font-bold text-[#AAA] uppercase mb-4">Top C2 Countries (Feodo)</h4>
                                 <div className="grid grid-cols-2 gap-4">
                                     {iocStats.countries.slice(0, 8).map((c, i) => (
-                                        <div key={i} className="flex items-center justify-between bg-black/30 p-2 rounded border border-gray-800 hover:border-red-500/30 transition-colors">
+                                        <div key={i} className="flex items-center justify-between bg-black/30 p-2 rounded border border-[#222] hover:border-red-500/30 transition-colors">
                                             <div className="flex items-center gap-2">
                                                 <img src={`https://flagcdn.com/w20/${c.label.toLowerCase()}.png`} className="w-5 h-3 rounded-sm opacity-80" alt={c.label}/>
-                                                <span className="text-sm text-gray-300 font-mono">{c.label}</span>
+                                                <span className="text-sm text-neutral-300 font-mono">{c.label}</span>
                                             </div>
                                             <span className="text-sm font-bold text-red-400">{c.count}</span>
                                         </div>
@@ -966,18 +966,18 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                 )}
 
                 {activeTab === 'NEWS' && (
-                    <div className="absolute inset-4 z-20 bg-black/80 backdrop-blur-md border border-gray-800 rounded-xl p-0 animate-fade-in overflow-hidden flex flex-col relative">
+                    <div className="absolute inset-4 z-20 bg-black/80 backdrop-blur-md border border-[#222] rounded-xl p-0 animate-fade-in overflow-hidden flex flex-col relative">
                         <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black via-black/80 to-transparent h-24 p-8 flex items-center gap-4">
-                             <h3 className="text-2xl font-bold text-white flex items-center gap-2 font-cyber"><Globe className="text-blue-500"/> GLOBAL INTEL BRIEF</h3>
-                             <span className="text-xs font-mono text-gray-500 bg-gray-900/80 px-2 py-1 rounded border border-gray-800">{newsItems.length} Sources Active</span>
+                             <h3 className="text-2xl font-bold text-white flex items-center gap-2 font-cyber"><Globe className="text-red-500"/> GLOBAL INTEL BRIEF</h3>
+                             <span className="text-xs font-mono text-[#888] bg-[#111] px-2 py-1 rounded border border-[#222]">{newsItems.length} Sources Active</span>
                         </div>
                         
                         <div className="flex-1 relative overflow-hidden">
-                             <div className="animate-vertical-scroll hover:[animation-play-state:paused] w-full px-8 pb-8 pt-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style={{ animationDuration: `${Math.max(120, newsItems.length * 10)}s` }}>
+                             <div className="overflow-y-auto custom-scrollbar w-full h-full px-8 pb-8 pt-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 absolute inset-0">
                                 {scrollingNews.map((news, i) => {
                                     const criticality = getCriticality(news);
                                     return (
-                                        <div key={`${news.link}-${i}`} className={`bg-gray-900/40 border p-6 rounded-lg hover:bg-gray-800 transition-colors group relative ${getTagStyle(news.category)}`}>
+                                        <div key={`${news.link}-${i}`} className={`bg-[#111] border p-6 rounded-lg hover:bg-[#151515] transition-colors group relative ${getTagStyle(news.category)}`}>
                                             {criticality === 'CRITICAL' && (
                                                 <div className="absolute -right-1 -top-1 bg-red-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-bl shadow-[0_0_8px_#dc2626] animate-pulse">CRITICAL</div>
                                             )}
@@ -990,7 +990,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                                                 </span>
                                                 <span>{new Date(news.timestamp).toLocaleDateString()}</span>
                                             </div>
-                                            <h4 className="text-lg font-bold text-white mb-2 group-hover:text-cyber-cyan transition-colors leading-tight">{news.title}</h4>
+                                            <h4 className="text-lg font-bold text-white mb-2 group-hover:text-red-500 transition-colors leading-tight">{news.title}</h4>
                                             <p className="text-sm opacity-70 line-clamp-3 leading-relaxed">{news.description}</p>
                                         </div>
                                     );

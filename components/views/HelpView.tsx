@@ -8,22 +8,22 @@ const Rocket = ({ size, className }: { size: number, className?: string }) => (
 );
 
 const HelpSection = ({ title, icon: Icon, children }: { title: string, icon: any, children?: React.ReactNode }) => (
-    <div className="bg-gray-900/40 border border-gray-800 rounded-lg p-6 hover:border-gray-700 transition-colors">
-        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-3 border-b border-gray-800 pb-3">
-            <Icon className="text-cyber-cyan" size={24}/> {title}
+    <div className="bg-[#111] border border-[#222] rounded-lg p-6 hover:border-[#333] transition-colors">
+        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-3 border-b border-[#222] pb-3">
+            <Icon className="text-red-500" size={24}/> {title}
         </h3>
-        <div className="text-gray-400 text-sm leading-relaxed space-y-4">
+        <div className="text-[#AAA] text-sm leading-relaxed space-y-4">
             {children}
         </div>
     </div>
 );
 
 const KeyShortcut = ({ keys, desc }: { keys: string[], desc: string }) => (
-    <div className="flex justify-between items-center py-2 border-b border-gray-800 last:border-0">
-        <span className="text-gray-400">{desc}</span>
+    <div className="flex justify-between items-center py-2 border-b border-[#222] last:border-0">
+        <span className="text-[#AAA]">{desc}</span>
         <div className="flex gap-1">
             {keys.map((k, i) => (
-                <span key={i} className="px-2 py-1 bg-gray-800 rounded border border-gray-700 font-mono text-xs text-white min-w-[24px] text-center">
+                <span key={i} className="px-2 py-1 bg-[#151515] rounded border border-[#333] font-mono text-xs text-white min-w-[24px] text-center">
                     {k}
                 </span>
             ))}
@@ -34,15 +34,15 @@ const KeyShortcut = ({ keys, desc }: { keys: string[], desc: string }) => (
 export const HelpView: React.FC = () => {
     return (
         <div className="h-[calc(100vh-70px)] bg-cyber-grid flex flex-col">
-            <div className="bg-black/40 border-b border-gray-800 p-6 flex items-center gap-4 shrink-0">
-                <div className="p-3 bg-blue-900/20 rounded-lg border border-blue-500/30 text-blue-400">
+            <div className="bg-black/40 border-b border-[#222] p-6 flex items-center gap-4 shrink-0">
+                <div className="p-3 bg-[#111] rounded-lg border border-neutral-500/30 text-red-400">
                     <HelpCircle size={28}/>
                 </div>
                 <div>
                     <h2 className="text-2xl font-bold text-white font-cyber flex items-center gap-2">
-                        SYSTEM <span className="text-cyber-cyan">GUIDE</span>
+                        SYSTEM <span className="text-red-500">GUIDE</span>
                     </h2>
-                    <p className="text-sm text-gray-500 font-mono mt-1">Technical Documentation & Usage Manual</p>
+                    <p className="text-sm text-[#888] font-mono mt-1">Technical Documentation & Usage Manual</p>
                 </div>
             </div>
 
@@ -56,8 +56,8 @@ export const HelpView: React.FC = () => {
                                 <strong>Xyberah Threat Processor</strong> is a client-side threat intelligence and forensic analysis platform. 
                                 It runs entirely in your browser, ensuring data privacy while providing advanced analytic capabilities.
                             </p>
-                            <div className="bg-blue-900/10 border border-blue-500/20 p-4 rounded text-blue-200 text-xs font-mono mt-2">
-                                <strong className="text-blue-400">QUICK START:</strong> Drag & Drop any JSON logs, PCAP capture files, or STIX bundles directly onto the dashboard to begin analysis immediately.
+                            <div className="bg-[#111] border border-neutral-500/20 p-4 rounded text-white text-xs font-mono mt-2">
+                                <strong className="text-red-400">QUICK START:</strong> Drag & Drop any JSON logs, PCAP capture files, or STIX bundles directly onto the dashboard to begin analysis immediately.
                             </div>
                         </HelpSection>
 
@@ -72,16 +72,16 @@ export const HelpView: React.FC = () => {
                         </HelpSection>
                     </div>
 
-                    <div className="h-px bg-gray-800 w-full"></div>
+                    <div className="h-px bg-[#151515] w-full"></div>
 
                     {/* Architecture & Tech Specs */}
-                    <h3 className="text-xl font-bold text-white mb-4 pl-2 border-l-4 border-cyber-cyan">Technical Architecture</h3>
+                    <h3 className="text-xl font-bold text-white mb-4 pl-2 border-l-4 border-red-500">Technical Architecture</h3>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <HelpSection title="Zero-Trust Privacy" icon={Shield}>
                             <p>
                                 This system employs a <strong>Local-First</strong> architecture. All heavy lifting—log parsing, graph generation, and pattern matching—is executed within your browser's JavaScript engine (V8/SpiderMonkey).
                             </p>
-                            <div className="bg-green-900/10 border border-green-500/20 p-3 rounded text-green-300 text-xs font-mono mt-2">
+                            <div className="bg-neutral-900/10 border border-neutral-500/20 p-3 rounded text-white text-xs font-mono mt-2">
                                 NO UPLOADS: Your raw logs and PCAP files are never sent to a remote server.
                             </div>
                         </HelpSection>
@@ -91,7 +91,7 @@ export const HelpView: React.FC = () => {
                                 Data persistence is handled via <strong>IndexedDB</strong>. 
                                 Large datasets (&gt;100MB JSON or &gt;500k graph nodes) may impact browser performance.
                             </p>
-                            <ul className="list-disc list-inside space-y-1 ml-2 text-gray-500 text-xs mt-2">
+                            <ul className="list-disc list-inside space-y-1 ml-2 text-[#888] text-xs mt-2">
                                 <li>Recommended Max Log Size: 50MB</li>
                                 <li>Recommended Max Nodes: 2,000</li>
                                 <li>Storage Quota: Dependent on Browser (typ. 50-80% disk)</li>
@@ -99,17 +99,17 @@ export const HelpView: React.FC = () => {
                         </HelpSection>
                     </div>
 
-                    <div className="h-px bg-gray-800 w-full"></div>
+                    <div className="h-px bg-[#151515] w-full"></div>
 
                     {/* Module Breakdown */}
-                    <h3 className="text-xl font-bold text-white mb-4 pl-2 border-l-4 border-purple-500">System Modules</h3>
+                    <h3 className="text-xl font-bold text-white mb-4 pl-2 border-l-4 border-neutral-500">System Modules</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <HelpSection title="Dashboard & SOC Wall" icon={Activity}>
                             <p>
                                 The central hub for monitoring active threats. The <strong>SOC Wall</strong> mode provides a cinematic, high-contrast view suitable for large screens in Security Operations Centers.
                             </p>
-                            <ul className="mt-2 text-xs space-y-1 text-gray-500 font-mono">
+                            <ul className="mt-2 text-xs space-y-1 text-[#888] font-mono">
                                 <li>• Live Attack Map</li>
                                 <li>• IOC Velocity Tracking</li>
                                 <li>• Critical Alert Feed</li>
@@ -120,7 +120,7 @@ export const HelpView: React.FC = () => {
                             <p>
                                 Analyze packet captures (PCAP) directly in-browser. Features include TCP stream reassembly, file extraction, TLS fingerprinting (JA3), and protocol breakdown.
                             </p>
-                            <ul className="mt-2 text-xs space-y-1 text-gray-500 font-mono">
+                            <ul className="mt-2 text-xs space-y-1 text-[#888] font-mono">
                                 <li>• Stream Follow</li>
                                 <li>• Hex/ASCII Viewer</li>
                                 <li>• Geo-IP Correlation</li>
@@ -131,7 +131,7 @@ export const HelpView: React.FC = () => {
                             <p>
                                 Visual link analysis connecting IPs, Domains, Threat Actors, and Malware signatures. Supports physics-based force layout and structured "Kill Chain" layout modes.
                             </p>
-                            <ul className="mt-2 text-xs space-y-1 text-gray-500 font-mono">
+                            <ul className="mt-2 text-xs space-y-1 text-[#888] font-mono">
                                 <li>• STIX 2.1 Visualization</li>
                                 <li>• Entity Expansion</li>
                                 <li>• Cluster Detection</li>
@@ -142,7 +142,7 @@ export const HelpView: React.FC = () => {
                             <p>
                                 Create, edit, and convert detection rules (YARA, Sigma, Suricata). Integrated AI assistant helps generate rules from natural language or log samples.
                             </p>
-                            <ul className="mt-2 text-xs space-y-1 text-gray-500 font-mono">
+                            <ul className="mt-2 text-xs space-y-1 text-[#888] font-mono">
                                 <li>• Multi-format Converter</li>
                                 <li>• Syntax Highlighting</li>
                                 <li>• Simulation Engine</li>
@@ -153,7 +153,7 @@ export const HelpView: React.FC = () => {
                             <p>
                                 Aggregated feeds from CISA, ZDI, URLHaus, and MalwareBazaar. Search for IOCs (Hashes, IPs, Domains) across multiple providers instantly.
                             </p>
-                            <ul className="mt-2 text-xs space-y-1 text-gray-500 font-mono">
+                            <ul className="mt-2 text-xs space-y-1 text-[#888] font-mono">
                                 <li>• TAXII Relay Support</li>
                                 <li>• CSV/JSON Export</li>
                                 <li>• Real-time Feed Sync</li>
@@ -164,7 +164,7 @@ export const HelpView: React.FC = () => {
                             <p>
                                 Context-aware LLM integration (Gemini) that can explain alerts, suggest mitigation strategies, and summarize complex threat actor profiles.
                             </p>
-                            <ul className="mt-2 text-xs space-y-1 text-gray-500 font-mono">
+                            <ul className="mt-2 text-xs space-y-1 text-[#888] font-mono">
                                 <li>• Contextual Chat</li>
                                 <li>• Rule Generation</li>
                                 <li>• Report Summarization</li>
@@ -172,7 +172,7 @@ export const HelpView: React.FC = () => {
                         </HelpSection>
                     </div>
 
-                    <div className="h-px bg-gray-800 w-full"></div>
+                    <div className="h-px bg-[#151515] w-full"></div>
 
                     {/* Shortcuts & Reference */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -186,7 +186,7 @@ export const HelpView: React.FC = () => {
 
                         <HelpSection title="Technical JSON Format" icon={FileJson}>
                             <p className="mb-2">For custom log ingestion, ensure your JSON follows this schema:</p>
-                            <pre className="bg-black border border-gray-700 p-3 rounded text-xs font-mono text-green-400 overflow-x-auto">
+                            <pre className="bg-black border border-[#333] p-3 rounded text-xs font-mono text-white overflow-x-auto">
 {`[
   {
     "timestamp": "2023-10-27T10:00:00Z",
