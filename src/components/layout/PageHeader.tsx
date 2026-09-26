@@ -27,19 +27,8 @@ export default function PageHeader({
     <section className="at-page-header">
       <div className="at-page-header-inner">
         <div className="at-breadcrumb-row">
-          <nav className="at-breadcrumbs" aria-label="Breadcrumb">
-            {breadcrumbs.map((crumb, index) => (
-              <div className="at-breadcrumb" key={`${crumb.label}-${index}`}>
-                {index > 0 && <ChevronRight size={12} />}
-                <span className={index === breadcrumbs.length - 1 ? 'current' : ''}>
-                  {crumb.label}
-                </span>
-              </div>
-            ))}
-          </nav>
-
           {timeRange && (
-            <button type="button" className="at-range-control">
+            <button type="button" className="at-range-control" style={{ marginLeft: "auto" }}>
               <Calendar size={13} />
               <span>{timeRange}</span>
               <ChevronRight size={12} />
