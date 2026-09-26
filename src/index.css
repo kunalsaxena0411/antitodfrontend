@@ -11481,7 +11481,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  bottom: 112px;
+  bottom: 130px;
   left: 0;
   transform-origin: 50% 50%;
 }
@@ -11620,7 +11620,7 @@
   bottom: 0;
   left: 0;
   z-index: 12;
-  height: 112px;
+  height: 130px;
   border-top: 1px solid #252525;
   background:
     linear-gradient(180deg,
@@ -11672,7 +11672,7 @@
 .at-investigation-timeline-track {
   position: relative;
   display: flex;
-  height: 74px;
+  height: 92px;
   align-items: flex-start;
   gap: 0;
   overflow-x: auto;
