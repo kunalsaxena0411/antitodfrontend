@@ -1,0 +1,1513 @@
+<USER_REQUEST>
+Yes. After inspecting the actual project code, there is a **much bigger underlying problem** than just the `+` buttons.
+
+### The real cause
+
+Your React Flow pages **never import React Flow's required stylesheet**.
+
+In `src/main.tsx` you currently have:
+
+```tsx
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
+```
+
+but there is no:
+
+```tsx
+import 'reactflow/dist/style.css';
+```
+
+That explains the screenshots where nodes become absurdly wide, handles look like random blocks, and newly inserted nodes can appear in strange document-flow positions.
+
+At the same time, the stencil palette is using **native HTML5 drag/drop**. So you have two interaction systems fighting each other:
+
+```text
+Stencil card
+   ?
+native draggable
+   ?
+ReactFlow onDrop
+   ?
+screenToFlowPosition(mouse event)
+```
+
+while your redesigned card UI is trying to provide:
+
+```text
+Stencil card ? +
+```
+
+I would stop doing that.
+
+## New approach
+
+Make stencil insertion deterministic:
+
+```text
+CLICK STENCIL
+      ?
+Create node
+      ?
+Place node at the visible canvas center
+      ?
+Select node
+      ?
+Center canvas on node
+```
+
+No HTML5 drag/drop.
+
+The stencil cards remain visually draggable-looking only if you later want a real drag system, but **the primary interaction becomes click-to-add**. This eliminates the inconsistent `+` behavior completely.
+
+---
+
+# 1. Fix React Flow globally
+
+## `src/main.tsx`
+
+Replace the whole file with:
+
+```tsx
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+
+import 'reactflow/dist/style.css';
+import './index.css';
+
+import { AuthProvider } from '../contexts/AuthContext';
+import AppRouter from './AppRouter';
+
+const root = document.getElementById('root');
+
+if (!root) {
+    throw new Error('ANTITODE root element is missing.');
+}
+
+createRoot(root).render(
+    <StrictMode>
+        <AuthProvider>
+            <AppRouter />
+        </AuthProvider>
+    </StrictMode>,
+);
+```
+
+This is **mandatory**, not optional.
+
+It should immediately fix a large portion of what you're seeing in both:
+
+```text
+/network-topology
+/threat-canvas
+```
+
+---
+
+# 2. Add one proper stencil component
+
+Create:
+
+```text
+src/components/modeling/StencilPalette.tsx
+```
+
+Complete file:
+
+```tsx
+import React, { useEffect, useMemo, useState } from 'react';
+import { Check, Layers, Plus, Search } from 'lucide-react';
+
+export interface StencilItem {
+    id?: string;
+    type: string;
+    label: string;
+    description?: string;
+    iconName?: string;
+    color?: string;
+    [key: string]: any;
+}
+
+export interface StencilGroup {
+    title: string;
+    items: StencilItem[];
+}
+
+interface StencilPaletteProps {
+    groups: StencilGroup[];
+    query: string;
+    onQueryChange: (value: string) => void;
+    onAdd: (item: StencilItem) => void;
+    onCreate?: () => void;
+    getIcon: (item: StencilItem) => React.ComponentType<{
+        size?: number;
+        className?: string;
+    }>;
+    title?: string;
+    placeholder?: string;
+    showCreate?: boolean;
+}
+
+export default function StencilPalette({
+    groups,
+    query,
+    onQueryChange,
+    onAdd,
+    onCreate,
+    getIcon,
+    title = 'STENCILS',
+    placeholder = 'Search components...',
+    showCreate = true,
+}: StencilPaletteProps) {
+    const [recentlyAdded, setRecentlyAdded] = useState<string | null>(null);
+
+    const totalItems = useMemo(
+        () => groups.reduce((total, group) => total + group.items.length, 0),
+        [groups]
+    );
+
+    const handleAdd = (item: StencilItem) => {
+        const key = item.id || `${item.type}:${item.label}`;
+
+        onAdd(item);
+        setRecentlyAdded(key);
+
+        window.setTimeout(() => {
+            setRecentlyAdded(current => (
+                current === key ? null : current
+            ));
+        }, 700);
+    };
+
+    useEffect(() => {
+        return () => {
+            setRecentlyAdded(null);
+        };
+    }, []);
+
+    return (
+        <div className="flex min-h-0 flex-1 flex-col bg-at-surface">
+            {/* Header */}
+            <div className="border-b border-at-border bg-at-surface-raised px-3.5 py-3">
+                <div className="mb-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <Layers
+                            size={14}
+                            className="text-at-muted"
+                        />
+
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-at-text-secondary">
+                            {title}
+                        </span>
+
+                        <span className="rounded-md border border-at-border bg-at-subtle px-1.5 py-0.5 font-mono text-[9px] text-at-muted">
+                            {totalItems}
+                        </span>
+                    </div>
+
+                    {showCreate && onCreate && (
+                        <button
+                            type="button"
+                            onClick={onCreate}
+                            className="
+                                flex h-7 w-7 items-center justify-center
+                                rounded-md
+                                border border-at-border
+                                bg-at-bg
+                                text-at-muted
+                                transition-colors
+                                hover:border-at-border-strong
+                                hover:bg-at-surface-hover
+                                hover:text-at-text
+                            "
+                            title="Create custom stencil"
+                        >
+                            <Plus size={15} />
+                        </button>
+                    )}
+                </div>
+
+                <label className="relative block">
+                    <Search
+                        size={14}
+                        className="
+                            pointer-events-none
+                            absolute left-3 top-1/2
+                            -translate-y-1/2
+                            text-at-disabled
+                        "
+                    />
+
+                    <input
+                        type="text"
+                        value={query}
+                        onChange={(event) => onQueryChange(event.target.value)}
+                        placeholder={placeholder}
+                        className="
+                            h-9 w-full
+                            rounded-md
+                            border border-at-border
+                            bg-at-bg
+                            pl-9 pr-3
+                            text-[12px] text-at-text
+                            outline-none
+                            placeholder:text-at-disabled
+                            transition-colors
+                            focus:border-at-border-strong
+                            focus:bg-at-surface
+                        "
+                    />
+                </label>
+            </div>
+
+            {/* Stencil groups */}
+            <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3 custom-scrollbar">
+                {groups.length === 0 && (
+                    <div className="flex min-h-[180px] items-center justify-center">
+                        <div className="text-center">
+                            <div className="mb-2 text-[12px] font-medium text-at-text-secondary">
+                                No components found
+                            </div>
+
+                            <div className="text-[10px] text-at-muted">
+                                Try a different search term.
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <div className="space-y-5">
+                    {groups.map((group) => (
+                        <section key={group.title}>
+                            <div className="mb-2 flex items-center justify-between px-1">
+                                <div className="flex items-center gap-2">
+                                    <span className="h-1 w-1 rounded-full bg-at-muted" />
+
+                                    <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-at-muted">
+                                        {group.title}
+                                    </span>
+                                </div>
+
+                                <span className="font-mono text-[9px] text-at-disabled">
+                                    {group.items.length}
+                                </span>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                {group.items.map((item) => {
+                                    const Icon = getIcon(item);
+                                    const key = item.id || `${item.type}:${item.label}`;
+                                    const isRecentlyAdded = recentlyAdded === key;
+
+                                    return (
+                                        <button
+                                            key={key}
+                                            type="button"
+                                            onClick={() => handleAdd(item)}
+                                            className={`
+                                                group
+                                                flex w-full items-center gap-3
+                                                rounded-lg
+                                                border border-at-border
+                                                bg-at-bg
+                                                px-2.5 py-2.5
+                                                text-left
+                                                transition-all duration-150
+                                                hover:border-at-border-strong
+                                                hover:bg-at-surface-hover
+                                                active:scale-[0.995]
+                                            `}
+                                        >
+                                            <span
+                                                className="
+                                                    flex h-8 w-8 shrink-0
+                                                    items-center justify-center
+                                                    rounded-md
+                                                    border border-at-border
+                                                    bg-at-subtle
+                                                    text-at-muted
+                                                    transition-colors
+                                                    group-hover:border-at-border-strong
+                                                    group-hover:text-at-accent
+                                                "
+                                            >
+                                                <Icon size={16} />
+                                            </span>
+
+                                            <span className="min-w-0 flex-1">
+                                                <span
+                                                    className="
+                                                        block truncate
+                                                        text-[12px]
+                                                        font-medium
+                                                        text-at-text-secondary
+                                                        transition-colors
+                                                        group-hover:text-at-text
+                                                    "
+                                                >
+                                                    {item.label}
+                                                </span>
+
+                                                {item.description && (
+                                                    <span
+                                                        className="
+                                                            mt-0.5 block truncate
+                                                            text-[10px]
+                                                            text-at-muted
+                                                        "
+                                                    >
+                                                        {item.description}
+                                                    </span>
+                                                )}
+                                            </span>
+
+                                            <span
+                                                className={`
+                                                    flex h-7 w-7 shrink-0
+                                                    items-center justify-center
+                                                    rounded-md
+                                                    border
+                                                    transition-all
+                                                    ${
+                                                        isRecentlyAdded
+                                                            ? `
+                                                                border-at-accent/40
+                                                                bg-at-accent/10
+                                                                text-at-accent
+                                                            `
+                                                            : `
+                                                                border-at-border
+                                                                bg-at-surface
+                                                                text-at-disabled
+                                                                group-hover:border-at-border-strong
+                                                                group-hover:bg-at-subtle
+                                                                group-hover:text-at-accent
+                                                            `
+                                                    }
+                                                `}
+                                                aria-hidden="true"
+                                            >
+                                                {isRecentlyAdded ? (
+                                                    <Check size={14} />
+                                                ) : (
+                                                    <Plus size={14} />
+                                                )}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </section>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+```
+
+### Important
+
+There is deliberately **no**:
+
+```tsx
+draggable
+```
+
+and no:
+
+```tsx
+onDragStart
+```
+
+in this component.
+
+That's intentional.
+
+---
+
+# 3. Add a deterministic React Flow placement helper
+
+Create:
+
+```text
+src/utils/reactFlowPlacement.ts
+```
+
+Complete file:
+
+```tsx
+import type { MutableRefObject } from 'react';
+import type { Node, ReactFlowInstance } from 'reactflow';
+
+type PlacementOptions = {
+    nodeWidth?: number;
+    nodeHeight?: number;
+    horizontalGap?: number;
+    verticalGap?: number;
+};
+
+const CANDIDATES = [
+    [0, 0],
+
+    [1, 0],
+    [-1, 0],
+
+    [0, 1],
+    [0, -1],
+
+    [1, 1],
+    [-1, 1],
+    [1, -1],
+    [-1, -1],
+
+    [2, 0],
+    [-2, 0],
+
+    [0, 2],
+    [0, -2],
+
+    [2, 1],
+    [-2, 1],
+    [2, -1],
+    [-2, -1],
+
+    [1, 2],
+    [-1, 2],
+    [1, -2],
+    [-1, -2],
+] as const;
+
+export function getCanvasInsertPosition(
+    reactFlowInstance: ReactFlowInstance | null,
+    canvasRef: MutableRefObject<HTMLDivElement | null>,
+    nodes: Node[],
+    options: PlacementOptions = {}
+) {
+    const {
+        nodeWidth = 260,
+        nodeHeight = 150,
+        horizontalGap = 80,
+        verticalGap = 60,
+    } = options;
+
+    if (!reactFlowInstance || !canvasRef.current) {
+        return {
+            x: 120,
+            y: 120,
+        };
+    }
+
+    const rect = canvasRef.current.getBoundingClientRect();
+
+    const screenCenter = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+    };
+
+    const flowCenter = reactFlowInstance.screenToFlowPosition(screenCenter);
+
+    const stepX = nodeWidth + horizontalGap;
+    const stepY = nodeHeight + verticalGap;
+
+    const collides = (x: number, y: number) => {
+        return nodes.some((node) => {
+            const dx = Math.abs(node.position.x - x);
+            const dy = Math.abs(node.position.y - y);
+
+            return (
+                dx < nodeWidth &&
+                dy < nodeHeight
+            );
+        });
+    };
+
+    for (const [cx, cy] of CANDIDATES) {
+        const candidate = {
+            x: flowCenter.x - nodeWidth / 2 + cx * stepX,
+            y: flowCenter.y - nodeHeight / 2 + cy * stepY,
+        };
+
+        if (!collides(candidate.x, candidate.y)) {
+            return candidate;
+        }
+    }
+
+    const ring = 4;
+
+    for (let i = 0; i < 16; i++) {
+        const angle = (Math.PI * 2 * i) / 16;
+
+        const candidate = {
+            x:
+                flowCenter.x -
+                nodeWidth / 2 +
+                Math.cos(angle) * stepX * ring,
+            y:
+                flowCenter.y -
+                nodeHeight / 2 +
+                Math.sin(angle) * stepY * ring,
+        };
+
+        if (!collides(candidate.x, candidate.y)) {
+            return candidate;
+        }
+    }
+
+    return {
+        x: flowCenter.x - nodeWidth / 2,
+        y: flowCenter.y - nodeHeight / 2,
+    };
+}
+```
+
+This solves the "I clicked plus and it appeared somewhere down there" problem.
+
+---
+
+# 4. Network Topology
+
+## `components/views/NetworkTopologyView.tsx`
+
+### Add these imports
+
+Near your current imports:
+
+```tsx
+import StencilPalette from '../modeling/StencilPalette';
+import { getCanvasInsertPosition } from '../../utils/reactFlowPlacement';
+```
+
+You already have `useRef`, so **do not add another `useRef` import**.
+
+---
+
+## Add a canvas ref
+
+Immediately after:
+
+```tsx
+const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
+```
+
+add:
+
+```tsx
+const canvasRef = useRef<HTMLDivElement>(null);
+```
+
+---
+
+# 5. Remove the old drop interaction
+
+Delete this entire block:
+
+```tsx
+const onDragOver = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+}, []);
+
+const onDrop = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    if (!reactFlowInstance) return;
+    
+    const type = event.dataTransfer.getData('application/reactflow/type');
+    const label = event.dataTransfer.getData('application/reactflow/label');
+    const criticality = event.dataTransfer.getData('application/reactflow/criticality');
+    const internet = event.dataTransfer.getData('application/reactflow/internet') === 'true';
+    const iconName = event.dataTransfer.getData('application/reactflow/iconName');
+    const sensitivity = event.dataTransfer.getData('application/reactflow/sensitivity') || 'None';
+    const colorClass = event.dataTransfer.getData('application/reactflow/colorClass');
+    const ipAddress = event.dataTransfer.getData('application/reactflow/ipAddress');
+    const interface_val = event.dataTransfer.getData('application/reactflow/interface');
+    const vlan_val = event.dataTransfer.getData('application/reactflow/vlan');
+
+    const position = reactFlowInstance.screenToFlowPosition({ x: event.clientX, y: event.clientY });
+    const id = `${type}-${Date.now()}`;
+    
+    const newNode: Node = {
+        id, type, position,
+        data: { 
+            label, 
+            criticality, 
+            isInternetFacing: internet, 
+            vulnerabilities: [], 
+            iocs: [],
+            status: 'SECURE',
+            iconName,
+            sensitivity,
+            colorClass: colorClass || undefined,
+            ipAddress: ipAddress || undefined,
+            interface: interface_val || undefined,
+            vlan: vlan_val || undefined
+        }
+    };
+
+    setNodes((nds) => nds.concat(newNode));
+}, [reactFlowInstance, setNodes]);
+```
+
+---
+
+# 6. Add this instead
+
+Place it after `onConnect`:
+
+```tsx
+const handleAddStencilToCanvas = useCallback(
+    (stencil: any) => {
+        if (!reactFlowInstance || !canvasRef.current) {
+            return;
+        }
+
+        const id = `${stencil.type}-${crypto.randomUUID()}`;
+
+        const position = getCanvasInsertPosition(
+            reactFlowInstance,
+            canvasRef,
+            nodes,
+            {
+                nodeWidth: stencil.type === 'boundary' ? 420 : 240,
+                nodeHeight: stencil.type === 'boundary' ? 300 : 140,
+                horizontalGap: 80,
+                verticalGap: 60,
+            }
+        );
+
+        const newNode: Node = {
+            id,
+            type: stencil.type,
+            position,
+            data: {
+                label: stencil.label,
+                criticality: stencil.criticality || 'MEDIUM',
+                isInternetFacing: Boolean(stencil.internet),
+                vulnerabilities: [],
+                iocs: [],
+                status: 'SECURE',
+                iconName: stencil.iconName || undefined,
+                sensitivity: stencil.sensitivity || 'None',
+                colorClass: stencil.color || undefined,
+                ipAddress: stencil.ipAddress || undefined,
+                interface: stencil.interface || undefined,
+                vlan: stencil.vlan || undefined,
+            },
+        };
+
+        setNodes((currentNodes) => [
+            ...currentNodes,
+            newNode,
+        ]);
+
+        setSelectedNode(newNode);
+        setSelectedEdge(null);
+        setNodeIntel(null);
+
+        const focusX =
+            position.x +
+            (stencil.type === 'boundary' ? 210 : 120);
+
+        const focusY =
+            position.y +
+            (stencil.type === 'boundary' ? 150 : 70);
+
+        reactFlowInstance.setCenter(
+            focusX,
+            focusY,
+            {
+                duration: 250,
+            }
+        );
+    },
+    [
+        reactFlowInstance,
+        nodes,
+        setNodes,
+    ]
+);
+```
+
+---
+
+# 7. Replace the Network stencil list
+
+Delete the entire current block beginning with:
+
+```tsx
+<div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-6">
+```
+
+through its mapped `cat.items.map(...)`.
+
+Replace it with:
+
+```tsx
+<StencilPalette
+    groups={filteredStencils}
+    query={paletteSearch}
+    onQueryChange={setPaletteSearch}
+    onAdd={handleAddStencilToCanvas}
+    onCreate={() => setShowStencilCreator(true)}
+    getIcon={(item) =>
+        STENCIL_ICONS[item.iconName || 'Box'] || Box
+    }
+    title="STENCILS"
+    placeholder="Find stencil..."
+/>
+```
+
+This gives **every stencil exactly one interaction**:
+
+```text
+click card ? add node
+```
+
+and visually:
+
+```text
+???????????????????????????????
+? shield  WAF / Proxy       + ?
+???????????????????????????????
+```
+
+No nested button.
+
+---
+
+# 8. Remove drag from React Flow
+
+Your current:
+
+```tsx
+<ReactFlow 
+    ...
+    onDrop={onDrop}
+    onDragOver={onDragOver}
+```
+
+becomes:
+
+```tsx
+<ReactFlow
+    nodes={nodes}
+    edges={edges}
+    nodeTypes={nodeTypes}
+    onNodesChange={onNodesChange}
+    onEdgesChange={onEdgesChange}
+    onConnect={onConnect}
+    onInit={(instance) => setReactFlowInstance(instance)}
+    onNodeClick={(_, node) => {
+        setSelectedNode(node);
+        setSelectedEdge(null);
+        setNodeIntel(null);
+    }}
+    onEdgeClick={(_, edge) => {
+        setSelectedEdge(edge);
+        setSelectedNode(null);
+        setNodeIntel(null);
+    }}
+    onPaneClick={() => {
+        setSelectedNode(null);
+        setSelectedEdge(null);
+        setNodeIntel(null);
+    }}
+    fitView
+    className="!bg-at-bg"
+>
+    <Background
+        color="rgba(255,255,255,0.055)"
+        gap={24}
+        size={1}
+    />
+
+    <Controls />
+
+    {/* existing Panels stay here */}
+</ReactFlow>
+```
+
+---
+
+# 9. Add the canvas ref
+
+Change:
+
+```tsx
+<div className="flex-1 relative bg-cyber-grid overflow-hidden">
+```
+
+to:
+
+```tsx
+<div
+    ref={canvasRef}
+    className="flex-1 relative min-w-0 bg-at-bg overflow-hidden"
+>
+```
+
+This ref is important.
+
+The add logic now knows the **actual visible canvas bounds** instead of using the click location of the sidebar.
+
+---
+
+# 10. Fix the Network outer colors
+
+Change:
+
+```tsx
+<div className="h-full flex bg-[#020617] overflow-hidden">
+```
+
+to:
+
+```tsx
+<div className="h-full flex bg-at-bg overflow-hidden">
+```
+
+and:
+
+```tsx
+<div className="w-72 border-r border-gray-800 bg-[#050b1a] ...">
+```
+
+to:
+
+```tsx
+<div className="w-72 border-r border-at-border bg-at-surface flex flex-col shrink-0 relative z-20">
+```
+
+You don't need the giant:
+
+```text
+shadow-2xl
+```
+
+on this pane anymore.
+
+---
+
+# 11. Fix Network nodes themselves
+
+Your current node has:
+
+```tsx
+min-w-[200px]
+```
+
+I'd make it deterministic:
+
+```tsx
+w-[240px] min-h-[120px]
+```
+
+So the opening `<div>` becomes:
+
+```tsx
+<div
+    className={`
+        relative
+        w-[240px]
+        min-h-[120px]
+        rounded-lg
+        border
+        bg-at-surface
+        shadow-xl
+        transition-all duration-200
+        cursor-grab
+        active:cursor-grabbing
+        ${
+            selected
+                ? 'border-at-accent ring-2 ring-at-accent/20'
+                : 'border-at-border'
+        }
+        ${
+            isCompromised
+                ? 'border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.25)]'
+                : ''
+        }
+        ${
+            isReachable && !isCompromised
+                ? 'border-orange-500 shadow-[0_0_16px_rgba(249,115,22,0.18)]'
+                : ''
+        }
+        ${
+            hasIntel &&
+            !isCompromised &&
+            !isReachable
+                ? 'border-yellow-600'
+                : ''
+        }
+    `}
+>
+```
+
+With the React Flow stylesheet loaded, these will actually behave like graph nodes instead of enormous document blocks.
+
+---
+
+# 12. Threat Canvas
+
+Exactly the same architectural change.
+
+## Imports
+
+Add:
+
+```tsx
+import StencilPalette from '../modeling/StencilPalette';
+import { getCanvasInsertPosition } from '../../utils/reactFlowPlacement';
+```
+
+Change:
+
+```tsx
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+```
+
+to:
+
+```tsx
+import React, {
+    useState,
+    useCallback,
+    useMemo,
+    useEffect,
+    useRef,
+} from 'react';
+```
+
+---
+
+# 13. Add the canvas ref
+
+After:
+
+```tsx
+const [reactFlowInstance, setReactFlowInstance] =
+    useState<ReactFlowInstance | null>(null);
+```
+
+add:
+
+```tsx
+const canvasRef = useRef<HTMLDivElement>(null);
+```
+
+---
+
+# 14. Remove Threat Canvas `onDrop`
+
+Delete the current:
+
+```tsx
+const onDrop = useCallback(
+    (event: React.DragEvent) => {
+        ...
+    },
+    [reactFlowInstance, setNodes, onLabelChange]
+);
+```
+
+completely.
+
+---
+
+# 15. Add deterministic Threat Canvas insertion
+
+Place this where the old `onDrop` was:
+
+```tsx
+const handleAddStencilToCanvas = useCallback(
+    (stencil: any) => {
+        if (!reactFlowInstance || !canvasRef.current) {
+            return;
+        }
+
+        const id = `${stencil.type}-${crypto.randomUUID()}`;
+
+        const isBoundary = stencil.type === 'boundary';
+
+        const position = getCanvasInsertPosition(
+            reactFlowInstance,
+            canvasRef,
+            nodes,
+            {
+                nodeWidth: isBoundary ? 420 : 260,
+                nodeHeight: isBoundary ? 280 : 150,
+                horizontalGap: 90,
+                verticalGap: 70,
+            }
+        );
+
+        const newNode: Node = {
+            id,
+            type: stencil.type,
+            position,
+            data: {
+                label: stencil.label || 'New Unit',
+                description: stencil.description || '',
+                onLabelChange,
+                id,
+                sensitivity: stencil.sensitivity || 'None',
+                isExternal: Boolean(stencil.isExternal),
+                criticality: stencil.criticality || 'MEDIUM',
+                vulnerabilities: [],
+                iocs: [],
+                mitreIds: [],
+                iconName: stencil.iconName || undefined,
+                colorClass: stencil.color || undefined,
+                borderClass: stencil.color
+                    ? stencil.color.replace(
+                          'bg-',
+                          'border-'
+                      )
+                    : undefined,
+            },
+        };
+
+        setNodes((currentNodes) => [
+            ...currentNodes,
+            newNode,
+        ]);
+
+        setSelectedNode(newNode);
+        setSelectedEdge(null);
+
+        reactFlowInstance.setCenter(
+            position.x + (isBoundary ? 210 : 130),
+            position.y + (isBoundary ? 140 : 75),
+            {
+                duration: 250,
+            }
+        );
+    },
+    [
+        reactFlowInstance,
+        nodes,
+        setNodes,
+        onLabelChange,
+    ]
+);
+```
+
+---
+
+# 16. Replace the Threat Canvas stencil rendering
+
+Remove this whole pattern:
+
+```tsx
+{group.items.map(item => (
+    <div
+        key={item.id}
+        draggable
+        onDragStart={(e) => {
+            ...
+        }}
+        className="..."
+    >
+        ...
+    </div>
+))}
+```
+
+and replace the entire palette list with:
+
+```tsx
+<StencilPalette
+    groups={filteredPalette}
+    query={paletteSearch}
+    onQueryChange={setPaletteSearch}
+    onAdd={handleAddStencilToCanvas}
+    onCreate={() => setShowStencilCreator(true)}
+    getIcon={(item) =>
+        STENCIL_ICONS[item.iconName || 'Box'] || Box
+    }
+    title="STENCILS"
+    placeholder="Search components..."
+/>
+```
+
+---
+
+# 17. Threat canvas ref
+
+Change:
+
+```tsx
+<div className="flex-1 relative bg-[#020617] overflow-hidden">
+```
+
+to:
+
+```tsx
+<div
+    ref={canvasRef}
+    className="flex-1 relative min-w-0 bg-at-bg overflow-hidden"
+>
+```
+
+---
+
+# 18. Threat ReactFlow
+
+Change:
+
+```tsx
+<ReactFlow
+    nodes={nodes}
+    edges={edges}
+    nodeTypes={nodeTypes}
+    onNodesChange={onNodesChange}
+    onEdgesChange={onEdgesChange}
+    onConnect={onConnect}
+    onInit={setReactFlowInstance}
+    onDrop={onDrop}
+    onDragOver={(e) => e.preventDefault()}
+```
+
+to:
+
+```tsx
+<ReactFlow
+    nodes={nodes}
+    edges={edges}
+    nodeTypes={nodeTypes}
+    onNodesChange={onNodesChange}
+    onEdgesChange={onEdgesChange}
+    onConnect={onConnect}
+    onInit={setReactFlowInstance}
+    onNodeClick={(_, node) => {
+        setSelectedNode(node);
+        setSelectedEdge(null);
+    }}
+    onEdgeClick={(_, edge) => {
+        setSelectedEdge(edge);
+        setSelectedNode(null);
+    }}
+    onPaneClick={() => {
+        setSelectedNode(null);
+        setSelectedEdge(null);
+    }}
+    fitView
+    className="!bg-at-bg"
+>
+    <Background
+        color="rgba(255,255,255,0.055)"
+        gap={24}
+        size={1}
+    />
+
+    <Controls />
+</ReactFlow>
+```
+
+---
+
+# 19. Add the React Flow SaaS styling
+
+At the end of:
+
+```text
+src/index.css
+```
+
+add:
+
+```css
+/* =========================================================
+   XYBERAH REACT FLOW WORKSPACE
+   ========================================================= */
+
+.react-flow {
+    --xyberah-rf-bg: var(--at-bg);
+    --xyberah-rf-border: var(--at-border);
+    --xyberah-rf-accent: var(--at-accent);
+}
+
+.react-flow__renderer {
+    background: var(--xyberah-rf-bg);
+}
+
+.react-flow__pane {
+    cursor: default;
+}
+
+.react-flow__node {
+    font-family: inherit;
+}
+
+.react-flow__handle {
+    width: 8px !important;
+    height: 8px !important;
+    border: 2px solid var(--at-bg) !important;
+    background: var(--at-accent) !important;
+}
+
+.react-flow__handle:hover {
+    width: 10px !important;
+    height: 10px !important;
+    background: var(--at-red-strong) !important;
+}
+
+.react-flow__edge-path {
+    stroke: #777;
+    stroke-width: 1.5;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+    stroke: var(--at-accent);
+    stroke-width: 2;
+}
+
+.react-flow__controls {
+    overflow: hidden;
+    border: 1px solid var(--at-border) !important;
+    border-radius: 8px !important;
+    background: var(--at-surface) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35) !important;
+}
+
+.react-flow__controls-button {
+    width: 30px !important;
+    height: 30px !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--at-border) !important;
+    background: var(--at-surface) !important;
+    color: var(--at-text-secondary) !important;
+    fill: currentColor !important;
+}
+
+.react-flow__controls-button:last-child {
+    border-bottom: 0 !important;
+}
+
+.react-flow__controls-button:hover {
+    background: var(--at-surface-hover) !important;
+    color: var(--at-text) !important;
+}
+
+.react-flow__attribution {
+    display: none !important;
+}
+
+.react-flow__background {
+    opacity: 1;
+}
+```
+
+---
+
+# 20. Change the Threat Canvas node width
+
+Your current `CyberNode` starts with:
+
+```tsx
+p-4 rounded-lg border-2 shadow-2xl transition-all duration-300 min-w-[220px]
+```
+
+Replace with:
+
+```tsx
+p-4 rounded-lg border shadow-xl transition-all duration-200 w-[260px] min-h-[150px]
+```
+
+And change:
+
+```tsx
+bg-[#0a0f1e]/95
+```
+
+to:
+
+```tsx
+bg-at-surface
+```
+
+The main selected state:
+
+```tsx
+${selected ? `${dynamicBorder} ring-4 ring-cyber-cyan/20 scale-[1.02]` : 'border-gray-800'}
+```
+
+should become:
+
+```tsx
+${
+    selected
+        ? 'border-at-accent ring-2 ring-at-accent/20 scale-[1.01]'
+        : 'border-at-border'
+}
+```
+
+---
+
+# 21. One more important change: remove the old drag attributes everywhere
+
+Search both files for:
+
+```tsx
+draggable
+```
+
+and:
+
+```tsx
+onDragStart
+```
+
+For the stencil palette, the final result should be:
+
+```text
+NetworkTopologyView
+    ?
+StencilPalette
+    ?
+onAdd
+    ?
+handleAddStencilToCanvas
+    ?
+ReactFlow node
+
+ThreatCanvasView
+    ?
+StencilPalette
+    ?
+onAdd
+    ?
+handleAddStencilToCanvas
+    ?
+ReactFlow node
+```
+
+There should be **no**:
+
+```text
+HTML5 drag
+      ?
+dataTransfer
+      ?
+ReactFlow onDrop
+```
+
+for stencil creation anymore.
+
+---
+
+# What this changes in the actual UX
+
+### Before
+
+```text
+drag card
+   ?
+browser drag state
+   ?
+ReactFlow drop coordinate
+   ?
+coordinate affected by sidebar/layout
+   ?
+node may appear somewhere weird
+
++
+
+button may be inside draggable region
+   ?
+event conflicts
+```
+
+### After
+
+```text
+click stencil
+      ?
+handler knows exactly which stencil
+      ?
+get actual canvas bounds
+      ?
+calculate visible center
+      ?
+find nearby free position
+      ?
+create node
+      ?
+select node
+      ?
+center viewport
+```
+
+So clicking:
+
+```text
+WAF / Proxy       +
+```
+
+always does one thing.
+
+Clicking:
+
+```text
+NoSQL Store       +
+```
+
+always does one thing.
+
+Clicking:
+
+```text
+Cloud Bucket      +
+```
+
+always does one thing.
+
+There is no ambiguity about whether the click is interpreted as a drag, a drop, or a button.
+
+---
+
+## The most important fix order
+
+Do these in this order:
+
+```text
+1. src/main.tsx
+   ? import reactflow/dist/style.css
+
+2. add StencilPalette.tsx
+
+3. add reactFlowPlacement.ts
+
+4. NetworkTopologyView
+   ? remove HTML5 stencil drag/drop
+   ? add deterministic click-to-create
+
+5. ThreatCanvasView
+   ? same
+
+6. index.css
+   ? React Flow workspace styling
+```
+
+The **React Flow stylesheet import is especially important**. Your screenshots' giant stretched nodes and strange handle positioning are consistent with that CSS not being loaded. Once that is fixed, the new click-to-create architecture will address the remaining insertion/interaction problems rather than trying to patch individual `+` buttons.
+
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-09-26T20:37:58+05:30.
+
+The user's current state is as follows:
+Active Document: c:\Users\rishi\ANTI AI\ANTI-TODE\Xyberah-redesign\src\pages\NewsPage.tsx (LANGUAGE_TSX)
+Cursor is on line: 894
+Other open documents:
+- c:\Users\rishi\ANTI AI\ANTI-TODE\Xyberah-redesign\services\news.ts (LANGUAGE_TYPESCRIPT)
+- c:\Users\rishi\ANTI AI\ANTI-TODE\Xyberah-redesign\src\pages\NewsPage.tsx (LANGUAGE_TSX)
+- c:\Users\rishi\ANTI AI\ANTI-TODE\Xyberah-redesign\src\index.css (LANGUAGE_CSS)
+- c:\Users\rishi\ANTI AI\ANTI-TODE\Xyberah-redesign\components\views\BigScreenView.tsx (LANGUAGE_TSX)
+- c:\Users\rishi\ANTI AI\ANTI-TODE\Xyberah-redesign\components\views\BrandMonitorView.tsx (LANGUAGE_TSX)
+Running terminal commands:
+- npm run dev (in c:\Users\rishi\ANTI AI\ANTI-TODE\Xyberah-redesign, running for 45m28s)
+</ADDITIONAL_METADATA>
+<USER_SETTINGS_CHANGE>
+The user changed setting `Model Selection` from None to Gemini 3.1 Pro (High). No need to comment on this change if the user doesn't ask about it. If reporting what model you are, please use a human readable name instead of the exact string.
+</USER_SETTINGS_CHANGE>

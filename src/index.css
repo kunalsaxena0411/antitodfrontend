@@ -2681,13 +2681,7 @@
 }
 
 /* Legacy wrapper / full-screen surfaces */
-.at-legacy-view-wrap {
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  overflow: auto;
-  scrollbar-gutter: stable;
-}
+
 
 .at-fullscreen-view {
   position: fixed;
@@ -15660,3 +15654,178 @@
         min-height: 700px;
     }
 }
+
+/* Modeling / legacy view containment */
+.at-legacy-view-wrap {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Prevent page-level scrolling from React Flow workspaces */
+.at-legacy-view-wrap > * {
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Shared modeling canvas */
+.modeling-canvas {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--at-bg);
+}
+
+.modeling-canvas > .react-flow {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* React Flow */
+.modeling-canvas .react-flow__renderer {
+  background: var(--at-bg);
+}
+
+.modeling-canvas .react-flow__pane {
+  cursor: default;
+}
+
+.modeling-canvas .react-flow__edge-path {
+  stroke: #555;
+  stroke-width: 1.5;
+}
+
+.modeling-canvas .react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--at-accent);
+  stroke-width: 2;
+}
+
+.modeling-canvas .react-flow__handle {
+  width: 8px !important;
+  height: 8px !important;
+  border: 2px solid var(--at-bg) !important;
+  background: #777 !important;
+}
+
+.modeling-canvas .react-flow__handle:hover {
+  background: var(--at-accent) !important;
+}
+
+.modeling-canvas .react-flow__controls {
+  overflow: hidden;
+  border: 1px solid var(--at-border) !important;
+  border-radius: 8px !important;
+  background: var(--at-surface) !important;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, .35) !important;
+}
+
+.modeling-canvas .react-flow__controls-button {
+  width: 30px !important;
+  height: 30px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--at-border) !important;
+  background: var(--at-surface) !important;
+  color: var(--at-muted) !important;
+  fill: currentColor !important;
+}
+
+.modeling-canvas .react-flow__controls-button:last-child {
+  border-bottom: 0 !important;
+}
+
+.modeling-canvas .react-flow__controls-button:hover {
+  background: var(--at-surface-hover) !important;
+  color: var(--at-text) !important;
+}
+
+.modeling-canvas .react-flow__attribution {
+  display: none !important;
+}
+
+/* Better default modeling surfaces */
+.modeling-panel {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--at-surface);
+  border-color: var(--at-border);
+}
+
+.modeling-inspector {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--at-surface);
+  border-color: var(--at-border);
+}
+
+.modeling-inspector-scroll {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+/* Prevent nodes from affecting document height */
+.modeling-canvas .react-flow__viewport {
+  min-width: 0;
+  min-height: 0;
+}
+
+/* =========================================================
+   MODELING WORKSPACES
+   ========================================================= */
+
+.modeling-shell {
+  display: flex;
+  width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--at-bg);
+}
+
+.modeling-palette {
+  display: flex;
+  width: 256px;
+  min-width: 256px;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid var(--at-border);
+  background: var(--at-surface);
+}
+
+.modeling-main {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--at-bg);
+}
+
+.modeling-toolbar {
+  display: flex;
+  height: 48px;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--at-border);
+  background: var(--at-surface-raised);
+}
+

@@ -378,9 +378,9 @@ export const ThreatCanvasView: React.FC = () => {
                 return;
             }
 
-            const id = `${stencil.type}-${crypto.randomUUID()}`;
-
             const isBoundary = stencil.type === 'boundary';
+
+            const id = `${stencil.type}-${crypto.randomUUID()}`;
 
             const position = getCanvasInsertPosition(
                 reactFlowInstance,
@@ -413,9 +413,9 @@ export const ThreatCanvasView: React.FC = () => {
                     colorClass: stencil.color || undefined,
                     borderClass: stencil.color
                         ? stencil.color.replace(
-                              'bg-',
-                              'border-'
-                          )
+                            'bg-',
+                            'border-'
+                        )
                         : undefined,
                 },
             };
@@ -428,13 +428,15 @@ export const ThreatCanvasView: React.FC = () => {
             setSelectedNode(newNode);
             setSelectedEdge(null);
 
-            reactFlowInstance.setCenter(
-                position.x + (isBoundary ? 210 : 130),
-                position.y + (isBoundary ? 140 : 75),
-                {
+            requestAnimationFrame(() => {
+                reactFlowInstance.fitView({
+                    nodes: [newNode],
+                    padding: 0.4,
+                    minZoom: 0.65,
+                    maxZoom: 1.15,
                     duration: 250,
-                }
-            );
+                });
+            });
         },
         [
             reactFlowInstance,
@@ -523,22 +525,7 @@ export const ThreatCanvasView: React.FC = () => {
         })).filter(group => group.items.length > 0);
     }, [paletteSearch, customStencils]);
 
-    const addStencilToCanvas = useCallback((item: any) => {
-        const newId = `${item.type}-${Date.now()}`;
-        const position = reactFlowInstance 
-            ? reactFlowInstance.screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 }) 
-            : { x: 250 + Math.random() * 100, y: 250 + Math.random() * 100 };
-            
-        const newNode = {
-            id: newId, type: item.type, position,
-            data: { 
-                label: item.label, description: item.description || '', onLabelChange, id: newId,
-                sensitivity: item.sensitivity || 'None', isExternal: item.isExternal || false, criticality: item.criticality || 'MEDIUM',
-                vulnerabilities: [], iocs: [], mitreIds: [], iconName: item.iconName || undefined, colorClass: item.color || undefined, borderClass: item.color ? item.color.replace('bg-', 'border-') : undefined
-            },
-        };
-        setNodes((nds) => nds.concat(newNode));
-    }, [reactFlowInstance, setNodes, onLabelChange]);
+
 
     return (
         <div className="flex flex-col flex-1 min-h-0 bg-transparent text-[#ededed] font-sans">
@@ -547,9 +534,9 @@ export const ThreatCanvasView: React.FC = () => {
                 title="Threat Canvas"
                 description="Interactive STRIDE threat modeling with AI analysis."
             />
-            <div className="flex w-full flex-1 min-h-0 overflow-hidden relative">
+            <div className="modeling-shell">
                 {/* Sidebar: Palette */}
-                <div className="w-64 bg-at-bg border-r border-at-border flex flex-col shrink-0 relative z-20 h-full">
+                <div className="modeling-palette">
                 <StencilPalette
                     groups={filteredPalette}
                     query={paletteSearch}
@@ -572,8 +559,8 @@ export const ThreatCanvasView: React.FC = () => {
             </div>
 
             {/* Main Area */}
-            <div className="flex-1 flex flex-col min-w-0 relative">
-                <div className="bg-[#111216] border-b border-[#222328] flex items-center px-4 gap-1 shrink-0 h-12">
+            <div className="modeling-main">
+                <div className="modeling-toolbar">
                     <div className="text-xs font-bold text-[#888] px-4">Workspace: {workspaces.find(w => w.id === activeWorkspaceId)?.name}</div>
                     <div className="flex gap-2 ml-auto pr-4">
                         <button onClick={handleClearCanvas} className="p-1.5 hover:bg-[#ffffff10] rounded text-[#888] hover:text-[#ea4a4a]" title="Clear Canvas"><RotateCcw size={16}/></button>
@@ -583,7 +570,7 @@ export const ThreatCanvasView: React.FC = () => {
 
                 <div
                     ref={canvasRef}
-                    className="flex-1 relative min-w-0 bg-at-bg overflow-hidden z-10"
+                    className="modeling-canvas"
                 >
                     <ReactFlow
                         nodes={nodes}
@@ -606,24 +593,34 @@ export const ThreatCanvasView: React.FC = () => {
                             setSelectedEdge(null);
                         }}
                         fitView
+                        fitViewOptions={{
+                            padding: 0.25,
+                            minZoom: 0.55,
+                            maxZoom: 1.1,
+                        }}
                         className="!bg-at-bg"
                         proOptions={{ hideAttribution: true }}
                     >
-                        <Background color="#ffffff" gap={24} size={1} style={{ opacity: 0.05 }} />
-                        <Controls className="!bg-[#111216] !border !border-[#222328] !fill-[#999] shadow-md [&>button]:!border-b-[#222328] hover:[&>button]:!bg-[#1a1b20]" />
+                        <Background
+                            color="rgba(255,255,255,0.055)"
+                            gap={24}
+                            size={1}
+                        />
+
+                        <Controls />
                     </ReactFlow>
                 </div>
             </div>
 
             {/* Right Sidebar: Intel & Properties */}
-            <div className="w-80 bg-[#0A0A0A] border-l border-[#ffffff10] flex flex-col shrink-0 relative z-20">
+            <div className="modeling-inspector flex w-80 flex-col shrink-0 relative z-20">
                 <div className="p-5 border-b border-[#222328] bg-[#111216]">
                     <h2 className="text-xs font-bold text-[#888] uppercase tracking-[0.2em] flex items-center gap-2">
                         <Gauge size={14}/> {selectedNode ? 'ASSET INTEL' : selectedEdge ? 'FLOW LOGIC' : 'THREATS'}
                     </h2>
                 </div>
 
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-5">
+                <div className="modeling-inspector-scroll custom-scrollbar p-5">
                     {selectedNode ? (
                         <div className="space-y-6 animate-fade-in">
                             <div className="bg-[#121316] p-4 rounded border border-[#222328] space-y-4">

@@ -264,7 +264,7 @@ export const NetworkTopologyView: React.FC = () => {
         label: '',
         type: 'standard',
         iconName: 'Box',
-        color: 'bg-[#d62828]',
+        color: 'bg-at-accent',
         internet: false,
         sensitivity: 'None',
         criticality: 'MEDIUM',
@@ -308,27 +308,29 @@ export const NetworkTopologyView: React.FC = () => {
     }, [setEdges]);
 
     const handleAddStencilToCanvas = useCallback(
-        (stencil: any, e?: React.MouseEvent) => {
+        (stencil: any) => {
             if (!reactFlowInstance || !canvasRef.current) {
                 return;
             }
 
-            const id = `${stencil.type}-${crypto.randomUUID()}`;
+            const isBoundary = stencil.type === 'boundary';
+
+            const newId = `${stencil.type}-${crypto.randomUUID()}`;
 
             const position = getCanvasInsertPosition(
                 reactFlowInstance,
                 canvasRef,
                 nodes,
                 {
-                    nodeWidth: stencil.type === 'boundary' ? 420 : 240,
-                    nodeHeight: stencil.type === 'boundary' ? 300 : 140,
+                    nodeWidth: isBoundary ? 420 : 240,
+                    nodeHeight: isBoundary ? 280 : 120,
                     horizontalGap: 80,
                     verticalGap: 60,
                 }
             );
 
             const newNode: Node = {
-                id,
+                id: newId,
                 type: stencil.type,
                 position,
                 data: {
@@ -356,21 +358,15 @@ export const NetworkTopologyView: React.FC = () => {
             setSelectedEdge(null);
             setNodeIntel(null);
 
-            const focusX =
-                position.x +
-                (stencil.type === 'boundary' ? 210 : 120);
-
-            const focusY =
-                position.y +
-                (stencil.type === 'boundary' ? 150 : 70);
-
-            reactFlowInstance.setCenter(
-                focusX,
-                focusY,
-                {
+            requestAnimationFrame(() => {
+                reactFlowInstance.fitView({
+                    nodes: [newNode],
+                    padding: 0.4,
+                    minZoom: 0.65,
+                    maxZoom: 1.15,
                     duration: 250,
-                }
-            );
+                });
+            });
         },
         [
             reactFlowInstance,
@@ -786,25 +782,20 @@ export const NetworkTopologyView: React.FC = () => {
         setCustomStencils(updated);
         await saveToStorage(STORES.CUSTOM_STENCILS, updated, 'network_topology_list');
         setShowStencilCreator(false);
-        setNewStencil({ label: '', type: 'standard', iconName: 'Box', color: 'bg-[#d62828]', internet: false, sensitivity: 'None', criticality: 'MEDIUM', ipAddress: '', interface: '', vlan: '' });
+        setNewStencil({
+            label: '',
+            type: 'standard',
+            iconName: 'Box',
+            color: 'bg-at-accent',
+            internet: false,
+            sensitivity: 'None',
+            criticality: 'MEDIUM',
+            ipAddress: '',
+            interface: '',
+            vlan: ''
+        });
     };
 
-    const addStencilToCanvas = useCallback((s: any) => {
-        const position = reactFlowInstance 
-            ? reactFlowInstance.screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 }) 
-            : { x: 250 + Math.random() * 100, y: 250 + Math.random() * 100 };
-            
-        const newNode = {
-            id: `${s.type}-${Date.now()}`, type: s.type, position,
-            data: { 
-                label: s.label, criticality: s.criticality || 'MEDIUM', isInternetFacing: s.internet || false, 
-                vulnerabilities: [], iocs: [], status: 'SECURE', iconName: s.iconName,
-                sensitivity: s.sensitivity || 'None', colorClass: s.color || undefined,
-                ipAddress: s.ipAddress || undefined, interface: s.interface || undefined, vlan: s.vlan || undefined
-            }
-        };
-        setNodes((nds) => nds.concat(newNode));
-    }, [reactFlowInstance, setNodes]);
 
     const filteredStencils = useMemo(() => {
         let combined = [...STENCIL_CATEGORIES];
@@ -821,9 +812,9 @@ export const NetworkTopologyView: React.FC = () => {
                 title="Network Topology"
                 description="Design and simulate blast radius across infrastructure."
             />
-            <div className="flex w-full flex-1 min-h-0 overflow-hidden relative">
+            <div className="modeling-shell">
                 {/* Sidebar: Palette & Library */}
-                <div className="w-64 flex flex-col bg-at-bg border-r border-at-border z-20 flex-shrink-0 h-full">
+                <div className="modeling-palette">
                 <div className="flex bg-at-surface border-b border-at-border">
                     <button onClick={() => setSidebarMode('STENCILS')} className={`flex-1 py-3 text-[10px] font-bold uppercase transition-colors border-b-2 ${sidebarMode === 'STENCILS' ? 'border-at-accent text-at-text bg-at-surface-hover' : 'border-transparent text-at-muted hover:text-at-text-secondary'}`}>Stencils</button>
                     <button onClick={() => setSidebarMode('LIBRARY')} className={`flex-1 py-3 text-[10px] font-bold uppercase transition-colors border-b-2 ${sidebarMode === 'LIBRARY' ? 'border-at-border-strong text-at-text bg-at-surface-hover' : 'border-transparent text-at-muted hover:text-at-text-secondary'}`}>Library</button>
@@ -884,11 +875,8 @@ export const NetworkTopologyView: React.FC = () => {
             {/* Canvas */}
             <div
                 ref={canvasRef}
-                className="flex-1 relative min-w-0 bg-at-bg overflow-hidden z-10"
+                className="modeling-canvas z-10"
             >
-                <div className="absolute top-0 left-0 z-[100] bg-black text-white p-4 max-w-lg max-h-[400px] overflow-auto text-xs pointer-events-none opacity-80">
-                    <pre>{JSON.stringify(nodes, null, 2)}</pre>
-                </div>
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
@@ -896,7 +884,7 @@ export const NetworkTopologyView: React.FC = () => {
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
-                    onInit={(instance) => setReactFlowInstance(instance)}
+                    onInit={setReactFlowInstance}
                     onNodeClick={(_, node) => {
                         setSelectedNode(node);
                         setSelectedEdge(null);
@@ -913,10 +901,21 @@ export const NetworkTopologyView: React.FC = () => {
                         setNodeIntel(null);
                     }}
                     fitView
+                    fitViewOptions={{
+                        padding: 0.25,
+                        minZoom: 0.55,
+                        maxZoom: 1.1,
+                    }}
                     className="!bg-at-bg"
+                    proOptions={{ hideAttribution: true }}
                 >
-                    <Background color="#ffffff" gap={24} size={1} style={{ opacity: 0.05 }} />
-                    <Controls className="!bg-[#111216] !border !border-[#222328] !fill-[#999] shadow-md [&>button]:!border-b-[#222328] hover:[&>button]:!bg-[#1a1b20]" />
+                    <Background
+                        color="rgba(255,255,255,0.055)"
+                        gap={24}
+                        size={1}
+                    />
+
+                    <Controls />
                     <Panel position="top-left" className="!m-4 !left-0 !top-0">
                         <div className="flex flex-wrap items-center gap-2 p-2 bg-[#111216] border border-[#222328] rounded-lg shadow-lg">
                         {isConfigParsing && (
@@ -1048,14 +1047,28 @@ export const NetworkTopologyView: React.FC = () => {
             </div>
 
             {/* Right Panel: Context & Simulation Output */}
-            <div className={`flex flex-col bg-[#0A0A0A] border-[#ffffff10] transition-all duration-300 overflow-hidden flex-shrink-0 ${selectedNode || selectedEdge ? 'w-80 border-l z-20' : 'w-0 border-none'}`}>
+            <div
+                className={`
+                    modeling-inspector
+                    flex
+                    flex-col
+                    shrink-0
+                    transition-[width]
+                    duration-200
+                    ${
+                        selectedNode || selectedEdge
+                            ? 'w-80 border-l'
+                            : 'w-0 border-none'
+                    }
+                `}
+            >
                 <div className="p-4 border-b border-[#222328] bg-[#0a0b0d] flex items-center justify-between">
                     <h3 className="text-xs font-bold text-[#888] uppercase tracking-[0.2em] flex items-center gap-2">
                         <Terminal size={14}/> {selectedNode ? 'ASSET INTEL' : selectedEdge ? 'FLOW' : 'ANALYTICS'}
                     </h3>
                 </div>
 
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-6">
+                <div className="modeling-inspector-scroll custom-scrollbar p-5 space-y-6">
                     {selectedNode ? (
                         <div className="space-y-6 animate-fade-in pb-10">
                             {/* Asset Identity Card */}
