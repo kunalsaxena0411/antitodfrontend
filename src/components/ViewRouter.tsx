@@ -394,9 +394,6 @@ export default function ViewRouter({
       renderedView = (
         <DashboardPage
           onNavigate={onNavigate}
-          results={results}
-          newsItems={newsItems}
-          cveFeedItems={cveFeedItems}
         />
       );
       break;

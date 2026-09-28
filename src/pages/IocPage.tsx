@@ -26,6 +26,7 @@ import {
   X,
 } from 'lucide-react';
 
+import { dataProvider } from '../services/dataProvider';
 import { useAppData } from '../contexts/AppDataContext';
 import PageHeader from '../components/layout/PageHeader';
 

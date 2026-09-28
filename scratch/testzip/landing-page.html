@@ -1,0 +1,1376 @@
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xyberah | Unified Cyber Defense & Threat Intelligence Platform</title>
+    <meta name="description" content="Next-gen Threat Intelligence Platform. Unified defense for Dark Web Monitoring, Zero-Day Vulnerability Management, and AI Forensics. Client-side, zero-trust execution.">
+    <meta name="keywords" content="Cybersecurity, Threat Intelligence, SOC, Dark Web Monitoring, Malware Sandbox, Vulnerability Management, AI Forensics, Honeypot, CTI">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- D3 & TopoJSON -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/topojson@3"></script>
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                        sans: ['"Inter"', 'sans-serif'],
+                    },
+                    colors: {
+                        cyber: {
+                            black: '#020617',
+                            dark: '#0f172a',
+                            cyan: '#4361ee',
+                            purple: '#f72585',
+                            glass: 'rgba(15, 23, 42, 0.7)',
+                            red: '#ef4444',
+                        }
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #1e293b 1px, transparent 1px), linear-gradient(to bottom, #1e293b 1px, transparent 1px), linear-gradient(to bottom, #1e293b 1px, transparent 1px), linear-gradient(to bottom, #1e293b 1px, transparent 1px)",
+                        'glow-radial': "radial-gradient(circle at center, rgba(67, 97, 238, 0.15) 0%, transparent 70%)"
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'typewriter': 'blink 1s step-end infinite',
+                        'scan': 'scan 4s linear infinite',
+                        'slide-in-right': 'slideInRight 0.5s ease-out forwards',
+                        'marquee': 'marquee 60s linear infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 1, boxShadow: '0 0 20px rgba(67, 97, 238, 0.2)' },
+                            '50%': { opacity: .7, boxShadow: '0 0 10px rgba(67, 97, 238, 0)' },
+                        },
+                        blink: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0' },
+                        },
+                        scan: {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(100%)' }
+                        },
+                        slideInRight: {
+                            '0%': { transform: 'translateX(100%)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' }
+                        },
+                        marquee: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-50%)' }
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #020617;
+            color: #cbd5e1;
+            overflow-x: hidden;
+        }
+
+        .cyber-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, #1e293b 1px, transparent 1px), linear-gradient(to bottom, #1e293b 1px, transparent 1px);
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.2;
+            z-index: 0;
+        }
+
+        .text-glow {
+            text-shadow: 0 0 20px rgba(67, 97, 238, 0.5);
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4361ee;
+        }
+
+        .scanlines {
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.15;
+        }
+        
+        /* Map Mode Styles */
+        #attack-globe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            opacity: 0.6;
+            transition: opacity 0.5s ease;
+            cursor: grab;
+        }
+        
+        #attack-globe:active {
+            cursor: grabbing;
+        }
+        
+        body.map-active #attack-globe {
+            z-index: 50;
+            opacity: 1;
+        }
+
+        body.map-active #main-content,
+        body.map-active #navbar {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        
+        /* Full Page Product View Styles */
+        #product-page-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 100;
+            background: #020617;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        body.product-active #product-page-view {
+            transform: translateX(0);
+        }
+
+        #map-controls, #live-feed-panel {
+            transition: opacity 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        body.map-active #map-controls, 
+        body.map-active #live-feed-panel {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .mask-image-b {
+            mask-image: linear-gradient(to bottom, transparent, black 20%);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%);
+        }
+
+        #map-tooltip {
+            transform: translate(-50%, -120%);
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        
+        .gradient-border-bottom {
+            background: linear-gradient(to right, transparent, #4361ee, transparent);
+            height: 1px;
+            width: 100%;
+            opacity: 0.3;
+        }
+        
+        /* Tech Grid Background for Product Page */
+        .tech-grid {
+            background-image: 
+                linear-gradient(rgba(67, 97, 238, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(67, 97, 238, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-red-500 selection:text-white">
+
+    <div class="scanlines"></div>
+    <div class="cyber-grid"></div>
+
+    <!-- 3D Globe Canvas (Fixed Background) -->
+    <canvas id="attack-globe"></canvas>
+    
+    <!-- Map Tooltip -->
+    <div id="map-tooltip" class="fixed hidden z-[70] bg-black/90 border border-red-500/50 text-white text-xs px-3 py-1.5 rounded shadow-lg backdrop-blur-md font-mono whitespace-nowrap"></div>
+
+    <!-- Live Attack Feed Panel (Hidden by default) -->
+    <div id="live-feed-panel" class="fixed top-8 left-8 z-[60] w-96 flex flex-col gap-2">
+        <div class="bg-black/80 backdrop-blur border border-neutral-700 p-3 rounded-lg flex items-center justify-between shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+            <span class="text-xs font-bold text-white flex items-center gap-2 font-mono">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+                LIVE THREAT STREAM
+            </span>
+            <span class="text-[10px] text-neutral-500 font-mono">REAL-TIME</span>
+        </div>
+        <div id="feed-container" class="flex flex-col-reverse gap-2 h-[400px] overflow-hidden relative mask-image-b">
+            <!-- Feed items injected via JS -->
+        </div>
+    </div>
+
+    <!-- Map Zen Mode Controls -->
+    <div id="map-controls" class="fixed bottom-8 right-8 z-[60] flex flex-col gap-2 items-end">
+        <div class="bg-black/80 backdrop-blur border border-neutral-700 p-4 rounded-lg text-xs font-mono text-neutral-400 mb-2 w-48">
+            <div class="flex items-center gap-2 mb-1"><span class="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_#ef4444]"></span> DDOS (Volumetric)</div>
+            <div class="flex items-center gap-2 mb-1"><span class="w-2 h-2 rounded-full bg-purple-500 animate-pulse shadow-[0_0_8px_#d946ef]"></span> MALWARE C2</div>
+            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-neutral-800 animate-pulse shadow-[0_0_8px_#3b82f6]"></span> PHISHING</div>
+            <div class="mt-3 pt-3 border-t border-neutral-700 text-[10px] uppercase opacity-70 flex justify-between">
+                <span>Status: LIVE</span>
+                <span>Drag to Rotate</span>
+            </div>
+        </div>
+        <button onclick="toggleMapMode()" class="px-6 py-3 bg-white text-black font-bold rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:bg-neutral-200 transition-all flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            EXIT MAP VIEW
+        </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-40 glass-panel border-b border-white/10 top-0 transition-all duration-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="#" onclick="closeProductPage(); window.scrollTo(0,0); return false;" class="flex-shrink-0 flex items-center gap-3">
+                    <div class="relative w-10 h-10 flex items-center justify-center">
+                         <div class="absolute inset-0 bg-gradient-to-r from-[#4361ee] to-[#f72585] rounded-full blur opacity-20 animate-pulse"></div>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="url(#nav-logo-gradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="relative z-10"><defs><linearGradient id="nav-logo-gradient" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4361ee"/><stop offset="100%" stop-color="#f72585"/></linearGradient></defs><path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 1 0 0-8c-2 0-4 1.33-6 4Z"/></svg>
+                    </div>
+                    <div>
+                        <span class="font-sans font-bold text-xl text-white tracking-wide">XYBERAH</span>
+                        <span class="block text-[10px] text-neutral-500 font-mono tracking-widest uppercase">Cyber Defense</span>
+                    </div>
+                </a>
+                <div class="hidden md:flex items-center space-x-6">
+                    
+                    <!-- Platform Dropdown -->
+                    <div class="relative group">
+                        <a href="#platform" onclick="closeProductPage(); document.getElementById('platform').scrollIntoView({behavior: 'smooth'}); return false;" class="text-sm font-medium text-neutral-300 hover:text-red-500 transition-colors flex items-center gap-1 py-4 focus:outline-none">
+                            Platform 
+                            <svg class="w-3 h-3 text-neutral-500 group-hover:text-red-500 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </a>
+                        <div class="absolute left-1/2 -translate-x-1/2 mt-0 w-64 rounded-xl shadow-2xl bg-neutral-900 ring-1 ring-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top pt-2 border border-neutral-700/50 overflow-hidden z-50">
+                             <div class="bg-neutral-900/95 backdrop-blur-xl">
+                                <a href="#" onclick="openProductPage('darkweb'); return false;" class="block px-4 py-3 text-sm text-neutral-300 hover:bg-white/5 hover:text-white border-b border-neutral-800 transition-colors">
+                                    <span class="block font-bold text-red-500 text-xs mb-0.5">INTEL</span> Dark Web Monitoring
+                                </a>
+                                <a href="#" onclick="openProductPage('vuln'); return false;" class="block px-4 py-3 text-sm text-neutral-300 hover:bg-white/5 hover:text-white border-b border-neutral-800 transition-colors">
+                                    <span class="block font-bold text-orange-400 text-xs mb-0.5">VULN</span> Vulnerability Intel
+                                </a>
+                                <a href="#" onclick="openProductPage('threat'); return false;" class="block px-4 py-3 text-sm text-neutral-300 hover:bg-white/5 hover:text-white border-b border-neutral-800 transition-colors">
+                                    <span class="block font-bold text-red-400 text-xs mb-0.5">FEEDS</span> Threat Intelligence
+                                </a>
+                                <a href="#" onclick="openProductPage('brand'); return false;" class="block px-4 py-3 text-sm text-neutral-300 hover:bg-white/5 hover:text-white border-b border-neutral-800 transition-colors">
+                                    <span class="block font-bold text-red-400 text-xs mb-0.5">BRAND</span> Risk Protection
+                                </a>
+                                <a href="#" onclick="openProductPage('ai'); return false;" class="block px-4 py-3 text-sm text-neutral-300 hover:bg-white/5 hover:text-white border-b border-neutral-800 transition-colors">
+                                    <span class="block font-bold text-red-400 text-xs mb-0.5">SOC</span> AI Forensics
+                                </a>
+                                <a href="#" onclick="openProductPage('honey'); return false;" class="block px-4 py-3 text-sm text-neutral-300 hover:bg-white/5 hover:text-white border-b border-neutral-800 transition-colors">
+                                    <span class="block font-bold text-yellow-400 text-xs mb-0.5">DECEPTION</span> Honeypots
+                                </a>
+                                <a href="#" onclick="openProductPage('box'); return false;" class="block px-4 py-3 text-sm text-neutral-300 hover:bg-white/5 hover:text-white transition-colors">
+                                    <span class="block font-bold text-green-400 text-xs mb-0.5">ANALYSIS</span> Malware Sandbox
+                                </a>
+                             </div>
+                        </div>
+                    </div>
+
+                    <a href="#comparison" class="text-sm font-medium text-neutral-300 hover:text-red-500 transition-colors">Benchmark</a>
+                    <a href="#testimonials" class="text-sm font-medium text-neutral-300 hover:text-red-500 transition-colors">Testimony</a>
+                    <a href="#contact" class="text-sm font-medium text-neutral-300 hover:text-red-500 transition-colors">Contact</a>
+                    <a href="#demo" class="text-sm font-medium text-white hover:text-red-500 transition-colors flex items-center gap-2"><span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> Live Demo</a>
+                    <button onclick="toggleMapMode()" class="text-sm font-medium text-neutral-300 hover:text-red-500 transition-colors flex items-center gap-2 border border-neutral-700 px-3 py-1 rounded bg-neutral-900/50">
+                        <span class="text-red-500 animate-pulse">◎</span> Live Attack Map
+                    </button>
+                    <a href="#demo" class="px-5 py-2.5 text-xs font-bold text-white bg-red-500 hover:bg-neutral-700 rounded-lg transition-all shadow-[0_0_15px_rgba(67,97,238,0.4)] tracking-wide uppercase">Launch App</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- FULL PAGE PRODUCT VIEW (SPA Overlay) -->
+    <div id="product-page-view" class="custom-scrollbar">
+        <!-- Close Button -->
+        <button onclick="closeProductPage()" class="fixed top-6 right-6 z-[110] p-3 bg-black/50 hover:bg-black/80 backdrop-blur-md rounded-full border border-neutral-700 text-neutral-400 hover:text-white transition-all group">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-300"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+
+        <!-- Product Hero -->
+        <section class="relative min-h-[60vh] flex items-center justify-center pt-20 overflow-hidden">
+            <div class="absolute inset-0 bg-cyber-dark z-0 tech-grid opacity-30"></div>
+            <div id="pp-gradient-bg" class="absolute inset-0 bg-gradient-to-b from-transparent to-cyber-black z-0 opacity-50"></div>
+            
+            <div class="max-w-7xl mx-auto px-6 relative z-10 text-center">
+                <div id="pp-icon-container" class="w-20 h-20 mx-auto bg-neutral-900/80 rounded-2xl border border-neutral-700 flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(0,0,0,0.5)] animate-fade-in-up">
+                    <!-- Icon injected here -->
+                </div>
+                <h1 id="pp-title" class="text-5xl md:text-7xl font-bold text-white mb-4 tracking-tight animate-fade-in-up" style="animation-delay: 0.1s">Product Title</h1>
+                <p id="pp-tagline" class="text-xl md:text-2xl text-red-500 font-mono mb-8 animate-fade-in-up" style="animation-delay: 0.2s">Product Tagline</p>
+                <p id="pp-description" class="max-w-3xl mx-auto text-neutral-400 text-lg leading-relaxed animate-fade-in-up" style="animation-delay: 0.3s">Description goes here.</p>
+                
+                <div class="mt-10 flex justify-center gap-4 animate-fade-in-up" style="animation-delay: 0.4s">
+                    <a href="#demo" onclick="closeProductPage()" class="px-8 py-3 bg-white text-black font-bold rounded-lg hover:bg-neutral-200 transition-colors shadow-lg flex items-center gap-2">
+                        Launch Live Demo <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </a>
+                    <a href="#contact" onclick="closeProductPage()" class="px-8 py-3 bg-neutral-800 text-white font-bold rounded-lg border border-neutral-700 hover:bg-neutral-700 transition-colors">
+                        Request Quote
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Capabilities Grid -->
+        <section class="py-20 bg-black relative border-y border-neutral-800">
+            <div class="max-w-7xl mx-auto px-6">
+                <h2 class="text-sm font-mono text-neutral-500 font-bold tracking-widest uppercase mb-12 border-l-4 border-red-500 pl-4">Core Capabilities</h2>
+                <div id="pp-features-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Features injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Specs (Terminal Style) -->
+        <section class="py-20 bg-cyber-dark">
+            <div class="max-w-5xl mx-auto px-6">
+                <div class="glass-panel rounded-xl overflow-hidden shadow-2xl border border-neutral-700">
+                    <div class="bg-neutral-900 px-4 py-2 flex items-center gap-2 border-b border-neutral-800">
+                        <div class="flex gap-1.5">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <div class="flex-1 text-center text-xs font-mono text-neutral-500">technical_specs.json</div>
+                    </div>
+                    <div class="p-8 font-mono text-sm bg-black/80 text-neutral-300">
+                        <div id="pp-specs">
+                            <!-- Specs injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Footer for Product Page -->
+        <footer class="py-10 text-center text-neutral-600 text-xs font-mono bg-black">
+            © 2025 Xyberah Inc. // Encrypted Connection
+        </footer>
+    </div>
+
+    <!-- Main Content Wrapper -->
+    <div id="main-content" class="relative z-10 transition-opacity duration-500">
+        
+        <!-- Hero Section -->
+        <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden min-h-screen flex items-center">
+            <div class="absolute inset-0 bg-gradient-to-b from-[#020617] via-transparent to-[#020617] z-0 pointer-events-none"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-900/30 border border-blue-500/30 text-blue-300 text-xs font-mono mb-8 animate-fade-in backdrop-blur-md">
+                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                    SYSTEM ACTIVE: GLOBAL THREAT MONITORING
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl font-sans font-extrabold text-white tracking-tight mb-6 leading-tight drop-shadow-2xl">
+                    Unified Intelligence <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-purple-500 to-pink-500 text-glow">
+                        <span id="hero-dynamic-text">Across Every Layer</span><span class="text-red-500 animate-typewriter">_</span>
+                    </span>
+                </h1>
+                
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-neutral-300 font-light leading-relaxed bg-black/40 p-4 rounded-xl backdrop-blur-sm border border-white/5">
+                    From <strong>Dark Web</strong> leaks to <strong>Surface Web</strong> vulnerabilities. Xyberah provides a single pane of glass for Threat Intelligence (CTI), Digital Risk Protection (DRP), and Attack Surface Management (ASM).
+                </p>
+                
+                <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="#contact" class="px-8 py-4 text-sm font-bold text-black bg-white hover:bg-neutral-200 rounded-lg transition-all shadow-lg flex items-center justify-center gap-2">
+                        Request Enterprise Demo
+                    </a>
+                    <button onclick="toggleMapMode()" class="px-8 py-4 text-sm font-bold text-white bg-neutral-900/80 backdrop-blur-md border border-neutral-700 hover:border-red-500 hover:bg-neutral-800 rounded-lg transition-all flex items-center justify-center gap-2 font-mono group">
+                        <span class="text-red-500 group-hover:animate-pulse">◎</span> Fullscreen Map
+                    </button>
+                </div>
+
+                <!-- Terminal Visual Overlay -->
+                <div class="mt-20 mx-auto max-w-3xl glass-panel rounded-xl overflow-hidden shadow-2xl border-t border-white/10 animate-float">
+                    <div class="bg-neutral-900/90 px-4 py-2 flex items-center gap-2 border-b border-neutral-800">
+                        <div class="flex gap-1.5">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <div class="flex-1 text-center text-xs font-mono text-neutral-500">xyberah-intel-engine — -bash — 80x24</div>
+                    </div>
+                    <div class="p-6 text-left font-mono text-xs md:text-sm bg-black/80 h-48 overflow-hidden relative">
+                        <div id="terminal-output" class="space-y-1"></div>
+                        <div class="text-red-500 mt-1 animate-pulse">_</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Platform Capabilities -->
+        <section id="platform" class="py-24 bg-cyber-dark relative">
+            <div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center mb-16">
+                    <h2 class="text-sm font-mono text-red-500 font-bold tracking-widest uppercase mb-2">The Platform</h2>
+                    <h3 class="text-3xl md:text-4xl font-bold text-white">Market-Leading CTI Modules</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Dark Web -->
+                    <div id="product-darkweb" onclick="openProductPage('darkweb')" class="glass-panel p-6 rounded-xl hover:border-red-500/50 transition-colors group relative overflow-hidden cursor-pointer hover:bg-neutral-900/50 scroll-mt-24">
+                        <div class="absolute top-4 right-4 text-xs font-bold text-neutral-500 group-hover:text-red-400 transition-colors">FULL VIEW &rarr;</div>
+                        <div class="w-12 h-12 bg-red-900/30 rounded-lg flex items-center justify-center mb-4 text-red-400 group-hover:text-white group-hover:bg-red-600 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-2">Dark Web Monitoring</h4>
+                        <p class="text-sm text-neutral-400 leading-relaxed mb-4">
+                            Real-time scanning of Tor hidden services (.onion), I2P, and criminal marketplaces.
+                        </p>
+                    </div>
+
+                    <!-- Vulnerability Intel -->
+                    <div id="product-vuln" onclick="openProductPage('vuln')" class="glass-panel p-6 rounded-xl hover:border-orange-500/50 transition-colors group cursor-pointer hover:bg-neutral-900/50 relative scroll-mt-24">
+                        <div class="absolute top-4 right-4 text-xs font-bold text-neutral-500 group-hover:text-orange-400 transition-colors">FULL VIEW &rarr;</div>
+                        <div class="w-12 h-12 bg-orange-900/30 rounded-lg flex items-center justify-center mb-4 text-orange-400 group-hover:text-white group-hover:bg-orange-600 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-2">Vulnerability Intel</h4>
+                        <p class="text-sm text-neutral-400 leading-relaxed">
+                            Prioritize patching with real-time exploitation data (CISA KEV, EPSS).
+                        </p>
+                    </div>
+                    
+                    <!-- Threat Intel Feeds (New) -->
+                    <div id="product-threat" onclick="openProductPage('threat')" class="glass-panel p-6 rounded-xl hover:border-red-500/50 transition-colors group cursor-pointer hover:bg-neutral-900/50 relative scroll-mt-24">
+                        <div class="absolute top-4 right-4 text-xs font-bold text-neutral-500 group-hover:text-red-400 transition-colors">FULL VIEW &rarr;</div>
+                        <div class="w-12 h-12 bg-red-900/30 rounded-lg flex items-center justify-center mb-4 text-red-400 group-hover:text-white group-hover:bg-red-600 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-2">Threat Intelligence</h4>
+                        <p class="text-sm text-neutral-400 leading-relaxed">
+                            Aggregated feeds from 50+ global sources including ISACs, CERTs, and proprietary sensors.
+                        </p>
+                    </div>
+
+                    <!-- Brand Protection -->
+                    <div id="product-brand" onclick="openProductPage('brand')" class="glass-panel p-6 rounded-xl hover:border-blue-500/50 transition-colors group cursor-pointer hover:bg-neutral-900/50 relative scroll-mt-24">
+                        <div class="absolute top-4 right-4 text-xs font-bold text-neutral-500 group-hover:text-red-400 transition-colors">FULL VIEW &rarr;</div>
+                        <div class="w-12 h-12 bg-neutral-900/30 rounded-lg flex items-center justify-center mb-4 text-red-400 group-hover:text-white group-hover:bg-neutral-700 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-2">Digital Risk Protection</h4>
+                        <p class="text-sm text-neutral-400 leading-relaxed">
+                            Monitor typosquatting domains and phishing sites mimicking your brand.
+                        </p>
+                    </div>
+
+                    <!-- AI Forensics -->
+                    <div id="product-ai" onclick="openProductPage('ai')" class="glass-panel p-6 rounded-xl hover:border-purple-500/50 transition-colors group cursor-pointer hover:bg-neutral-900/50 relative scroll-mt-24">
+                        <div class="absolute top-4 right-4 text-xs font-bold text-neutral-500 group-hover:text-red-400 transition-colors">FULL VIEW &rarr;</div>
+                        <div class="w-12 h-12 bg-purple-900/30 rounded-lg flex items-center justify-center mb-4 text-red-400 group-hover:text-white group-hover:bg-purple-600 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-2">AI-Driven Forensics</h4>
+                        <p class="text-sm text-neutral-400 leading-relaxed">
+                            Gemini-powered log analysis and incident summarization.
+                        </p>
+                    </div>
+
+                    <!-- Adaptive Honeypots -->
+                    <div id="product-honey" onclick="openProductPage('honey')" class="glass-panel p-6 rounded-xl hover:border-yellow-500/50 transition-colors group cursor-pointer hover:bg-neutral-900/50 relative scroll-mt-24">
+                        <div class="absolute top-4 right-4 text-xs font-bold text-neutral-500 group-hover:text-yellow-400 transition-colors">FULL VIEW &rarr;</div>
+                        <div class="w-12 h-12 bg-yellow-900/30 rounded-lg flex items-center justify-center mb-4 text-yellow-400 group-hover:text-white group-hover:bg-yellow-600 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-2">Adaptive Honeypots</h4>
+                        <p class="text-sm text-neutral-400 leading-relaxed">
+                            Deploy active deception nodes that mimic your specific infrastructure.
+                        </p>
+                    </div>
+
+                    <!-- Sandbox -->
+                    <div id="product-box" onclick="openProductPage('box')" class="glass-panel p-6 rounded-xl hover:border-green-500/50 transition-colors group cursor-pointer hover:bg-neutral-900/50 relative scroll-mt-24">
+                        <div class="absolute top-4 right-4 text-xs font-bold text-neutral-500 group-hover:text-green-400 transition-colors">FULL VIEW &rarr;</div>
+                        <div class="w-12 h-12 bg-green-900/30 rounded-lg flex items-center justify-center mb-4 text-green-400 group-hover:text-white group-hover:bg-green-600 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-2">Malware Sandbox</h4>
+                        <p class="text-sm text-neutral-400 leading-relaxed">
+                            Safely investigate suspicious files and URLs without risking your local machine. Our client-side sandbox technology renders content in an isolated environment while capturing network traffic and DOM mutations.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Product Differentiation (Comparison) -->
+        <section id="comparison" class="py-24 bg-black relative border-t border-neutral-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-sm font-mono text-red-500 font-bold tracking-widest uppercase mb-2">System Benchmark</h2>
+                    <h3 class="text-3xl md:text-4xl font-bold text-white">Legacy Systems vs. Xyberah Core</h3>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    
+                    <!-- Performance Charts (Left) -->
+                    <div class="space-y-8">
+                        <!-- Metric 1: Latency -->
+                        <div class="relative group">
+                             <div class="flex justify-between text-xs font-bold uppercase mb-2">
+                                 <span class="text-neutral-400">Mean Time to Detect (MTTD)</span>
+                                 <span class="text-green-400 font-mono">98% Faster</span>
+                             </div>
+                             <div class="h-10 bg-neutral-900 rounded-full border border-neutral-800 relative overflow-hidden flex items-center px-4">
+                                 <div class="w-[95%] h-2 bg-red-500/20 rounded-full absolute"></div> <!-- Legacy Background -->
+                                 <span class="relative z-10 text-[10px] text-red-400">Legacy: ~45 Minutes</span>
+                             </div>
+                             <div class="h-10 bg-neutral-900 rounded-full border border-red-500/50 relative overflow-hidden flex items-center px-4 -mt-2 transform translate-x-4 shadow-[0_0_20px_rgba(67,97,238,0.3)] z-10">
+                                 <div class="w-[15%] h-full bg-red-500 absolute top-0 left-0"></div> <!-- Xyberah Bar -->
+                                 <span class="relative z-10 text-xs font-bold text-white pl-2">Xyberah: &lt; 30 Seconds</span>
+                             </div>
+                        </div>
+
+                        <!-- Metric 2: Privacy -->
+                        <div class="relative group">
+                             <div class="flex justify-between text-xs font-bold uppercase mb-2">
+                                 <span class="text-neutral-400">Data Sovereignty</span>
+                                 <span class="text-red-400 font-mono">100% Local</span>
+                             </div>
+                             <div class="flex items-center gap-4">
+                                 <div class="flex-1 bg-neutral-900/50 p-4 rounded-xl border border-neutral-800 text-center opacity-50">
+                                     <div class="text-red-500 text-xs uppercase font-bold mb-1">Cloud Upload</div>
+                                     <div class="text-neutral-500 text-[10px]">Data leaves perimeter</div>
+                                 </div>
+                                 <div class="flex-1 bg-gradient-to-r from-purple-900/40 to-blue-900/40 p-4 rounded-xl border border-purple-500/50 text-center shadow-lg relative">
+                                     <div class="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                     <div class="text-white text-xs uppercase font-bold mb-1">Client-Side</div>
+                                     <div class="text-neutral-300 text-[10px]">Zero-Trust Execution</div>
+                                 </div>
+                             </div>
+                        </div>
+
+                        <!-- Metric 3: False Positives -->
+                        <div class="relative group">
+                             <div class="flex justify-between text-xs font-bold uppercase mb-2">
+                                 <span class="text-neutral-400">False Positive Rate</span>
+                                 <span class="text-orange-400 font-mono">&lt; 0.1%</span>
+                             </div>
+                             <div class="w-full bg-neutral-800 h-2 rounded-full overflow-hidden flex">
+                                 <div class="w-[60%] bg-red-500/50"></div> <!-- Legacy Error -->
+                                 <div class="w-[1%] bg-green-500"></div> <!-- Xyberah Error -->
+                             </div>
+                             <div class="flex justify-between text-[10px] mt-1 text-neutral-500 font-mono">
+                                 <span>Legacy SIEM</span>
+                                 <span class="text-white">Xyberah AI</span>
+                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature List (Right) -->
+                    <div class="space-y-6">
+                         <div class="flex gap-4 items-start">
+                             <div class="p-3 bg-neutral-900/20 rounded-lg border border-blue-500/30 text-red-400">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+                             </div>
+                             <div>
+                                 <h4 class="text-lg font-bold text-white">Active Defense vs Passive Logs</h4>
+                                 <p class="text-sm text-neutral-400 mt-1 leading-relaxed">While others wait for logs, Xyberah deploys adaptive honeypots to catch attackers mid-stream.</p>
+                             </div>
+                         </div>
+
+                         <div class="flex gap-4 items-start">
+                             <div class="p-3 bg-purple-900/20 rounded-lg border border-purple-500/30 text-red-400">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                             </div>
+                             <div>
+                                 <h4 class="text-lg font-bold text-white">Generative AI Context</h4>
+                                 <p class="text-sm text-neutral-400 mt-1 leading-relaxed">Raw data is useless without context. Our AI engine correlates IOCs with global actor profiles instantly.</p>
+                             </div>
+                         </div>
+
+                         <div class="flex gap-4 items-start">
+                             <div class="p-3 bg-green-900/20 rounded-lg border border-green-500/30 text-green-400">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 7h10"/><path d="M7 12h10"/><path d="M7 17h10"/></svg>
+                             </div>
+                             <div>
+                                 <h4 class="text-lg font-bold text-white">Unified Workbench</h4>
+                                 <p class="text-sm text-neutral-400 mt-1 leading-relaxed">Kill chain analysis, sandbox detonation, and dark web scanning in one browser tab.</p>
+                             </div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials (Scrolling Marquee) -->
+        <section id="testimonials" class="py-24 bg-cyber-dark relative overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 text-center">
+                <h2 class="text-sm font-mono text-red-500 font-bold tracking-widest uppercase mb-2">Success Stories</h2>
+                <h3 class="text-3xl md:text-4xl font-bold text-white">Customer Testimony</h3>
+            </div>
+
+            <div class="relative w-full">
+                <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-cyber-dark to-transparent z-10 pointer-events-none"></div>
+                <div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-cyber-dark to-transparent z-10 pointer-events-none"></div>
+                
+                <div class="flex animate-marquee hover:[animation-play-state:paused] gap-6 w-max px-6">
+                    <!-- Cards -->
+                    <div class="glass-panel p-6 rounded-xl w-[400px] flex-shrink-0 border border-neutral-700/50">
+                        <div class="flex gap-2 text-yellow-500 mb-3 text-xs">★★★★★</div>
+                        <p class="text-sm text-neutral-300 italic mb-4 leading-relaxed">"The client-side execution model is a game changer for our compliance needs. We get deep forensics without exposing sensitive logs to third-party clouds."</p>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center font-bold text-white border border-neutral-600">ES</div>
+                            <div><div class="text-xs font-bold text-white">Elena S.</div><div class="text-[10px] text-neutral-500 font-mono">CISO, FinTech Global</div></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-xl w-[400px] flex-shrink-0 border border-red-500/30 bg-neutral-900/10">
+                        <div class="flex gap-2 text-yellow-500 mb-3 text-xs">★★★★★</div>
+                        <p class="text-sm text-neutral-300 italic mb-4 leading-relaxed">"Xyberah's active deception features allowed us to identify a persistent threat actor inside our network that traditional EDR completely missed."</p>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center font-bold text-white">MJ</div>
+                            <div><div class="text-xs font-bold text-white">Marcus J.</div><div class="text-[10px] text-neutral-500 font-mono">SOC Manager, DefCorp</div></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-xl w-[400px] flex-shrink-0 border border-neutral-700/50">
+                        <div class="flex gap-2 text-yellow-500 mb-3 text-xs">★★★★★</div>
+                        <p class="text-sm text-neutral-300 italic mb-4 leading-relaxed">"The unified dashboard saves my analysts hours every day. Having Dark Web monitoring and vulnerability intel in one view is exactly what we needed."</p>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center font-bold text-white">AL</div>
+                            <div><div class="text-xs font-bold text-white">Sarah L.</div><div class="text-[10px] text-neutral-500 font-mono">Head of SecOps, TechGiant</div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-panel p-6 rounded-xl w-[400px] flex-shrink-0 border border-neutral-700/50">
+                        <div class="flex gap-2 text-yellow-500 mb-3 text-xs">★★★★★</div>
+                        <p class="text-sm text-neutral-300 italic mb-4 leading-relaxed">"Finally, a tool that respects data sovereignty. The local analysis engine is incredibly fast and handles our massive log volume without lag."</p>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center font-bold text-white">DK</div>
+                            <div><div class="text-xs font-bold text-white">David K.</div><div class="text-[10px] text-neutral-500 font-mono">Compliance Officer, HealthSys</div></div>
+                        </div>
+                    </div>
+
+                     <div class="glass-panel p-6 rounded-xl w-[400px] flex-shrink-0 border border-neutral-700/50">
+                        <div class="flex gap-2 text-yellow-500 mb-3 text-xs">★★★★★</div>
+                        <p class="text-sm text-neutral-300 italic mb-4 leading-relaxed">"The Brand Intelligence module flagged a phishing domain 48 hours before it went live. We took it down before a single employee clicked."</p>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center font-bold text-white">RN</div>
+                            <div><div class="text-xs font-bold text-white">Rachel N.</div><div class="text-[10px] text-neutral-500 font-mono">Threat Hunter, RetailCore</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Demo Section -->
+        <section id="demo" class="py-24 bg-black relative border-y border-neutral-800/50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center mb-10">
+                    <h2 class="text-sm font-mono text-red-500 font-bold tracking-widest uppercase mb-2">Live Interface</h2>
+                    <h3 class="text-3xl md:text-4xl font-bold text-white mb-4">Interactive Threat Dashboard</h3>
+                    <p class="text-neutral-400 max-w-2xl mx-auto">Experience the full power of Xyberah directly in your browser. This instance connects to live public threat feeds.</p>
+                </div>
+
+                <div class="w-full h-[800px] bg-neutral-900 rounded-xl border border-neutral-700 shadow-[0_0_50px_rgba(67,97,238,0.15)] overflow-hidden relative group">
+                    <iframe src="about:blank" class="w-full h-full border-0 bg-black" title="Live demo (configure deployment URL)"></iframe>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Us Section -->
+        <section id="contact" class="py-24 bg-[#020617] relative">
+             <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                 <div class="glass-panel rounded-2xl p-8 md:p-12 shadow-2xl border border-neutral-800">
+                     <div class="text-center mb-10">
+                         <div class="w-16 h-16 bg-neutral-900/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-blue-500/30">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500"><path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H18c2.2 0 4 1.8 4 4v8Z"/><path d="M15 9a2 2 0 0 1 2-2h4"/><path d="M15 5v2"/><path d="M15 14a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2V9.8c0-1.1.9-2 2-2h2a2 2 0 0 1 2 2V14Z"/></svg>
+                         </div>
+                         <h2 class="text-3xl font-bold text-white mb-2">Secure Channel</h2>
+                         <p class="text-neutral-400 text-sm">Establish an encrypted link with our deployment team.</p>
+                     </div>
+
+                     <form class="space-y-6">
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             <div>
+                                 <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Agent Name</label>
+                                 <input type="text" class="w-full bg-black/50 border border-neutral-700 rounded-lg px-4 py-3 text-white focus:border-red-500 focus:outline-none transition-colors" placeholder="John Doe">
+                             </div>
+                             <div>
+                                 <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Comms Frequency (Email)</label>
+                                 <input type="email" class="w-full bg-black/50 border border-neutral-700 rounded-lg px-4 py-3 text-white focus:border-red-500 focus:outline-none transition-colors" placeholder="john@company.com">
+                             </div>
+                         </div>
+                         <div>
+                             <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Transmission Message</label>
+                             <textarea rows="4" class="w-full bg-black/50 border border-neutral-700 rounded-lg px-4 py-3 text-white focus:border-red-500 focus:outline-none transition-colors" placeholder="Requesting demo for enterprise deployment..."></textarea>
+                         </div>
+                         <button type="submit" class="w-full py-4 bg-red-500 hover:bg-neutral-700 text-white font-bold rounded-lg transition-all shadow-[0_0_20px_rgba(67,97,238,0.3)] uppercase tracking-widest text-sm flex items-center justify-center gap-2 group">
+                             Transmit Request
+                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                         </button>
+                     </form>
+                     
+                     <div class="mt-8 pt-8 border-t border-neutral-800 text-center text-xs text-neutral-500 font-mono">
+                         <p>Encrypted via TLS 1.3 • PGP Key: 0x4A1B...</p>
+                         <p class="mt-2">HQ: 123 Cyberpunk Ave, Neo-Tokyo, Sector 7</p>
+                     </div>
+                 </div>
+             </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-cyber-black border-t border-neutral-800 py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-neutral-800"></div>
+                    <span class="text-neutral-400 font-bold tracking-wider">XYBERAH INC.</span>
+                </div>
+                <div class="text-xs text-neutral-600 font-mono">
+                    © 2025 Xyberah Unified Defense.
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Interactive Scripts -->
+    <script>
+        function toggleMapMode() {
+            document.body.classList.toggle('map-active');
+        }
+
+        function closeModal() {
+            document.getElementById('feature-modal').classList.add('hidden');
+        }
+
+        // --- Rich Product Content Data ---
+        const productContent = {
+            'darkweb': {
+                title: "Dark Web Monitoring",
+                tagline: "Illuminating the Underground Economy",
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>',
+                description: "Proactive surveillance of the deep and dark web. Our automated agents infiltrate exclusive criminal forums, marketplaces, and leak sites to detect stolen credentials, leaked source code, and mentions of your organization before they can be weaponized.",
+                features: [
+                    { title: "Onion/I2P Crawling", desc: "Continuous indexing of 50,000+ hidden services.", icon: "layers" },
+                    { title: "Leak Detection", desc: "Instant alerts for employee credentials in combo lists.", icon: "lock" },
+                    { title: "Ransomware Watch", desc: "Monitor leak sites (LockBit, Clop) for your data.", icon: "shield" }
+                ],
+                specs: [
+                    "Sources: Tor, I2P, Telegram, Discord, IRC",
+                    "Update Frequency: Real-time (Streaming)",
+                    "Alert Channels: Email, Webhook, SIEM (Splunk/QRadar)",
+                    "Data Retention: 365 Days"
+                ],
+                gradient: "from-red-900/40 to-black"
+            },
+            'vuln': {
+                title: "Vulnerability Intelligence",
+                tagline: "Prioritize What Matters",
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>',
+                description: "Not all vulnerabilities are created equal. We filter the noise by correlating CVEs with active exploitation data from CISA KEV, EPSS scores, and threat actor chatter. Focus your patching efforts on the 2% of bugs that are actually being used in the wild.",
+                features: [
+                    { title: "Exploit Prediction", desc: "EPSS integration for probability scoring.", icon: "activity" },
+                    { title: "CISA KEV Sync", desc: "Auto-flag vulnerabilities mandated for patching.", icon: "alert-triangle" },
+                    { title: "Vendor Monitoring", desc: "Track exposure across your specific tech stack.", icon: "server" }
+                ],
+                specs: [
+                    "Feeds: NVD, CISA KEV, GitHub PoCs, Exploit-DB",
+                    "Scoring: CVSS v3.1 + Custom Risk Algo",
+                    "Asset Matching: CPE v2.3 Auto-discovery",
+                    "API Access: REST / STIX 2.1"
+                ],
+                gradient: "from-orange-900/40 to-black"
+            },
+            'threat': {
+                title: "Threat Intelligence Feeds",
+                tagline: "Global Sensor Network",
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+                description: "Access high-fidelity Indicators of Compromise (IOCs) derived from a global network of sensors. We aggregate, de-duplicate, and enrich data from over 50 sources including Feodo Tracker, URLHaus, and proprietary honeypots.",
+                features: [
+                    { title: "C2 Botnet Tracking", desc: "Live IP lists for Cobalt Strike, Emotet, etc.", icon: "radio" },
+                    { title: "Malicious URLs", desc: "Block phishing and malware distribution sites.", icon: "globe" },
+                    { title: "Contextualized Data", desc: "Enriched with ASN, GeoIP, and Threat Actor attribution.", icon: "database" }
+                ],
+                specs: [
+                    "Format: JSON, CSV, STIX 2.1, TAXII",
+                    "Updates: Every 15 minutes",
+                    "Volume: ~50k new indicators/day",
+                    "Integration: Firewall, SIEM, SOAR, EDR"
+                ],
+                gradient: "from-red-900/40 to-black"
+            },
+            'brand': {
+                title: "Digital Risk Protection",
+                tagline: "Defend Your Digital Identity",
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>',
+                description: "Protect your brand from impersonation. We monitor global DNS registration logs (CertStream) and use AI visual analysis to detect phishing sites, fake mobile apps, and social media impersonators targeting your customers.",
+                features: [
+                    { title: "Typosquat Scanner", desc: "Detect domain variations (e.g. g0ogle.com).", icon: "search" },
+                    { title: "Visual AI", desc: "Match logos and site layouts using TensorFlow.", icon: "image" },
+                    { title: "Takedown Automation", desc: "Generate legal notices for registrars instantly.", icon: "send" }
+                ],
+                specs: [
+                    "Monitoring: Global Whois, CT Logs, App Stores",
+                    "Detection: Levenshtein distance + Visual Similarity",
+                    "Alerting: Real-time via Email/Slack",
+                    "Reporting: Automated Takedown Templates"
+                ],
+                gradient: "from-blue-900/40 to-black"
+            },
+            'ai': {
+                title: "AI Forensic Analyst",
+                tagline: "Force Multiplier for SOC Teams",
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>',
+                description: "Empower your Tier 1 analysts with a specialized LLM trained on cybersecurity. The AI Assistant can explain complex alerts, generate YARA/Sigma rules from natural language, and summarize incident reports automatically.",
+                features: [
+                    { title: "Incident Summary", desc: "Turn raw logs into executive reports.", icon: "file-text" },
+                    { title: "Query Translation", desc: "Natural language to KQL/SPL/SQL.", icon: "terminal" },
+                    { title: "Chat Assistant", desc: "Context-aware threat hunting guidance.", icon: "message-square" }
+                ],
+                specs: [
+                    "Model: Gemini 1.5 Pro (Custom Tuned)",
+                    "Privacy: Local Context Injection (RAG)",
+                    "Knowledge Base: MITRE ATT&CK, NIST, OWASP",
+                    "Latency: < 2s response time"
+                ],
+                gradient: "from-purple-900/40 to-black"
+            },
+            'honey': {
+                title: "Adaptive Honeypots",
+                tagline: "Active Defense Grid",
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>',
+                description: "Turn the tables on attackers. Deploy lightweight decoys that mimic your infrastructure. Any interaction with these nodes is a high-fidelity alert of lateral movement inside your perimeter.",
+                features: [
+                    { title: "Dynamic Emulation", desc: "Mimics SSH, HTTP, SMB, and DB services.", icon: "box" },
+                    { title: "Lateral Detection", desc: "Spot attackers scanning internal subnets.", icon: "crosshair" },
+                    { title: "Zero False Positives", desc: "No legitimate user should touch a honeypot.", icon: "check-circle" }
+                ],
+                specs: [
+                    "Deployment: Docker Containers / Virtual Agents",
+                    "Protocols: TCP/UDP, ICMP",
+                    "Logging: Full Packet Capture (PCAP)",
+                    "Management: Centralized Console"
+                ],
+                gradient: "from-yellow-900/40 to-black"
+            },
+            'box': {
+                title: "Malware Sandbox",
+                tagline: "Safe Detonation Environment",
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>',
+                description: "Safely investigate suspicious files and URLs without risking your local machine. Our client-side sandbox technology renders content in an isolated environment while capturing network traffic and DOM mutations.",
+                features: [
+                    { title: "Browser Isolation", desc: "Render phishing sites safely via proxy.", icon: "shield" },
+                    { title: "Static Analysis", desc: "Extract metadata from PDF, Office, and PE files.", icon: "code" },
+                    { title: "Network Forensics", desc: "Log all HTTP requests and DNS queries.", icon: "wifi" }
+                ],
+                specs: [
+                    "Execution: Client-Side (WASM/JS Isolation)",
+                    "Support: Windows PE, PDF, MS Office, HTML",
+                    "Integrations: VirusTotal, AlienVault OTX",
+                    "Privacy: Files analyzed in-memory"
+                ],
+                gradient: "from-green-900/40 to-black"
+            }
+        };
+
+        function openProductPage(productId) {
+            const data = productContent[productId];
+            if (!data) return;
+
+            // Update Content
+            document.getElementById('pp-title').innerText = data.title;
+            document.getElementById('pp-tagline').innerText = data.tagline;
+            document.getElementById('pp-description').innerText = data.description;
+            document.getElementById('pp-icon-container').innerHTML = data.icon;
+            
+            // Update Gradient Background
+            const bg = document.getElementById('pp-gradient-bg');
+            bg.className = `absolute inset-0 bg-gradient-to-b ${data.gradient} z-0 opacity-50`;
+
+            // Render Features
+            const grid = document.getElementById('pp-features-grid');
+            grid.innerHTML = '';
+            data.features.forEach(feat => {
+                const div = document.createElement('div');
+                div.className = "bg-neutral-900/50 border border-neutral-700 p-6 rounded-xl hover:border-neutral-500 transition-colors";
+                div.innerHTML = `
+                    <div class="w-10 h-10 bg-neutral-800 rounded-lg flex items-center justify-center mb-4 text-white">
+                        <!-- Simple Icon Placeholder based on keyword -->
+                        ${getIconSvg(feat.icon)}
+                    </div>
+                    <h3 class="text-white font-bold text-lg mb-2">${feat.title}</h3>
+                    <p class="text-neutral-400 text-sm leading-relaxed">${feat.desc}</p>
+                `;
+                grid.appendChild(div);
+            });
+
+            // Render Specs
+            const specs = document.getElementById('pp-specs');
+            specs.innerHTML = '';
+            data.specs.forEach(spec => {
+                const div = document.createElement('div');
+                div.className = "mb-2 text-green-400";
+                div.innerText = `> ${spec}`;
+                specs.appendChild(div);
+            });
+            const cursor = document.createElement('div');
+            cursor.className = "text-red-500 animate-pulse";
+            cursor.innerText = "_";
+            specs.appendChild(cursor);
+
+            // Show Page
+            document.body.classList.add('product-active');
+            // Hide scrollbar on body
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeProductPage() {
+            document.body.classList.remove('product-active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function getIconSvg(name) {
+            // Helper to return SVGs based on name string
+            const svgs = {
+                'layers': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>',
+                'lock': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+                'shield': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+                'activity': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+                'alert-triangle': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+                'server': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>',
+                'search': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+                'image': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>',
+                'send': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>',
+                'file-text': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>',
+                'terminal': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
+                'message-square': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+                'box': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
+                'crosshair': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>',
+                'check-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+                'code': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+                'wifi': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>',
+                'radio': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>',
+                'globe': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"/></svg>',
+                'database': '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>'
+            };
+            return svgs[name] || svgs['shield'];
+        }
+
+        // Terminal Typing Effect
+        const termLines = [
+            { text: "[+] Initializing heuristic engine...", color: "text-neutral-400" },
+            { text: "[*] Connecting to CTI feeds (CISA, URLHaus)...", color: "text-neutral-400" },
+            { text: "[!] ALERT: Ransomware Chatter detected (Dark Web)", color: "text-red-500 font-bold" },
+            { text: "    > Actor: LockBit 3.0", color: "text-red-400" },
+            { text: "    > Target Sector: Financial", color: "text-red-400" },
+            { text: "[+] Automating defensive posture...", color: "text-red-400" },
+            { text: "[*] Generating Executive Report...", color: "text-red-500" },
+            { text: "READY.", color: "text-green-500" }
+        ];
+
+        async function runTerminal() {
+            const output = document.getElementById('terminal-output');
+            if(!output) return;
+            output.innerHTML = '';
+            
+            for (let line of termLines) {
+                const div = document.createElement('div');
+                div.className = line.color;
+                output.appendChild(div);
+                
+                // Type characters
+                for (let char of line.text) {
+                    div.textContent += char;
+                    await new Promise(r => setTimeout(r, 15 + Math.random() * 30));
+                }
+                await new Promise(r => setTimeout(r, 400));
+            }
+        }
+        
+        setTimeout(runTerminal, 1000);
+
+        // --- 3D Globe Animation Engine with D3 ---
+        (function() {
+            const canvas = document.getElementById('attack-globe');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d', { alpha: true });
+            let width, height;
+
+            // Data
+            let worldFeatures = [];
+            const pulses = [];
+            const projectiles = [];
+            
+            // Random Target Pools
+            const TARGETS = ["HQ-PRIMARY", "CLOUD-US-EAST", "DB-CLUSTER-04", "DMZ-GATEWAY", "WAF-NODE-01"];
+            
+            // Log Helper
+            function logAttack(type, src, country, dst) {
+                const container = document.getElementById('feed-container');
+                if (!container) return;
+                
+                const div = document.createElement('div');
+                div.className = "bg-neutral-900/80 border-l-2 border-red-500 p-2 text-[10px] font-mono text-neutral-300 animate-slide-in-right backdrop-blur-sm shadow-md";
+                div.innerHTML = `<span class="text-red-400 font-bold">${type}</span> <span class="text-neutral-400">${src}</span> <span class="text-neutral-600">(${country})</span> &gt;&gt; <span class="text-white font-bold">${dst}</span>`;
+                
+                container.insertBefore(div, container.firstChild);
+                if (container.children.length > 8) container.removeChild(container.lastChild);
+            }
+            
+            // Random IP Generator
+            function getRandomIp() {
+                return `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+            }
+
+            // Load World Data
+            d3.json('https://unpkg.com/world-atlas@2.0.2/countries-110m.json').then(data => {
+                const world = topojson.feature(data, data.objects.countries);
+                worldFeatures = world.features;
+            });
+
+            // Projection Setup
+            const projection = d3.geoOrthographic().clipAngle(90);
+            const path = d3.geoPath(projection, ctx);
+            
+            // Drag State
+            let isInteracting = false;
+            let autoRotate = 0;
+            
+            const drag = d3.drag()
+                .on("start", () => { isInteracting = true; })
+                .on("drag", (event) => {
+                    const rotate = projection.rotate();
+                    // Sensitivity factor
+                    const k = 0.25;
+                    projection.rotate([rotate[0] + event.dx * k, rotate[1] - event.dy * k]);
+                })
+                .on("end", () => {
+                    // Resume auto-rotation after short delay
+                    setTimeout(() => { isInteracting = false; }, 2000);
+                });
+                
+            d3.select(canvas)
+                .call(drag)
+                .on("mousemove", (event) => {
+                    // Tooltip Logic
+                    const [x, y] = d3.pointer(event);
+                    // D3 v7 invert needs [x, y]
+                    const invert = projection.invert([x, y]);
+                    
+                    if (invert) {
+                        const [lon, lat] = invert;
+                        // Check if point is inside any country
+                        const found = worldFeatures.find(f => d3.geoContains(f, [lon, lat]));
+                        const tooltip = document.getElementById('map-tooltip');
+                        
+                        if (found) {
+                            tooltip.style.display = 'block';
+                            tooltip.style.left = (event.pageX + 10) + 'px';
+                            tooltip.style.top = (event.pageY - 10) + 'px';
+                            tooltip.textContent = found.properties.name;
+                        } else {
+                            tooltip.style.display = 'none';
+                        }
+                    }
+                })
+                .on("mouseout", () => {
+                    document.getElementById('map-tooltip').style.display = 'none';
+                });
+
+            function resize() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Scale projection
+                const scale = Math.min(width, height) / 2.2;
+                projection.translate([width / 2, height / 2]).scale(scale);
+            }
+            
+            window.addEventListener('resize', resize);
+            resize();
+
+            // Classes for D3 Logic
+            class Explosion {
+                constructor(coords, color) {
+                    this.coords = coords;
+                    this.color = color;
+                    this.r = 2;
+                    this.alpha = 1;
+                    this.dead = false;
+                    this.life = 60 + Math.random() * 60; // 1-2 seconds pulsing
+                    this.maxR = 5 + Math.random() * 5;
+                    this.growing = true;
+                }
+                update() {
+                    if (this.life > 0) {
+                        this.life--;
+                        // Blinking / Pulsing effect
+                        if (this.growing) {
+                            this.r += 0.2;
+                            if (this.r > this.maxR) this.growing = false;
+                        } else {
+                            this.r -= 0.2;
+                            if (this.r < 2) this.growing = true;
+                        }
+                    } else {
+                        this.alpha -= 0.05; // Fade out after life
+                        this.r += 0.5;
+                        if (this.alpha <= 0) this.dead = true;
+                    }
+                }
+                draw() {
+                    if (this.dead) return;
+                    const center = projection.invert([width/2, height/2]);
+                    if (d3.geoDistance(this.coords, center) < 1.57) {
+                        const p = projection(this.coords);
+                        ctx.beginPath();
+                        ctx.arc(p[0], p[1], this.r, 0, 2*Math.PI);
+                        ctx.fillStyle = this.color;
+                        ctx.globalAlpha = this.alpha;
+                        ctx.fill();
+                        
+                        // Stroke ring
+                        ctx.beginPath();
+                        ctx.arc(p[0], p[1], this.r * 1.5, 0, 2*Math.PI);
+                        ctx.strokeStyle = this.color;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                        
+                        ctx.globalAlpha = 1;
+                    }
+                }
+            }
+            
+            class Projectile {
+                constructor(srcCoords, dstCoords) {
+                    this.src = srcCoords;
+                    this.dst = dstCoords;
+                    this.progress = 0;
+                    this.speed = 0.005 + Math.random() * 0.005;
+                    this.dead = false;
+                    this.color = ['#ef4444', '#d946ef', '#3b82f6', '#eab308'][Math.floor(Math.random() * 4)];
+                    
+                    // Initial Explosion (Source)
+                    pulses.push(new Explosion(srcCoords, this.color));
+                    
+                    // Log
+                    this.log();
+                }
+
+                log() {
+                    // Reverse geocode source for log
+                    const srcFeat = worldFeatures.find(f => d3.geoContains(f, this.src));
+                    const country = srcFeat ? srcFeat.properties.name : "Unknown";
+                    const ip = getRandomIp();
+                    const target = TARGETS[Math.floor(Math.random() * TARGETS.length)];
+                    const types = ['DDOS', 'MALWARE', 'PHISHING', 'EXPLOIT', 'SQL INJECTION', 'RANSOMWARE', 'BRUTE FORCE', 'DATA EXFIL', 'APT BEACON', 'ZERO-DAY'];
+                    const type = types[Math.floor(Math.random() * types.length)];
+                    
+                    // Only log if not too fast to avoid spam visual
+                    if(Math.random() > 0.7) {
+                        logAttack(type, ip, country, target);
+                    }
+                }
+
+                update() {
+                    this.progress += this.speed;
+                    if (this.progress >= 1) {
+                        this.dead = true;
+                        // Impact Explosion (Destination)
+                        pulses.push(new Explosion(this.dst, '#ffffff'));
+                    }
+                }
+
+                draw() {
+                    if (this.dead) return;
+                    
+                    const interpolator = d3.geoInterpolate(this.src, this.dst);
+                    const pos = interpolator(this.progress);
+                    const trailPos = interpolator(Math.max(0, this.progress - 0.15));
+                    
+                    const center = projection.invert([width/2, height/2]);
+                    const dist = d3.geoDistance(pos, center);
+                    
+                    if (dist < 1.57) { 
+                        const p1 = projection(pos);
+                        const p2 = projection(trailPos);
+                        
+                        const grad = ctx.createLinearGradient(p2[0], p2[1], p1[0], p1[1]);
+                        grad.addColorStop(0, 'rgba(0,0,0,0)');
+                        grad.addColorStop(1, this.color);
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(p2[0], p2[1]);
+                        ctx.lineTo(p1[0], p1[1]);
+                        ctx.strokeStyle = grad;
+                        ctx.lineWidth = 2;
+                        ctx.lineCap = 'round';
+                        ctx.stroke();
+                        
+                        ctx.beginPath();
+                        ctx.arc(p1[0], p1[1], 2, 0, 2*Math.PI);
+                        ctx.fillStyle = '#fff';
+                        ctx.shadowBlur = 10;
+                        ctx.shadowColor = this.color;
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    }
+                }
+            }
+            
+            // Animation Loop
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                
+                // Auto Rotate if not interacting
+                if (!isInteracting) {
+                    autoRotate += 0.15;
+                    // Keep current tilt but rotate longitude
+                    const currentRotate = projection.rotate();
+                    projection.rotate([currentRotate[0] + 0.15, currentRotate[1]]);
+                }
+                
+                // 2. Draw Globe Base
+                ctx.beginPath(); path({type: "Sphere"});
+                ctx.fillStyle = 'rgba(2, 6, 23, 0.4)'; 
+                ctx.fill();
+                
+                ctx.shadowBlur = 30;
+                ctx.shadowColor = 'rgba(67, 97, 238, 0.3)';
+                ctx.strokeStyle = 'rgba(67, 97, 238, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+
+                // 3. Draw Countries
+                if (worldFeatures.length > 0) {
+                    ctx.beginPath();
+                    // We can just draw the whole feature collection at once
+                    path({type: "FeatureCollection", features: worldFeatures});
+                    ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(67, 97, 238, 0.3)';
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+
+                // 4. Random Attacks
+                if (Math.random() < 0.05) {
+                    const src = [(Math.random() * 360) - 180, (Math.random() * 120) - 60];
+                    // Destination is roughly fixed near "HQ" (US East approx) with noise
+                    const dst = [-77 + (Math.random()-0.5)*10, 38 + (Math.random()-0.5)*10]; 
+                    projectiles.push(new Projectile(src, dst));
+                }
+                
+                // 5. Update & Draw
+                for (let i = pulses.length - 1; i >= 0; i--) {
+                    pulses[i].update();
+                    pulses[i].draw();
+                    if (pulses[i].dead) pulses.splice(i, 1);
+                }
+                
+                for (let i = projectiles.length - 1; i >= 0; i--) {
+                    projectiles[i].update();
+                    projectiles[i].draw();
+                    if (projectiles[i].dead) projectiles.splice(i, 1);
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        })();
+
+        // Hero Typing Effect
+        const heroPhrases = [
+            "Across Every Layer",
+            "For The Dark Web",
+            "Against Zero-Days",
+            "Inside Your Network",
+            "Before The Breach"
+        ];
+        
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const heroTextElement = document.getElementById('hero-dynamic-text');
+
+        function typeEffect() {
+            if (!heroTextElement) return;
+            const currentPhrase = heroPhrases[phraseIndex];
+            
+            if (isDeleting) {
+                heroTextElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                heroTextElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                // Pause at end
+                isDeleting = true;
+                setTimeout(typeEffect, 2000);
+            } else if (isDeleting && charIndex === 0) {
+                // Move to next phrase
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % heroPhrases.length;
+                setTimeout(typeEffect, 500);
+            } else {
+                // Typing speed
+                const speed = isDeleting ? 50 : 100;
+                setTimeout(typeEffect, speed);
+            }
+        }
+        // Start after a slight delay
+        setTimeout(typeEffect, 1000);
+    </script>
+</body>
+</html>

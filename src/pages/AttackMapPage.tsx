@@ -1,3 +1,4 @@
+import React from 'react';
 import {
     useMemo,
     type CSSProperties,
@@ -19,6 +20,7 @@ import {
 
 import type { LogEventV2 } from '../../api/services';
 
+import { dataProvider } from '../services/dataProvider';
 import { useAppData } from '../contexts/AppDataContext';
 import PageHeader from '../components/layout/PageHeader';
 
@@ -133,7 +135,10 @@ function prettyEvent(
 export default function AttackMapPage({
     onNavigate,
 }: AttackMapPageProps) {
-    const { MOCK_EVENTS } = useAppData();
+    const [MOCK_EVENTS, set_MOCK_EVENTS] = React.useState<any[]>([]);
+    React.useEffect(() => {
+        dataProvider.getAttackEvents().then(set_MOCK_EVENTS);
+    }, []);
 
     const events = useMemo(() => {
         return [...MOCK_EVENTS].sort(

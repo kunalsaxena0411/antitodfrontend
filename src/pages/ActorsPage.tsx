@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   useEffect,
   useMemo,
@@ -23,6 +24,7 @@ import {
   X,
 } from 'lucide-react';
 
+import { dataProvider } from '../services/dataProvider';
 import { useAppData } from '../contexts/AppDataContext';
 import PageHeader from '../components/layout/PageHeader';
 
@@ -86,7 +88,10 @@ function downloadCsv(
 /* -------------------------------------------------------------------------- */
 
 export default function ActorsPage() {
-  const { MOCK_ACTORS } = useAppData();
+  const [MOCK_ACTORS, set_MOCK_ACTORS] = React.useState<any[]>([]);
+    React.useEffect(() => {
+        dataProvider.getActors().then(set_MOCK_ACTORS);
+    }, []);
 
   /* ------------------------------------------------------------------------ */
   /*                                 State                                    */

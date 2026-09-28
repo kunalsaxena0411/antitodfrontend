@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   useMemo,
   useState,
@@ -26,6 +27,7 @@ import {
   X,
 } from 'lucide-react';
 
+import { dataProvider } from '../services/dataProvider';
 import { useAppData } from '../contexts/AppDataContext';
 import PageHeader from '../components/layout/PageHeader';
 
@@ -252,7 +254,10 @@ function parseAdvancedQuery(
 /* -------------------------------------------------------------------------- */
 
 export default function CvePage() {
-  const { MOCK_CVES } = useAppData();
+  const [MOCK_CVES, set_MOCK_CVES] = React.useState<any[]>([]);
+    React.useEffect(() => {
+        dataProvider.getCves().then(set_MOCK_CVES);
+    }, []);
 
   /* ------------------------------------------------------------------------ */
   /*                                  State                                   */

@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   useMemo,
   useState,
@@ -18,6 +19,7 @@ import {
   X,
 } from 'lucide-react';
 
+import { dataProvider } from '../services/dataProvider';
 import { useAppData } from '../contexts/AppDataContext';
 
 import PageHeader from '../components/layout/PageHeader';
@@ -49,7 +51,10 @@ function formatNewsDateTime(timestamp?: number) {
 }
 
 export default function NewsPage() {
-  const { MOCK_NEWS } = useAppData();
+  const [MOCK_NEWS, set_MOCK_NEWS] = React.useState<any[]>([]);
+    React.useEffect(() => {
+        dataProvider.getNews().then(set_MOCK_NEWS);
+    }, []);
 
   const [search, setSearch] =
     useState('');

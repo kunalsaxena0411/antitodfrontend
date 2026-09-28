@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Download,
   Plus,
@@ -10,6 +10,7 @@ import {
   X,
   ExternalLink,
 } from 'lucide-react';
+import { dataProvider } from '../services/dataProvider';
 import IntelLayout from '../components/layout/IntelLayout';
 
 type RuleSeverity = 'critical' | 'high' | 'medium' | 'low';
@@ -28,58 +29,7 @@ interface MockRule {
   testStatus: TestStatus;
 }
 
-const MOCK_RULES: MockRule[] = [
-  {
-    id: 'RUL-001',
-    name: 'Suspicious PowerShell Download',
-    severity: 'high',
-    status: 'active',
-    mitre: ['T1059.001'],
-    format: 'sigma',
-    lastModified: '2026-09-20',
-    testStatus: 'passing',
-  },
-  {
-    id: 'RUL-002',
-    name: 'Cobalt Strike Beacon HTTP',
-    severity: 'critical',
-    status: 'active',
-    mitre: ['T1071.001', 'T1573'],
-    format: 'snort',
-    lastModified: '2026-09-22',
-    testStatus: 'passing',
-  },
-  {
-    id: 'RUL-003',
-    name: 'Mimikatz Execution Pattern',
-    severity: 'critical',
-    status: 'testing',
-    mitre: ['T1003.001'],
-    format: 'sigma',
-    lastModified: '2026-09-24',
-    testStatus: 'failing',
-  },
-  {
-    id: 'RUL-004',
-    name: 'Malicious Office Macro',
-    severity: 'medium',
-    status: 'active',
-    mitre: ['T1059.005'],
-    format: 'yara',
-    lastModified: '2026-09-15',
-    testStatus: 'passing',
-  },
-  {
-    id: 'RUL-005',
-    name: 'RDP Brute Force Attempt',
-    severity: 'high',
-    status: 'disabled',
-    mitre: ['T1110.001'],
-    format: 'sigma',
-    lastModified: '2026-09-10',
-    testStatus: 'untested',
-  },
-];
+
 
 const severityClass = (severity: RuleSeverity) => {
   switch (severity) {
@@ -147,6 +97,16 @@ const escapeCsv = (value: string) => {
 };
 
 export default function RulesPage() {
+    const [rules, setRules] = useState<MockRule[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        dataProvider.getRules().then(data => {
+            setRules(data as MockRule[]);
+            setIsLoading(false);
+        });
+    }, []);
+
   const [search, setSearch] = useState('');
   const [severityFilter, setSeverityFilter] = useState<'all' | RuleSeverity>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | RuleStatus>('all');
@@ -156,7 +116,7 @@ export default function RulesPage() {
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    return MOCK_RULES.filter((rule) => {
+    return rules.filter((rule) => {
       const matchesSearch =
         !query ||
         rule.name.toLowerCase().includes(query) ||
@@ -178,7 +138,7 @@ export default function RulesPage() {
   }, [search, severityFilter, statusFilter, formatFilter]);
 
   const selectedRule =
-    MOCK_RULES.find((rule) => rule.id === selectedRuleId) ?? null;
+    rules.find((rule) => rule.id === selectedRuleId) ?? null;
 
   const exportRules = () => {
     const header = [

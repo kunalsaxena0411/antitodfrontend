@@ -1,3 +1,4 @@
+import { dataProvider } from '../services/dataProvider';
 import {
   useEffect,
   useMemo,
@@ -333,6 +334,16 @@ function downloadFile(
 /* -------------------------------------------------------------------------- */
 
 export default function InvestigationPage() {
+    const [investigations, setInvestigations] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        dataProvider.getInvestigations().then(data => {
+            setInvestigations(data);
+            setIsLoading(false);
+        });
+    }, []);
+
   /* ------------------------------------------------------------------------ */
   /*                                  State                                   */
   /* ------------------------------------------------------------------------ */
