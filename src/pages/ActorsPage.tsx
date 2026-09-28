@@ -87,10 +87,38 @@ function downloadCsv(
 /*                              Page component                                */
 /* -------------------------------------------------------------------------- */
 
+export interface ActorProfile {
+  id: string;
+  name: string;
+  description: string;
+  country: string;
+  motivation: string;
+  aliases: string[];
+  targets: string[];
+  ttps: string[];
+  firstSeen: string;
+  lastSeen: string;
+}
+
 export default function ActorsPage() {
-  const [MOCK_ACTORS, set_MOCK_ACTORS] = React.useState<any[]>([]);
+  const [MOCK_ACTORS, set_MOCK_ACTORS] = React.useState<ActorProfile[]>([]);
+  const [visibleCount, setVisibleCount] = React.useState(50);
     React.useEffect(() => {
-        dataProvider.getActors().then(set_MOCK_ACTORS);
+        dataProvider.getActors().then((malpediaActors) => {
+            const mappedActors: ActorProfile[] = malpediaActors.map((ma: any) => ({
+                id: ma.uuid || `actor-${Math.random()}`,
+                name: ma.value || 'Unknown Actor',
+                description: ma.description || '',
+                country: ma.meta?.country || 'Unknown',
+                motivation: ma.sophistication === 'Critical' ? 'Financial / Espionage' : 'Unknown',
+                aliases: ma.meta?.synonyms || [],
+                targets: ma.malwareFamilies || [],
+                ttps: ma.mitreIds || [],
+                firstSeen: 'Unknown',
+                lastSeen: 'Unknown',
+            }));
+            set_MOCK_ACTORS(mappedActors);
+        });
     }, []);
 
   /* ------------------------------------------------------------------------ */
@@ -744,7 +772,7 @@ export default function ActorsPage() {
                     </td>
                   </tr>
                 ) : (
-                  filtered.map((actor, index) => {
+                  filtered.slice(0, visibleCount).map((actor, index) => {
                     const selected =
                       selectedActorId === actor.id;
 
@@ -895,6 +923,27 @@ export default function ActorsPage() {
                       </tr>
                     );
                   })
+                )}
+
+                {filtered.length > visibleCount && (
+                  <tr>
+                    <td colSpan={7} style={{ textAlign: "center", padding: "16px" }}>
+                      <button
+                        type="button"
+                        onClick={() => setVisibleCount(v => v + 50)}
+                        style={{
+                          background: "rgba(255,255,255,0.05)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          padding: "8px 16px",
+                          color: "#fff",
+                          cursor: "pointer",
+                          borderRadius: "4px"
+                        }}
+                      >
+                        Load More ({filtered.length - visibleCount} remaining)
+                      </button>
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </table>
