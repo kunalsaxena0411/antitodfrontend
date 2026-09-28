@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 
 import type { LogEventV2 } from '../../api/services';
-import { useHoneypotData } from '../../hooks/useHoneypotData';
+import { dataProvider } from '../services/dataProvider';
 import PageHeader from '../components/layout/PageHeader';
 
 interface HoneypotLogsProps {
@@ -215,20 +215,21 @@ function exportEventsToCsv(
 export default function HoneypotLogsPage({
   onNavigate,
 }: HoneypotLogsProps) {
-  const {
-    events: rawEvents,
-    isLoadingEvents,
-    refresh,
-    offset,
-    limit,
-    total,
-    setPage,
-  } = useHoneypotData({
-    limit: 100,
-    offset: 0,
-  });
+  const [events, setEvents] = useState<LogEventV2[]>([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(false);
+  const total = events.length;
+  const limit = 100;
+  const offset = 0;
+  const refresh = () => {};
+  const setPage = (page: number) => {};
 
-  const events = rawEvents ?? [];
+  useEffect(() => {
+    setIsLoadingEvents(true);
+    dataProvider.getAttackEvents().then(e => {
+      setEvents(e);
+      setIsLoadingEvents(false);
+    });
+  }, []);
 
   const [search, setSearch] = useState('');
   const [sevFilter, setSevFilter] =

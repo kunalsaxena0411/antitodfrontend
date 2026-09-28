@@ -24,7 +24,7 @@ import {
 
 import type { AnalyzedHost } from '../../types';
 
-import { useAppData } from '../contexts/AppDataContext';
+import { dataProvider } from '../services/dataProvider';
 import PageHeader from '../components/layout/PageHeader';
 
 /* -------------------------------------------------------------------------- */
@@ -102,7 +102,13 @@ function clampScore(score: number): number {
 export default function AnalysisPage({
     onNavigate,
 }: AnalysisPageProps) {
-    const { MOCK_HOSTS } = useAppData();
+    const [MOCK_HOSTS, setMockHosts] = useState<AnalyzedHost[]>([]);
+
+    useEffect(() => {
+        (dataProvider as any).getHosts().then((hosts: AnalyzedHost[]) => {
+            setMockHosts(hosts);
+        });
+    }, []);
 
     /* ------------------------------------------------------------------------ */
     /*                                  State                                   */
