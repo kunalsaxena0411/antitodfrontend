@@ -285,6 +285,12 @@ export default function CvePage() {
   const [inspectorTab, setInspectorTab] =
     useState<InspectorTab>('Overview');
 
+  const [visibleCount, setVisibleCount] = useState(50);
+
+  React.useEffect(() => {
+    setVisibleCount(50);
+  }, [search, advancedMode, severityFilter, exploitOnly, vendorFilter]);
+
   /* ------------------------------------------------------------------------ */
   /*                            Filter options                                */
   /* ------------------------------------------------------------------------ */
@@ -976,36 +982,10 @@ export default function CvePage() {
               <tbody>
                 {filtered.length === 0 ? (
                   <tr>
-                    <td
-                      colSpan={7}
-                      className="at-cve-empty"
-                    >
-                      <FileWarning
-                        size={21}
-                      />
-
-                      <strong>
-                        No CVEs found
-                      </strong>
-
-                      <span>
-                        No vulnerabilities
-                        match the current
-                        search and filters.
-                      </span>
-
-                      <button
-                        type="button"
-                        onClick={
-                          clearAllFilters
-                        }
-                      >
-                        Clear filters
-                      </button>
-                    </td>
+                    <td colSpan={7} className="p-8"><div className="at-cve-empty-state mx-auto max-w-sm bg-[#111] border border-[#222] rounded-xl shadow-lg"><FileWarning size={24} className="text-[#666] mb-2" /><strong className="text-white text-sm block">No CVEs found</strong><span className="text-[#888] text-xs block mt-1">No vulnerabilities match the current search and filters.</span><button type="button" onClick={clearAllFilters} className="mt-4 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 transition-colors rounded-lg text-xs text-white border border-neutral-700">Clear filters</button></div></td>
                   </tr>
                 ) : (
-                  filtered.map((cve) => {
+                  filtered.slice(0, visibleCount).map((cve) => {
                     const selected =
                       selectedCveId ===
                       cve.id;
@@ -1146,6 +1126,18 @@ export default function CvePage() {
                 )}
               </tbody>
             </table>
+
+            {filtered.length > visibleCount && (
+              <div className="flex justify-center p-6 border-t border-[#1d1d1d]">
+                <button
+                  type="button"
+                  className="at-btn at-btn-secondary"
+                  onClick={() => setVisibleCount((c) => c + 50)}
+                >
+                  Load More ({filtered.length - visibleCount} remaining)
+                </button>
+              </div>
+            )}
           </div>
         </section>
 
@@ -1564,3 +1556,4 @@ export default function CvePage() {
     </div>
   );
 }
+

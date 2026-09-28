@@ -9,14 +9,14 @@ import {
   BrainCircuit,
   CalendarClock,
   ChevronRight,
-  CircleX, Loader,
+  CircleX, Loader2,
   Download,
   ExternalLink,
   Hash,
   Newspaper,
   Search,
   Tag,
-  X, Loader,
+  X,
 } from 'lucide-react';
 
 import { dataProvider } from '../services/dataProvider';
@@ -565,43 +565,9 @@ export default function NewsPage() {
 
                 {isLoading ? (
                   <tr>
-                    <td colSpan={6} className="at-news-empty">
-                      <Loader size={24} className="at-spin" />
-                      <strong>Fetching Intelligence...</strong>
-                      <span>Connecting to external threat feeds and ingesting data.</span>
-                    </td>
+                    <td colSpan={6} className="p-8"><div className="at-news-empty-state mx-auto max-w-sm bg-[#111] border border-[#222] rounded-xl shadow-lg py-8 flex flex-col items-center justify-center gap-2"><Loader2 size={24} className="at-spin text-[#666] mb-2" /><strong className="text-white text-sm block">Fetching Intelligence...</strong><span className="text-[#888] text-xs block text-center">Connecting to external threat feeds and ingesting data.</span></div></td>
                   </tr>
-                ) : filtered.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={6}
-                      className="at-news-empty"
-                    >
-                      <Newspaper
-                        size={21}
-                      />
-
-                      <strong>
-                        No news found
-                      </strong>
-
-                      <span>
-                        No articles match
-                        the current
-                        search.
-                      </span>
-
-                      <button
-                        type="button"
-                        onClick={
-                          clearAll
-                        }
-                      >
-                        Clear search
-                      </button>
-                    </td>
-                  </tr>
-                ) : (
+                ) : filtered.length === 0 ? (<tr><td colSpan={6} className="p-8"><div className="at-news-empty-state mx-auto max-w-sm bg-[#111] border border-[#222] rounded-xl shadow-lg py-8 flex flex-col items-center justify-center gap-2"><Newspaper size={24} className="text-[#666] mb-2" /><strong className="text-white text-sm block">No news found</strong><span className="text-[#888] text-xs block text-center">No articles match the current search.</span><button type="button" onClick={clearAll} className="mt-4 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 transition-colors rounded-lg text-xs text-white border border-neutral-700">Clear search</button></div></td></tr>) : (
                   filtered.map(
                     (
                       news,
@@ -1028,5 +994,8 @@ export default function NewsPage() {
     </div>
   );
 }
+
+
+
 
 

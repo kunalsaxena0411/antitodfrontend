@@ -17,6 +17,54 @@ interface MonitoredAsset {
     lastChecked: number | null;
 }
 
+const MOCK_CERTS: SuspiciousCert[] = [
+    {
+        id: 'cert-1',
+        timestamp: Date.now() - 1000 * 60 * 5,
+        domain: 'secure-paypal-login.com',
+        issuer: 'Let\'s Encrypt',
+        score: 95,
+        keywordMatched: 'paypal',
+        isTypo: false,
+    },
+    {
+        id: 'cert-2',
+        timestamp: Date.now() - 1000 * 60 * 15,
+        domain: 'appIe-support.com',
+        issuer: 'Cloudflare',
+        score: 88,
+        keywordMatched: 'apple',
+        isTypo: true,
+    },
+    {
+        id: 'cert-3',
+        timestamp: Date.now() - 1000 * 60 * 45,
+        domain: 'mircosoft-update.net',
+        issuer: 'ZeroSSL',
+        score: 92,
+        keywordMatched: 'microsoft',
+        isTypo: true,
+    },
+    {
+        id: 'cert-4',
+        timestamp: Date.now() - 1000 * 60 * 60 * 2,
+        domain: 'google-docs-share.com',
+        issuer: 'Let\'s Encrypt',
+        score: 75,
+        keywordMatched: 'google',
+        isTypo: false,
+    },
+    {
+        id: 'cert-5',
+        timestamp: Date.now() - 1000 * 60 * 60 * 5,
+        domain: 'binance-auth.info',
+        issuer: 'Sectigo',
+        score: 98,
+        keywordMatched: 'binance',
+        isTypo: false,
+    }
+];
+
 export const BrandMonitorView: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'LIVE' | 'SCANNER' | 'REPUTATION' | 'CONFIG'>('LIVE');
     
@@ -29,7 +77,7 @@ export const BrandMonitorView: React.FC = () => {
     const [fuzzyThreshold, setFuzzyThreshold] = useState(80);
 
     // Live Feed State
-    const [certStream, setCertStream] = useState<SuspiciousCert[]>([]);
+    const [certStream, setCertStream] = useState<SuspiciousCert[]>(MOCK_CERTS);
     const [isStreamPaused, setIsStreamPaused] = useState(false);
     const observerRef = useRef<CertStreamObserver | null>(null);
 
@@ -584,32 +632,68 @@ ${originalDomain}`;
                                     <p className="text-xs font-mono">Listening to Certificate Transparency Logs...</p>
                                 </div>
                             ) : (
-                                <div className="divide-y divide-neutral-800">
-                                    {certStream.map(cert => (
-                                        <div key={cert.id} className="p-4 hover:bg-white/5 transition-colors animate-fade-in-up group">
-                                            <div className="flex justify-between items-start mb-2">
-                                                <div className="flex items-center gap-3">
-                                                    <AlertTriangle size={16} className="text-red-500"/>
-                                                    <span className="text-sm font-bold text-white font-mono truncate max-w-md">{cert.domain}</span>
+                                <div className="flex flex-col gap-3 p-4">
+                                    {certStream.map((cert, i) => (
+                                        <div key={cert.id} className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-[#121212] to-[#0a0a0a] border border-[#222] p-4 transition-all duration-300 hover:border-red-500/30 hover:shadow-[0_0_20px_rgba(239,68,68,0.05)] animate-fade-in-up" style={{ animationDelay: `${i * 0.05}s` }}>
+                                            
+                                            {/* Animated background glow on hover */}
+                                            <div className="absolute top-0 right-0 -mt-10 -mr-10 h-32 w-32 rounded-full bg-red-500/10 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                                            
+                                            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                                
+                                                {/* Left Section: Icon & Identity */}
+                                                <div className="flex items-center gap-4">
+                                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-500 shadow-[0_0_10px_rgba(239,68,68,0.1)]">
+                                                        <AlertTriangle size={18} />
+                                                    </div>
+                                                    
+                                                    <div className="flex flex-col">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-sm font-semibold tracking-wide text-white">{cert.domain}</span>
+                                                            {cert.isTypo && (
+                                                               <span className="rounded bg-orange-500/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-orange-400 border border-orange-500/20">Typosquat</span>
+                                                            )}
+                                                        </div>
+                                                        <div className="mt-1 flex items-center gap-3 text-[11px] text-neutral-500">
+                                                            <div className="flex items-center gap-1">
+                                                                <span className="uppercase tracking-wider">Target:</span>
+                                                                <span className="font-mono text-red-400 font-medium">{cert.keywordMatched}</span>
+                                                            </div>
+                                                            <span className="h-3 w-px bg-neutral-800" />
+                                                            <div className="flex items-center gap-1">
+                                                                <span className="uppercase tracking-wider">Issuer:</span>
+                                                                <span className="text-neutral-400">{cert.issuer}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <span className="text-[10px] text-[#888] font-mono">{new Date(cert.timestamp).toLocaleTimeString()}</span>
-                                            </div>
-                                            <div className="flex items-center justify-between text-xs">
-                                                <div className="flex gap-4 text-[#AAA]">
-                                                    <span>Match: <span className="text-red-400 font-bold">{cert.keywordMatched}</span></span>
-                                                    <span>Issuer: <span className="text-neutral-300">{cert.issuer}</span></span>
+
+                                                {/* Right Section: Score & Action */}
+                                                <div className="flex items-center gap-5">
+                                                    
+                                                    <div className="flex flex-col items-end">
+                                                        <span className="text-[9px] uppercase tracking-wider text-neutral-500 mb-1">Threat Score</span>
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="h-1.5 w-16 overflow-hidden rounded-full bg-neutral-800">
+                                                                 <div className="h-full rounded-full bg-red-500" style={{ width: `${cert.score}%` }} />
+                                                            </div>
+                                                            <span className="font-mono text-xs font-bold text-red-500">{cert.score}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex flex-col items-end gap-1 border-l border-neutral-800 pl-5">
+                                                        <span className="font-mono text-[10px] text-neutral-500">{new Date(cert.timestamp).toLocaleTimeString()}</span>
+                                                        <a 
+                                                            href={`https://${cert.domain}`} 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer" 
+                                                            className="mt-1 flex items-center gap-1.5 rounded bg-neutral-800/50 px-3 py-1.5 text-[10px] font-medium text-neutral-300 transition-colors hover:bg-red-500/20 hover:text-red-400 border border-neutral-700/50 hover:border-red-500/30"
+                                                        >
+                                                            <ExternalLink size={12}/> Inspect
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                                <div className="flex gap-2">
-                                                    <span className="px-2 py-0.5 bg-[#151515] rounded text-[10px] border border-[#333]">Score: {cert.score}</span>
-                                                    <a 
-                                                        href={`https://${cert.domain}`} 
-                                                        target="_blank" 
-                                                        rel="noopener noreferrer" 
-                                                        className="px-2 py-0.5 bg-[#111] text-[#AAA] border border-neutral-500/30 rounded text-[10px] hover:bg-[#111] flex items-center gap-1"
-                                                    >
-                                                        VISIT <ExternalLink size={8}/>
-                                                    </a>
-                                                </div>
+                                                
                                             </div>
                                         </div>
                                     ))}

@@ -707,7 +707,7 @@ export default function HoneypotLogsPage({
               Workspace
              =============================================================== */}
 
-          <section className="at-hp-workspace">
+          <section className={`at-hp-workspace ${!selectedEvent ? 'no-inspector' : ''}`}>
 
             {/* Event stream */}
 
@@ -1046,23 +1046,8 @@ export default function HoneypotLogsPage({
 
             {/* Inspector */}
 
-            <aside className="at-hp-inspector">
-              {!selectedEvent ? (
-                <div className="at-hp-inspector-empty">
-                  <Server size={24} />
-
-                  <strong>
-                    Select an event
-                  </strong>
-
-                  <span>
-                    Event details and
-                    investigation actions will
-                    appear here.
-                  </span>
-                </div>
-              ) : (
-                <>
+            {selectedEvent && (
+              <aside className="at-hp-inspector">
                   <div className="at-hp-inspector-header">
                     <div>
                       <span className="at-eyebrow">
@@ -1342,9 +1327,8 @@ export default function HoneypotLogsPage({
                       <ChevronRight size={13} />
                     </button>
                   </div>
-                </>
-              )}
-            </aside>
+              </aside>
+            )}
           </section>
         </div>
       </div>

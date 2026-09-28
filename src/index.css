@@ -23,7 +23,7 @@
     overflow: hidden;
     background: #0a0a0a;
     color: #ededed;
-    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     font-size: 14px;
     line-height: 1.5;
     text-rendering: optimizeLegibility;
@@ -112,7 +112,7 @@
   flex-direction: column;
   overflow: hidden;
   background: #090909;
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 14px;
   line-height: 1.5;
 }
@@ -9986,6 +9986,9 @@
   gap: 10px;
   min-height: 0;
 }
+.at-hp-workspace.no-inspector {
+  grid-template-columns: 1fr;
+}
 
 .at-hp-stream-panel,
 .at-hp-inspector {
@@ -10083,7 +10086,7 @@
 
 .at-hp-table {
   width: 100%;
-  min-width: 930px;
+  min-width: 650px;
   border-collapse: collapse;
 }
 
@@ -10421,9 +10424,15 @@
 
 .at-hp-inspector {
   min-height: 650px;
+  position: sticky;
+  top: 16px;
+  align-self: flex-start;
 }
 
 .at-hp-inspector-empty {
+  position: sticky;
+  top: 16px;
+  align-self: flex-start;
   display: flex;
   min-height: 650px;
   align-items: center;
@@ -10788,6 +10797,10 @@
   .at-hp-workspace {
     grid-template-columns:
       minmax(0, 1fr) 350px;
+  }
+
+  .at-hp-workspace.no-inspector {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -15966,4 +15979,8 @@
   color: #555555;
   font: 500 10px/1 "JetBrains Mono", monospace;
 }
+
+
+
+
 
