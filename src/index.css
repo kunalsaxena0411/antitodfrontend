@@ -10115,7 +10115,7 @@
 }
 
 .at-hp-table tbody tr.active {
-  background: rgba(229, 72, 77, .055);
+  background: rgba(255, 255, 255, .045);
 }
 
 .at-hp-table tbody tr:last-child td {

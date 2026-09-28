@@ -20,22 +20,14 @@ const generateMockEvents = (): LogEventV2[] => {
     
     events.push({
       id: `EVT-${10000 + i}`,
+      event_id: `EVT-${10000 + i}`,
       timestamp,
       src_ip: rand > 0.8 ? SHARED_ENTITIES.ip : `192.168.1.${Math.floor(Math.random() * 255)}`,
       dst_ip: '10.0.0.5',
       dst_port: rand > 0.7 ? 3389 : 22,
-      service: rand > 0.7 ? 'RDP' : 'SSH',
       protocol: 'TCP',
-      action,
-      severity,
       event_type,
-      geoip: {
-        country_name: rand > 0.5 ? 'Russia' : 'China',
-        country_code: rand > 0.5 ? 'RU' : 'CN',
-        city_name: rand > 0.5 ? 'Moscow' : 'Beijing',
-        latitude: rand > 0.5 ? 55.7558 : 39.9042,
-        longitude: rand > 0.5 ? 37.6173 : 116.4074
-      }
+      severity
     });
   }
   
