@@ -357,25 +357,7 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
           </button>
         </div>
 
-        {visuallyExpanded ? (
-          <button type="button" className="at-sidebar-workspace" onClick={() => onNavigate('dashboard')}>
-            <span className="at-sidebar-workspace-mark">G</span>
-            <span className="at-sidebar-workspace-copy">
-              <strong>Global Operations</strong>
-              <small>Security workspace</small>
-            </span>
-            <ChevronDown size={14} />
-          </button>
-        ) : (
-          <button
-            type="button"
-            className="at-sidebar-workspace at-sidebar-workspace-collapsed"
-            onClick={() => onNavigate('dashboard')}
-            title="Global Operations"
-          >
-            <span className="at-sidebar-workspace-mark">G</span>
-          </button>
-        )}
+        
 
         {visuallyExpanded ? (
           <div className="at-sidebar-search-row">
@@ -466,3 +448,4 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
     </aside>
   );
 }
+
