@@ -10,6 +10,6 @@ export const DEMO_NEWS: ThreatNewsItem[] = [
     date: new Date().toISOString(),
     published: new Date().toISOString(),
     link: 'https://example.com/news/1',
-    category: 'news'
+    category: 'general'
   }
 ];

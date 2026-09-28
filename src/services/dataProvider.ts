@@ -7,7 +7,9 @@ import {
   DEMO_RULES,
   DEMO_PLAYBOOKS,
   DEMO_NEWS,
-  DEMO_DASHBOARD
+  DEMO_DASHBOARD,
+  DEMO_HOSTS,
+  DEMO_CVE_FEEDS
 } from '../data/demo';
 
 import { fetchThreatNews } from '../../services/news';
@@ -18,6 +20,12 @@ const DEMO_MODE = true; // Temporary flag to indicate we are in design-review fa
 
 // We wrap real API calls with a try/catch. If API is missing or fails, we return the demo data.
 export const dataProvider = {
+  getHosts: async () => {
+    return DEMO_HOSTS;
+  },
+  getCveFeeds: async () => {
+    return DEMO_CVE_FEEDS;
+  },
   getDashboardMetrics: async () => {
     return DEMO_DASHBOARD;
   },
@@ -72,3 +80,6 @@ export const dataProvider = {
     return DEMO_IOCS;
   }
 };
+
+
+

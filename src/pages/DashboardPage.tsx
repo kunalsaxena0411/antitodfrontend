@@ -163,21 +163,27 @@ function getEventId(
 }
 
 export default function DashboardPage({
-    onNavigate,
-  }: Omit<DashboardProps, 'results' | 'newsItems' | 'cveFeedItems'>) {
-    const [results, setResults] = useState<AnalyzedHost[]>([]);
-    const [newsItems, setNewsItems] = useState<ThreatNewsItem[]>([]);
-    const [cveFeedItems, setCveFeedItems] = useState<CveFeedItem[]>([]);
-    const [metrics, setMetrics] = useState<any>(null);
+  onNavigate
+}: Omit<DashboardProps, 'results' | 'newsItems' | 'cveFeedItems'>) {
+  const [results, setResults] = useState<AnalyzedHost[]>([]);
+  const [newsItems, setNewsItems] = useState<ThreatNewsItem[]>([]);
+  const [cveFeedItems, setCveFeedItems] = useState<CveFeedItem[]>([]);
+  const [metrics, setMetrics] = useState<any>(null);
 
-    useEffect(() => {
-        Promise.all([
-            // In a real app we'd fetch hosts and feeds from dataProvider
-            dataProvider.getDashboardMetrics()
-        ]).then(([m]) => {
-            setMetrics(m);
-        });
-    }, []);
+  useEffect(() => {
+      // Fetch dynamic non-prop metrics if any
+      Promise.all([
+      dataProvider.getDashboardMetrics(),
+      (dataProvider as any).getHosts(),
+      dataProvider.getNews(),
+      (dataProvider as any).getCveFeeds()
+    ]).then(([m, h, n, c]) => {
+      setMetrics(m);
+      setResults(h);
+      setNewsItems(n);
+      setCveFeedItems(c);
+    });
+  }, []);
 
   const {
     events,

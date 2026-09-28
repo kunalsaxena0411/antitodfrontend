@@ -8,3 +8,6 @@ export * from './attackMap';
 export * from './rules';
 export * from './playbooks';
 export * from './news';
+
+export * from './hosts';
+export * from './cveFeeds';
