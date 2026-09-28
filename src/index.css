@@ -9276,7 +9276,8 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: #b7353c;
+  background: linear-gradient(90deg, #b7353c 0%, #ff4b55 100%);
+  box-shadow: 0 0 8px rgba(255, 75, 85, 0.4);
 }
 
 .at-map-country-list-v2 b {
@@ -9321,6 +9322,7 @@
 
 .priority-dot.critical {
   background: #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.6), 0 0 12px rgba(239, 68, 68, 0.3);
 }
 
 .priority-dot.high {

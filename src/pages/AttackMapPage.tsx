@@ -530,12 +530,7 @@ export default function AttackMapPage({
 
                                 <div className="at-map-grid-lines" />
 
-                                <div className="at-map-world world-north-america" />
-                                <div className="at-map-world world-south-america" />
-                                <div className="at-map-world world-europe" />
-                                <div className="at-map-world world-africa" />
-                                <div className="at-map-world world-asia" />
-                                <div className="at-map-world world-oceania" />
+                                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.25, backgroundImage: 'url(/world-map.svg)', backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', filter: 'invert(1)', pointerEvents: 'none', zIndex: 0 }} />
 
                                 <div className="at-map-route route-one" />
                                 <div className="at-map-route route-two" />
