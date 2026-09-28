@@ -11,3 +11,4 @@ export * from './news';
 
 export * from './hosts';
 export * from './cveFeeds';
+export * from './intel';

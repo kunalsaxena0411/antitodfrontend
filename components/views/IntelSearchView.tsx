@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { searchThreatIntelligence } from '../../services/aiConverter';
 import { saveToStorage, loadFromStorage, STORES } from '../../services/storage';
+import { dataProvider } from '../../src/services/dataProvider';
 
 interface ResearchResult {
     query: string;
@@ -34,8 +35,16 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
     useEffect(() => {
         const loadHistory = async () => {
             const saved = await loadFromStorage(STORES.INTEL_RESEARCH, 'history');
-            if (saved && Array.isArray(saved)) {
-                setHistory(saved);
+            let loadedHistory = [];
+            if (saved && Array.isArray(saved) && saved.length > 0) {
+                loadedHistory = saved;
+            } else {
+                loadedHistory = await dataProvider.getIntelHistory();
+                await saveToStorage(STORES.INTEL_RESEARCH, loadedHistory, 'history');
+            }
+            setHistory(loadedHistory);
+            if (loadedHistory.length > 0) {
+                setResult(loadedHistory[0]);
             }
         };
         loadHistory();

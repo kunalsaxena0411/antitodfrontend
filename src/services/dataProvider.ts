@@ -9,7 +9,8 @@ import {
   DEMO_NEWS,
   DEMO_DASHBOARD,
   DEMO_HOSTS,
-  DEMO_CVE_FEEDS
+  DEMO_CVE_FEEDS,
+  DEMO_INTEL_HISTORY
 } from '../data/demo';
 
 import { fetchThreatNews } from '../../services/news';
@@ -36,6 +37,10 @@ export const dataProvider = {
 
   getInvestigations: async () => {
     return DEMO_INVESTIGATIONS;
+  },
+
+  getIntelHistory: async () => {
+    return DEMO_INTEL_HISTORY;
   },
 
   getRules: async () => {
