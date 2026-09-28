@@ -4058,6 +4058,8 @@
 }
 
 .at-actors-empty,
+.at-news-empty,
+.at-intel-empty,
 .at-actors-empty-state {
   display: flex;
   min-height: 220px;
@@ -4071,6 +4073,8 @@
 }
 
 .at-actors-empty strong,
+.at-news-empty strong,
+.at-intel-empty strong,
 .at-actors-empty-state strong {
   color: var(--at-text-secondary);
   font-size: 12px;
@@ -10329,6 +10333,9 @@
   font-size: 12px;
 }
 
+.at-actors-empty span,
+.at-intel-empty span,
+.at-news-empty span,
 .at-hp-empty span {
   max-width: 310px;
   margin-top: 5px;
@@ -10337,6 +10344,9 @@
   line-height: 1.6;
 }
 
+.at-actors-empty button,
+.at-intel-empty button,
+.at-news-empty button,
 .at-hp-empty button {
   margin-top: 12px;
   padding: 0;

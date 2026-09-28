@@ -9,14 +9,14 @@ import {
   BrainCircuit,
   CalendarClock,
   ChevronRight,
-  CircleX,
+  CircleX, Loader,
   Download,
   ExternalLink,
   Hash,
   Newspaper,
   Search,
   Tag,
-  X,
+  X, Loader,
 } from 'lucide-react';
 
 import { dataProvider } from '../services/dataProvider';
@@ -52,9 +52,14 @@ function formatNewsDateTime(timestamp?: number) {
 
 export default function NewsPage() {
   const [MOCK_NEWS, set_MOCK_NEWS] = React.useState<any[]>([]);
-    React.useEffect(() => {
-        dataProvider.getNews().then(set_MOCK_NEWS);
-    }, []);
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+
+  React.useEffect(() => {
+      dataProvider.getNews().then((news) => {
+          set_MOCK_NEWS(news);
+          setIsLoading(false);
+      });
+  }, []);
 
   const [search, setSearch] =
     useState('');
@@ -278,7 +283,7 @@ export default function NewsPage() {
 
           <div>
             <strong>
-              {MOCK_NEWS.length}
+              {isLoading ? '-' : MOCK_NEWS.length}
             </strong>
 
             <span>
@@ -558,8 +563,15 @@ export default function NewsPage() {
 
               <tbody>
 
-                {filtered.length ===
-                  0 ? (
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={6} className="at-news-empty">
+                      <Loader size={24} className="at-spin" />
+                      <strong>Fetching Intelligence...</strong>
+                      <span>Connecting to external threat feeds and ingesting data.</span>
+                    </td>
+                  </tr>
+                ) : filtered.length === 0 ? (
                   <tr>
                     <td
                       colSpan={6}
@@ -1016,3 +1028,5 @@ export default function NewsPage() {
     </div>
   );
 }
+
+
