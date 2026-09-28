@@ -39,7 +39,7 @@ interface CountryPlot {
     severity: LogEventV2['severity'];
 }
 
-type Severity = LogEventV2['severity'];
+type Severity = NonNullable<LogEventV2['severity']>;
 
 const COUNTRY_LAYOUT: Record<
     string,

@@ -47,6 +47,7 @@ export interface LogEventV2 {
     container_name?: string;
     id?: string;
     country?: string | null;
+    countryCode?: string | null;
     asn?: string | null;
     severity?: string;
     geo_country?: string | null;
