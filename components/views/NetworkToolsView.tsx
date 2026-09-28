@@ -560,7 +560,7 @@ export const NetworkToolsView: React.FC = () => {
 
     // Helper for rendering My IP results
     const renderMyIpTool = () => {
-        if (!ipWhoIsResult && !isLoading) return <div className="text-[#888] text-xs italic text-center p-8">No identity data found.</div>;
+        if (!ipWhoIsResult && !isLoading) return <div className="flex flex-col items-center justify-center h-64 text-center animate-fade-in border border-[#222] border-dashed rounded-xl bg-black/20 m-4"><div className="w-16 h-16 rounded-full bg-red-900/10 border border-red-500/20 flex items-center justify-center mb-4"><Search size={24} className="text-red-500 opacity-80" /></div><h3 className="text-white font-cyber text-lg mb-2">IDENTITY TRACING</h3><p className="text-neutral-500 text-sm max-w-md">Click MY IP to securely trace your current network identity and location exposure.</p></div>;
         if (!ipWhoIsResult) return null;
 
         return (
@@ -600,7 +600,7 @@ export const NetworkToolsView: React.FC = () => {
 
     // Helper for rendering Network/Whois tool results
     const renderNetworkTool = () => {
-        if (!ipApiResult && !whoisResult && !isLoading) return <div className="text-[#888] text-xs italic text-center p-8">No network data found.</div>;
+        if (!ipApiResult && !whoisResult && !isLoading) return <div className="flex flex-col items-center justify-center h-64 text-center animate-fade-in border border-[#222] border-dashed rounded-xl bg-black/20 m-4"><div className="w-16 h-16 rounded-full bg-red-900/10 border border-red-500/20 flex items-center justify-center mb-4"><Search size={24} className="text-red-500 opacity-80" /></div><h3 className="text-white font-cyber text-lg mb-2">WHOIS & IP INTELLIGENCE</h3><p className="text-neutral-500 text-sm max-w-md">Enter an IP address or Domain above to retrieve ownership, registration, and network routing information.</p></div>;
 
         return (
             <div className="space-y-6 animate-fade-in">
@@ -808,7 +808,7 @@ export const NetworkToolsView: React.FC = () => {
                     
                     {/* SUPER SCAN DASHBOARD */}
                     {activeCategory === 'SUPER_SCAN' && (
-                        (riskAnalysis || isLoading) && (
+                        (riskAnalysis || isLoading) ? (
                             <div className="space-y-6 animate-slide-in-up">
                                 {/* Progress Bar / Status Text */}
                                 {isLoading && (
@@ -1095,6 +1095,16 @@ export const NetworkToolsView: React.FC = () => {
                                     </button>
                                 </div>
                                 )}
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center h-64 text-center animate-fade-in border border-[#222] border-dashed rounded-xl bg-black/20 mt-4">
+                                <div className="w-16 h-16 rounded-full bg-red-900/10 border border-red-500/20 flex items-center justify-center mb-4">
+                                    <Radar size={24} className="text-red-500 opacity-80" />
+                                </div>
+                                <h3 className="text-white font-cyber text-lg mb-2">SUPER SCAN SUITE</h3>
+                                <p className="text-neutral-500 text-sm max-w-md">
+                                    Enter a target domain, IP, or CIDR above to initiate a deep reconnaissance scan aggregating Threat Intelligence, DNS, WHOIS, and Vulnerability data.
+                                </p>
                             </div>
                         )
                     )}
@@ -1383,3 +1393,4 @@ export const NetworkToolsView: React.FC = () => {
         </div>
     );
 };
+
