@@ -169,6 +169,7 @@ export default function DashboardPage({
   const [newsItems, setNewsItems] = useState<ThreatNewsItem[]>([]);
   const [cveFeedItems, setCveFeedItems] = useState<CveFeedItem[]>([]);
   const [metrics, setMetrics] = useState<any>(null);
+  const [events, setEvents] = useState<any[]>([]);
 
   useEffect(() => {
       // Fetch dynamic non-prop metrics if any
@@ -176,24 +177,20 @@ export default function DashboardPage({
       dataProvider.getDashboardMetrics(),
       (dataProvider as any).getHosts(),
       dataProvider.getNews(),
-      (dataProvider as any).getCveFeeds()
-    ]).then(([m, h, n, c]) => {
+      (dataProvider as any).getCveFeeds(),
+      dataProvider.getAttackEvents()
+    ]).then(([m, h, n, c, e]) => {
       setMetrics(m);
       setResults(h);
       setNewsItems(n);
       setCveFeedItems(c);
+      setEvents(e);
     });
   }, []);
 
-  const {
-    events,
-    stats: honeypotStats,
-    isLoadingEvents,
-    refresh,
-  } = useHoneypotData({
-    limit: 100,
-    offset: 0,
-  });
+  const honeypotStats = { total_events: events.length };
+  const isLoadingEvents = false;
+  const refresh = () => {};
 
   const safeEvents = events ?? [];
 
