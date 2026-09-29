@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ViewRouter from './components/ViewRouter';
-import { DEMO_HOSTS, DEMO_ACTORS, DEMO_CVES, DEMO_CVE_FEEDS, DEMO_NEWS } from './data/demo';
+import { DEMO_HOSTS, DEMO_ACTORS, DEMO_CVES, DEMO_CVE_FEEDS, DEMO_NEWS, DEMO_EXPLOITS } from './data/demo';
 import { DEMO_MODE } from './services/dataProvider';
 import { SettingsModal } from '../components/SettingsModal';
 import {
@@ -2021,9 +2021,7 @@ export const App: React.FC = () => {
                             malpediaActors={malpediaActors.length > 0 ? malpediaActors : DEMO_ACTORS}
                             cveData={cveData.length > 0 ? cveData : DEMO_CVES}
                             cveFeedItems={cveFeedItems.length > 0 ? cveFeedItems : DEMO_CVE_FEEDS}
-                            exploitData={
-                                exploitData
-                            }
+                            exploitData={exploitData.length > 0 ? exploitData : DEMO_EXPLOITS}
                             isFeedLoading={
                                 isFeedLoading
                             }
