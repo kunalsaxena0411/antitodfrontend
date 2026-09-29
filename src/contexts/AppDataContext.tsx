@@ -21,6 +21,8 @@ import type {
 } from '../../types';
 
 import { PLAYBOOKS } from '../../services/playbooks';
+import { DEMO_IOCS } from '../data/demo/iocs';
+import { DEMO_MODE } from '../services/dataProvider';
 
 export interface AppDataContextType {
   results: AnalyzedHost[];
@@ -152,6 +154,21 @@ export function AppDataProvider({
         lastSeen: item.last_seen_utc ?? undefined,
         tags: normalizeTags(item.tags),
       });
+    }
+    if (DEMO_MODE) {
+      // Add demo IOCs, mapping them to the expected CombinedIoc format
+      for (const item of DEMO_IOCS) {
+        iocs.push({
+          id: `demo-ioc-${item.value}`,
+          type: item.type as any,
+          value: item.value,
+          source: item.source,
+          severity: item.severity as any,
+          firstSeen: item.firstSeen,
+          lastSeen: item.lastSeen,
+          tags: item.relatedActors || [],
+        });
+      }
     }
 
     return iocs;
