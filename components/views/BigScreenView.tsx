@@ -966,7 +966,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                 )}
 
                 {activeTab === 'NEWS' && (
-                    <div className="absolute inset-4 z-20 bg-black/80 backdrop-blur-md border border-[#222] rounded-xl p-0 animate-fade-in overflow-hidden flex flex-col relative">
+                    <div className="absolute inset-4 z-20 bg-black/80 backdrop-blur-md border border-[#222] rounded-xl p-0 animate-fade-in overflow-hidden flex flex-col">
                         <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black via-black/80 to-transparent h-24 p-8 flex items-center gap-4">
                              <h3 className="text-2xl font-bold text-white flex items-center gap-2 font-cyber"><Globe className="text-red-500"/> GLOBAL INTEL BRIEF</h3>
                              <span className="text-xs font-mono text-[#888] bg-[#111] px-2 py-1 rounded border border-[#222]">{newsItems.length} Sources Active</span>
