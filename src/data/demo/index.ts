@@ -14,3 +14,4 @@ export * from './cveFeeds';
 export * from './intel';
 export * from './exploits';
 export * from './iocFeeds';
+export * from './ransomware';

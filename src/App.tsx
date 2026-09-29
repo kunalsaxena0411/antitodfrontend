@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ViewRouter from './components/ViewRouter';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { DEMO_HOSTS, DEMO_ACTORS, DEMO_CVES, DEMO_CVE_FEEDS, DEMO_NEWS, DEMO_EXPLOITS, DEMO_URLHAUS, DEMO_FEODO, DEMO_THREATFOX, DEMO_MALWAREBAZAAR, DEMO_SSLBL, DEMO_JA3 } from './data/demo';
+import { DEMO_HOSTS, DEMO_ACTORS, DEMO_CVES, DEMO_CVE_FEEDS, DEMO_NEWS, DEMO_EXPLOITS, DEMO_URLHAUS, DEMO_FEODO, DEMO_THREATFOX, DEMO_MALWAREBAZAAR, DEMO_SSLBL, DEMO_JA3, DEMO_RANSOMWARE_POSTS, DEMO_RANSOMWARE_GROUPS } from './data/demo';
 import { DEMO_MODE } from './services/dataProvider';
 import { SettingsModal } from '../components/SettingsModal';
 import {
@@ -2055,12 +2055,8 @@ export const App: React.FC = () => {
                             maliciousHashItems={
                                 maliciousHashItems
                             }
-                            ransomwarePosts={
-                                ransomwarePosts
-                            }
-                            ransomwareGroups={
-                                ransomwareGroups
-                            }
+                            ransomwarePosts={ransomwarePosts.length > 0 ? ransomwarePosts : DEMO_RANSOMWARE_POSTS}
+                            ransomwareGroups={ransomwareGroups.length > 0 ? ransomwareGroups : DEMO_RANSOMWARE_GROUPS}
                             onAddLogs={
                                 handleAddLogs
                             }
