@@ -1,4 +1,3 @@
-import { SHARED_ENTITIES } from './entities';
 
 export const DEMO_IOCS = [
   { value: '192.168.100.10', type: 'ipv4', severity: 'critical', confidence: 50, firstSeen: '2023-10-20T23:27:48.189Z', lastSeen: '2026-05-26T03:12:31.922Z', relatedActors: ['APT28'], source: 'ThreatFox' },

@@ -1,4 +1,3 @@
-import { SHARED_ENTITIES } from './entities';
 import type { MalpediaActor } from '../../../types';
 
 export const DEMO_ACTORS: MalpediaActor[] = [

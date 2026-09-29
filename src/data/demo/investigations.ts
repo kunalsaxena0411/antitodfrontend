@@ -1,4 +1,3 @@
-import { SHARED_ENTITIES } from './entities';
 
 export const DEMO_INVESTIGATIONS = [
   { id: 'INV-8811', title: 'Suspicious Activity 0', status: 'Open', severity: 'Critical', assignedTo: 'Analyst-1', createdAt: '2025-03-04T08:32:34.361Z', relatedEntities: ['192.168.100.10', 'malicious-node-1.net', 'APT28'] },

@@ -1,4 +1,3 @@
-import { SHARED_ENTITIES } from './entities';
 import type { CveEntry } from '../../../types';
 
 const rawDemoCves = [

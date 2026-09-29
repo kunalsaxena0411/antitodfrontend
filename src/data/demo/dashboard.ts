@@ -1,4 +1,3 @@
-import { SHARED_ENTITIES } from './entities';
 import { DEMO_INVESTIGATIONS } from './investigations';
 import { DEMO_HOSTS } from './hosts';
 import { DEMO_EVENTS } from './attackMap';
@@ -11,7 +10,7 @@ export const DEMO_DASHBOARD = {
     threatLevel: 'Elevated'
   },
   recentActivity: [
-    { id: SHARED_ENTITIES.event, type: 'incident', title: 'Suspicious Login', relatedTo: SHARED_ENTITIES.ip, time: new Date().toISOString() },
+    { id: 'EVT-7812', type: 'incident', title: 'Suspicious Login', relatedTo: '185.15.20.10', time: new Date().toISOString() },
     { id: 'EVT-7813', type: 'scan', title: 'Port Scan Detected', relatedTo: '45.33.32.156', time: new Date(Date.now() - 300000).toISOString() },
     { id: 'INC-2041', type: 'incident', title: 'Malware Dropper Blocked', relatedTo: 'wkst-marketing-04', time: new Date(Date.now() - 1500000).toISOString() },
     { id: 'EVT-9001', type: 'alert', title: 'Unusual Data Exfiltration', relatedTo: '193.187.112.44', time: new Date(Date.now() - 3600000).toISOString() },

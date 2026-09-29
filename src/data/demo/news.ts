@@ -1,4 +1,3 @@
-import { SHARED_ENTITIES } from './entities';
 import type { ThreatNewsItem } from '../../../types';
 
 export const DEMO_NEWS: ThreatNewsItem[] = [

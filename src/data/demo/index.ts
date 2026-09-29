@@ -1,4 +1,3 @@
-export * from './entities';
 export * from './dashboard';
 export * from './vulnerabilities';
 export * from './actors';
