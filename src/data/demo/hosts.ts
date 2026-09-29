@@ -46,5 +46,53 @@ export const DEMO_HOSTS: AnalyzedHost[] = [
     signals: [],
     lastSeen: Date.now() - 600000,
     timesSeen: 500
+  },
+  {
+    ip: '193.187.112.44',
+    totalScore: 82,
+    riskLevel: 'HIGH',
+    country: 'CN',
+    city: 'Beijing',
+    asn: 'AS4134',
+    hostname: 'unknown.chinatelecom.com',
+    isMalicious: true,
+    isTor: false,
+    tags: ['brute-force', 'ssh'],
+    signals: [{ source: 'abuseipdb', score: 85, description: 'SSH Brute force attacks reported', timestamp: Date.now() - 86400000 }],
+    lastSeen: Date.now() - 1200000,
+    timesSeen: 142
+  },
+  {
+    ip: '178.62.203.111',
+    totalScore: 40,
+    riskLevel: 'MEDIUM',
+    country: 'GB',
+    city: 'London',
+    asn: 'AS14061',
+    hostname: 'digitalocean.com',
+    isMalicious: false,
+    isTor: false,
+    tags: ['proxy', 'vpn'],
+    signals: [{ source: 'threatfox', score: 40, description: 'Suspicious proxy node', timestamp: Date.now() - 259200000 }],
+    lastSeen: Date.now() - 14400000,
+    timesSeen: 3
+  },
+  {
+    ip: '103.224.212.222',
+    totalScore: 98,
+    riskLevel: 'CRITICAL',
+    country: 'IR',
+    city: 'Tehran',
+    asn: 'AS58224',
+    hostname: 'telecommunication-co.ir',
+    isMalicious: true,
+    isTor: false,
+    tags: ['apt', 'c2', 'ransomware'],
+    signals: [
+      { source: 'alienvault', score: 95, description: 'MuddyWater C2 infrastructure', timestamp: Date.now() - 4000000 },
+      { source: 'urlhaus', score: 100, description: 'Ransomware payload distribution', timestamp: Date.now() - 8000000 }
+    ],
+    lastSeen: Date.now() - 300000,
+    timesSeen: 88
   }
 ];
