@@ -1272,7 +1272,7 @@
   flex-direction: row;
   flex: 1;
   overflow: hidden;
-  background-color: #060606;
+  background-color: transparent;
   color: #ededed;
 }
 
@@ -1564,7 +1564,7 @@
   flex-direction: row;
   flex: 1; min-height: 0;
   overflow: hidden;
-  background-color: #060606;
+  background-color: transparent;
   color: #ededed;
 }
 
@@ -2293,7 +2293,7 @@
   min-width: 0;
   min-height: 0;
   flex-direction: column;
-  background: var(--at-bg);
+  background: transparent;
 }
 
 .at-intel-querybar {
@@ -2871,7 +2871,7 @@
   gap: 0;
   padding: 0;
   overflow: auto;
-  background: var(--at-bg);
+  background: transparent;
 }
 
 .at-dashboard>.custom-scrollbar {
@@ -3578,7 +3578,7 @@
   flex-direction: column;
   overflow: auto;
   padding: 0 24px 28px;
-  background: var(--at-bg);
+  background: transparent;
 }
 
 .at-actors-summary {
@@ -4226,7 +4226,7 @@
   min-height: 0;
   flex-direction: column;
   overflow: hidden;
-  background: var(--at-bg);
+  background: transparent;
 }
 
 .at-analysis-filterbar,
@@ -13604,7 +13604,7 @@
     min-width: 0;
     min-height: 0;
     overflow: auto;
-    background: var(--at-bg);
+    background: transparent;
 }
 
 .at-news-summary {
@@ -13667,7 +13667,7 @@
 .at-news-search {
     width: min(620px, 100%);
     min-height: 38px;
-    background: var(--at-bg);
+    background: transparent;
     border: 1px solid var(--at-border);
     border-radius: var(--at-radius-md, 6px);
 }
@@ -13817,7 +13817,7 @@
   flex-direction: column;
   overflow: auto;
   padding: 0 24px 24px;
-  background: var(--at-bg);
+  background: transparent;
   color: var(--at-text);
 }
 
@@ -13972,7 +13972,7 @@
   padding: 0 11px;
   border: 1px solid var(--at-border);
   border-radius: var(--at-radius-md);
-  background: var(--at-bg);
+  background: transparent;
   transition:
     border-color 140ms ease,
     box-shadow 140ms ease,
@@ -14390,7 +14390,7 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  background: var(--at-bg);
+  background: transparent;
   color: var(--at-text);
 }
 
@@ -14423,14 +14423,14 @@
   flex: 1 1 auto;
   flex-direction: column;
   overflow: hidden;
-  background: var(--at-bg);
+  background: transparent;
 }
 
 .at-intel-hero {
   flex: 0 0 auto;
   padding: 42px 32px 46px;
   border-bottom: 1px solid var(--at-border);
-  background: var(--at-bg);
+  background: transparent;
 }
 
 .at-intel-hero-inner {
@@ -14524,7 +14524,7 @@
   flex: 1 1 auto;
   overflow: auto;
   padding: 28px 32px 42px;
-  background: var(--at-bg);
+  background: transparent;
 }
 
 .at-intel-result-card {
@@ -14567,7 +14567,7 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: var(--at-bg);
+    background: transparent;
     color: var(--at-text);
 }
 
@@ -14651,7 +14651,7 @@
     padding: 0 7px;
     border: 1px solid var(--at-border);
     border-radius: 6px;
-    background: var(--at-bg);
+    background: transparent;
     color: var(--at-muted);
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 9px;
@@ -14679,7 +14679,7 @@
     border: 1px solid var(--at-border);
     border-radius: var(--at-radius-md);
     outline: 0;
-    background: var(--at-bg);
+    background: transparent;
     color: var(--at-text);
     font-family: inherit;
     font-size: 11px;
@@ -14776,7 +14776,7 @@
     padding: 8px;
     border: 1px solid var(--at-border);
     border-radius: 8px;
-    background: var(--at-bg);
+    background: transparent;
     color: inherit;
     cursor: pointer;
     text-align: left;
@@ -14896,7 +14896,7 @@
     flex-direction: column;
     overflow: hidden;
     border-right: 1px solid var(--at-border);
-    background: var(--at-bg);
+    background: transparent;
 }
 
 .cyberchef-recipe-header {
@@ -15180,7 +15180,7 @@
     border: 1px solid var(--at-border);
     border-radius: 6px;
     outline: 0;
-    background: var(--at-bg);
+    background: transparent;
     color: var(--at-text-secondary);
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 10px;
@@ -15236,7 +15236,7 @@
     justify-content: center;
     border: 1px solid var(--at-border);
     border-radius: 999px;
-    background: var(--at-bg);
+    background: transparent;
     font-size: 10px;
 }
 
@@ -15302,7 +15302,7 @@
     padding: 0 9px;
     border: 1px solid var(--at-border);
     border-radius: 7px;
-    background: var(--at-bg);
+    background: transparent;
     color: var(--at-muted);
     cursor: pointer;
     font-size: 8px;
@@ -15364,7 +15364,7 @@
     gap: 10px;
     padding: 10px;
     overflow: hidden;
-    background: var(--at-bg);
+    background: transparent;
 }
 
 .cyberchef-io-panel {
@@ -15471,7 +15471,7 @@
     border: 0;
     outline: 0;
     padding: 15px;
-    background: var(--at-bg);
+    background: transparent;
     color: var(--at-text-secondary);
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 11px;
@@ -15487,7 +15487,7 @@
     min-height: 0;
     flex: 1 1 auto;
     overflow: auto;
-    background: var(--at-bg);
+    background: transparent;
 }
 
 .cyberchef-output-text {
@@ -15682,7 +15682,7 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  background: var(--at-bg);
+  background: transparent;
 }
 
 .modeling-canvas > .react-flow {
@@ -15694,7 +15694,7 @@
 
 /* React Flow */
 .modeling-canvas .react-flow__renderer {
-  background: var(--at-bg);
+  background: transparent;
 }
 
 .modeling-canvas .react-flow__pane {
@@ -15793,7 +15793,7 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  background: var(--at-bg);
+  background: transparent;
 }
 
 .modeling-palette {
@@ -15815,7 +15815,7 @@
   min-height: 0;
   flex-direction: column;
   overflow: hidden;
-  background: var(--at-bg);
+  background: transparent;
 }
 
 .modeling-toolbar {
@@ -15850,7 +15850,7 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  background: var(--at-bg);
+  background: transparent;
 }
 
 .modeling-canvas > .react-flow {

@@ -81,7 +81,7 @@ const NewsTicker = ({ items }: { items: ThreatNewsItem[] }) => {
 
     return (
         <div className="at-soc-news-ticker">
-            <div className="absolute left-0 bg-[#0A0A0A] px-4 z-20 h-full flex items-center border-r border-red-500/30 shadow-[5px_0_15px_rgba(0,0,0,0.8)]">
+            <div className="absolute left-0 bg-[#111] px-4 z-20 h-full flex items-center border-r border-red-500/30 shadow-[5px_0_15px_rgba(0,0,0,0.8)]">
                 <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest flex items-center gap-2 animate-pulse">
                     <Rss size={12} /> CYBER INTEL
                 </span>
@@ -188,7 +188,7 @@ const IocStatTile = ({
                     <div className="text-[10px] text-[#888] font-bold mb-2 uppercase flex items-center gap-2"><Globe size={10}/> Feed Sources</div>
                     <div className="grid grid-cols-2 gap-2 overflow-y-auto custom-scrollbar pb-2">
                         {counts.map((c, i) => (
-                            <div key={i} className="bg-black/40 border border-[#222] p-2 rounded flex flex-col justify-center">
+                            <div key={i} className="bg-[#111]/40 border border-[#222] p-2 rounded flex flex-col justify-center">
                                 <div className="text-[9px] text-[#888] uppercase font-bold truncate" title={c.label}>{c.label}</div>
                                 <div className={`text-sm font-mono font-bold ${
                                     c.tone === 'danger' ? 'text-[#e56d72]' : 
@@ -519,7 +519,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                     </div>
                 </div>
 
-                <div className="flex items-center bg-[#0A0A0A] rounded-lg p-1 border border-[#222] gap-1">
+                <div className="flex items-center bg-[#111] rounded-lg p-1 border border-[#222] gap-1">
                     {[
                         { id: 'OPS', icon: MonitorPlay, label: 'OPS' },
                         { id: 'LIVE', icon: Zap, label: 'LIVE' },
@@ -548,7 +548,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                         <select 
                             value={rotationInterval}
                             onChange={(e) => setRotationInterval(Number(e.target.value))}
-                            className="bg-[#0A0A0A] border border-[#333] text-xs rounded-r px-2 py-1 text-neutral-300 outline-none h-full border-l-0"
+                            className="bg-[#111] border border-[#333] text-xs rounded-r px-2 py-1 text-neutral-300 outline-none h-full border-l-0"
                         >
                             <option value={10000}>10s</option>
                             <option value={30000}>30s</option>
@@ -695,11 +695,11 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
 
                 {activeTab === 'LIVE' && (
                     <div className="absolute inset-4 z-20 flex gap-4 animate-fade-in">
-                        <div className="w-1/2 h-full bg-black/60 backdrop-blur-md border border-[#222] rounded-xl overflow-hidden shadow-2xl p-6 flex flex-col">
+                        <div className="w-1/2 h-full bg-[#111]/60 backdrop-blur-md border border-[#222] rounded-xl overflow-hidden shadow-2xl p-6 flex flex-col">
                             <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2 font-cyber">
                                 <Zap className="text-white" size={24}/> THREAT STREAM
                             </h3>
-                            <div className="flex-1 overflow-hidden rounded-lg border border-[#333] bg-black/40">
+                            <div className="flex-1 overflow-hidden rounded-lg border border-[#333] bg-[#111]/40">
                                 <LiveThreatFeed 
                                     ransomwarePosts={ransomwarePosts}
                                     threatFoxItems={threatFoxItems}
@@ -708,7 +708,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                             </div>
                         </div>
                         <div className="w-1/2 h-full flex flex-col gap-4">
-                            <div className="flex-1 bg-black/60 backdrop-blur-md border border-[#222] rounded-xl p-6">
+                            <div className="flex-1 bg-[#111]/60 backdrop-blur-md border border-[#222] rounded-xl p-6">
                                 <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2 uppercase tracking-wider">
                                     <Activity className="text-white" size={20}/> Recent Operations
                                 </h3>
@@ -730,30 +730,30 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                 )}
 
                 {activeTab === 'VULN' && (
-                    <div className="absolute inset-4 z-20 bg-black/80 backdrop-blur-md border border-[#222] rounded-xl p-8 animate-fade-in flex flex-col gap-6">
+                    <div className="absolute inset-4 z-20 bg-[#111]/80 backdrop-blur-md border border-[#222] rounded-xl p-8 animate-fade-in flex flex-col gap-6">
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 shrink-0">
-                            <div className="bg-black/60 border border-red-500/30 rounded-lg p-4 flex items-center gap-4 hover:bg-red-900/10 transition-colors">
+                            <div className="bg-[#111]/60 border border-red-500/30 rounded-lg p-4 flex items-center gap-4 hover:bg-red-900/10 transition-colors">
                                 <div className="p-3 bg-red-900/20 rounded-full border border-red-500/30 text-red-500 animate-pulse"><Flame size={24}/></div>
                                 <div>
                                     <div className="text-[10px] text-red-400 font-bold uppercase tracking-widest">Critical CVEs</div>
                                     <div className="text-3xl font-mono font-bold text-white">{vulnStats.critical.toLocaleString()}</div>
                                 </div>
                             </div>
-                            <div className="bg-black/60 border border-white/20 rounded-lg p-4 flex items-center gap-4 hover:bg-white/5 transition-colors">
+                            <div className="bg-[#111]/60 border border-white/20 rounded-lg p-4 flex items-center gap-4 hover:bg-white/5 transition-colors">
                                 <div className="p-3 bg-white/10 rounded-full border border-white/20 text-white"><AlertCircle size={24}/></div>
                                 <div>
                                     <div className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">Known Exploited</div>
                                     <div className="text-3xl font-mono font-bold text-white">{vulnStats.kev.toLocaleString()}</div>
                                 </div>
                             </div>
-                            <div className="bg-black/60 border border-white/20 rounded-lg p-4 flex items-center gap-4 hover:bg-[#111] transition-colors">
+                            <div className="bg-[#111]/60 border border-white/20 rounded-lg p-4 flex items-center gap-4 hover:bg-[#111] transition-colors">
                                 <div className="p-3 bg-[#111] rounded-full border border-white/20 text-white"><BarChart3 size={24}/></div>
                                 <div>
                                     <div className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">Avg Severity</div>
                                     <div className="text-3xl font-mono font-bold text-white">{vulnStats.avgScore}</div>
                                 </div>
                             </div>
-                            <div className="bg-black/60 border border-white/20 rounded-lg p-4 flex items-center gap-4 hover:bg-white/5 transition-colors">
+                            <div className="bg-[#111]/60 border border-white/20 rounded-lg p-4 flex items-center gap-4 hover:bg-white/5 transition-colors">
                                 <div className="p-3 bg-white/10 rounded-full border border-white/20 text-white"><Zap size={24}/></div>
                                 <div>
                                     <div className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">Public Exploits</div>
@@ -866,7 +866,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                 )}
 
                 {activeTab === 'IOC' && (
-                    <div className="absolute inset-4 z-20 bg-black/80 backdrop-blur-md border border-[#222] rounded-xl p-8 animate-fade-in flex flex-col gap-6">
+                    <div className="absolute inset-4 z-20 bg-[#111]/80 backdrop-blur-md border border-[#222] rounded-xl p-8 animate-fade-in flex flex-col gap-6">
                         <div className="flex justify-between items-center mb-2">
                             <h3 className="text-2xl font-bold text-white flex items-center gap-2 font-cyber"><Database className="text-red-500"/> INDICATOR ANALYTICS</h3>
                             <div className="text-xs font-mono text-[#888] animate-pulse flex items-center gap-2">
@@ -951,7 +951,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                                 <h4 className="text-sm font-bold text-[#AAA] uppercase mb-4">Top C2 Countries (Feodo)</h4>
                                 <div className="grid grid-cols-2 gap-4">
                                     {iocStats.countries.slice(0, 8).map((c, i) => (
-                                        <div key={i} className="flex items-center justify-between bg-black/30 p-2 rounded border border-[#222] hover:border-red-500/30 transition-colors">
+                                        <div key={i} className="flex items-center justify-between bg-[#111]/30 p-2 rounded border border-[#222] hover:border-red-500/30 transition-colors">
                                             <div className="flex items-center gap-2">
                                                 <img src={`https://flagcdn.com/w20/${c.label.toLowerCase()}.png`} className="w-5 h-3 rounded-sm opacity-80" alt={c.label}/>
                                                 <span className="text-sm text-neutral-300 font-mono">{c.label}</span>
@@ -966,7 +966,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                 )}
 
                 {activeTab === 'NEWS' && (
-                    <div className="absolute inset-4 z-20 bg-black/80 backdrop-blur-md border border-[#222] rounded-xl p-0 animate-fade-in overflow-hidden flex flex-col">
+                    <div className="absolute inset-4 z-20 bg-[#111]/80 backdrop-blur-md border border-[#222] rounded-xl p-0 animate-fade-in overflow-hidden flex flex-col">
                         <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black via-black/80 to-transparent h-24 p-8 flex items-center gap-4">
                              <h3 className="text-2xl font-bold text-white flex items-center gap-2 font-cyber"><Globe className="text-red-500"/> GLOBAL INTEL BRIEF</h3>
                              <span className="text-xs font-mono text-[#888] bg-[#111] px-2 py-1 rounded border border-[#222]">{newsItems.length} Sources Active</span>
@@ -984,7 +984,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
                                             <div className="text-xs font-bold uppercase mb-2 flex justify-between opacity-80 items-center">
                                                 <span className="flex items-center gap-2">
                                                     {news.source}
-                                                    <span className="px-2 py-0.5 rounded text-[8px] font-bold uppercase bg-black/30 border border-white/10">
+                                                    <span className="px-2 py-0.5 rounded text-[8px] font-bold uppercase bg-[#111]/30 border border-white/10">
                                                         {news.category}
                                                     </span>
                                                 </span>
@@ -1009,3 +1009,4 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
         document.body
     );
 };
+

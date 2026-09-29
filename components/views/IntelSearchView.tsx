@@ -142,7 +142,7 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
         ).filter(row => row.length > 0);
 
         return (
-            <div key={`table-${keyIndex}`} className="my-8 overflow-hidden rounded-xl border border-at-border bg-black/40">
+            <div key={`table-${keyIndex}`} className="my-8 overflow-hidden rounded-xl border border-at-border bg-[#111]/40">
                 <div className="bg-at-surface-raised px-4 py-2 border-b border-at-border flex items-center gap-2">
                     <Table size={12} className="text-at-accent"/>
                     <span className="text-[10px] font-bold text-[#888] uppercase tracking-widest">Enriched Data Table</span>
@@ -385,7 +385,7 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
                                 </div>
 
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                    <div className="bg-black/40 border border-at-border/50 rounded-2xl p-8 flex flex-col shadow-inner">
+                                    <div className="bg-[#111]/40 border border-at-border/50 rounded-2xl p-8 flex flex-col shadow-inner">
                                         <h3 className="text-xs font-bold text-[#888] uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
                                             <Link size={16} className="text-at-accent"/> TECHNICAL REFERENCES
                                         </h3>
@@ -409,7 +409,7 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
                                         </div>
                                     </div>
 
-                                    <div className="bg-black/40 border border-at-border/50 rounded-2xl p-8 flex flex-col shadow-inner">
+                                    <div className="bg-[#111]/40 border border-at-border/50 rounded-2xl p-8 flex flex-col shadow-inner">
                                         <h3 className="text-xs font-bold text-[#888] uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
                                             <Fingerprint size={16} className="text-at-accent"/> FIDELITY ASSESSMENT
                                         </h3>
@@ -456,3 +456,4 @@ export const IntelSearchView: React.FC<IntelSearchViewProps> = ({ initialQuery }
         </div>
     );
 };
+

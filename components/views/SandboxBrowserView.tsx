@@ -8,7 +8,7 @@ import { enrichIP } from '../../services/dns';
 // --- Components ---
 
 const TabBar = ({ tabs, activeId, onActivate, onClose, onNew }: { tabs: SandboxTab[], activeId: string, onActivate: (id: string) => void, onClose: (id: string) => void, onNew: () => void }) => (
-    <div className="flex items-center bg-black border-b border-[#222] px-2 pt-2 gap-1 overflow-x-auto custom-scrollbar">
+    <div className="flex items-center bg-[#111] border-b border-[#222] px-2 pt-2 gap-1 overflow-x-auto custom-scrollbar">
         {tabs.map(tab => (
             <div 
                 key={tab.id}
@@ -16,7 +16,7 @@ const TabBar = ({ tabs, activeId, onActivate, onClose, onNew }: { tabs: SandboxT
                 className={`
                     flex items-center gap-2 px-3 py-2 rounded-t-lg cursor-pointer min-w-[120px] max-w-[200px] border-t border-x transition-all group
                     ${tab.id === activeId 
-                        ? 'bg-[#0A0A0A] border-[#333] text-white' 
+                        ? 'bg-[#111] border-[#333] text-white' 
                         : 'bg-[#111] border-transparent text-[#888] hover:bg-[#151515]'}
                 `}
             >
@@ -42,7 +42,7 @@ const AddressBar = ({ url, loading, score, category, onNavigate, onChange }: { u
     };
 
     return (
-        <div className="h-12 bg-[#0A0A0A] border-b border-[#222] flex items-center px-4 gap-4">
+        <div className="h-12 bg-[#111] border-b border-[#222] flex items-center px-4 gap-4">
             <div className="flex gap-2">
                 <button className="p-1.5 text-[#AAA] hover:text-white hover:bg-[#151515] rounded"><RotateCcw size={14}/></button>
                 <button className="p-1.5 text-[#AAA] hover:text-white hover:bg-[#151515] rounded"><Lock size={14}/></button>
@@ -51,7 +51,7 @@ const AddressBar = ({ url, loading, score, category, onNavigate, onChange }: { u
             <div className="flex-1 relative group">
                 <input 
                     type="text" 
-                    className="w-full bg-black border border-[#333] rounded-lg py-1.5 pl-10 pr-20 text-sm text-neutral-300 focus:border-red-500 focus:outline-none font-mono transition-all"
+                    className="w-full bg-[#111] border border-[#333] rounded-lg py-1.5 pl-10 pr-20 text-sm text-neutral-300 focus:border-red-500 focus:outline-none font-mono transition-all"
                     placeholder="Enter URL or .onion address..."
                     value={url}
                     onChange={(e) => onChange(e.target.value)}
@@ -79,7 +79,7 @@ const AddressBar = ({ url, loading, score, category, onNavigate, onChange }: { u
 
 const NetworkLogPanel = ({ logs, alerts, ipThreats }: { logs: SandboxNetworkLog[], alerts: string[], ipThreats: Record<string, any> }) => (
     <div className="flex-1 overflow-hidden flex flex-col">
-        <div className="px-4 py-2 bg-[#0A0A0A] border-b border-[#222] text-[10px] font-bold text-[#888] uppercase flex items-center justify-between">
+        <div className="px-4 py-2 bg-[#111] border-b border-[#222] text-[10px] font-bold text-[#888] uppercase flex items-center justify-between">
             <div className="flex gap-4">
                 <span>Network Traffic</span>
                 {alerts.length > 0 && (
@@ -101,9 +101,9 @@ const NetworkLogPanel = ({ logs, alerts, ipThreats }: { logs: SandboxNetworkLog[
             </div>
         )}
 
-        <div className="flex-1 overflow-auto custom-scrollbar bg-black font-mono text-xs">
+        <div className="flex-1 overflow-auto custom-scrollbar bg-[#111] font-mono text-xs">
             <table className="w-full text-left">
-                <thead className="bg-[#0A0A0A] text-[#888] sticky top-0">
+                <thead className="bg-[#111] text-[#888] sticky top-0">
                     <tr>
                         <th className="p-2">Status</th>
                         <th className="p-2">Method</th>
@@ -120,7 +120,7 @@ const NetworkLogPanel = ({ logs, alerts, ipThreats }: { logs: SandboxNetworkLog[
                         const isThreat = threat && (threat.is_known_attacker || threat.is_threat || threat.is_bot);
 
                         return (
-                            <tr key={log.id} className={`hover:bg-[#0A0A0A] transition-colors ${isThreat ? 'bg-red-900/20' : ''}`}>
+                            <tr key={log.id} className={`hover:bg-[#111] transition-colors ${isThreat ? 'bg-red-900/20' : ''}`}>
                                 <td className="p-2">
                                     {log.blocked ? (
                                         <span className="text-red-500 flex items-center gap-1"><XCircle size={10}/> BLK</span>
@@ -150,11 +150,11 @@ const NetworkLogPanel = ({ logs, alerts, ipThreats }: { logs: SandboxNetworkLog[
 
 const DomMutationPanel = ({ logs }: { logs: DomMutationLog[] }) => (
     <div className="flex-1 overflow-hidden flex flex-col border-l border-[#222]">
-        <div className="px-4 py-2 bg-[#0A0A0A] border-b border-[#222] text-[10px] font-bold text-[#888] uppercase flex items-center justify-between">
+        <div className="px-4 py-2 bg-[#111] border-b border-[#222] text-[10px] font-bold text-[#888] uppercase flex items-center justify-between">
             <span>DOM Sanitizer</span>
             <span className="bg-[#151515] px-2 py-0.5 rounded text-neutral-300">{logs.length} Actions</span>
         </div>
-        <div className="flex-1 overflow-auto custom-scrollbar bg-black font-mono text-xs p-2 space-y-1">
+        <div className="flex-1 overflow-auto custom-scrollbar bg-[#111] font-mono text-xs p-2 space-y-1">
             {logs.map(log => (
                 <div key={log.id} className="flex items-start gap-2 p-1 hover:bg-white/5 rounded">
                     <div className={`mt-0.5 w-1.5 h-1.5 rounded-full shrink-0 ${log.type === 'REMOVE' ? 'bg-red-500' : log.type === 'MODIFY' ? 'bg-[#666]' : 'bg-white'}`}></div>
@@ -217,8 +217,8 @@ const SecureConnectionLoader = ({ isDarkweb }: { isDarkweb: boolean }) => {
     }, []);
 
     return (
-        <div className="absolute inset-0 z-50 bg-[#0A0A0A] flex flex-col items-center justify-center font-mono">
-            <div className="w-96 p-6 bg-black/50 border border-[#222] rounded-xl backdrop-blur-md shadow-2xl relative overflow-hidden">
+        <div className="absolute inset-0 z-50 bg-[#111] flex flex-col items-center justify-center font-mono">
+            <div className="w-96 p-6 bg-[#111]/50 border border-[#222] rounded-xl backdrop-blur-md shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent animate-scan"></div>
                 
                 <h3 className="text-white font-bold mb-6 flex items-center gap-2 text-sm tracking-wider">
@@ -237,8 +237,8 @@ const SecureConnectionLoader = ({ isDarkweb }: { isDarkweb: boolean }) => {
                     ))}
                 </div>
 
-                <div className="bg-black/80 rounded border border-[#222] p-2 h-24 overflow-hidden relative">
-                    <div className="absolute inset-0 bg-[#0A0A0A] pointer-events-none"></div>
+                <div className="bg-[#111]/80 rounded border border-[#222] p-2 h-24 overflow-hidden relative">
+                    <div className="absolute inset-0 bg-[#111] pointer-events-none"></div>
                     <div className="space-y-1">
                         {log.map((l, i) => (
                             <div key={i} className="text-[9px] text-[#888] truncate">{l}</div>
@@ -519,9 +519,9 @@ export const SandboxBrowserView: React.FC = () => {
     };
 
     return (
-        <div className="h-[calc(100vh-70px)] flex bg-[#0A0A0A] text-neutral-300 font-sans overflow-hidden">
+        <div className="h-[calc(100vh-70px)] flex bg-[#111] text-neutral-300 font-sans overflow-hidden">
             {/* Left Sidebar */}
-            <div className="w-64 bg-black/40 border-r border-[#222] flex flex-col">
+            <div className="w-64 bg-[#111]/40 border-r border-[#222] flex flex-col">
                 <div className="p-4 border-b border-[#222]">
                     <h2 className="text-lg font-cyber font-bold text-white flex items-center gap-2">
                         <Shield className="text-red-500"/> SECURE <span className="text-[#888]">BOX</span>
@@ -607,8 +607,8 @@ export const SandboxBrowserView: React.FC = () => {
                         <SecureConnectionLoader isDarkweb={activeTab.isDarkweb} />
                     ) : activeTab.isDarkweb && darkwebData && !iframeSrc ? (
                         // Fallback Darkweb Viewer (Screenshot)
-                        <div className="absolute inset-0 bg-[#0A0A0A] flex flex-col items-center justify-center p-8 overflow-auto custom-scrollbar">
-                            <div className="max-w-4xl w-full bg-black border border-[#222] rounded-xl overflow-hidden shadow-2xl">
+                        <div className="absolute inset-0 bg-[#111] flex flex-col items-center justify-center p-8 overflow-auto custom-scrollbar">
+                            <div className="max-w-4xl w-full bg-[#111] border border-[#222] rounded-xl overflow-hidden shadow-2xl">
                                 <div className="p-4 bg-neutral-900/20 border-b border-neutral-500/30 flex items-center justify-between">
                                     <h3 className="text-red-400 font-bold flex items-center gap-2"><EyeOff size={16}/> TOR NETWORK PREVIEW</h3>
                                     <div className="flex items-center gap-3">
@@ -620,12 +620,12 @@ export const SandboxBrowserView: React.FC = () => {
                                     <img src={darkwebData.imageBase64} alt="Darkweb Screenshot" className="w-full object-contain bg-[#111]"/>
                                     <div className="absolute top-4 right-4 flex flex-col gap-2">
                                         <span className="bg-red-500/90 text-white text-[10px] font-bold px-2 py-1 rounded shadow-lg border border-red-400">JAVASCRIPT DISABLED</span>
-                                        <span className="bg-black/80 text-neutral-300 text-[10px] font-bold px-2 py-1 rounded shadow-lg border border-[#333]">REMOTE RENDER</span>
+                                        <span className="bg-[#111]/80 text-neutral-300 text-[10px] font-bold px-2 py-1 rounded shadow-lg border border-[#333]">REMOTE RENDER</span>
                                     </div>
                                 </div>
-                                <div className="p-4 bg-[#0a0a0a]">
+                                <div className="p-4 bg-[#111]">
                                     <h4 className="text-xs font-bold text-[#888] uppercase mb-2 flex items-center gap-2"><FileCode size={12}/> Extracted Text Content</h4>
-                                    <div className="text-xs font-mono text-white whitespace-pre-wrap bg-black p-3 rounded border border-[#222] h-48 overflow-y-auto custom-scrollbar border-l-2 border-l-green-500/50">
+                                    <div className="text-xs font-mono text-white whitespace-pre-wrap bg-[#111] p-3 rounded border border-[#222] h-48 overflow-y-auto custom-scrollbar border-l-2 border-l-green-500/50">
                                         {darkwebData.extractedText}
                                     </div>
                                 </div>
@@ -643,7 +643,7 @@ export const SandboxBrowserView: React.FC = () => {
                         />
                     ) : (
                         // Empty State
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0A0A0A] text-neutral-600">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#111] text-neutral-600">
                             <Shield size={64} className="mb-4 opacity-20"/>
                             <h3 className="text-xl font-bold text-[#888] mb-2">Secure Browsing Environment</h3>
                             <p className="text-sm text-center max-w-md">
@@ -655,7 +655,7 @@ export const SandboxBrowserView: React.FC = () => {
 
                 {/* DevTools Panel */}
                 {showPanels && (
-                    <div className="h-48 bg-black border-t border-[#222] flex">
+                    <div className="h-48 bg-[#111] border-t border-[#222] flex">
                         <NetworkLogPanel logs={networkLogs} alerts={networkAlerts} ipThreats={ipThreats} />
                         <DomMutationPanel logs={domLogs} />
                     </div>
@@ -664,3 +664,4 @@ export const SandboxBrowserView: React.FC = () => {
         </div>
     );
 };
+

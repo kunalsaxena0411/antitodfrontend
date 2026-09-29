@@ -562,9 +562,9 @@ ${originalDomain}`;
     };
 
     return (
-        <div className="h-[calc(100vh-70px)] bg-[#020303] flex flex-col relative font-mono selection:bg-red-500/30 overflow-hidden">
+        <div className="h-[calc(100vh-70px)] bg-transparent flex flex-col relative font-mono selection:bg-red-500/30 overflow-hidden">
             {/* Header */}
-            <div className="bg-[#050505]/95 border-b border-[#1A1A1A] px-5 py-3 shrink-0 flex items-center justify-between z-20 shadow-[0_6px_24px_rgba(0,0,0,0.18)] backdrop-blur-sm">
+            <div className="bg-[#111]/95 border-b border-[#1A1A1A] px-5 py-3 shrink-0 flex items-center justify-between z-20 shadow-[0_6px_24px_rgba(0,0,0,0.18)] backdrop-blur-sm">
                 <div className="flex items-center gap-3">
                     <div className="p-1.5 bg-red-500/[0.06] border border-red-500/20 text-red-400 rounded-sm">
                         <Shield size={18} />
@@ -578,7 +578,7 @@ ${originalDomain}`;
                     </div>
                 </div>
 
-                <div className="flex items-center bg-[#080808] p-1 border border-[#1A1A1A] gap-0.5 rounded-sm">
+                <div className="flex items-center bg-[#111] p-1 border border-[#1A1A1A] gap-0.5 rounded-sm">
                     <button
                         onClick={() => setActiveTab('LIVE')}
                         className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider flex items-center gap-2 transition-all rounded-sm ${activeTab === 'LIVE' ? 'bg-red-500/[0.08] text-red-300 border border-red-500/20 shadow-[inset_0_1px_0_rgba(239,68,68,0.08)]' : 'text-[#666] hover:text-neutral-300 border border-transparent'}`}
@@ -606,7 +606,7 @@ ${originalDomain}`;
                 </div>
             </div>
 
-            <div className="flex-1 overflow-hidden relative bg-[#020303]">
+            <div className="flex-1 overflow-hidden relative bg-transparent">
 
                 {/* LIVE FEED TAB */}
                 {activeTab === 'LIVE' && (
@@ -614,21 +614,20 @@ ${originalDomain}`;
                         <div className="flex justify-between items-center mb-2">
                             <div className="flex items-center gap-2 text-[11px] text-[#9A9A9A]">
                                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(74,222,128,0.45)]" /> Monitoring <span className="text-white font-semibold">{keywords.length}</span> brand keywords in the global SSL stream.
-                                <span className="ml-1 bg-[#0D0D0D] border border-[#262626] px-2 py-0.5 rounded-sm text-[9px] uppercase tracking-wider text-[#777]">Phonetic matching active</span>
+                                <span className="ml-1 bg-[#111] border border-[#262626] px-2 py-0.5 rounded-sm text-[9px] uppercase tracking-wider text-[#777]">Phonetic matching active</span>
                             </div>
                             <div className="flex gap-2">
-                                <button title={isStreamPaused ? "Resume stream" : "Pause stream"} onClick={() => setIsStreamPaused(!isStreamPaused)} className="h-7 w-7 bg-[#0D0D0D] hover:bg-[#151515] border border-[#242424] rounded-sm text-neutral-300 transition-colors flex items-center justify-center">
+                                <button title={isStreamPaused ? "Resume stream" : "Pause stream"} onClick={() => setIsStreamPaused(!isStreamPaused)} className="h-7 w-7 bg-[#111] hover:bg-[#151515] border border-[#242424] rounded-sm text-neutral-300 transition-colors flex items-center justify-center">
                                     {isStreamPaused ? <Play size={14} /> : <Pause size={14} />}
                                 </button>
-                                <button title="Clear feed" onClick={() => setCertStream([])} className="h-7 w-7 bg-[#0D0D0D] hover:bg-[#151515] border border-[#242424] rounded-sm text-neutral-300 transition-colors flex items-center justify-center">
+                                <button title="Clear feed" onClick={() => setCertStream([])} className="h-7 w-7 bg-[#111] hover:bg-[#151515] border border-[#242424] rounded-sm text-neutral-300 transition-colors flex items-center justify-center">
                                     <RefreshCw size={14} />
                                 </button>
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto custom-scrollbar bg-[#040404] border border-[#1B1B1B] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] relative">
-                            {/* Grid overlay */}
-                            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
+                        <div className="flex-1 overflow-y-auto custom-scrollbar bg-transparent border border-[#1B1B1B] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] relative">
+                            {/* Removed Grid overlay */}
                             {certStream.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center text-neutral-600 gap-4">
                                     <Radio size={48} className="opacity-20 animate-pulse" />
@@ -637,7 +636,7 @@ ${originalDomain}`;
                             ) : (
                                 <div className="flex flex-col gap-2 relative z-10">
                                     {certStream.map((cert, i) => (
-                                        <div key={cert.id} className="group overflow-hidden bg-[#070707] border border-[#1A1A1A] p-3 transition-all hover:border-[#303030] hover:bg-[#0A0A0A] border-l-[2px] border-l-transparent hover:border-l-red-500/70 shadow-[0_1px_0_rgba(255,255,255,0.02)]" style={{ animationDelay: `${i * 0.05}s` }}>
+                                        <div key={cert.id} className="group overflow-hidden bg-[#111] border border-[#1A1A1A] p-3 transition-all hover:border-[#303030] hover:bg-[#111] border-l-[2px] border-l-transparent hover:border-l-red-500/70 shadow-[0_1px_0_rgba(255,255,255,0.02)]" style={{ animationDelay: `${i * 0.05}s` }}>
 
                                             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
 
@@ -687,7 +686,7 @@ ${originalDomain}`;
                                                             href={`https://${cert.domain}`}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="mt-1 flex items-center gap-1.5 rounded-sm bg-[#0D0D0D] px-3 py-1.5 text-[9px] font-medium uppercase tracking-wider text-neutral-400 transition-colors hover:bg-red-500/[0.07] hover:text-red-300 border border-[#242424] hover:border-red-500/25"
+                                                            className="mt-1 flex items-center gap-1.5 rounded-sm bg-[#111] px-3 py-1.5 text-[9px] font-medium uppercase tracking-wider text-neutral-400 transition-colors hover:bg-red-500/[0.07] hover:text-red-300 border border-[#242424] hover:border-red-500/25"
                                                         >
                                                             <ExternalLink size={12} /> Inspect
                                                         </a>
@@ -706,7 +705,7 @@ ${originalDomain}`;
                 {/* SCANNER TAB */}
                 {activeTab === 'SCANNER' && (
                     <div className="h-full flex flex-col gap-5 p-5 md:p-6 relative">
-                        <div className="bg-[#050505] border border-[#1C1C1C] rounded-sm p-5 flex flex-col gap-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
+                        <div className="bg-[#111] border border-[#1C1C1C] rounded-sm p-5 flex flex-col gap-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
                             <div className="flex justify-between items-center">
                                 <h3 className="text-sm font-bold text-white uppercase flex items-center gap-2">
                                     <Search size={16} className="text-[#AAA]" /> Domain Typosquatting Scanner
@@ -719,13 +718,13 @@ ${originalDomain}`;
                                         <input
                                             type="text"
                                             placeholder="Filter results..."
-                                            className="w-full bg-[#0A0A0A] border border-[#333] text-xs rounded-full pl-9 pr-4 py-1.5 focus:outline-none focus:border-neutral-500 text-white transition-colors"
+                                            className="w-full bg-[#111] border border-[#333] text-xs rounded-full pl-9 pr-4 py-1.5 focus:outline-none focus:border-neutral-500 text-white transition-colors"
                                             value={searchQuery}
                                             onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(true); }}
                                             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                                         />
                                         {showSuggestions && suggestions.length > 0 && (
-                                            <div className="absolute top-full left-0 right-0 mt-2 bg-[#0A0A0A] border border-[#333] rounded-lg shadow-xl overflow-hidden z-20">
+                                            <div className="absolute top-full left-0 right-0 mt-2 bg-[#111] border border-[#333] rounded-lg shadow-xl overflow-hidden z-20">
                                                 {suggestions.map((s, i) => (
                                                     <button
                                                         key={i}
@@ -745,7 +744,7 @@ ${originalDomain}`;
                             <div className="flex gap-2">
                                 <input
                                     type="text"
-                                    className="flex-1 bg-[#0A0A0A] border border-[#222] rounded-none px-4 py-2.5 text-xs text-white focus:border-red-500/50 focus:outline-none font-mono transition-colors shadow-inner"
+                                    className="flex-1 bg-[#111] border border-[#222] rounded-none px-4 py-2.5 text-xs text-white focus:border-red-500/50 focus:outline-none font-mono transition-colors shadow-inner"
                                     placeholder="Enter official domain (e.g. facebook.com)..."
                                     value={scanTarget}
                                     onChange={(e) => setScanTarget(e.target.value)}
@@ -768,9 +767,8 @@ ${originalDomain}`;
                         </div>
 
                         {/* Updated Grid Layout */}
-                        <div className="flex-1 overflow-y-auto custom-scrollbar bg-[#040404] border border-[#1B1B1B] p-4 md:p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] relative">
-                            {/* Grid overlay */}
-                            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
+                        <div className="flex-1 overflow-y-auto custom-scrollbar bg-transparent border border-[#1B1B1B] p-4 md:p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] relative">
+                            {/* Removed Grid overlay */}
                             {scanResults.length === 0 && !isScanning ? (
                                 <div className="flex flex-col items-center justify-center text-neutral-600 h-full gap-4 relative z-10">
                                     <Globe size={48} className="opacity-20" />
@@ -784,14 +782,14 @@ ${originalDomain}`;
                                             return (
                                                 <div
                                                     key={i}
-                                                    className="bg-[#080808] border border-[#1A1A1A] rounded-sm overflow-hidden group hover:border-[#333] transition-colors animate-fade-in flex flex-col h-auto cursor-pointer border-t-[3px] border-t-transparent hover:border-t-red-500/50 shadow-sm"
+                                                    className="bg-[#111] border border-[#1A1A1A] rounded-sm overflow-hidden group hover:border-[#333] transition-colors animate-fade-in flex flex-col h-auto cursor-pointer border-t-[3px] border-t-transparent hover:border-t-red-500/50 shadow-sm"
                                                     onClick={() => handleInspect(res)}
                                                 >
-                                                    <div className="h-28 bg-black relative overflow-hidden shrink-0">
+                                                    <div className="h-28 bg-[#111] relative overflow-hidden shrink-0">
                                                         {res.screenshotUrl ? (
                                                             <img src={res.screenshotUrl} alt="Preview" className="w-full h-full object-cover opacity-55 group-hover:opacity-90 transition-opacity duration-300" />
                                                         ) : (
-                                                            <div className="flex items-center justify-center h-full text-neutral-700 bg-[#0A0A0A]"><Eye size={24} /></div>
+                                                            <div className="flex items-center justify-center h-full text-neutral-700 bg-[#111]"><Eye size={24} /></div>
                                                         )}
                                                         <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
                                                             <span className="bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-lg">ACTIVE</span>
@@ -807,10 +805,10 @@ ${originalDomain}`;
                                                             )}
                                                         </div>
                                                     </div>
-                                                    <div className="p-3.5 flex-1 flex flex-col bg-[#060606]">
+                                                    <div className="p-3.5 flex-1 flex flex-col bg-[#111]">
                                                         <div className="flex justify-between items-start mb-2">
                                                             <div className="font-mono font-bold text-[12px] text-neutral-300 group-hover:text-red-300 transition-colors truncate w-2/3" title={res.variation}>{res.variation}</div>
-                                                            <span className="text-[9px] text-[#888] bg-[#0A0A0A] px-1.5 py-0.5 rounded-sm border border-[#222]">{res.type}</span>
+                                                            <span className="text-[9px] text-[#888] bg-[#111] px-1.5 py-0.5 rounded-sm border border-[#222]">{res.type}</span>
                                                         </div>
                                                         <div className="grid grid-cols-2 gap-2 text-[10px] text-neutral-500 mb-3 font-mono">
                                                             <div className="flex items-center gap-1.5 truncate" title={res.country || 'Unknown'}>
@@ -852,9 +850,9 @@ ${originalDomain}`;
 
                         {/* Investigation Modal */}
                         {selectedTyposquat && (
-                            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in" onClick={() => setSelectedTyposquat(null)}>
-                                <div className="bg-[#080808] border border-[#2A2A2A] w-full max-w-4xl rounded-sm overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.55)] flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
-                                    <div className="p-4 bg-black/40 border-b border-[#222] flex justify-between items-start">
+                            <div className="fixed inset-0 z-50 bg-[#111]/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in" onClick={() => setSelectedTyposquat(null)}>
+                                <div className="bg-[#111] border border-[#2A2A2A] w-full max-w-4xl rounded-sm overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.55)] flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+                                    <div className="p-4 bg-[#111]/40 border-b border-[#222] flex justify-between items-start">
                                         <div className="flex items-start gap-4">
                                             <div className="p-3 bg-red-900/20 border border-red-500/30 rounded text-red-500">
                                                 <ShieldAlert size={32} />
@@ -871,7 +869,7 @@ ${originalDomain}`;
                                         <button onClick={() => setSelectedTyposquat(null)} className="text-[#888] hover:text-white"><X size={20} /></button>
                                     </div>
 
-                                    <div className="flex bg-[#0A0A0A] border-b border-[#222] px-4">
+                                    <div className="flex bg-[#111] border-b border-[#222] px-4">
                                         <button
                                             onClick={() => setInvestigationTab('INTEL')}
                                             className={`py-3 px-4 text-xs font-bold border-b-2 transition-colors flex items-center gap-2 ${investigationTab === 'INTEL' ? 'border-neutral-500 text-white' : 'border-transparent text-[#888] hover:text-neutral-300'}`}
@@ -886,7 +884,7 @@ ${originalDomain}`;
                                         </button>
                                     </div>
 
-                                    <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-black/20">
+                                    <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-[#111]/20">
                                         {enrichmentLoading ? (
                                             <div className="flex flex-col items-center justify-center h-48 text-[#888] gap-2">
                                                 <Loader2 className="animate-spin text-[#888]" size={32} />
@@ -1039,7 +1037,7 @@ ${originalDomain}`;
                                                             </button>
                                                         </div>
                                                         <textarea
-                                                            className="flex-1 bg-black border border-[#333] rounded p-4 text-xs font-mono text-neutral-300 resize-none focus:outline-none focus:border-red-500"
+                                                            className="flex-1 bg-[#111] border border-[#333] rounded p-4 text-xs font-mono text-neutral-300 resize-none focus:outline-none focus:border-red-500"
                                                             value={getTakedownTemplate()}
                                                             readOnly
                                                         />
@@ -1067,7 +1065,7 @@ ${originalDomain}`;
                 {activeTab === 'REPUTATION' && (
                     <div className="h-full p-5 md:p-6 flex flex-col gap-5">
                         {/* Input Area */}
-                        <div className="bg-[#050505] border border-[#1C1C1C] rounded-sm p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
+                        <div className="bg-[#111] border border-[#1C1C1C] rounded-sm p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-sm font-bold text-white uppercase flex items-center gap-2">
                                     <Siren size={16} className="text-red-400" /> Reputation Monitor
@@ -1083,7 +1081,7 @@ ${originalDomain}`;
 
                             <div className="flex gap-2 items-center">
                                 <select
-                                    className="bg-[#0A0A0A] border border-[#333] rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500"
+                                    className="bg-[#111] border border-[#333] rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500"
                                     value={newAssetType}
                                     onChange={(e) => setNewAssetType(e.target.value as any)}
                                 >
@@ -1118,11 +1116,11 @@ ${originalDomain}`;
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pb-4">
                                     {monitoredAssets.map(asset => (
-                                        <div key={asset.id} className="bg-[#070707] border border-[#1D1D1D] rounded-sm p-4 hover:border-red-500/25 transition-all group shadow-[0_1px_0_rgba(255,255,255,0.015)]">
+                                        <div key={asset.id} className="bg-[#111] border border-[#1D1D1D] rounded-sm p-4 hover:border-red-500/25 transition-all group shadow-[0_1px_0_rgba(255,255,255,0.015)]">
                                             <div className="flex justify-between items-start mb-2">
                                                 <div className="flex items-center gap-2">
                                                     {asset.type === 'DOMAIN' ? <Globe size={14} className="text-[#AAA]" /> : asset.type === 'IP' ? <Layers size={14} className="text-red-400" /> : <Mail size={14} className="text-red-400" />}
-                                                    <span className="text-xs font-bold text-[#888] bg-black/40 px-1.5 rounded border border-[#333]">{asset.type}</span>
+                                                    <span className="text-xs font-bold text-[#888] bg-[#111]/40 px-1.5 rounded border border-[#333]">{asset.type}</span>
                                                 </div>
                                                 <button onClick={() => handleRemoveAsset(asset.id)} className="text-neutral-600 hover:text-red-400"><Trash2 size={14} /></button>
                                             </div>
@@ -1168,7 +1166,7 @@ ${originalDomain}`;
                     <div className="h-full overflow-y-auto custom-scrollbar p-6">
                         <div className="max-w-5xl mx-auto space-y-4 animate-fade-in pb-10">
                             {/* Keyword Management */}
-                            <div className="bg-[#050505] border border-[#1C1C1C] rounded-sm p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
+                            <div className="bg-[#111] border border-[#1C1C1C] rounded-sm p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
                                 <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
                                     <Layers size={16} className="text-[#AAA]" /> Monitored Keywords
                                 </h3>
@@ -1181,13 +1179,13 @@ ${originalDomain}`;
                                         onChange={(e) => setNewKeyword(e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && handleAddKeyword()}
                                     />
-                                    <button onClick={handleAddKeyword} className="px-4 bg-[#0E0E0E] hover:bg-[#151515] text-neutral-200 rounded-sm font-bold text-[10px] uppercase tracking-wider border border-[#2E2E2E]">
+                                    <button onClick={handleAddKeyword} className="px-4 bg-[#111] hover:bg-[#151515] text-neutral-200 rounded-sm font-bold text-[10px] uppercase tracking-wider border border-[#2E2E2E]">
                                         ADD
                                     </button>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                     {keywords.map(k => (
-                                        <div key={k} className="px-2.5 py-1 bg-[#0D0D0D] border border-[#282828] rounded-sm flex items-center gap-2 text-[11px] text-neutral-300">
+                                        <div key={k} className="px-2.5 py-1 bg-[#111] border border-[#282828] rounded-sm flex items-center gap-2 text-[11px] text-neutral-300">
                                             {k}
                                             <button onClick={() => handleRemoveKeyword(k)} className="hover:text-red-400"><XCircle size={14} /></button>
                                         </div>
@@ -1196,7 +1194,7 @@ ${originalDomain}`;
                             </div>
 
                             {/* Official Domains */}
-                            <div className="bg-[#050505] border border-[#1C1C1C] rounded-sm p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
+                            <div className="bg-[#111] border border-[#1C1C1C] rounded-sm p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
                                 <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
                                     <Globe size={16} className="text-[#AAA]" /> Official Domains (Whitelist)
                                 </h3>
@@ -1209,13 +1207,13 @@ ${originalDomain}`;
                                         onChange={(e) => setNewDomain(e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && handleAddDomain()}
                                     />
-                                    <button onClick={handleAddDomain} className="px-4 bg-[#0E0E0E] hover:bg-[#151515] text-neutral-200 rounded-sm font-bold text-[10px] uppercase tracking-wider border border-[#2E2E2E]">
+                                    <button onClick={handleAddDomain} className="px-4 bg-[#111] hover:bg-[#151515] text-neutral-200 rounded-sm font-bold text-[10px] uppercase tracking-wider border border-[#2E2E2E]">
                                         ADD
                                     </button>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                     {officialDomains.map(d => (
-                                        <div key={d} className="px-2.5 py-1 bg-[#0D0D0D] border border-neutral-500/20 rounded-sm flex items-center gap-2 text-[11px] text-neutral-300">
+                                        <div key={d} className="px-2.5 py-1 bg-[#111] border border-neutral-500/20 rounded-sm flex items-center gap-2 text-[11px] text-neutral-300">
                                             {d}
                                             <button onClick={() => handleRemoveDomain(d)} className="hover:text-white"><XCircle size={14} /></button>
                                         </div>
@@ -1225,12 +1223,12 @@ ${originalDomain}`;
 
                             {/* Visual Identity & Thresholds */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="bg-[#050505] border border-[#1C1C1C] rounded-sm p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
+                                <div className="bg-[#111] border border-[#1C1C1C] rounded-sm p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
                                     <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
                                         <Image size={16} className="text-red-400" /> Brand Logo
                                     </h3>
                                     <div className="flex items-center gap-4">
-                                        <div className="w-20 h-20 bg-black/60 border border-[#333] rounded-lg flex items-center justify-center overflow-hidden">
+                                        <div className="w-20 h-20 bg-[#111]/60 border border-[#333] rounded-lg flex items-center justify-center overflow-hidden">
                                             {officialLogo ? (
                                                 <img src={officialLogo} alt="Logo" className="max-w-full max-h-full object-contain" />
                                             ) : (
@@ -1254,7 +1252,7 @@ ${originalDomain}`;
                                     </div>
                                 </div>
 
-                                <div className="bg-[#050505] border border-[#1C1C1C] rounded-sm p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
+                                <div className="bg-[#111] border border-[#1C1C1C] rounded-sm p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
                                     <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
                                         <Settings size={16} className="text-red-400" /> Sensitivity Config
                                     </h3>
@@ -1286,4 +1284,7 @@ ${originalDomain}`;
         </div>
     );
 };
+
+
+
 

@@ -47,7 +47,7 @@ const deployStatusBadge = (status: DeploymentStatus) => {
         deploying: { label: 'DEPLOYING', cls: 'text-white bg-neutral-500/10 border-neutral-500/30' },
         stopped:   { label: 'STOPPED',   cls: 'text-[#AAA]   bg-[#1C1C1C]      border-neutral-600'      },
         error:     { label: 'ERROR',     cls: 'text-red-400    bg-red-500/10    border-red-500/30'    },
-        removed:   { label: 'REMOVED',   cls: 'text-neutral-600   bg-[#0A0A0A]      border-[#222]'      },
+        removed:   { label: 'REMOVED',   cls: 'text-neutral-600   bg-[#111]      border-[#222]'      },
     };
     const c = map[status] ?? map.stopped;
     return <span className={`px-2 py-0.5 rounded border text-[10px] font-mono font-bold ${c.cls}`}>{c.label}</span>;
@@ -97,8 +97,8 @@ interface ConfirmDialogProps {
     onCancel: () => void;
 }
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ title, message, confirmLabel = 'Confirm', danger = false, onConfirm, onCancel }) => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-        <div className="bg-[#0A0A0A] border border-[#333] rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111]/70 backdrop-blur-sm">
+        <div className="bg-[#111] border border-[#333] rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
             <h3 className="text-lg font-bold text-white font-cyber mb-2">{title}</h3>
             <p className="text-sm text-neutral-300 mb-6">{message}</p>
             <div className="flex justify-end gap-3">
@@ -132,8 +132,8 @@ const InstallCommandModal: React.FC<{
     const current = showFull && fullScript ? fullScript.script : result.installCommand;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-            <div className="bg-[#0A0A0A] border border-[#333] rounded-xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111]/70 backdrop-blur-sm p-4">
+            <div className="bg-[#111] border border-[#333] rounded-xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh]">
                 <div className="flex items-center justify-between p-5 border-b border-[#222]">
                     <div>
                         <h3 className="text-lg font-bold text-white font-cyber">Agent Registered</h3>
@@ -157,7 +157,7 @@ const InstallCommandModal: React.FC<{
                     </div>
                     {/* Script block */}
                     <div className="relative">
-                        <pre className="bg-black/80 border border-[#333] rounded-lg p-4 text-xs text-white font-mono overflow-x-auto whitespace-pre-wrap break-all">{current}</pre>
+                        <pre className="bg-[#111]/80 border border-[#333] rounded-lg p-4 text-xs text-white font-mono overflow-x-auto whitespace-pre-wrap break-all">{current}</pre>
                         <div className="absolute top-2 right-2"><CopyButton text={current} /></div>
                     </div>
                     <p className="text-xs text-[#888]">The agent will appear as <strong className="text-white">PENDING → ONLINE</strong> within 60 seconds after running the command.</p>
@@ -196,8 +196,8 @@ const ContainerLogsModal: React.FC<{
     useEffect(() => { load(); }, []);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-            <div className="bg-[#0A0A0A] border border-[#333] rounded-xl w-full max-w-4xl shadow-2xl flex flex-col" style={{ height: '80vh' }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111]/70 backdrop-blur-sm p-4">
+            <div className="bg-[#111] border border-[#333] rounded-xl w-full max-w-4xl shadow-2xl flex flex-col" style={{ height: '80vh' }}>
                 <div className="flex items-center justify-between p-4 border-b border-[#222] shrink-0">
                     <div className="flex items-center gap-3">
                         <Terminal size={18} className="text-red-500" />
@@ -212,7 +212,7 @@ const ContainerLogsModal: React.FC<{
                         <button onClick={onClose} className="p-1.5 rounded hover:bg-[#151515] text-[#AAA] hover:text-white"><X size={16}/></button>
                     </div>
                 </div>
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-4 bg-black/80 font-mono text-xs text-white leading-relaxed whitespace-pre-wrap">
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-4 bg-[#111]/80 font-mono text-xs text-white leading-relaxed whitespace-pre-wrap">
                     {loading ? <span className="text-[#888] animate-pulse">Loading logs...</span> : logs || <span className="text-neutral-600">No log output.</span>}
                     <div ref={endRef} />
                 </div>
@@ -272,8 +272,8 @@ const DeployModal: React.FC<{
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-            <div className="bg-[#0A0A0A] border border-[#333] rounded-xl w-full max-w-xl shadow-2xl flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111]/70 backdrop-blur-sm p-4">
+            <div className="bg-[#111] border border-[#333] rounded-xl w-full max-w-xl shadow-2xl flex flex-col max-h-[90vh]">
                 <div className="flex items-center justify-between p-5 border-b border-[#222] shrink-0">
                     <div>
                         <h3 className="text-lg font-bold text-white font-cyber">Deploy Stack</h3>
@@ -323,7 +323,7 @@ const DeployModal: React.FC<{
                                 </div>
                             </div>
                             {deployError.detail && (
-                                <pre className="text-[11px] text-red-300 font-mono bg-black/40 rounded p-2 overflow-x-auto whitespace-pre-wrap break-all leading-relaxed">{deployError.detail}</pre>
+                                <pre className="text-[11px] text-red-300 font-mono bg-[#111]/40 rounded p-2 overflow-x-auto whitespace-pre-wrap break-all leading-relaxed">{deployError.detail}</pre>
                             )}
                         </div>
                     )}
@@ -373,8 +373,8 @@ const TemplateFormModal: React.FC<{
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-            <div className="bg-[#0A0A0A] border border-[#333] rounded-xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111]/70 backdrop-blur-sm p-4">
+            <div className="bg-[#111] border border-[#333] rounded-xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh]">
                 <div className="flex items-center justify-between p-5 border-b border-[#222] shrink-0">
                     <h3 className="text-lg font-bold text-white font-cyber">{template ? 'Edit Template' : 'New Template'}</h3>
                     <button onClick={onClose} className="p-2 rounded hover:bg-[#151515] text-[#AAA] hover:text-white"><X size={18}/></button>
@@ -400,11 +400,11 @@ const TemplateFormModal: React.FC<{
                     </div>
                     <div>
                         <label className="text-xs text-[#AAA] font-mono block mb-1">Docker Compose / Stack File *</label>
-                        <textarea value={stackContent} onChange={e => setStackContent(e.target.value)} rows={10} className="w-full bg-black/80 border border-[#333] text-white rounded-lg p-3 text-xs font-mono resize-y" placeholder={"version: '3.8'\nservices:\n  ..."} />
+                        <textarea value={stackContent} onChange={e => setStackContent(e.target.value)} rows={10} className="w-full bg-[#111]/80 border border-[#333] text-white rounded-lg p-3 text-xs font-mono resize-y" placeholder={"version: '3.8'\nservices:\n  ..."} />
                     </div>
                     <div>
                         <label className="text-xs text-[#AAA] font-mono block mb-1">Environment Template <span className="text-neutral-600">(JSON)</span></label>
-                        <textarea value={envJson} onChange={e => setEnvJson(e.target.value)} rows={5} className="w-full bg-black/80 border border-[#333] text-white rounded-lg p-3 text-xs font-mono resize-y" placeholder={'{"SSH_PORT": {"description": "SSH port", "default": "2222", "required": false}}'} />
+                        <textarea value={envJson} onChange={e => setEnvJson(e.target.value)} rows={5} className="w-full bg-[#111]/80 border border-[#333] text-white rounded-lg p-3 text-xs font-mono resize-y" placeholder={'{"SSH_PORT": {"description": "SSH port", "default": "2222", "required": false}}'} />
                     </div>
                     {error && <p className="text-xs text-red-400 font-mono bg-red-500/10 border border-red-500/30 rounded px-3 py-2">{error}</p>}
                 </div>
@@ -464,8 +464,8 @@ const RegisterServerModal: React.FC<{
     ];
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-            <div className="bg-[#0A0A0A] border border-[#333] rounded-xl w-full max-w-lg shadow-2xl flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111]/70 backdrop-blur-sm p-4">
+            <div className="bg-[#111] border border-[#333] rounded-xl w-full max-w-lg shadow-2xl flex flex-col">
                 <div className="flex items-center justify-between p-5 border-b border-[#222]">
                     <div>
                         <h3 className="text-lg font-bold text-white font-cyber">Register Server</h3>
@@ -527,8 +527,8 @@ const ShipperTokenModal: React.FC<{
 }> = ({ result, onClose }) => {
     const [revealed, setRevealed] = useState(false);
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-            <div className="bg-[#0A0A0A] border border-neutral-500/40 rounded-xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111]/70 backdrop-blur-sm p-4">
+            <div className="bg-[#111] border border-neutral-500/40 rounded-xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh]">
                 <div className="flex items-center gap-3 p-5 border-b border-[#222] shrink-0">
                     <div className="p-2 bg-neutral-500/10 rounded-lg border border-neutral-500/30">
                         <KeyRound size={18} className="text-white"/>
@@ -557,7 +557,7 @@ const ShipperTokenModal: React.FC<{
                             </button>
                         </div>
                         <div className="relative">
-                            <div className={`bg-black/80 border border-neutral-500/30 rounded-lg p-3 pr-10 font-mono text-xs break-all leading-relaxed ${revealed ? 'text-white' : 'blur-sm select-none text-white'}`}>
+                            <div className={`bg-[#111]/80 border border-neutral-500/30 rounded-lg p-3 pr-10 font-mono text-xs break-all leading-relaxed ${revealed ? 'text-white' : 'blur-sm select-none text-white'}`}>
                                 {result.shipper.Token}
                             </div>
                             <div className="absolute top-2 right-2">
@@ -579,7 +579,7 @@ const ShipperTokenModal: React.FC<{
                                     sel?.removeAllRanges();
                                     sel?.addRange(range);
                                 }}
-                                className="bg-black/80 border border-[#333] rounded-lg p-3 pr-10 text-xs text-white font-mono overflow-x-auto whitespace-pre-wrap break-all select-all cursor-text"
+                                className="bg-[#111]/80 border border-[#333] rounded-lg p-3 pr-10 text-xs text-white font-mono overflow-x-auto whitespace-pre-wrap break-all select-all cursor-text"
                             >
                                 {result.deployment.installCommand}
                             </pre>
@@ -654,8 +654,8 @@ const RegisterShipperModal: React.FC<{
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-            <div className="bg-[#0A0A0A] border border-[#333] rounded-xl w-full max-w-md shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111]/70 backdrop-blur-sm p-4">
+            <div className="bg-[#111] border border-[#333] rounded-xl w-full max-w-md shadow-2xl">
                 <div className="flex items-center justify-between p-5 border-b border-[#222]">
                     <div>
                         <h3 className="text-lg font-bold text-white font-cyber">Register Log Shipper</h3>
@@ -894,7 +894,7 @@ const ServerDetailPanel: React.FC<{
     ];
 
     return (
-        <div className="flex flex-col h-full border-l border-[#222] bg-black/60 w-full">
+        <div className="flex flex-col h-full border-l border-[#222] bg-[#111]/60 w-full">
             {/* Panel Header */}
             <div className="p-4 border-b border-[#222] flex items-center justify-between shrink-0">
                 <div>
@@ -1592,7 +1592,7 @@ export const InfrastructureView: React.FC = () => {
     return (
         <div className="h-full flex flex-col bg-cyber-grid relative">
             {/* Top Header */}
-            <div className="p-4 border-b border-[#222] bg-black/40 backdrop-blur-sm flex items-center justify-between shrink-0">
+            <div className="p-4 border-b border-[#222] bg-[#111]/40 backdrop-blur-sm flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-[#111] rounded-lg border border-neutral-500/30 text-red-400"><MonitorCog size={20}/></div>
                     <div>
@@ -1626,7 +1626,7 @@ export const InfrastructureView: React.FC = () => {
             </div>
 
             {/* Section Tab Bar */}
-            <div className="flex border-b border-[#222] bg-black/30 shrink-0">
+            <div className="flex border-b border-[#222] bg-[#111]/30 shrink-0">
                 {([
                     { id: 'servers' as InfraTab, label: 'SERVERS & AGENTS', icon: Server },
                     { id: 'shippers' as InfraTab, label: 'SHIPPERS', icon: Radio },
@@ -1673,7 +1673,7 @@ export const InfrastructureView: React.FC = () => {
                         )}
                         <div className="flex-1 overflow-y-auto custom-scrollbar">
                             {/* Table Header */}
-                            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-3 px-4 py-2 text-[10px] text-neutral-600 font-mono font-bold uppercase tracking-widest border-b border-[#222] sticky top-0 bg-black/80 backdrop-blur-sm">
+                            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-3 px-4 py-2 text-[10px] text-neutral-600 font-mono font-bold uppercase tracking-widest border-b border-[#222] sticky top-0 bg-[#111]/80 backdrop-blur-sm">
                                 <span>Server</span>
                                 <span>Agent</span>
                                 <span>Shipper</span>
@@ -1692,7 +1692,7 @@ export const InfrastructureView: React.FC = () => {
                                                 {srv.shipper.active ? 'ACTIVE' : 'INACTIVE'}
                                             </span>
                                         ) : (
-                                            <span className="px-2 py-0.5 rounded border text-[10px] font-mono text-neutral-600 bg-[#0A0A0A] border-[#222]">NONE</span>
+                                            <span className="px-2 py-0.5 rounded border text-[10px] font-mono text-neutral-600 bg-[#111] border-[#222]">NONE</span>
                                         )}
                                     </div>
                                     <div className="text-center">
@@ -1757,7 +1757,7 @@ export const InfrastructureView: React.FC = () => {
             )}
 
             {registerLoading && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111]/60 backdrop-blur-sm">
                     <div className="flex items-center gap-3 text-red-500 font-mono text-sm">
                         <Loader2 size={20} className="animate-spin"/> Registering agent with Portainer...
                     </div>
@@ -1766,3 +1766,4 @@ export const InfrastructureView: React.FC = () => {
         </div>
     );
 };
+

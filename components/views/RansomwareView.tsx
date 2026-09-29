@@ -61,15 +61,15 @@ export const RansomwareView: React.FC<RansomwareViewProps> = ({ posts, groups })
     }, [posts]);
 
     return (
-        <div className="h-[calc(100vh-70px)] bg-cyber-grid flex flex-col overflow-hidden relative">
+        <div className="h-[calc(100vh-70px)] bg-transparent flex flex-col overflow-hidden relative">
             {/* Screenshot Preview Overlay */}
             {previewImage && (
                 <div 
-                    className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-8 cursor-zoom-out"
+                    className="fixed inset-0 z-50 bg-[#111]/80 backdrop-blur-sm flex items-center justify-center p-8 cursor-zoom-out"
                     onClick={() => setPreviewImage(null)}
                 >
-                    <div className="relative max-w-4xl w-full bg-[#0A0A0A] border border-[#333] rounded-lg overflow-hidden shadow-2xl">
-                        <div className="p-2 bg-black flex justify-between items-center border-b border-[#222]">
+                    <div className="relative max-w-4xl w-full bg-[#111] border border-[#333] rounded-lg overflow-hidden shadow-2xl">
+                        <div className="p-2 bg-[#111] flex justify-between items-center border-b border-[#222]">
                             <span className="text-xs font-mono text-[#AAA]">EVIDENCE SNAPSHOT</span>
                             <button className="text-white hover:text-red-400"><ExternalLink size={16}/></button>
                         </div>
@@ -79,7 +79,7 @@ export const RansomwareView: React.FC<RansomwareViewProps> = ({ posts, groups })
             )}
 
             {/* Header */}
-            <div className="bg-black/40 border-b border-[#222] p-6 flex flex-col gap-4 shrink-0">
+            <div className="bg-[#111]/40 border-b border-[#222] p-6 flex flex-col gap-4 shrink-0">
                 <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
                         <div className="p-3 bg-red-900/20 rounded-lg border border-red-500/30 text-red-500">
@@ -135,7 +135,7 @@ export const RansomwareView: React.FC<RansomwareViewProps> = ({ posts, groups })
 
             <div className="flex-1 flex overflow-hidden">
                 {/* Left Column: Victim Feed */}
-                <div className="w-1/3 min-w-[400px] border-r border-[#222] flex flex-col bg-black/20">
+                <div className="w-1/3 min-w-[400px] border-r border-[#222] flex flex-col bg-[#111]/20">
                     <div className="p-3 bg-[#111] border-b border-[#222] flex items-center justify-between sticky top-0 z-10">
                         <div className="text-xs font-bold text-[#AAA] uppercase flex items-center gap-2">
                             <Zap size={14}/> Live Victim Feed
@@ -145,7 +145,7 @@ export const RansomwareView: React.FC<RansomwareViewProps> = ({ posts, groups })
                             <input 
                                 type="text" 
                                 placeholder="Filter victims or country..." 
-                                className="bg-black border border-[#333] rounded-full pl-7 pr-3 py-1 text-xs text-neutral-300 focus:outline-none focus:border-red-500 w-32 transition-all focus:w-48"
+                                className="bg-[#111] border border-[#333] rounded-full pl-7 pr-3 py-1 text-xs text-neutral-300 focus:outline-none focus:border-red-500 w-32 transition-all focus:w-48"
                                 value={victimSearch}
                                 onChange={(e) => setVictimSearch(e.target.value)}
                             />
@@ -205,7 +205,7 @@ export const RansomwareView: React.FC<RansomwareViewProps> = ({ posts, groups })
                             ))
                         )}
                         {filteredPosts.length === 100 && (
-                            <div className="p-2 text-center text-[10px] text-neutral-600 border-t border-[#222] bg-black/20 font-mono">
+                            <div className="p-2 text-center text-[10px] text-neutral-600 border-t border-[#222] bg-[#111]/20 font-mono">
                                 Showing recent 100 of {posts.length}
                             </div>
                         )}
@@ -213,7 +213,7 @@ export const RansomwareView: React.FC<RansomwareViewProps> = ({ posts, groups })
                 </div>
 
                 {/* Right Column: Gang Profiles */}
-                <div className="flex-1 flex flex-col bg-black/40">
+                <div className="flex-1 flex flex-col bg-[#111]/40">
                     <div className="p-3 bg-[#111] border-b border-[#222] flex items-center justify-between">
                         <div className="text-xs font-bold text-[#AAA] uppercase flex items-center gap-2">
                             <Lock size={14}/> Gang Profiles
@@ -223,7 +223,7 @@ export const RansomwareView: React.FC<RansomwareViewProps> = ({ posts, groups })
                             <input 
                                 type="text" 
                                 placeholder="Search groups..." 
-                                className="bg-black border border-[#333] rounded-full pl-7 pr-3 py-1 text-xs text-neutral-300 focus:outline-none focus:border-red-500 w-48"
+                                className="bg-[#111] border border-[#333] rounded-full pl-7 pr-3 py-1 text-xs text-neutral-300 focus:outline-none focus:border-red-500 w-48"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -234,7 +234,7 @@ export const RansomwareView: React.FC<RansomwareViewProps> = ({ posts, groups })
                             <div className="col-span-full text-center text-[#888] text-xs italic mt-10">Loading group profiles...</div>
                         ) : (
                             filteredGroups.map((group, i) => (
-                                <div key={i} className="bg-black/40 backdrop-blur-md border border-[#222] rounded-xl p-5 hover:bg-black/60 hover:border-red-500/40 hover:shadow-[0_0_30px_rgba(220,38,38,0.1)] transition-all duration-500 flex flex-col h-full group/card">
+                                <div key={i} className="bg-[#111]/40 backdrop-blur-md border border-[#222] rounded-xl p-5 hover:bg-[#111]/60 hover:border-red-500/40 hover:shadow-[0_0_30px_rgba(220,38,38,0.1)] transition-all duration-500 flex flex-col h-full group/card">
                                     <div className="flex justify-between items-start mb-3">
                                         <h3 className="text-xl font-bold text-white uppercase tracking-wider group-hover/card:text-red-400 transition-colors flex items-center gap-2"><Globe className="text-neutral-600 group-hover/card:text-red-500 w-4 h-4"/> {group.name}</h3>
                                         <span className="text-xs font-mono font-bold text-red-400 bg-red-950/30 px-3 py-1 rounded-full border border-red-900/50 shadow-[0_0_10px_rgba(153,27,27,0.2)]">
@@ -272,3 +272,6 @@ export const RansomwareView: React.FC<RansomwareViewProps> = ({ posts, groups })
         </div>
     );
 };
+
+
+

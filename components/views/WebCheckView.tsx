@@ -158,11 +158,11 @@ export const WebCheckView: React.FC<WebCheckViewProps> = ({ logoUrl }) => {
     };
 
     return (
-        <div className="h-full bg-[#0A0A0A] overflow-y-auto custom-scrollbar p-4 md:p-8 w-full relative">
+        <div className="h-full bg-[#111] overflow-y-auto custom-scrollbar p-4 md:p-8 w-full relative">
             {/* Screenshot Modal */}
             {expandedScreenshot && (
                 <div 
-                    className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 animate-fade-in cursor-zoom-out"
+                    className="fixed inset-0 z-[100] bg-[#111]/90 backdrop-blur-xl flex items-center justify-center p-4 animate-fade-in cursor-zoom-out"
                     onClick={() => setExpandedScreenshot(null)}
                 >
                     <div className="relative max-w-[95vw] max-h-[95vh]">
@@ -175,7 +175,7 @@ export const WebCheckView: React.FC<WebCheckViewProps> = ({ logoUrl }) => {
                         <img 
                             src={expandedScreenshot} 
                             alt="Full Capture" 
-                            className="max-w-full max-h-[85vh] rounded-lg shadow-2xl border border-[#222] object-contain bg-black"
+                            className="max-w-full max-h-[85vh] rounded-lg shadow-2xl border border-[#222] object-contain bg-[#111]"
                             onClick={(e) => e.stopPropagation()} 
                         />
                     </div>
@@ -196,7 +196,7 @@ export const WebCheckView: React.FC<WebCheckViewProps> = ({ logoUrl }) => {
                     </div>
                     <input
                         type="text"
-                        className="block w-full pl-10 pr-24 py-3 bg-black/50 border border-[#333] rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-white placeholder-neutral-500 sm:text-sm font-mono transition-all"
+                        className="block w-full pl-10 pr-24 py-3 bg-[#111]/50 border border-[#333] rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-white placeholder-neutral-500 sm:text-sm font-mono transition-all"
                         placeholder="example.com, 8.8.8.8, or https://site.com"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
@@ -240,7 +240,7 @@ export const WebCheckView: React.FC<WebCheckViewProps> = ({ logoUrl }) => {
                                 <div className="p-4 rounded-full bg-red-500/10 border border-red-500/30 relative">
                                     <Globe className="text-red-500" size={32}/>
                                     {result.visuals?.favicon && (
-                                        <img src={result.visuals.favicon} alt="fav" className="absolute -bottom-1 -right-1 w-6 h-6 rounded bg-black p-0.5 border border-[#333]" onError={(e) => e.currentTarget.style.display = 'none'}/>
+                                        <img src={result.visuals.favicon} alt="fav" className="absolute -bottom-1 -right-1 w-6 h-6 rounded bg-[#111] p-0.5 border border-[#333]" onError={(e) => e.currentTarget.style.display = 'none'}/>
                                     )}
                                 </div>
                                 <div>
@@ -281,7 +281,7 @@ export const WebCheckView: React.FC<WebCheckViewProps> = ({ logoUrl }) => {
                         <div className="space-y-4 h-full flex flex-col">
                             {result.visuals?.screenshot ? (
                                 <div 
-                                    className="relative rounded-lg overflow-hidden border border-[#333] group flex-1 bg-black min-h-[200px] cursor-zoom-in"
+                                    className="relative rounded-lg overflow-hidden border border-[#333] group flex-1 bg-[#111] min-h-[200px] cursor-zoom-in"
                                     onClick={() => setExpandedScreenshot(result.visuals!.screenshot)}
                                 >
                                     <img 
@@ -291,16 +291,16 @@ export const WebCheckView: React.FC<WebCheckViewProps> = ({ logoUrl }) => {
                                     />
                                     <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/80 to-transparent opacity-60"></div>
                                     <div className="absolute bottom-2 left-2">
-                                        <span className="text-[10px] bg-black/80 text-neutral-300 px-2 py-1 rounded border border-[#333]">Live Capture</span>
+                                        <span className="text-[10px] bg-[#111]/80 text-neutral-300 px-2 py-1 rounded border border-[#333]">Live Capture</span>
                                     </div>
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[1px]">
-                                        <div className="p-3 bg-black/60 rounded-full text-white border border-white/20 shadow-xl">
+                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-[#111]/20 backdrop-blur-[1px]">
+                                        <div className="p-3 bg-[#111]/60 rounded-full text-white border border-white/20 shadow-xl">
                                             <Maximize2 size={24} />
                                         </div>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="flex items-center justify-center h-48 bg-[#0A0A0A] rounded text-neutral-600 text-xs">
+                                <div className="flex items-center justify-center h-48 bg-[#111] rounded text-neutral-600 text-xs">
                                     Screenshot Unavailable
                                 </div>
                             )}
@@ -324,7 +324,7 @@ export const WebCheckView: React.FC<WebCheckViewProps> = ({ logoUrl }) => {
                         <div className="space-y-3">
                             {result.dnsSecurity && result.dnsSecurity.length > 0 ? (
                                 result.dnsSecurity.map((res, i) => (
-                                    <div key={i} className="flex items-center justify-between p-2 rounded bg-black/30 border border-[#222] text-xs">
+                                    <div key={i} className="flex items-center justify-between p-2 rounded bg-[#111]/30 border border-[#222] text-xs">
                                         <span className="text-[#AAA] font-mono">{res.provider}</span>
                                         {res.status === 'BLOCKED' ? (
                                             <span className="text-red-400 font-bold flex items-center gap-1 px-2 py-0.5 bg-red-900/20 rounded border border-red-500/30">
@@ -361,7 +361,7 @@ export const WebCheckView: React.FC<WebCheckViewProps> = ({ logoUrl }) => {
                                  
                                  <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1 pr-1 max-h-48">
                                      {result.blocklist.sources.map((src, idx) => (
-                                         <div key={idx} className="flex items-center justify-between p-2 rounded bg-black/30 border border-[#222] text-xs">
+                                         <div key={idx} className="flex items-center justify-between p-2 rounded bg-[#111]/30 border border-[#222] text-xs">
                                              <span className="text-[#AAA] truncate pr-2">{src.name}</span>
                                              {src.detected ? (
                                                  <span className="text-red-400 font-bold flex items-center gap-1 whitespace-nowrap"><Skull size={10}/> LISTED</span>
@@ -370,7 +370,7 @@ export const WebCheckView: React.FC<WebCheckViewProps> = ({ logoUrl }) => {
                                              )}
                                          </div>
                                      ))}
-                                     <a href={`https://www.virustotal.com/gui/${result.inputType === 'IP' ? 'ip-address' : 'domain'}/${result.target}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-2 rounded bg-black/30 border border-[#222] text-xs hover:bg-[#111] transition-colors group">
+                                     <a href={`https://www.virustotal.com/gui/${result.inputType === 'IP' ? 'ip-address' : 'domain'}/${result.target}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-2 rounded bg-[#111]/30 border border-[#222] text-xs hover:bg-[#111] transition-colors group">
                                          <span className="text-red-400 group-hover:text-[#888]">VirusTotal</span>
                                          <ExternalLink size={10} className="text-neutral-600 group-hover:text-[#888]"/>
                                      </a>
@@ -435,7 +435,7 @@ export const WebCheckView: React.FC<WebCheckViewProps> = ({ logoUrl }) => {
                                         <span className="text-[10px] text-[#888] uppercase font-bold">Subdomains Found ({result.ct.subdomains.length})</span>
                                         {result.ct.subdomains.length > 10 && <span className="text-[10px] text-neutral-600 italic">Top 50</span>}
                                     </div>
-                                    <div className="flex-1 overflow-y-auto custom-scrollbar bg-black/30 rounded border border-[#222] p-2 space-y-1">
+                                    <div className="flex-1 overflow-y-auto custom-scrollbar bg-[#111]/30 rounded border border-[#222] p-2 space-y-1">
                                         {result.ct.subdomains.slice(0, 50).map((sub, i) => (
                                             <div key={i} className="text-xs text-neutral-300 font-mono truncate hover:text-white cursor-default" title={sub}>
                                                 {sub}
@@ -659,3 +659,4 @@ export const WebCheckView: React.FC<WebCheckViewProps> = ({ logoUrl }) => {
         </div>
     );
 };
+

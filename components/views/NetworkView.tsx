@@ -90,12 +90,12 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
 
     if (!savedResult) {
         return (
-            <div className="h-full min-h-[calc(100vh-140px)] flex flex-col items-center justify-center bg-[#090a0c] text-[#8b949e] p-8 w-full">
-                <div className="w-full max-w-md border border-[#20242a] rounded-xl p-10 flex flex-col items-center justify-center text-center bg-[#0d1013] hover:border-[#2a2f36] transition-colors group relative overflow-hidden shadow-lg">
+            <div className="h-full min-h-[calc(100vh-140px)] flex flex-col items-center justify-center bg-transparent text-[#AAA] p-8 w-full">
+                <div className="w-full max-w-md border border-[#222] rounded-xl p-10 flex flex-col items-center justify-center text-center bg-[#111] hover:border-[#333] transition-colors group relative overflow-hidden shadow-lg">
                     <input type="file" className="absolute inset-0 opacity-0 cursor-pointer z-10" onChange={handleFileUpload} accept=".pcap,.pcapng,.json"/>
                     
-                    <div className="w-16 h-16 flex items-center justify-center bg-[#14171c] border border-[#262b33] rounded-2xl mb-6 group-hover:scale-105 group-hover:border-[#303640] transition-all duration-300 shadow-sm">
-                        <Network size={28} className="text-[#a1a6b0] group-hover:text-[#d1d5db] transition-colors"/>
+                    <div className="w-16 h-16 flex items-center justify-center bg-[#111] border border-[#333] rounded-2xl mb-6 group-hover:scale-105 group-hover:border-[#444] transition-all duration-300 shadow-sm">
+                        <Network size={28} className="text-[#888] group-hover:text-white transition-colors"/>
                     </div>
                     
                     <h3 className="text-sm font-semibold text-[#e5e7eb] mb-2 font-sans tracking-wide">Network Traffic Analysis</h3>
@@ -104,12 +104,12 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
                     </p>
                     
                     {isProcessing ? (
-                        <div className="flex items-center gap-2 text-[#d62828] text-xs font-semibold animate-pulse">
+                        <div className="flex items-center gap-2 text-red-500 text-xs font-semibold animate-pulse">
                             <Activity className="animate-spin" size={14}/> 
                             <span>PROCESSING PACKETS...</span>
                         </div>
                     ) : (
-                        <button className="px-5 py-2.5 bg-[#171a21] hover:bg-[#1e222b] border border-[#292e35] hover:border-[#373d47] text-[#c9ccd1] rounded-lg font-semibold text-[11px] transition-all shadow-sm">
+                        <button className="px-5 py-2.5 bg-[#151515] hover:bg-[#1c1c1c] border border-[#333] hover:border-[#444] text-neutral-300 rounded-lg font-semibold text-[11px] transition-all shadow-sm">
                             SELECT CAPTURE FILE
                         </button>
                     )}
@@ -119,9 +119,9 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
     }
 
     return (
-        <div className="h-full min-h-[calc(100vh-140px)] flex flex-col bg-[#090a0c] overflow-hidden w-full">
+        <div className="h-full min-h-[calc(100vh-140px)] flex flex-col bg-transparent overflow-hidden w-full">
             {/* Header */}
-            <div className="bg-black/40 border-b border-[#222] p-4 flex justify-between items-center shrink-0">
+            <div className="bg-[#111]/40 border-b border-[#222] p-4 flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-4">
                     <div className="p-2 bg-[#111] rounded border border-neutral-500/30">
                         <Activity size={20} className="text-red-400"/>
@@ -164,7 +164,7 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
                 </button>
             </div>
 
-            <div className="flex-1 overflow-hidden relative bg-black/20">
+            <div className="flex-1 overflow-hidden relative bg-[#111]/20">
                 {activeTab === 'DASHBOARD' && (
                     <div className="absolute inset-0 overflow-y-auto custom-scrollbar p-6 space-y-6">
                         {/* Traffic Volume */}
@@ -234,7 +234,7 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
                                 <Search className="absolute left-2 top-2 text-[#888] w-3 h-3"/>
                                 <input 
                                     type="text" 
-                                    className="w-full bg-black border border-[#333] rounded pl-8 pr-4 py-1 text-xs text-neutral-300 focus:border-neutral-500 focus:outline-none"
+                                    className="w-full bg-[#111] border border-[#333] rounded pl-8 pr-4 py-1 text-xs text-neutral-300 focus:border-neutral-500 focus:outline-none"
                                     placeholder="Filter packets (protocol, ip, info)..."
                                     value={packetSearch}
                                     onChange={(e) => setPacketSearch(e.target.value)}
@@ -243,7 +243,7 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
                         </div>
                         <div className="flex-1 overflow-auto custom-scrollbar">
                             <table className="w-full text-left text-xs font-mono">
-                                <thead className="bg-[#0A0A0A] text-[#888] sticky top-0 z-10">
+                                <thead className="bg-[#111] text-[#888] sticky top-0 z-10">
                                     <tr>
                                         <th className="p-2 w-16">No.</th>
                                         <th className="p-2 w-24">Time</th>
@@ -284,7 +284,7 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
                                          Stream {selectedStream.id} • {selectedStream.application} • {selectedStream.duration.toFixed(2)}ms
                                      </div>
                                  </div>
-                                 <div className="flex-1 bg-black border border-[#222] rounded p-4 overflow-auto custom-scrollbar font-mono text-xs">
+                                 <div className="flex-1 bg-[#111] border border-[#222] rounded p-4 overflow-auto custom-scrollbar font-mono text-xs">
                                      {selectedStream.payloads.map((p, i) => (
                                          <div key={i} className={`mb-2 ${p.direction === 'CLIENT_TO_SERVER' ? 'text-white' : 'text-white'}`}>
                                              {/* Simulated text decoding for demo - in real app would use Hex view */}
@@ -382,7 +382,7 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
                              <h3 className="text-sm font-bold text-white uppercase flex items-center gap-2"><Fingerprint size={16} className="lucide-icon"/> TLS Fingerprints (JA3)</h3>
                              <div className="bg-[#111] border border-[#222] rounded overflow-hidden">
                                  <table className="w-full text-left text-xs font-mono">
-                                     <thead className="bg-[#0A0A0A] text-[#888]">
+                                     <thead className="bg-[#111] text-[#888]">
                                          <tr><th className="p-3">JA3 Hash</th><th className="p-3 text-right">Count</th></tr>
                                      </thead>
                                      <tbody className="divide-y divide-neutral-800 text-neutral-300">
@@ -402,3 +402,4 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ actors, savedResult, o
         </div>
     );
 };
+

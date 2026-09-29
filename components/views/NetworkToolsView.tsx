@@ -543,7 +543,7 @@ export const NetworkToolsView: React.FC = () => {
         return (
             <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs font-mono">
-                    <thead className="bg-[#0A0A0A] text-[#888] uppercase font-bold">
+                    <thead className="bg-[#111] text-[#888] uppercase font-bold">
                         <tr><th className="p-3">Type</th><th className="p-3">Name</th><th className="p-3">TTL</th><th className="p-3">Data</th></tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-800 text-neutral-300">
@@ -560,13 +560,13 @@ export const NetworkToolsView: React.FC = () => {
 
     // Helper for rendering My IP results
     const renderMyIpTool = () => {
-        if (!ipWhoIsResult && !isLoading) return <div className="flex flex-col items-center justify-center h-64 text-center animate-fade-in border border-[#222] border-dashed rounded-xl bg-black/20 m-4"><div className="w-16 h-16 rounded-full bg-red-900/10 border border-red-500/20 flex items-center justify-center mb-4"><Search size={24} className="text-red-500 opacity-80" /></div><h3 className="text-white font-cyber text-lg mb-2">IDENTITY TRACING</h3><p className="text-neutral-500 text-sm max-w-md">Click MY IP to securely trace your current network identity and location exposure.</p></div>;
+        if (!ipWhoIsResult && !isLoading) return <div className="flex flex-col items-center justify-center h-64 text-center animate-fade-in border border-[#222] border-dashed rounded-xl bg-[#111]/20 m-4"><div className="w-16 h-16 rounded-full bg-red-900/10 border border-red-500/20 flex items-center justify-center mb-4"><Search size={24} className="text-red-500 opacity-80" /></div><h3 className="text-white font-cyber text-lg mb-2">IDENTITY TRACING</h3><p className="text-neutral-500 text-sm max-w-md">Click MY IP to securely trace your current network identity and location exposure.</p></div>;
         if (!ipWhoIsResult) return null;
 
         return (
             <div className="space-y-6 animate-fade-in">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                    <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5">
                         <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
                             <Server size={16} className="text-red-400"/> My Connection
                         </h3>
@@ -577,7 +577,7 @@ export const NetworkToolsView: React.FC = () => {
                             <div className="flex justify-between border-b border-[#222] pb-1"><span>ASN</span> <span>AS{ipWhoIsResult.connection.asn}</span></div>
                         </div>
                     </div>
-                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                    <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5">
                         <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
                             <MapIcon size={16} className="text-white"/> Physical Location
                         </h3>
@@ -600,14 +600,14 @@ export const NetworkToolsView: React.FC = () => {
 
     // Helper for rendering Network/Whois tool results
     const renderNetworkTool = () => {
-        if (!ipApiResult && !whoisResult && !isLoading) return <div className="flex flex-col items-center justify-center h-64 text-center animate-fade-in border border-[#222] border-dashed rounded-xl bg-black/20 m-4"><div className="w-16 h-16 rounded-full bg-red-900/10 border border-red-500/20 flex items-center justify-center mb-4"><Search size={24} className="text-red-500 opacity-80" /></div><h3 className="text-white font-cyber text-lg mb-2">WHOIS & IP INTELLIGENCE</h3><p className="text-neutral-500 text-sm max-w-md">Enter an IP address or Domain above to retrieve ownership, registration, and network routing information.</p></div>;
+        if (!ipApiResult && !whoisResult && !isLoading) return <div className="flex flex-col items-center justify-center h-64 text-center animate-fade-in border border-[#222] border-dashed rounded-xl bg-[#111]/20 m-4"><div className="w-16 h-16 rounded-full bg-red-900/10 border border-red-500/20 flex items-center justify-center mb-4"><Search size={24} className="text-red-500 opacity-80" /></div><h3 className="text-white font-cyber text-lg mb-2">WHOIS & IP INTELLIGENCE</h3><p className="text-neutral-500 text-sm max-w-md">Enter an IP address or Domain above to retrieve ownership, registration, and network routing information.</p></div>;
 
         return (
             <div className="space-y-6 animate-fade-in">
                 {ipApiResult && (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                            <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5">
                                 <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
                                     <Server size={16} className="text-red-400"/> Network Identity
                                 </h3>
@@ -618,7 +618,7 @@ export const NetworkToolsView: React.FC = () => {
                                     <div className="flex justify-between border-b border-[#222] pb-1"><span>Route</span> <span>{ipApiResult.asn.domain}</span></div>
                                 </div>
                             </div>
-                            <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                            <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5">
                                 <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
                                     <MapIcon size={16} className="text-white"/> Location & Abuse
                                 </h3>
@@ -637,11 +637,11 @@ export const NetworkToolsView: React.FC = () => {
                             </div>
                         </div>
                         {ipApiResult.whois.text && (
-                            <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                            <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5">
                                 <h3 className="text-sm font-bold text-white mb-2 uppercase flex items-center gap-2">
                                     <FileText size={16} className="text-[#AAA]"/> Raw WHOIS
                                 </h3>
-                                <div className="h-64 overflow-y-auto custom-scrollbar bg-black p-4 rounded border border-[#222] text-[10px] font-mono text-[#AAA] whitespace-pre-wrap">
+                                <div className="h-64 overflow-y-auto custom-scrollbar bg-[#111] p-4 rounded border border-[#222] text-[10px] font-mono text-[#AAA] whitespace-pre-wrap">
                                     {ipApiResult.whois.text}
                                 </div>
                             </div>
@@ -651,7 +651,7 @@ export const NetworkToolsView: React.FC = () => {
 
                 {whoisResult && (
                     <div className="space-y-6">
-                        <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                        <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5">
                             <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
                                 <Globe size={16} className="text-red-400"/> Domain Registration (RDAP)
                             </h3>
@@ -675,7 +675,7 @@ export const NetworkToolsView: React.FC = () => {
                             )}
                         </div>
                         
-                        <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                        <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5">
                             <h3 className="text-sm font-bold text-white mb-4 uppercase flex items-center gap-2">
                                 <List size={16} className="text-[#AAA]"/> Registration Events
                             </h3>
@@ -697,7 +697,7 @@ export const NetworkToolsView: React.FC = () => {
     return (
         <div className="h-[calc(100vh-70px)] bg-cyber-grid flex flex-col relative overflow-hidden">
             {/* Header */}
-            <div className="p-4 border-b border-[#222] bg-black/40 shrink-0">
+            <div className="p-4 border-b border-[#222] bg-[#111]/40 shrink-0">
                 <div className="flex items-center gap-3 mb-4">
                     <div className="p-2 bg-neutral-900/20 rounded-lg border border-neutral-500/30 text-red-400">
                         <HardDrive size={20}/>
@@ -734,7 +734,7 @@ export const NetworkToolsView: React.FC = () => {
                 {activeCategory !== 'MY_IP' && activeCategory !== 'HEADERS' && (
                     <form onSubmit={handleRunTool} className="mb-8 relative group max-w-2xl mx-auto w-full">
                         <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-900 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                        <div className="relative flex items-center bg-black border border-[#333] rounded-lg overflow-hidden shadow-2xl">
+                        <div className="relative flex items-center bg-[#111] border border-[#333] rounded-lg overflow-hidden shadow-2xl">
                             <div className="pl-4 text-[#888]">
                                 {isLoading ? <RefreshCw className="animate-spin" size={18}/> : <Terminal size={18}/>}
                             </div>
@@ -766,7 +766,7 @@ export const NetworkToolsView: React.FC = () => {
 
                         {/* ASN Suggestions Dropdown */}
                         {showAsnSuggestions && asnSuggestions.length > 0 && (
-                            <div className="absolute top-full left-0 right-0 mt-1 bg-[#0A0A0A] border border-[#333] rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto custom-scrollbar">
+                            <div className="absolute top-full left-0 right-0 mt-1 bg-[#111] border border-[#333] rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto custom-scrollbar">
                                 {asnSuggestions.map((item) => (
                                     <button
                                         key={item.asn}
@@ -790,7 +790,7 @@ export const NetworkToolsView: React.FC = () => {
                 {activeCategory === 'HEADERS' && (
                     <div className="flex flex-col gap-4 h-full">
                         <textarea 
-                            className="flex-1 bg-black/50 border border-[#333] rounded-lg p-4 font-mono text-xs text-neutral-300 focus:border-red-500 focus:outline-none resize-none custom-scrollbar"
+                            className="flex-1 bg-[#111]/50 border border-[#333] rounded-lg p-4 font-mono text-xs text-neutral-300 focus:border-red-500 focus:outline-none resize-none custom-scrollbar"
                             placeholder="Paste raw email headers here..."
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
@@ -821,7 +821,7 @@ export const NetworkToolsView: React.FC = () => {
                                 {/* Summary Card */}
                                 {riskAnalysis && (
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5 flex flex-col items-center justify-center text-center">
+                                    <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5 flex flex-col items-center justify-center text-center">
                                         <div className="text-xs font-bold text-[#888] uppercase tracking-widest mb-2">Composite Risk</div>
                                         <div className={`text-5xl font-cyber font-bold mb-2 ${
                                             riskAnalysis.level === 'CRITICAL' ? 'text-red-500' : 
@@ -839,7 +839,7 @@ export const NetworkToolsView: React.FC = () => {
                                         </span>
                                     </div>
                                     
-                                    <div className="md:col-span-2 bg-black/40 border border-[#222] rounded-lg p-5">
+                                    <div className="md:col-span-2 bg-[#111]/40 border border-[#222] rounded-lg p-5">
                                         <div className="flex items-center gap-4 mb-4">
                                             {enrichmentResult?.flag && <img src={enrichmentResult.flag} className="w-8 h-6 rounded shadow-sm" alt="flag"/>}
                                             <div>
@@ -867,7 +867,7 @@ export const NetworkToolsView: React.FC = () => {
                                 {/* Detailed Information Grid */}
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                     {/* Domain Info */}
-                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                                    <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5">
                                         <h3 className="text-sm font-bold text-red-400 uppercase mb-4 flex items-center gap-2">
                                             <Globe size={16}/> Domain Intelligence
                                         </h3>
@@ -882,7 +882,7 @@ export const NetworkToolsView: React.FC = () => {
                                                 {/* Expandable Raw Whois */}
                                                 <div className="mt-4">
                                                     <div className="text-[10px] text-[#888] uppercase font-bold mb-1">Raw Whois Data</div>
-                                                    <div className="max-h-32 overflow-y-auto custom-scrollbar bg-black p-2 rounded border border-[#222] text-[10px] text-[#888] whitespace-pre-wrap">
+                                                    <div className="max-h-32 overflow-y-auto custom-scrollbar bg-[#111] p-2 rounded border border-[#222] text-[10px] text-[#888] whitespace-pre-wrap">
                                                         {whoisResult.raw?.handle ? JSON.stringify(whoisResult.raw, null, 2) : "No raw data."}
                                                     </div>
                                                 </div>
@@ -891,7 +891,7 @@ export const NetworkToolsView: React.FC = () => {
                                     </div>
 
                                     {/* Infrastructure & DNS */}
-                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                                    <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5">
                                         <h3 className="text-sm font-bold text-red-400 uppercase mb-4 flex items-center gap-2">
                                             <Server size={16}/> Infrastructure & DNS
                                         </h3>
@@ -919,7 +919,7 @@ export const NetworkToolsView: React.FC = () => {
                                     </div>
 
                                     {/* Deep Intelligence (Shodan & IPData) */}
-                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                                    <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5">
                                         <h3 className="text-sm font-bold text-white uppercase mb-4 flex items-center gap-2">
                                             <Zap size={16}/> Deep Intelligence (Shodan & IPData)
                                         </h3>
@@ -985,7 +985,7 @@ export const NetworkToolsView: React.FC = () => {
                                     </div>
 
                                     {/* HTTP Security */}
-                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                                    <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5">
                                         <h3 className="text-sm font-bold text-white uppercase mb-4 flex items-center gap-2">
                                             <Lock size={16}/> Web Security & Headers
                                         </h3>
@@ -996,7 +996,7 @@ export const NetworkToolsView: React.FC = () => {
                                                 
                                                 <div className="mt-4">
                                                     <div className="text-[#888] mb-2 uppercase font-bold text-[10px]">Response Headers</div>
-                                                    <div className="max-h-32 overflow-y-auto custom-scrollbar bg-black p-2 rounded border border-[#222] space-y-1">
+                                                    <div className="max-h-32 overflow-y-auto custom-scrollbar bg-[#111] p-2 rounded border border-[#222] space-y-1">
                                                         {Object.entries(httpResult.headers).map(([k, v], i) => (
                                                             <div key={i} className="flex gap-2">
                                                                 <span className="text-red-400 w-1/3 truncate" title={k}>{k}:</span>
@@ -1010,7 +1010,7 @@ export const NetworkToolsView: React.FC = () => {
                                     </div>
 
                                     {/* AlienVault OTX Intelligence */}
-                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                                    <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5">
                                         <h3 className="text-sm font-bold text-red-400 uppercase mb-4 flex items-center gap-2">
                                             <Radar size={16}/> AlienVault OTX Intelligence
                                         </h3>
@@ -1050,7 +1050,7 @@ export const NetworkToolsView: React.FC = () => {
                                     </div>
 
                                     {/* Threat Indicators */}
-                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                                    <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5">
                                         <h3 className="text-sm font-bold text-red-400 uppercase mb-4 flex items-center gap-2">
                                             <ShieldAlert size={16}/> Threat Indicators
                                         </h3>
@@ -1097,7 +1097,7 @@ export const NetworkToolsView: React.FC = () => {
                                 )}
                             </div>
                         ) : (
-                            <div className="flex flex-col items-center justify-center h-64 text-center animate-fade-in border border-[#222] border-dashed rounded-xl bg-black/20 mt-4">
+                            <div className="flex flex-col items-center justify-center h-64 text-center animate-fade-in border border-[#222] border-dashed rounded-xl bg-[#111]/20 mt-4">
                                 <div className="w-16 h-16 rounded-full bg-red-900/10 border border-red-500/20 flex items-center justify-center mb-4">
                                     <Radar size={24} className="text-red-500 opacity-80" />
                                 </div>
@@ -1113,7 +1113,7 @@ export const NetworkToolsView: React.FC = () => {
                     {activeCategory === 'ASN' && (
                         <div className="space-y-6 animate-fade-in">
                             {asnResult && (
-                                <div className="bg-black/40 border border-[#222] rounded-lg p-6 relative overflow-hidden">
+                                <div className="bg-[#111]/40 border border-[#222] rounded-lg p-6 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 p-4 opacity-10">
                                         <Share2 size={120} className="text-white"/>
                                     </div>
@@ -1200,7 +1200,7 @@ export const NetworkToolsView: React.FC = () => {
                                 {renderDnsTab('dns0', 'DNS0.eu')}
                                 {renderDnsTab('cira', 'CIRA')}
                             </div>
-                            <div className="bg-black/40 border border-[#222] rounded-lg p-4 min-h-[300px]">
+                            <div className="bg-[#111]/40 border border-[#222] rounded-lg p-4 min-h-[300px]">
                                 {renderDnsTable()}
                             </div>
                         </div>
@@ -1240,7 +1240,7 @@ export const NetworkToolsView: React.FC = () => {
 
                     {/* SUBNET CALC */}
                     {activeCategory === 'SUBNET' && subnetResult && (
-                        <div className="bg-black/40 border border-[#222] rounded-lg p-6 animate-fade-in">
+                        <div className="bg-[#111]/40 border border-[#222] rounded-lg p-6 animate-fade-in">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-lg font-bold text-white font-mono">{subnetResult.ip}/{subnetResult.cidr}</h3>
                                 <div className="text-xs text-[#888]">
@@ -1267,17 +1267,17 @@ export const NetworkToolsView: React.FC = () => {
                     {activeCategory === 'EMAIL' && (
                         <div className="space-y-6 animate-fade-in">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className={`p-4 rounded border bg-black/40 ${spfResult?.valid ? 'border-neutral-500/30' : 'border-red-500/30'}`}>
+                                <div className={`p-4 rounded border bg-[#111]/40 ${spfResult?.valid ? 'border-neutral-500/30' : 'border-red-500/30'}`}>
                                     <div className="text-xs font-bold text-[#888] uppercase mb-2">SPF Record</div>
                                     <div className={`text-xl font-bold mb-1 ${spfResult?.valid ? 'text-white' : 'text-red-400'}`}>{spfResult?.valid ? 'VALID' : 'INVALID/MISSING'}</div>
                                     <div className="text-[10px] font-mono text-[#AAA] break-all">{spfResult?.raw}</div>
                                 </div>
-                                <div className={`p-4 rounded border bg-black/40 ${dmarcResult?.valid ? 'border-neutral-500/30' : 'border-red-500/30'}`}>
+                                <div className={`p-4 rounded border bg-[#111]/40 ${dmarcResult?.valid ? 'border-neutral-500/30' : 'border-red-500/30'}`}>
                                     <div className="text-xs font-bold text-[#888] uppercase mb-2">DMARC Policy</div>
                                     <div className={`text-xl font-bold mb-1 ${dmarcResult?.policy === 'reject' ? 'text-white' : dmarcResult?.policy === 'quarantine' ? 'text-white' : 'text-red-400'}`}>{dmarcResult?.policy?.toUpperCase() || 'NONE'}</div>
                                     <div className="text-[10px] text-[#AAA]">Pct: {dmarcResult?.percentage}% | Mail: {dmarcResult?.email}</div>
                                 </div>
-                                <div className="p-4 rounded border bg-black/40 border-[#222]">
+                                <div className="p-4 rounded border bg-[#111]/40 border-[#222]">
                                     <div className="text-xs font-bold text-[#888] uppercase mb-2">Mail Servers</div>
                                     <div className="text-xl font-bold text-white mb-1">{mxRecords.length} MX Records</div>
                                     <div className="text-[10px] text-[#AAA]">Primary: {mxRecords[0]?.name || 'N/A'}</div>
@@ -1286,7 +1286,7 @@ export const NetworkToolsView: React.FC = () => {
 
                             {/* Mail Server Reputation */}
                             {mailServerReputation.length > 0 && (
-                                <div className="bg-black/40 border border-[#222] rounded-lg p-4">
+                                <div className="bg-[#111]/40 border border-[#222] rounded-lg p-4">
                                     <h3 className="text-sm font-bold text-white mb-4 uppercase">MX Infrastructure Reputation</h3>
                                     <div className="space-y-2">
                                         {mailServerReputation.map((server, i) => (
@@ -1314,7 +1314,7 @@ export const NetworkToolsView: React.FC = () => {
 
                     {/* HTTP HEADERS */}
                     {activeCategory === 'HTTP' && httpResult && (
-                        <div className="bg-black/40 border border-[#222] rounded-lg p-6 animate-fade-in font-mono text-xs">
+                        <div className="bg-[#111]/40 border border-[#222] rounded-lg p-6 animate-fade-in font-mono text-xs">
                             <div className="flex justify-between mb-4 pb-4 border-b border-[#222]">
                                 <div className="text-xl font-bold text-white">{httpResult.status} {httpResult.statusText}</div>
                                 <div className="text-red-500">{httpResult.serverInfo.server || 'Unknown Server'}</div>
@@ -1351,7 +1351,7 @@ export const NetworkToolsView: React.FC = () => {
 
                     {/* TRACE / PING */}
                     {(activeCategory === 'PING' || activeCategory === 'TRACE') && (
-                        <div className="bg-black border border-[#222] rounded-lg p-4 font-mono text-xs h-[400px] overflow-y-auto custom-scrollbar text-white">
+                        <div className="bg-[#111] border border-[#222] rounded-lg p-4 font-mono text-xs h-[400px] overflow-y-auto custom-scrollbar text-white">
                             {activeCategory === 'PING' && pingResults.map((p, i) => (
                                 <div key={i} className="mb-1">
                                     <span className="text-[#888]">[{new Date().toLocaleTimeString()}]</span> 64 bytes from {p.ip}: seq={p.seq} time={p.time}ms status={p.status}
@@ -1371,9 +1371,9 @@ export const NetworkToolsView: React.FC = () => {
 
                     {/* CRT LOGS */}
                     {activeCategory === 'CRT' && (
-                        <div className="bg-black/40 border border-[#222] rounded-lg overflow-hidden animate-fade-in">
+                        <div className="bg-[#111]/40 border border-[#222] rounded-lg overflow-hidden animate-fade-in">
                             <table className="w-full text-left text-xs font-mono">
-                                <thead className="bg-[#0A0A0A] text-[#888] uppercase font-bold">
+                                <thead className="bg-[#111] text-[#888] uppercase font-bold">
                                     <tr><th className="p-3">Logged At</th><th className="p-3">Common Name</th><th className="p-3">Issuer</th></tr>
                                 </thead>
                                 <tbody className="divide-y divide-neutral-800 text-neutral-300">
@@ -1393,4 +1393,5 @@ export const NetworkToolsView: React.FC = () => {
         </div>
     );
 };
+
 

@@ -104,12 +104,12 @@ export const ChatView: React.FC<ChatViewProps> = ({ results, actors, cveData }) 
             if (part.startsWith('```')) {
                 const content = part.replace(/^```\w*\n?|```$/g, '');
                 return (
-                    <div key={i} className="bg-black/50 border border-[#333] rounded p-3 my-2 font-mono text-xs text-white overflow-x-auto whitespace-pre">
+                    <div key={i} className="bg-[#111]/50 border border-[#333] rounded p-3 my-2 font-mono text-xs text-white overflow-x-auto whitespace-pre">
                         {content}
                     </div>
                 );
             } else if (part.startsWith('`')) {
-                return <span key={i} className="bg-black/50 border border-[#333] px-1.5 py-0.5 rounded font-mono text-xs text-white mx-1">{part.replace(/`/g, '')}</span>;
+                return <span key={i} className="bg-[#111]/50 border border-[#333] px-1.5 py-0.5 rounded font-mono text-xs text-white mx-1">{part.replace(/`/g, '')}</span>;
             } else if (part.startsWith('**')) {
                 return <strong key={i} className="text-white">{part.replace(/\*\*/g, '')}</strong>;
             }
@@ -119,7 +119,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ results, actors, cveData }) 
 
     return (
         <div className="h-[calc(100vh-70px)] flex flex-col bg-cyber-grid relative">
-            <div className="bg-black/40 border-b border-[#222] p-4 flex items-center justify-between shrink-0 backdrop-blur-sm">
+            <div className="bg-[#111]/40 border-b border-[#222] p-4 flex items-center justify-between shrink-0 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-neutral-900/20 rounded-lg border border-neutral-500/30 text-red-400">
                         <Bot size={20}/>
@@ -190,7 +190,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ results, actors, cveData }) 
                 <div ref={messagesEndRef} />
             </div>
 
-            <div className="bg-black/60 border-t border-[#222] p-4 backdrop-blur-md">
+            <div className="bg-[#111]/60 border-t border-[#222] p-4 backdrop-blur-md">
                 <div className="max-w-4xl mx-auto relative">
                     <textarea
                         value={input}
@@ -221,3 +221,4 @@ export const ChatView: React.FC<ChatViewProps> = ({ results, actors, cveData }) 
         </div>
     );
 };
+

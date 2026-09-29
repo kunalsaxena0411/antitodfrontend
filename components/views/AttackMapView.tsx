@@ -549,10 +549,10 @@ export const AttackMapView: React.FC<AttackMapViewProps> = ({ results, globalThr
     };
 
     return (
-        <div ref={containerRef} className="w-full h-full bg-[#0A0A0A] relative overflow-hidden flex flex-col">
+        <div ref={containerRef} className="w-full h-full bg-[#111] relative overflow-hidden flex flex-col">
             {!cinematic && (
                 <div className="absolute top-4 left-4 z-20 flex flex-col gap-4 pointer-events-none">
-                    <div className="bg-black/80 backdrop-blur-md border border-red-500/30 p-4 rounded-lg pointer-events-auto shadow-[0_0_20px_rgba(14,165,233,0.1)]">
+                    <div className="bg-[#111]/80 backdrop-blur-md border border-red-500/30 p-4 rounded-lg pointer-events-auto shadow-[0_0_20px_rgba(14,165,233,0.1)]">
                         <div className="flex items-center gap-2 mb-3 border-b border-[#222] pb-2">
                             <Target className="text-red-500 animate-pulse" size={20}/>
                             <div>
@@ -576,7 +576,7 @@ export const AttackMapView: React.FC<AttackMapViewProps> = ({ results, globalThr
                         </div>
                     </div>
 
-                    <div className="bg-black/80 backdrop-blur-md border border-[#222] p-2 rounded-lg pointer-events-auto flex flex-col gap-2">
+                    <div className="bg-[#111]/80 backdrop-blur-md border border-[#222] p-2 rounded-lg pointer-events-auto flex flex-col gap-2">
                         <button onClick={() => setProjectionType(p => p === 'ORTHO' ? 'MERCATOR' : 'ORTHO')} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 text-xs font-bold text-neutral-300 transition-colors">
                             {projectionType === 'ORTHO' ? <MapIcon size={14}/> : <Globe size={14}/>} {projectionType === 'ORTHO' ? '2D MAP' : '3D GLOBE'}
                         </button>
@@ -599,7 +599,7 @@ export const AttackMapView: React.FC<AttackMapViewProps> = ({ results, globalThr
             )}
 
             {!cinematic && (
-                <div className="absolute top-4 bottom-4 right-4 z-20 w-80 bg-black/80 backdrop-blur-md border border-[#222] rounded-lg pointer-events-auto flex flex-col shadow-2xl overflow-hidden">
+                <div className="absolute top-4 bottom-4 right-4 z-20 w-80 bg-[#111]/80 backdrop-blur-md border border-[#222] rounded-lg pointer-events-auto flex flex-col shadow-2xl overflow-hidden">
                     <div className="p-3 border-b border-[#222] bg-[#111] flex items-center justify-between">
                         <div className="flex items-center gap-2 text-white font-bold text-xs font-cyber">
                             <Terminal size={14} className="text-white"/> INTERCEPT LOG
@@ -639,7 +639,7 @@ export const AttackMapView: React.FC<AttackMapViewProps> = ({ results, globalThr
                                     </div>
 
                                     <div className="flex items-center justify-between">
-                                        <div className="bg-black/50 rounded p-1.5 border border-[#222] text-[10px] font-mono text-[#AAA] break-all line-clamp-2 w-3/4" title={log.payload}>
+                                        <div className="bg-[#111]/50 rounded p-1.5 border border-[#222] text-[10px] font-mono text-[#AAA] break-all line-clamp-2 w-3/4" title={log.payload}>
                                             <span className="text-neutral-600 mr-1">$</span>{log.payload}
                                         </div>
                                         <span className="text-[8px] bg-[#151515] px-1 rounded text-[#888] uppercase">{log.source}</span>
@@ -655,7 +655,7 @@ export const AttackMapView: React.FC<AttackMapViewProps> = ({ results, globalThr
             )}
 
             {!cinematic && (
-                <div className="absolute bottom-6 left-6 z-20 bg-black/60 backdrop-blur-md border border-[#222] p-3 rounded-lg pointer-events-none">
+                <div className="absolute bottom-6 left-6 z-20 bg-[#111]/60 backdrop-blur-md border border-[#222] p-3 rounded-lg pointer-events-none">
                     <h3 className="text-[10px] text-[#888] font-bold uppercase mb-2">Risk Classification</h3>
                     <div className="space-y-1.5 text-[10px] font-mono">
                         <div className="flex items-center gap-2">
@@ -683,10 +683,10 @@ export const AttackMapView: React.FC<AttackMapViewProps> = ({ results, globalThr
 
             {cinematic && allowInteraction && (
                  <div className="absolute bottom-6 right-6 z-30 flex gap-2 pointer-events-auto">
-                     <button onClick={() => setIsPaused(!isPaused)} className="p-2 bg-black/40 hover:bg-black/80 text-[#AAA] hover:text-white rounded border border-[#333]/50 backdrop-blur transition-all">
+                     <button onClick={() => setIsPaused(!isPaused)} className="p-2 bg-[#111]/40 hover:bg-[#111]/80 text-[#AAA] hover:text-white rounded border border-[#333]/50 backdrop-blur transition-all">
                          {isPaused ? <Play size={16}/> : <Pause size={16}/>}
                      </button>
-                     <button onClick={() => setProjectionType(p => p === 'ORTHO' ? 'MERCATOR' : 'ORTHO')} className="p-2 bg-black/40 hover:bg-black/80 text-[#AAA] hover:text-white rounded border border-[#333]/50 backdrop-blur transition-all">
+                     <button onClick={() => setProjectionType(p => p === 'ORTHO' ? 'MERCATOR' : 'ORTHO')} className="p-2 bg-[#111]/40 hover:bg-[#111]/80 text-[#AAA] hover:text-white rounded border border-[#333]/50 backdrop-blur transition-all">
                          {projectionType === 'ORTHO' ? <Globe size={16}/> : <MapIcon size={16}/>}
                      </button>
                  </div>
@@ -696,3 +696,4 @@ export const AttackMapView: React.FC<AttackMapViewProps> = ({ results, globalThr
         </div>
     );
 };
+

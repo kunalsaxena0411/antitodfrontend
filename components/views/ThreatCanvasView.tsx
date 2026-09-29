@@ -164,7 +164,7 @@ const RiskNode = (props: any) => (
 
 const BoundaryNode = (props: any) => (
     <div className={`p-8 rounded-xl border-2 border-dashed transition-all duration-300 min-w-[400px] min-h-[250px] relative ${props.selected ? 'border-[#ea4a4a] bg-[#3b2a2a20]' : 'border-[#222328] bg-[#12131650]'} cursor-grab active:cursor-grabbing`}>
-        <div className="absolute -top-3 left-4 px-3 py-1 bg-[#0a0a0a] border border-[#222328] rounded text-[10px] font-bold text-[#ea4a4a] uppercase flex items-center gap-2 z-10 shadow-lg">
+        <div className="absolute -top-3 left-4 px-3 py-1 bg-[#111] border border-[#222328] rounded text-[10px] font-bold text-[#ea4a4a] uppercase flex items-center gap-2 z-10 shadow-lg">
             <Shield size={12}/> Trust Boundary
         </div>
         <input 
@@ -195,7 +195,7 @@ const STENCIL_LIBRARY = [
             { id: 'app_srv', type: 'compute', iconName: 'Server', label: 'App Logic', color: 'bg-[#151515]', description: 'Business processing' },
             { id: 'k8s_pod', type: 'compute', iconName: 'Monitor', label: 'Container/Pod', color: 'bg-[#1C1C1C]', description: 'Containerized unit' },
             { id: 'lambda_fn', type: 'compute', iconName: 'Zap', label: 'Serverless', color: 'bg-neutral-600', description: 'Function-as-a-Service' },
-            { id: 'mainframe', type: 'compute', iconName: 'MainframeIcon', label: 'Legacy Core', color: 'bg-[#0A0A0A]', description: 'Central compute' },
+            { id: 'mainframe', type: 'compute', iconName: 'MainframeIcon', label: 'Legacy Core', color: 'bg-[#111]', description: 'Central compute' },
             { id: 'logic', type: 'compute', iconName: 'Logic', label: 'Edge Worker', color: 'bg-[#1C1C1C]', description: 'CDNs/Edge logic' },
         ]
     },
@@ -217,7 +217,7 @@ const STENCIL_LIBRARY = [
             { id: 'nosql_db', type: 'storage', iconName: 'DatabaseZap', label: 'NoSQL Store', color: 'bg-[#151515]', description: 'Unstructured data' },
             { id: 'bucket', type: 'storage', iconName: 'Box', label: 'Cloud Bucket', color: 'bg-[#1C1C1C]', sensitivity: 'Protected', description: 'Object storage' },
             { id: 'hsm', type: 'storage', iconName: 'HsmIcon', label: 'HSM / Vault', color: 'bg-neutral-600', sensitivity: 'Secret', description: 'Keys & Secrets' },
-            { id: 'archive', type: 'storage', iconName: 'Archive', label: 'Tape / Cold', color: 'bg-[#0A0A0A]', description: 'Backup storage' },
+            { id: 'archive', type: 'storage', iconName: 'Archive', label: 'Tape / Cold', color: 'bg-[#111]', description: 'Backup storage' },
         ]
     },
     {
@@ -626,16 +626,16 @@ export const ThreatCanvasView: React.FC = () => {
                             <div className="bg-[#121316] p-4 rounded border border-[#222328] space-y-4">
                                 <div>
                                     <div className="text-[10px] text-[#666] uppercase font-bold mb-1">Asset Identity</div>
-                                    <input className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-sm text-[#ececec] focus:border-[#555] outline-none font-mono" value={selectedNode.data.label} onChange={(e) => onLabelChange(selectedNode.id, e.target.value)} />
+                                    <input className="w-full bg-[#111] border border-[#333] rounded p-2 text-sm text-[#ececec] focus:border-[#555] outline-none font-mono" value={selectedNode.data.label} onChange={(e) => onLabelChange(selectedNode.id, e.target.value)} />
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
                                         <label className="text-[9px] text-[#666] uppercase font-bold mb-1 block">Criticality</label>
-                                        <select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none focus:border-[#555]" value={selectedNode.data.criticality} onChange={(e) => onPropertyChange(selectedNode.id, 'criticality', e.target.value)}>{CRITICALITY_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}</select>
+                                        <select className="w-full bg-[#111] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none focus:border-[#555]" value={selectedNode.data.criticality} onChange={(e) => onPropertyChange(selectedNode.id, 'criticality', e.target.value)}>{CRITICALITY_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}</select>
                                     </div>
                                     <div>
                                         <label className="text-[9px] text-[#666] uppercase font-bold mb-1 block">Sensitivity</label>
-                                        <select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none focus:border-[#555]" value={selectedNode.data.sensitivity} onChange={(e) => onPropertyChange(selectedNode.id, 'sensitivity', e.target.value)}>{SENSITIVITY_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}</select>
+                                        <select className="w-full bg-[#111] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none focus:border-[#555]" value={selectedNode.data.sensitivity} onChange={(e) => onPropertyChange(selectedNode.id, 'sensitivity', e.target.value)}>{SENSITIVITY_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}</select>
                                     </div>
                                 </div>
                                 <button onClick={() => onPropertyChange(selectedNode.id, 'isExternal', !selectedNode.data.isExternal)} className={`w-full py-2 rounded text-[10px] font-bold border transition-all ${selectedNode.data.isExternal ? 'bg-[#3b2a2a] border-[#ea4a4a40] text-[#ea4a4a]' : 'bg-[#1a2e20] text-[#4fae63] border-[#4fae6340]'}`}>{selectedNode.data.isExternal ? 'PUBLIC FACING' : 'INTERNAL ASSET'}</button>
@@ -647,7 +647,7 @@ export const ThreatCanvasView: React.FC = () => {
                                 
                                 <div className="space-y-3">
                                     <div className="flex gap-2">
-                                        <input type="text" className="flex-1 bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] font-mono focus:border-[#555] outline-none" placeholder="CVE-2024-..." value={newCve} onChange={e => setNewCve(e.target.value)}/>
+                                        <input type="text" className="flex-1 bg-[#111] border border-[#333] rounded p-2 text-[10px] text-[#ececec] font-mono focus:border-[#555] outline-none" placeholder="CVE-2024-..." value={newCve} onChange={e => setNewCve(e.target.value)}/>
                                         <button onClick={() => { if(newCve) { onPropertyChange(selectedNode.id, 'vulnerabilities', [...selectedNode.data.vulnerabilities, newCve]); setNewCve(''); } }} className="px-3 bg-[#111216] rounded border border-[#222328] text-xs hover:bg-[#1a1c21]">+</button>
                                     </div>
                                     <div className="flex flex-wrap gap-1">
@@ -657,7 +657,7 @@ export const ThreatCanvasView: React.FC = () => {
                                     </div>
 
                                     <div className="flex gap-2">
-                                        <input type="text" className="flex-1 bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] font-mono focus:border-[#555] outline-none" placeholder="MITRE T1059..." value={newMitre} onChange={e => setNewMitre(e.target.value)}/>
+                                        <input type="text" className="flex-1 bg-[#111] border border-[#333] rounded p-2 text-[10px] text-[#ececec] font-mono focus:border-[#555] outline-none" placeholder="MITRE T1059..." value={newMitre} onChange={e => setNewMitre(e.target.value)}/>
                                         <button onClick={() => { if(newMitre) { onPropertyChange(selectedNode.id, 'mitreIds', [...selectedNode.data.mitreIds, newMitre]); setNewMitre(''); } }} className="px-3 bg-[#111216] rounded border border-[#222328] text-xs hover:bg-[#1a1c21]">+</button>
                                     </div>
                                     <div className="flex flex-wrap gap-1">
@@ -667,7 +667,7 @@ export const ThreatCanvasView: React.FC = () => {
                                     </div>
 
                                     <div className="flex gap-2">
-                                        <input type="text" className="flex-1 bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] font-mono focus:border-[#555] outline-none" placeholder="IOC (IP/Domain)..." value={newIoc} onChange={e => setNewIoc(e.target.value)}/>
+                                        <input type="text" className="flex-1 bg-[#111] border border-[#333] rounded p-2 text-[10px] text-[#ececec] font-mono focus:border-[#555] outline-none" placeholder="IOC (IP/Domain)..." value={newIoc} onChange={e => setNewIoc(e.target.value)}/>
                                         <button onClick={() => { if(newIoc) { onPropertyChange(selectedNode.id, 'iocs', [...selectedNode.data.iocs, newIoc]); setNewIoc(''); } }} className="px-3 bg-[#111216] rounded border border-[#222328] text-xs hover:bg-[#1a1c21]">+</button>
                                     </div>
                                     <div className="flex flex-wrap gap-1">
@@ -683,21 +683,21 @@ export const ThreatCanvasView: React.FC = () => {
                             <div className="bg-[#121316] p-4 rounded border border-[#222328] space-y-4">
                                 <div>
                                     <div className="text-[10px] text-[#666] uppercase font-bold mb-1">Flow Name</div>
-                                    <input className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-sm text-[#ececec] focus:border-[#555] outline-none font-mono" value={selectedEdge.label as string} onChange={e => onEdgePropertyChange(selectedEdge.id, 'label', e.target.value)} />
+                                    <input className="w-full bg-[#111] border border-[#333] rounded p-2 text-sm text-[#ececec] focus:border-[#555] outline-none font-mono" value={selectedEdge.label as string} onChange={e => onEdgePropertyChange(selectedEdge.id, 'label', e.target.value)} />
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
                                         <label className="text-[9px] text-[#666] uppercase font-bold mb-1 block">Protocol</label>
-                                        <select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none focus:border-[#555]" value={selectedEdge.data.protocol} onChange={e => onEdgePropertyChange(selectedEdge.id, 'protocol', e.target.value)}>{PROTOCOLS.map(p => <option key={p} value={p}>{p}</option>)}</select>
+                                        <select className="w-full bg-[#111] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none focus:border-[#555]" value={selectedEdge.data.protocol} onChange={e => onEdgePropertyChange(selectedEdge.id, 'protocol', e.target.value)}>{PROTOCOLS.map(p => <option key={p} value={p}>{p}</option>)}</select>
                                     </div>
                                     <div>
                                         <label className="text-[9px] text-[#666] uppercase font-bold mb-1 block">Port(s)</label>
-                                        <input type="text" className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none focus:border-[#555] font-mono" value={selectedEdge.data.portRange} onChange={e => onEdgePropertyChange(selectedEdge.id, 'portRange', e.target.value)} placeholder="443, 80-8080"/>
+                                        <input type="text" className="w-full bg-[#111] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none focus:border-[#555] font-mono" value={selectedEdge.data.portRange} onChange={e => onEdgePropertyChange(selectedEdge.id, 'portRange', e.target.value)} placeholder="443, 80-8080"/>
                                     </div>
                                 </div>
                                 <div>
                                     <label className="text-[9px] text-[#666] uppercase font-bold mb-1 block">Authentication</label>
-                                    <select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none focus:border-[#555]" value={selectedEdge.data.authentication} onChange={e => onEdgePropertyChange(selectedEdge.id, 'authentication', e.target.value)}>{AUTH_METHODS.map(a => <option key={a} value={a}>{a}</option>)}</select>
+                                    <select className="w-full bg-[#111] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none focus:border-[#555]" value={selectedEdge.data.authentication} onChange={e => onEdgePropertyChange(selectedEdge.id, 'authentication', e.target.value)}>{AUTH_METHODS.map(a => <option key={a} value={a}>{a}</option>)}</select>
                                 </div>
                                 <button onClick={() => onEdgePropertyChange(selectedEdge.id, 'isPermissive', !selectedEdge.data.isPermissive)} className={`w-full py-2 rounded text-[10px] font-bold border transition-all ${selectedEdge.data.isPermissive ? 'bg-[#3b2a2a] border-[#ea4a4a40] text-[#ea4a4a]' : 'bg-[#1a2e20] text-[#4fae63] border-[#4fae6340]'}`}>{selectedEdge.data.isPermissive ? 'PERMISSIVE FLOW' : 'HARDENED FLOW'}</button>
                             </div>
@@ -710,7 +710,7 @@ export const ThreatCanvasView: React.FC = () => {
 
             {/* Modal: Custom Stencil Creator */}
             {showStencilCreator && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in" onClick={() => setShowStencilCreator(false)}>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#111]/80 backdrop-blur-md animate-fade-in" onClick={() => setShowStencilCreator(false)}>
                     <div className="bg-[#111216] border border-[#222328] rounded-xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
                         <div className="p-4 border-b border-[#222328] flex justify-between items-center bg-[#0a0b0d]">
                             <h3 className="text-lg font-bold text-[#ececec] flex items-center gap-2 uppercase tracking-tight"><Palette size={20} className="text-[#888]"/> CREATE CUSTOM STENCIL</h3>
@@ -718,14 +718,14 @@ export const ThreatCanvasView: React.FC = () => {
                         </div>
                         <div className="p-6 space-y-6 overflow-y-auto custom-scrollbar">
                             <div className="space-y-4">
-                                <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Name</label><input type="text" className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-sm text-[#ececec] focus:border-[#555] outline-none font-mono" placeholder="Component Label" value={newStencil.label} onChange={e => setNewStencil({...newStencil, label: e.target.value})}/></div>
+                                <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Name</label><input type="text" className="w-full bg-[#111] border border-[#333] rounded p-2.5 text-sm text-[#ececec] focus:border-[#555] outline-none font-mono" placeholder="Component Label" value={newStencil.label} onChange={e => setNewStencil({...newStencil, label: e.target.value})}/></div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Type</label><select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] focus:border-[#555] outline-none" value={newStencil.type} onChange={e => setNewStencil({...newStencil, type: e.target.value as any})}><option value="compute">Process</option><option value="storage">Storage</option><option value="network">Interface</option><option value="actor">Actor</option></select></div>
-                                    <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Icon</label><select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] focus:border-[#555] outline-none" value={newStencil.iconName} onChange={e => setNewStencil({...newStencil, iconName: e.target.value})}>{Object.keys(STENCIL_ICONS).map(icon => <option key={icon} value={icon}>{icon}</option>)}</select></div>
+                                    <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Type</label><select className="w-full bg-[#111] border border-[#333] rounded p-2.5 text-xs text-[#ececec] focus:border-[#555] outline-none" value={newStencil.type} onChange={e => setNewStencil({...newStencil, type: e.target.value as any})}><option value="compute">Process</option><option value="storage">Storage</option><option value="network">Interface</option><option value="actor">Actor</option></select></div>
+                                    <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Icon</label><select className="w-full bg-[#111] border border-[#333] rounded p-2.5 text-xs text-[#ececec] focus:border-[#555] outline-none" value={newStencil.iconName} onChange={e => setNewStencil({...newStencil, iconName: e.target.value})}>{Object.keys(STENCIL_ICONS).map(icon => <option key={icon} value={icon}>{icon}</option>)}</select></div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Default Criticality</label><select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] focus:border-[#555] outline-none" value={newStencil.criticality} onChange={e => setNewStencil({...newStencil, criticality: e.target.value})}>{CRITICALITY_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}</select></div>
-                                    <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Default Color</label><select className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] focus:border-[#555] outline-none" value={newStencil.color} onChange={e => setNewStencil({...newStencil, color: e.target.value})}><option value="bg-[#151515]">Gray Dark</option><option value="bg-red-500">Red</option><option value="bg-[#1C1C1C]">Gray Medium</option><option value="bg-[#151515]">Gray Light</option><option value="bg-[#151515]">Black</option><option value="bg-[#1C1C1C]">Gray</option></select></div>
+                                    <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Default Criticality</label><select className="w-full bg-[#111] border border-[#333] rounded p-2.5 text-xs text-[#ececec] focus:border-[#555] outline-none" value={newStencil.criticality} onChange={e => setNewStencil({...newStencil, criticality: e.target.value})}>{CRITICALITY_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}</select></div>
+                                    <div><label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Default Color</label><select className="w-full bg-[#111] border border-[#333] rounded p-2.5 text-xs text-[#ececec] focus:border-[#555] outline-none" value={newStencil.color} onChange={e => setNewStencil({...newStencil, color: e.target.value})}><option value="bg-[#151515]">Gray Dark</option><option value="bg-red-500">Red</option><option value="bg-[#1C1C1C]">Gray Medium</option><option value="bg-[#151515]">Gray Light</option><option value="bg-[#151515]">Black</option><option value="bg-[#1C1C1C]">Gray</option></select></div>
                                 </div>
                             </div>
                         </div>
@@ -740,3 +740,4 @@ export const ThreatCanvasView: React.FC = () => {
         </div>
     );
 };
+

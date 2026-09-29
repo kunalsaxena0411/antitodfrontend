@@ -47,7 +47,7 @@ export const LoginView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden flex items-center justify-center">
+    <div className="min-h-screen bg-[#111] relative overflow-hidden flex items-center justify-center">
       {/* Cyber grid background */}
       <div className="cyber-grid-bg"></div>
       
@@ -76,7 +76,7 @@ export const LoginView: React.FC = () => {
         </div>
 
         {/* Login form */}
-        <div className="bg-black/40 backdrop-blur-md border border-neutral-800 rounded-2xl p-8 shadow-2xl animate-slide-in-up">
+        <div className="bg-[#111]/40 backdrop-blur-md border border-neutral-800 rounded-2xl p-8 shadow-2xl animate-slide-in-up">
           <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
             <Lock className="w-6 h-6 text-red-500" />
             Admin Login
@@ -106,7 +106,7 @@ export const LoginView: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="w-full bg-black/50 border border-neutral-700 rounded-lg pl-12 pr-4 py-3 text-white font-mono text-sm focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#111]/50 border border-neutral-700 rounded-lg pl-12 pr-4 py-3 text-white font-mono text-sm focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="admin@example.com"
                   autoComplete="email"
                 />
@@ -127,7 +127,7 @@ export const LoginView: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="w-full bg-black/50 border border-neutral-700 rounded-lg pl-12 pr-12 py-3 text-white font-mono text-sm focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#111]/50 border border-neutral-700 rounded-lg pl-12 pr-12 py-3 text-white font-mono text-sm focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="••••••••"
                   autoComplete="current-password"
                 />
@@ -180,3 +180,4 @@ export const LoginView: React.FC = () => {
     </div>
   );
 };
+

@@ -144,7 +144,7 @@ export const EmailForensicView: React.FC<EmailForensicViewProps> = ({ savedResul
             if (part.startsWith('```')) {
                  const content = part.replace(/^```\w*\n?|```$/g, '');
                  return (
-                     <div key={i} className="bg-black/50 border border-[#333] rounded p-3 my-2 font-mono text-xs text-white overflow-x-auto whitespace-pre scrollbar-thin">
+                     <div key={i} className="bg-[#111]/50 border border-[#333] rounded p-3 my-2 font-mono text-xs text-white overflow-x-auto whitespace-pre scrollbar-thin">
                          {content}
                      </div>
                  );
@@ -256,7 +256,7 @@ export const EmailForensicView: React.FC<EmailForensicViewProps> = ({ savedResul
     return (
         <div className="h-[calc(100vh-70px)] bg-cyber-grid flex flex-col overflow-hidden">
             {/* Header */}
-            <div className="bg-black/40 border-b border-[#222] p-4 shrink-0 flex justify-between items-center">
+            <div className="bg-[#111]/40 border-b border-[#222] p-4 shrink-0 flex justify-between items-center">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-[#111] rounded-lg border border-neutral-500/30 text-red-400">
                         <Mail size={20}/>
@@ -270,7 +270,7 @@ export const EmailForensicView: React.FC<EmailForensicViewProps> = ({ savedResul
                 </div>
 
                 {result && (
-                    <div className="flex bg-[#0A0A0A] rounded-lg p-1 border border-[#222] gap-1">
+                    <div className="flex bg-[#111] rounded-lg p-1 border border-[#222] gap-1">
                         {[
                             { id: 'DASHBOARD', icon: Layers, label: 'Overview' },
                             { id: 'HEADERS', icon: FileCode, label: 'Headers' },
@@ -290,7 +290,7 @@ export const EmailForensicView: React.FC<EmailForensicViewProps> = ({ savedResul
 
                 <div className="flex gap-2">
                     {!result ? (
-                         <div className="flex bg-[#0A0A0A] rounded-lg p-1 border border-[#222]">
+                         <div className="flex bg-[#111] rounded-lg p-1 border border-[#222]">
                             <button onClick={() => setActiveTab('UPLOAD')} className={`px-3 py-1.5 rounded text-xs font-bold ${activeTab === 'UPLOAD' ? 'bg-[#1C1C1C] text-white' : 'text-[#888]'}`}>Upload</button>
                             <button onClick={() => setActiveTab('PASTE')} className={`px-3 py-1.5 rounded text-xs font-bold ${activeTab === 'PASTE' ? 'bg-[#1C1C1C] text-white' : 'text-[#888]'}`}>Paste</button>
                          </div>
@@ -315,7 +315,7 @@ export const EmailForensicView: React.FC<EmailForensicViewProps> = ({ savedResul
                     /* INPUT VIEW */
                     <div className="max-w-2xl mx-auto mt-10">
                         {activeTab === 'UPLOAD' && (
-                            <div className="border-2 border-dashed border-[#333] rounded-xl p-16 flex flex-col items-center justify-center text-center hover:border-red-500/50 hover:bg-red-500/5 transition-all group cursor-pointer relative bg-black/20">
+                            <div className="border-2 border-dashed border-[#333] rounded-xl p-16 flex flex-col items-center justify-center text-center hover:border-red-500/50 hover:bg-red-500/5 transition-all group cursor-pointer relative bg-[#111]/20">
                                 <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileUpload} accept=".eml,.msg,.txt"/>
                                 <Upload size={48} className="text-neutral-600 group-hover:text-red-500 mb-4 transition-colors"/>
                                 <h3 className="text-xl font-bold text-white mb-2">Drop .EML File Here</h3>
@@ -325,7 +325,7 @@ export const EmailForensicView: React.FC<EmailForensicViewProps> = ({ savedResul
                         {activeTab === 'PASTE' && (
                             <div className="flex flex-col gap-4">
                                 <textarea 
-                                    className="w-full h-96 bg-black/50 border border-[#333] rounded-lg p-4 font-mono text-xs text-neutral-300 focus:border-red-500 focus:outline-none resize-none custom-scrollbar"
+                                    className="w-full h-96 bg-[#111]/50 border border-[#333] rounded-lg p-4 font-mono text-xs text-neutral-300 focus:border-red-500 focus:outline-none resize-none custom-scrollbar"
                                     placeholder="Paste raw email source here..."
                                     value={rawInput}
                                     onChange={(e) => setRawInput(e.target.value)}
@@ -383,7 +383,7 @@ export const EmailForensicView: React.FC<EmailForensicViewProps> = ({ savedResul
 
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                     {/* Metadata Card */}
-                                    <div className="lg:col-span-2 bg-black/40 border border-[#222] rounded-lg p-5 min-w-0">
+                                    <div className="lg:col-span-2 bg-[#111]/40 border border-[#222] rounded-lg p-5 min-w-0">
                                         <h3 className="text-sm font-bold text-white uppercase mb-4 flex items-center gap-2"><Mail size={16} className="text-red-400"/> Header Summary</h3>
                                         <div className="space-y-3 text-xs font-mono text-neutral-300">
                                             <div className="grid grid-cols-[80px_1fr] gap-2 border-b border-[#222] pb-2">
@@ -410,7 +410,7 @@ export const EmailForensicView: React.FC<EmailForensicViewProps> = ({ savedResul
                                     </div>
 
                                     {/* Risk Factors */}
-                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                                    <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5">
                                         <h3 className="text-sm font-bold text-white uppercase mb-4 flex items-center gap-2"><AlertTriangle size={16} className="text-white"/> Risk Indicators</h3>
                                         {result.riskFactors.length > 0 ? (
                                             <ul className="space-y-2">
@@ -427,14 +427,14 @@ export const EmailForensicView: React.FC<EmailForensicViewProps> = ({ savedResul
                                 </div>
 
                                 {/* Visual Hop Timeline */}
-                                <div className="bg-black/40 border border-[#222] rounded-lg p-6">
+                                <div className="bg-[#111]/40 border border-[#222] rounded-lg p-6">
                                     <h3 className="text-sm font-bold text-white uppercase mb-6 flex items-center gap-2"><Network size={16} className="text-red-400"/> Route Visualization</h3>
                                     <div className="space-y-1">
                                         {result.hops.map((hop, i) => {
                                             const delayPercent = Math.min(100, (hop.delaySeconds / 60) * 100); // 60s = 100% width
                                             return (
                                                 <div key={i} className="relative pl-4 border-l border-[#333] pb-6 last:pb-0 group">
-                                                    <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 bg-[#0A0A0A] border border-neutral-500 rounded-full group-hover:border-red-500 transition-colors"></div>
+                                                    <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 bg-[#111] border border-neutral-500 rounded-full group-hover:border-red-500 transition-colors"></div>
                                                     <div className="flex justify-between items-start text-xs mb-1 pl-2">
                                                         <div className="font-mono text-white">
                                                             <span className="text-[#888] mr-2">Hop {result.hops.length - i}</span>
@@ -469,7 +469,7 @@ export const EmailForensicView: React.FC<EmailForensicViewProps> = ({ savedResul
                                 </div>
 
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                                    <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5">
                                         <h4 className="text-xs font-bold text-red-400 uppercase mb-3 flex items-center gap-2"><Globe size={14}/> Network IOCs</h4>
                                         <div className="space-y-2 max-h-96 overflow-y-auto custom-scrollbar">
                                             {result.iocs.map((ioc, i) => (
@@ -477,7 +477,7 @@ export const EmailForensicView: React.FC<EmailForensicViewProps> = ({ savedResul
                                                     <div className="flex justify-between items-center mb-1">
                                                         <span className="text-white font-mono break-all">{ioc.value}</span>
                                                         <div className="flex gap-2 items-center shrink-0">
-                                                            <span className="text-[9px] text-[#888] uppercase bg-black px-1.5 rounded">{ioc.type}</span>
+                                                            <span className="text-[9px] text-[#888] uppercase bg-[#111] px-1.5 rounded">{ioc.type}</span>
                                                             <button 
                                                                 onClick={() => enrichIndicator(ioc.value, ioc.type)}
                                                                 className="p-1 hover:bg-[#1C1C1C] rounded text-[#AAA] hover:text-white"
@@ -532,7 +532,7 @@ export const EmailForensicView: React.FC<EmailForensicViewProps> = ({ savedResul
                                         </div>
                                     </div>
 
-                                    <div className="bg-black/40 border border-[#222] rounded-lg p-5">
+                                    <div className="bg-[#111]/40 border border-[#222] rounded-lg p-5">
                                         <h4 className="text-xs font-bold text-white uppercase mb-3 flex items-center gap-2"><FileWarning size={14}/> Attachments</h4>
                                         <div className="space-y-2">
                                             {result.attachments.map((att: any, i: number) => (
@@ -545,7 +545,7 @@ export const EmailForensicView: React.FC<EmailForensicViewProps> = ({ savedResul
                                                         <div>Type: {att.magic}</div>
                                                         <div>Entropy: {att.entropy?.toFixed(2)}</div>
                                                     </div>
-                                                    <div className="bg-black p-1.5 rounded border border-[#333] text-[9px] break-all text-[#888] flex justify-between items-center">
+                                                    <div className="bg-[#111] p-1.5 rounded border border-[#333] text-[9px] break-all text-[#888] flex justify-between items-center">
                                                         <span>SHA256: {att.hash}</span>
                                                         <button onClick={() => navigator.clipboard.writeText(att.hash)} className="hover:text-white"><Copy size={10}/></button>
                                                     </div>
@@ -560,14 +560,14 @@ export const EmailForensicView: React.FC<EmailForensicViewProps> = ({ savedResul
 
                         {/* HEADERS MODE */}
                         {viewMode === 'HEADERS' && (
-                            <div className="bg-black border border-[#222] rounded-lg p-4 overflow-auto h-[600px] font-mono text-xs text-[#AAA] custom-scrollbar">
+                            <div className="bg-[#111] border border-[#222] rounded-lg p-4 overflow-auto h-[600px] font-mono text-xs text-[#AAA] custom-scrollbar">
                                 <pre className="whitespace-pre-wrap">{result.rawHeaders}</pre>
                             </div>
                         )}
 
                         {/* BODY MODE */}
                         {viewMode === 'BODY' && (
-                            <div className="bg-black/40 border border-[#222] rounded-lg p-6">
+                            <div className="bg-[#111]/40 border border-[#222] rounded-lg p-6">
                                 <div className="flex justify-between items-center mb-4">
                                     <h3 className="text-sm font-bold text-white uppercase">Decoded Content Preview</h3>
                                     <span className="text-xs text-red-400 bg-red-900/20 px-2 py-1 rounded border border-red-500/30">DEFANGED VIEW</span>
@@ -584,16 +584,16 @@ export const EmailForensicView: React.FC<EmailForensicViewProps> = ({ savedResul
 
             {/* AI Chat Modal */}
             {showAiModal && (
-                <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-6 animate-fade-in">
-                    <div className="bg-[#0A0A0A] border border-[#333] rounded-xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
-                        <div className="p-4 border-b border-[#222] flex justify-between items-center bg-black/40">
+                <div className="fixed inset-0 z-50 bg-[#111]/90 backdrop-blur-md flex items-center justify-center p-6 animate-fade-in">
+                    <div className="bg-[#111] border border-[#333] rounded-xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+                        <div className="p-4 border-b border-[#222] flex justify-between items-center bg-[#111]/40">
                             <h3 className="text-lg font-bold text-white flex items-center gap-2 font-cyber">
                                 <Sparkles className="text-red-400" size={18}/> XYBER AI FORENSIC ASSISTANT
                             </h3>
                             <button onClick={() => setShowAiModal(false)} className="text-[#888] hover:text-white"><X size={20}/></button>
                         </div>
                         
-                        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-black/20 space-y-6">
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-[#111]/20 space-y-6">
                             {isAiLoading && messages.length === 0 && (
                                 <div className="flex flex-col items-center justify-center h-48 gap-4 text-[#888]">
                                     <Sparkles className="animate-spin text-red-500" size={48}/>
@@ -650,7 +650,7 @@ export const EmailForensicView: React.FC<EmailForensicViewProps> = ({ savedResul
                         </div>
 
                         {/* Input Area */}
-                        <div className="bg-black/40 border-t border-[#222] p-4">
+                        <div className="bg-[#111]/40 border-t border-[#222] p-4">
                             <div className="relative">
                                 <textarea
                                     value={chatInput}

@@ -1599,7 +1599,7 @@ export const XyberahReconView: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col bg-cyber-grid relative">
-      <div className="p-4 border-b border-[#222] bg-black/40 backdrop-blur-sm flex flex-col md:flex-row gap-4 justify-between items-center shrink-0">
+      <div className="p-4 border-b border-[#222] bg-[#111]/40 backdrop-blur-sm flex flex-col md:flex-row gap-4 justify-between items-center shrink-0">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-neutral-900/20 rounded-lg border border-neutral-500/30 text-white">
             <Target size={20} />
@@ -1618,7 +1618,7 @@ export const XyberahReconView: React.FC = () => {
               value={selectedWorkspaceId}
               onChange={(e) => setSelectedWorkspaceId(e.target.value)}
               disabled={workspaceLoading || workspaces.length === 0}
-              className="min-w-[200px] max-w-[min(100vw-8rem,320px)] px-2 py-1.5 rounded bg-black/40 border border-[#333] text-white text-xs font-mono focus:border-neutral-500/50 focus:outline-none"
+              className="min-w-[200px] max-w-[min(100vw-8rem,320px)] px-2 py-1.5 rounded bg-[#111]/40 border border-[#333] text-white text-xs font-mono focus:border-neutral-500/50 focus:outline-none"
             >
               {workspaces.length === 0 ? (
                 <option value="">No workspaces</option>
@@ -1643,7 +1643,7 @@ export const XyberahReconView: React.FC = () => {
           <span
             className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-mono font-bold ${
               healthLoading && !health
-                ? 'border-neutral-600 text-[#AAA] bg-black/40'
+                ? 'border-neutral-600 text-[#AAA] bg-[#111]/40'
                 : String(health?.status ?? '').toLowerCase() === 'healthy'
                   ? 'border-emerald-500/50 text-emerald-200 bg-emerald-950/40'
                   : String(health?.status ?? '').toLowerCase() === 'degraded'
@@ -1759,17 +1759,17 @@ export const XyberahReconView: React.FC = () => {
                       </div>
                     </div>
                     <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono">
-                      <div className="p-2 bg-black/40 rounded border border-[#222]">Total<br /><span className="text-white text-lg">{kpi.vuls}</span></div>
-                      <div className="p-2 bg-black/40 rounded border border-[#222]">Critical<br /><span className="text-red-400 text-lg">{kpi.criticalVuls}</span></div>
-                      <div className="p-2 bg-black/40 rounded border border-[#222]">High<br /><span className="text-white text-lg">{kpi.highVuls}</span></div>
-                      <div className="p-2 bg-black/40 rounded border border-[#222]">Medium<br /><span className="text-white text-lg">{kpi.mediumVuls}</span></div>
-                      <div className="p-2 bg-black/40 rounded border border-[#222]">Low<br /><span className="text-red-400 text-lg">{kpi.lowVuls}</span></div>
-                      <div className="p-2 bg-black/40 rounded border border-[#222]">Info<br /><span className="text-[#AAA] text-lg">{kpi.infoVuls}</span></div>
+                      <div className="p-2 bg-[#111]/40 rounded border border-[#222]">Total<br /><span className="text-white text-lg">{kpi.vuls}</span></div>
+                      <div className="p-2 bg-[#111]/40 rounded border border-[#222]">Critical<br /><span className="text-red-400 text-lg">{kpi.criticalVuls}</span></div>
+                      <div className="p-2 bg-[#111]/40 rounded border border-[#222]">High<br /><span className="text-white text-lg">{kpi.highVuls}</span></div>
+                      <div className="p-2 bg-[#111]/40 rounded border border-[#222]">Medium<br /><span className="text-white text-lg">{kpi.mediumVuls}</span></div>
+                      <div className="p-2 bg-[#111]/40 rounded border border-[#222]">Low<br /><span className="text-red-400 text-lg">{kpi.lowVuls}</span></div>
+                      <div className="p-2 bg-[#111]/40 rounded border border-[#222]">Info<br /><span className="text-[#AAA] text-lg">{kpi.infoVuls}</span></div>
                     </div>
                     <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono mt-2">
-                      <div className="p-2 bg-black/40 rounded border border-[#222]">Techs<br /><span className="text-white text-lg">{kpi.techs}</span></div>
-                      <div className="p-2 bg-black/40 rounded border border-[#222]">Ports<br /><span className="text-white text-lg">{kpi.ports}</span></div>
-                      <div className="p-2 bg-black/40 rounded border border-[#222]">Services<br /><span className="text-white text-lg">{kpi.services}</span></div>
+                      <div className="p-2 bg-[#111]/40 rounded border border-[#222]">Techs<br /><span className="text-white text-lg">{kpi.techs}</span></div>
+                      <div className="p-2 bg-[#111]/40 rounded border border-[#222]">Ports<br /><span className="text-white text-lg">{kpi.ports}</span></div>
+                      <div className="p-2 bg-[#111]/40 rounded border border-[#222]">Services<br /><span className="text-white text-lg">{kpi.services}</span></div>
                     </div>
                   </div>
                   <div className="p-4 rounded-xl bg-[#111] border border-[#222]">
@@ -1806,7 +1806,7 @@ export const XyberahReconView: React.FC = () => {
                   </div>
                   <div className="p-4 rounded-xl bg-[#111] border border-[#222] lg:col-span-2">
                     <h3 className="text-sm font-bold text-red-400 font-mono mb-2">Asset Locations</h3>
-                    <div className="rounded-lg border border-[#222] bg-black/40 h-72 relative overflow-hidden">
+                    <div className="rounded-lg border border-[#222] bg-[#111]/40 h-72 relative overflow-hidden">
                       {assetLocations.length === 0 ? (
                         <div className="flex h-full items-center justify-center text-xs text-[#888] font-mono">No geo data</div>
                       ) : (
@@ -1924,7 +1924,7 @@ export const XyberahReconView: React.FC = () => {
                         value={targetParams.value ?? ''}
                         onChange={(e) => setTargetParams((prev) => ({ ...prev, value: e.target.value, page: 1 }))}
                         placeholder="Search"
-                        className="w-full rounded-xl border border-dashed border-neutral-600 bg-black/50 py-2.5 pl-10 pr-3 text-sm text-white placeholder:text-[#888] focus:border-neutral-600/50 focus:outline-none"
+                        className="w-full rounded-xl border border-dashed border-neutral-600 bg-[#111]/50 py-2.5 pl-10 pr-3 text-sm text-white placeholder:text-[#888] focus:border-neutral-600/50 focus:outline-none"
                       />
                     </div>
                     <div className="relative">
@@ -1932,7 +1932,7 @@ export const XyberahReconView: React.FC = () => {
                       <select
                         value={targetParams.type ?? ''}
                         onChange={(e) => setTargetParams((prev) => ({ ...prev, page: 1, type: e.target.value as '' | 'DOMAIN' | 'CIDR' | 'IP' }))}
-                        className="appearance-none rounded-xl border border-dashed border-neutral-600 bg-black/50 py-2.5 pl-8 pr-9 text-sm text-white focus:border-neutral-600/50 focus:outline-none"
+                        className="appearance-none rounded-xl border border-dashed border-neutral-600 bg-[#111]/50 py-2.5 pl-8 pr-9 text-sm text-white focus:border-neutral-600/50 focus:outline-none"
                       >
                         <option value="">All types</option>
                         <option value="DOMAIN">DOMAIN</option>
@@ -1946,7 +1946,7 @@ export const XyberahReconView: React.FC = () => {
                       <select
                         value={targetParams.status ?? ''}
                         onChange={(e) => setTargetParams((prev) => ({ ...prev, page: 1, status: e.target.value }))}
-                        className="appearance-none rounded-xl border border-dashed border-neutral-600 bg-black/50 py-2.5 pl-8 pr-9 text-sm text-white focus:border-neutral-600/50 focus:outline-none"
+                        className="appearance-none rounded-xl border border-dashed border-neutral-600 bg-[#111]/50 py-2.5 pl-8 pr-9 text-sm text-white focus:border-neutral-600/50 focus:outline-none"
                       >
                         <option value="">All statuses</option>
                         <option value="completed">completed</option>
@@ -1981,7 +1981,7 @@ export const XyberahReconView: React.FC = () => {
                 </div>
 
                 {discoveryModalOpen && (
-                  <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/75 p-4" role="presentation">
+                  <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#111]/75 p-4" role="presentation">
                     <div
                       role="dialog"
                       aria-modal="true"
@@ -2032,13 +2032,13 @@ export const XyberahReconView: React.FC = () => {
                           value={targetValue}
                           onChange={(e) => setTargetValue(e.target.value)}
                           placeholder="example.com (URLs are cleaned to hostname)"
-                          className="w-full rounded-xl border border-[#333] bg-black/40 px-3 py-2.5 text-sm text-white focus:border-neutral-500/50 focus:outline-none"
+                          className="w-full rounded-xl border border-[#333] bg-[#111]/40 px-3 py-2.5 text-sm text-white focus:border-neutral-500/50 focus:outline-none"
                         />
                         <div className="flex flex-wrap gap-2">
                           <select
                             value={targetType}
                             onChange={(e) => setTargetType(e.target.value as 'DOMAIN' | 'CIDR' | 'IP')}
-                            className="flex-1 min-w-[120px] rounded-xl border border-[#333] bg-black/40 px-3 py-2 text-sm text-white"
+                            className="flex-1 min-w-[120px] rounded-xl border border-[#333] bg-[#111]/40 px-3 py-2 text-sm text-white"
                           >
                             <option value="DOMAIN">DOMAIN</option>
                             <option value="CIDR">CIDR</option>
@@ -2063,7 +2063,7 @@ export const XyberahReconView: React.FC = () => {
                           onChange={(e) => setBulkTargetsText(e.target.value)}
                           placeholder={'example.com,DOMAIN\nhttps://api.example.com/foo\n1.2.3.0/24,CIDR'}
                           rows={5}
-                          className="w-full rounded-xl border border-[#333] bg-black/40 px-3 py-2 text-sm text-white font-mono focus:border-neutral-500/50 focus:outline-none"
+                          className="w-full rounded-xl border border-[#333] bg-[#111]/40 px-3 py-2 text-sm text-white font-mono focus:border-neutral-500/50 focus:outline-none"
                         />
                         <button
                           type="submit"
@@ -2288,7 +2288,7 @@ export const XyberahReconView: React.FC = () => {
                           className={`rounded border px-3 py-1.5 font-mono text-xs ${
                             targetDetailTab === 'inventory'
                               ? 'border-neutral-500/40 bg-neutral-600/20 text-white'
-                              : 'border-[#333] bg-black/30 text-[#AAA]'
+                              : 'border-[#333] bg-[#111]/30 text-[#AAA]'
                           }`}
                         >
                           Inventory
@@ -2299,7 +2299,7 @@ export const XyberahReconView: React.FC = () => {
                           className={`rounded border px-3 py-1.5 font-mono text-xs ${
                             targetDetailTab === 'vulnerabilities'
                               ? 'border-neutral-500/40 bg-neutral-600/20 text-white'
-                              : 'border-[#333] bg-black/30 text-[#AAA]'
+                              : 'border-[#333] bg-[#111]/30 text-[#AAA]'
                           }`}
                         >
                           Vulnerabilities
@@ -2309,7 +2309,7 @@ export const XyberahReconView: React.FC = () => {
 
                     {targetSettingsOpen && targetDetail ? (
                       <div
-                        className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+                        className="fixed inset-0 z-[60] flex items-center justify-center bg-[#111]/70 p-4 backdrop-blur-sm"
                         onClick={() => setTargetSettingsOpen(false)}
                       >
                         <div
@@ -2335,7 +2335,7 @@ export const XyberahReconView: React.FC = () => {
                               <select
                                 value={scheduleValue}
                                 onChange={(e) => setScheduleValue(e.target.value)}
-                                className="w-full appearance-none rounded-xl border border-dashed border-neutral-600 bg-black/50 py-2.5 pl-3 pr-8 text-sm text-white focus:border-neutral-500/50 focus:outline-none"
+                                className="w-full appearance-none rounded-xl border border-dashed border-neutral-600 bg-[#111]/50 py-2.5 pl-3 pr-8 text-sm text-white focus:border-neutral-500/50 focus:outline-none"
                               >
                                 {[
                                   ...SCAN_SCHEDULE_OPTIONS,
@@ -2384,7 +2384,7 @@ export const XyberahReconView: React.FC = () => {
                               type="button"
                               onClick={handleDeleteTarget}
                               disabled={submitting}
-                              className="inline-flex items-center gap-2 rounded-xl border border-neutral-600 bg-black/30 px-5 py-2.5 text-sm font-medium text-red-400 hover:border-red-500/40 hover:bg-red-950/20 disabled:opacity-50"
+                              className="inline-flex items-center gap-2 rounded-xl border border-neutral-600 bg-[#111]/30 px-5 py-2.5 text-sm font-medium text-red-400 hover:border-red-500/40 hover:bg-red-950/20 disabled:opacity-50"
                             >
                               <Trash2 size={16} />
                               Delete target
@@ -2407,14 +2407,14 @@ export const XyberahReconView: React.FC = () => {
                                   setTargetInventoryParams((prev) => ({ ...prev, page: 1 }));
                                 }}
                                 className={`px-2 py-1 rounded text-xs font-mono border ${
-                                  targetInventoryGroup === tab ? 'bg-neutral-600/20 border-neutral-500/40 text-white' : 'bg-black/30 border-[#333] text-[#AAA]'
+                                  targetInventoryGroup === tab ? 'bg-neutral-600/20 border-neutral-500/40 text-white' : 'bg-[#111]/30 border-[#333] text-[#AAA]'
                                 }`}
                               >
                                 {INVENTORY_SUBTAB_LABELS[tab]}
                               </button>
                             ))}
                           </div>
-                          <div className="space-y-3 rounded-xl border border-[#222] bg-black/20 p-3">
+                          <div className="space-y-3 rounded-xl border border-[#222] bg-[#111]/20 p-3">
                             <div className="flex flex-wrap items-center gap-2">
                               <div className="relative min-w-[200px] flex-1">
                                 <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#888]" />
@@ -2423,7 +2423,7 @@ export const XyberahReconView: React.FC = () => {
                                   value={targetInventoryParams.value ?? ''}
                                   onChange={(e) => setTargetInventoryParams((prev) => ({ ...prev, value: e.target.value, page: 1 }))}
                                   placeholder="Filter (value)"
-                                  className="w-full rounded-xl border border-dashed border-neutral-600 bg-black/40 py-2 pl-9 pr-3 text-xs text-white font-mono placeholder:text-[#888]"
+                                  className="w-full rounded-xl border border-dashed border-neutral-600 bg-[#111]/40 py-2 pl-9 pr-3 text-xs text-white font-mono placeholder:text-[#888]"
                                 />
                               </div>
                               <button
@@ -2474,13 +2474,13 @@ export const XyberahReconView: React.FC = () => {
                                     className={`inline-flex items-center gap-2 rounded-xl border border-dashed px-3 py-2 text-xs font-medium transition-colors ${
                                       openInventoryFacet === menu
                                         ? 'border-neutral-500/50 bg-neutral-950/30 text-white'
-                                        : 'border-neutral-600 bg-black/30 text-neutral-300 hover:border-neutral-500'
+                                        : 'border-neutral-600 bg-[#111]/30 text-neutral-300 hover:border-neutral-500'
                                     }`}
                                   >
                                     <Plus size={14} className="shrink-0 opacity-80" />
                                     {FACET_MENU_LABEL[menu]}
                                     {inventoryFacets[menu].length > 0 ? (
-                                      <span className="rounded-md border border-neutral-600 bg-[#0A0A0A] px-1.5 py-0.5 font-mono text-[10px] text-neutral-200">
+                                      <span className="rounded-md border border-neutral-600 bg-[#111] px-1.5 py-0.5 font-mono text-[10px] text-neutral-200">
                                         {inventoryFacets[menu].length}
                                       </span>
                                     ) : null}
@@ -2575,7 +2575,7 @@ export const XyberahReconView: React.FC = () => {
                                       page: 1,
                                     }))
                                   }
-                                  className="rounded-lg border border-[#333] bg-black/50 px-2 py-1 text-neutral-200"
+                                  className="rounded-lg border border-[#333] bg-[#111]/50 px-2 py-1 text-neutral-200"
                                 >
                                   <option value={10}>10</option>
                                   <option value={25}>25</option>
@@ -2590,7 +2590,7 @@ export const XyberahReconView: React.FC = () => {
                               >
                                 Previous
                               </button>
-                              <span className="rounded border border-[#333] bg-black/40 px-2 py-1 text-neutral-300">
+                              <span className="rounded border border-[#333] bg-[#111]/40 px-2 py-1 text-neutral-300">
                                 {targetInventoryMeta.page ?? 1}
                               </span>
                               <button
@@ -2650,7 +2650,7 @@ export const XyberahReconView: React.FC = () => {
                                 value={targetVulnParams.search ?? ''}
                                 onChange={(e) => setTargetVulnParams((prev) => ({ ...prev, search: e.target.value, page: 1 }))}
                                 placeholder="Search"
-                                className="w-full rounded-xl border border-[#333] bg-black/50 py-2.5 pl-10 pr-3 text-sm text-white placeholder:text-[#888]"
+                                className="w-full rounded-xl border border-[#333] bg-[#111]/50 py-2.5 pl-10 pr-3 text-sm text-white placeholder:text-[#888]"
                               />
                             </div>
                             <div className="flex flex-wrap items-center justify-end gap-2">
@@ -2658,7 +2658,7 @@ export const XyberahReconView: React.FC = () => {
                                 <select
                                   value={targetVulnParams.status ?? 'open'}
                                   onChange={(e) => setTargetVulnParams((prev) => ({ ...prev, status: e.target.value, page: 1 }))}
-                                  className="appearance-none rounded-xl border border-dashed border-neutral-600 bg-black/50 py-2.5 pl-3 pr-9 text-sm text-white"
+                                  className="appearance-none rounded-xl border border-dashed border-neutral-600 bg-[#111]/50 py-2.5 pl-3 pr-9 text-sm text-white"
                                 >
                                   <option value="open">Open</option>
                                   <option value="dismissed">Dismissed</option>
@@ -2667,7 +2667,7 @@ export const XyberahReconView: React.FC = () => {
                                 </select>
                                 <ChevronDown size={16} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#888]" />
                               </div>
-                              <div className="relative inline-flex items-center gap-2 rounded-xl border border-dashed border-neutral-600 bg-black/50 py-1 pl-2 pr-2">
+                              <div className="relative inline-flex items-center gap-2 rounded-xl border border-dashed border-neutral-600 bg-[#111]/50 py-1 pl-2 pr-2">
                                 <Filter size={14} className="shrink-0 text-[#888]" />
                                 <select
                                   value={targetVulnParams.severity ?? ''}
@@ -2683,27 +2683,27 @@ export const XyberahReconView: React.FC = () => {
                                 </select>
                                 <ChevronDown size={14} className="pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-[#888]" />
                               </div>
-                              <div className="inline-flex items-center gap-2 rounded-xl border border-neutral-600 bg-black/40 px-3 py-2">
+                              <div className="inline-flex items-center gap-2 rounded-xl border border-neutral-600 bg-[#111]/40 px-3 py-2">
                                 <Calendar size={14} className="shrink-0 text-[#888]" />
                                 <span className="text-xs text-[#888]">Date</span>
                                 <input
                                   type="date"
                                   value={targetVulnParams.createdFrom ?? ''}
                                   onChange={(e) => setTargetVulnParams((prev) => ({ ...prev, createdFrom: e.target.value, page: 1 }))}
-                                  className="rounded border border-[#333] bg-black/50 px-2 py-1 text-xs text-white"
+                                  className="rounded border border-[#333] bg-[#111]/50 px-2 py-1 text-xs text-white"
                                 />
                                 <input
                                   type="date"
                                   value={targetVulnParams.createdTo ?? ''}
                                   onChange={(e) => setTargetVulnParams((prev) => ({ ...prev, createdTo: e.target.value, page: 1 }))}
-                                  className="rounded border border-[#333] bg-black/50 px-2 py-1 text-xs text-white"
+                                  className="rounded border border-[#333] bg-[#111]/50 px-2 py-1 text-xs text-white"
                                 />
                               </div>
                             </div>
                           </div>
                           <div className="overflow-x-auto rounded-xl border border-[#222]">
                             <table className="w-full min-w-[960px] text-left text-xs">
-                              <thead className="border-b border-[#222] bg-black/40 text-[11px] font-semibold uppercase tracking-wide text-[#888]">
+                              <thead className="border-b border-[#222] bg-[#111]/40 text-[11px] font-semibold uppercase tracking-wide text-[#888]">
                                 <tr>
                                   <th className="p-3 pl-4">
                                     <button
@@ -2791,7 +2791,7 @@ export const XyberahReconView: React.FC = () => {
                                           {tags.slice(0, 3).map((t) => (
                                             <span
                                               key={t}
-                                              className="rounded-md border border-[#333] bg-black/40 px-2 py-0.5 text-[10px] text-neutral-300"
+                                              className="rounded-md border border-[#333] bg-[#111]/40 px-2 py-0.5 text-[10px] text-neutral-300"
                                             >
                                               {t}
                                             </span>
@@ -2809,7 +2809,7 @@ export const XyberahReconView: React.FC = () => {
                                           {logoSrc ? (
                                             <img src={logoSrc} alt="" className="h-8 w-8 rounded-lg border border-[#333] bg-white/5 object-contain p-0.5" />
                                           ) : (
-                                            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#333] bg-[#0A0A0A] text-[10px] text-neutral-600">
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#333] bg-[#111] text-[10px] text-neutral-600">
                                               ?
                                             </div>
                                           )}
@@ -2896,7 +2896,7 @@ export const XyberahReconView: React.FC = () => {
                       className={`rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${
                         assetGroupTab === tab
                           ? 'bg-neutral-600/20 border-neutral-500/40 text-white'
-                          : 'bg-black/30 border-[#333] text-[#AAA] hover:text-white'
+                          : 'bg-[#111]/30 border-[#333] text-[#AAA] hover:text-white'
                       }`}
                     >
                       {INVENTORY_SUBTAB_LABELS[tab]}
@@ -2912,7 +2912,7 @@ export const XyberahReconView: React.FC = () => {
                         value={assetParams.value ?? ''}
                         onChange={(e) => setAssetParams((prev) => ({ ...prev, value: e.target.value, page: 1 }))}
                         placeholder="Filter value"
-                        className="w-full rounded-xl border border-dashed border-neutral-600 bg-black/40 py-2 pl-9 pr-3 text-xs text-white font-mono placeholder:text-[#888]"
+                        className="w-full rounded-xl border border-dashed border-neutral-600 bg-[#111]/40 py-2 pl-9 pr-3 text-xs text-white font-mono placeholder:text-[#888]"
                       />
                     </div>
                     <input
@@ -2920,14 +2920,14 @@ export const XyberahReconView: React.FC = () => {
                       value={assetParams.search ?? ''}
                       onChange={(e) => setAssetParams((prev) => ({ ...prev, search: e.target.value, page: 1 }))}
                       placeholder="Search"
-                      className="min-w-[160px] rounded-xl border border-[#333] bg-black/40 px-3 py-2 text-xs text-white font-mono"
+                      className="min-w-[160px] rounded-xl border border-[#333] bg-[#111]/40 px-3 py-2 text-xs text-white font-mono"
                     />
                     <input
                       type="text"
                       value={assetParams.type ?? ''}
                       onChange={(e) => setAssetParams((prev) => ({ ...prev, type: e.target.value, page: 1 }))}
                       placeholder="Type (optional)"
-                      className="w-40 rounded-xl border border-[#333] bg-black/40 px-3 py-2 text-xs text-white font-mono"
+                      className="w-40 rounded-xl border border-[#333] bg-[#111]/40 px-3 py-2 text-xs text-white font-mono"
                     />
                     <button
                       type="button"
@@ -2977,13 +2977,13 @@ export const XyberahReconView: React.FC = () => {
                           className={`inline-flex items-center gap-2 rounded-xl border border-dashed px-3 py-2 text-xs font-medium transition-colors ${
                             openAssetsFacet === menu
                               ? 'border-neutral-500/50 bg-neutral-950/30 text-white'
-                              : 'border-neutral-600 bg-black/30 text-neutral-300 hover:border-neutral-500'
+                              : 'border-neutral-600 bg-[#111]/30 text-neutral-300 hover:border-neutral-500'
                           }`}
                         >
                           <Plus size={14} className="shrink-0 opacity-80" />
                           {FACET_MENU_LABEL[menu]}
                           {assetsFacets[menu].length > 0 ? (
-                            <span className="rounded-md border border-neutral-600 bg-[#0A0A0A] px-1.5 py-0.5 font-mono text-[10px] text-neutral-200">
+                            <span className="rounded-md border border-neutral-600 bg-[#111] px-1.5 py-0.5 font-mono text-[10px] text-neutral-200">
                               {assetsFacets[menu].length}
                             </span>
                           ) : null}
@@ -3078,7 +3078,7 @@ export const XyberahReconView: React.FC = () => {
                             page: 1,
                           }))
                         }
-                        className="rounded-lg border border-[#333] bg-black/50 px-2 py-1 text-neutral-200"
+                        className="rounded-lg border border-[#333] bg-[#111]/50 px-2 py-1 text-neutral-200"
                       >
                         <option value={10}>10</option>
                         <option value={25}>25</option>
@@ -3093,7 +3093,7 @@ export const XyberahReconView: React.FC = () => {
                     >
                       Previous
                     </button>
-                    <span className="rounded border border-[#333] bg-black/40 px-2 py-1 text-neutral-300">{assetsMeta.page ?? 1}</span>
+                    <span className="rounded border border-[#333] bg-[#111]/40 px-2 py-1 text-neutral-300">{assetsMeta.page ?? 1}</span>
                     <button
                       type="button"
                       disabled={!assetsMeta.hasNextPage}
@@ -3124,27 +3124,27 @@ export const XyberahReconView: React.FC = () => {
                           {JSON.stringify(assetDetail, null, 2)}
                         </pre>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                          <div className="p-3 rounded border border-[#222] bg-black/30 space-y-2">
+                          <div className="p-3 rounded border border-[#222] bg-[#111]/30 space-y-2">
                             <div className="text-xs text-[#AAA] font-mono font-bold flex items-center gap-1"><Tag size={12} /> Tags</div>
                             <input
                               type="text"
                               value={assetTagsText}
                               onChange={(e) => setAssetTagsText(e.target.value)}
                               placeholder="comma,separated,tags"
-                              className="w-full px-3 py-2 rounded bg-black/40 border border-[#333] text-white text-xs font-mono"
+                              className="w-full px-3 py-2 rounded bg-[#111]/40 border border-[#333] text-white text-xs font-mono"
                             />
                             <button type="button" onClick={handleSaveAssetTags} disabled={submitting} className="px-3 py-2 rounded bg-neutral-700 hover:bg-neutral-600 text-white text-xs font-mono flex items-center gap-1">
                               <Save size={12} /> Save Tags
                             </button>
                           </div>
-                          <div className="p-3 rounded border border-[#222] bg-black/30 space-y-2">
+                          <div className="p-3 rounded border border-[#222] bg-[#111]/30 space-y-2">
                             <div className="text-xs text-[#AAA] font-mono font-bold flex items-center gap-1"><Sparkles size={12} /> AI Tag Suggestions</div>
                             <input
                               type="text"
                               value={aiDomain}
                               onChange={(e) => setAiDomain(e.target.value)}
                               placeholder="domain for suggestions"
-                              className="w-full px-3 py-2 rounded bg-black/40 border border-[#333] text-white text-xs font-mono"
+                              className="w-full px-3 py-2 rounded bg-[#111]/40 border border-[#333] text-white text-xs font-mono"
                             />
                             <button type="button" onClick={handleGenerateAiTags} disabled={submitting || !aiDomain.trim()} className="px-3 py-2 rounded bg-neutral-700 hover:bg-neutral-600 text-white text-xs font-mono">
                               Generate Tags
@@ -3153,7 +3153,7 @@ export const XyberahReconView: React.FC = () => {
                               <div className="text-xs text-neutral-300 font-mono">{aiTags.join(', ')}</div>
                             )}
                           </div>
-                          <div className="p-3 rounded border border-[#222] bg-black/30 space-y-2">
+                          <div className="p-3 rounded border border-[#222] bg-[#111]/30 space-y-2">
                             <div className="text-xs text-[#AAA] font-mono font-bold">Enabled Toggle</div>
                             <button
                               type="button"
@@ -3164,14 +3164,14 @@ export const XyberahReconView: React.FC = () => {
                               {assetEnabled ? 'Disable Asset' : 'Enable Asset'}
                             </button>
                           </div>
-                          <div className="p-3 rounded border border-[#222] bg-black/30 space-y-2">
+                          <div className="p-3 rounded border border-[#222] bg-[#111]/30 space-y-2">
                             <div className="text-xs text-[#AAA] font-mono font-bold flex items-center gap-1"><FolderPlus size={12} /> Create Asset Group</div>
                             <input
                               type="text"
                               value={assetGroupName}
                               onChange={(e) => setAssetGroupName(e.target.value)}
                               placeholder="group name"
-                              className="w-full px-3 py-2 rounded bg-black/40 border border-[#333] text-white text-xs font-mono"
+                              className="w-full px-3 py-2 rounded bg-[#111]/40 border border-[#333] text-white text-xs font-mono"
                             />
                             <button type="button" onClick={handleCreateAssetGroup} disabled={submitting || !assetGroupName.trim()} className="px-3 py-2 rounded bg-neutral-700 hover:bg-neutral-600 text-white text-xs font-mono">
                               Create Group
@@ -3221,7 +3221,7 @@ export const XyberahReconView: React.FC = () => {
                       value={vulnParams.search ?? ''}
                       onChange={(e) => setVulnParams((prev) => ({ ...prev, search: e.target.value, page: 1 }))}
                       placeholder="Search"
-                      className="w-full rounded-xl border border-[#333] bg-black/50 py-2.5 pl-10 pr-3 text-sm text-white placeholder:text-[#888]"
+                      className="w-full rounded-xl border border-[#333] bg-[#111]/50 py-2.5 pl-10 pr-3 text-sm text-white placeholder:text-[#888]"
                     />
                   </div>
                   <div className="flex flex-wrap items-center justify-end gap-2">
@@ -3229,7 +3229,7 @@ export const XyberahReconView: React.FC = () => {
                       <select
                         value={vulnParams.status ?? 'open'}
                         onChange={(e) => setVulnParams((prev) => ({ ...prev, status: e.target.value, page: 1 }))}
-                        className="appearance-none rounded-xl border border-dashed border-neutral-600 bg-black/50 py-2.5 pl-3 pr-9 text-sm text-white"
+                        className="appearance-none rounded-xl border border-dashed border-neutral-600 bg-[#111]/50 py-2.5 pl-3 pr-9 text-sm text-white"
                       >
                         <option value="open">Open</option>
                         <option value="dismissed">Dismissed</option>
@@ -3238,7 +3238,7 @@ export const XyberahReconView: React.FC = () => {
                       </select>
                       <ChevronDown size={16} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#888]" />
                     </div>
-                    <div className="relative inline-flex items-center gap-2 rounded-xl border border-dashed border-neutral-600 bg-black/50 py-1 pl-2 pr-2">
+                    <div className="relative inline-flex items-center gap-2 rounded-xl border border-dashed border-neutral-600 bg-[#111]/50 py-1 pl-2 pr-2">
                       <Filter size={14} className="shrink-0 text-[#888]" />
                       <select
                         value={vulnParams.severity ?? ''}
@@ -3254,20 +3254,20 @@ export const XyberahReconView: React.FC = () => {
                       </select>
                       <ChevronDown size={14} className="pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-[#888]" />
                     </div>
-                    <div className="inline-flex items-center gap-2 rounded-xl border border-neutral-600 bg-black/40 px-3 py-2">
+                    <div className="inline-flex items-center gap-2 rounded-xl border border-neutral-600 bg-[#111]/40 px-3 py-2">
                       <Calendar size={14} className="shrink-0 text-[#888]" />
                       <span className="text-xs text-[#888]">Date</span>
                       <input
                         type="date"
                         value={vulnParams.createdFrom ?? ''}
                         onChange={(e) => setVulnParams((prev) => ({ ...prev, createdFrom: e.target.value, page: 1 }))}
-                        className="rounded border border-[#333] bg-black/50 px-2 py-1 text-xs text-white"
+                        className="rounded border border-[#333] bg-[#111]/50 px-2 py-1 text-xs text-white"
                       />
                       <input
                         type="date"
                         value={vulnParams.createdTo ?? ''}
                         onChange={(e) => setVulnParams((prev) => ({ ...prev, createdTo: e.target.value, page: 1 }))}
-                        className="rounded border border-[#333] bg-black/50 px-2 py-1 text-xs text-white"
+                        className="rounded border border-[#333] bg-[#111]/50 px-2 py-1 text-xs text-white"
                       />
                     </div>
                   </div>
@@ -3279,7 +3279,7 @@ export const XyberahReconView: React.FC = () => {
                 ) : (
                   <div className="overflow-x-auto rounded-xl border border-[#222]">
                     <table className="w-full min-w-[960px] text-left text-xs">
-                      <thead className="border-b border-[#222] bg-black/40 text-[11px] font-semibold uppercase tracking-wide text-[#888]">
+                      <thead className="border-b border-[#222] bg-[#111]/40 text-[11px] font-semibold uppercase tracking-wide text-[#888]">
                         <tr>
                           <th className="p-3 pl-4">
                             <button
@@ -3366,7 +3366,7 @@ export const XyberahReconView: React.FC = () => {
                                   {tags.slice(0, 3).map((t) => (
                                     <span
                                       key={t}
-                                      className="rounded-md border border-[#333] bg-black/40 px-2 py-0.5 text-[10px] text-neutral-300"
+                                      className="rounded-md border border-[#333] bg-[#111]/40 px-2 py-0.5 text-[10px] text-neutral-300"
                                     >
                                       {t}
                                     </span>
@@ -3384,7 +3384,7 @@ export const XyberahReconView: React.FC = () => {
                                   {logoSrc ? (
                                     <img src={logoSrc} alt="" className="h-8 w-8 rounded-lg border border-[#333] bg-white/5 object-contain p-0.5" />
                                   ) : (
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#333] bg-[#0A0A0A] text-[10px] text-neutral-600">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#333] bg-[#111] text-[10px] text-neutral-600">
                                       ?
                                     </div>
                                   )}
@@ -3477,11 +3477,11 @@ export const XyberahReconView: React.FC = () => {
                           className="space-y-4 rounded-2xl border border-[#222] bg-[#111827]/90 p-5"
                         >
                           <div className="flex items-center justify-between gap-2 text-xs">
-                            <span className="rounded-md border border-[#333] bg-black/40 px-2 py-1 text-[#AAA]">Scope</span>
-                            <span className="rounded-full border border-neutral-600 bg-black/30 px-3 py-1 font-medium text-white">{scopeLabel}</span>
+                            <span className="rounded-md border border-[#333] bg-[#111]/40 px-2 py-1 text-[#AAA]">Scope</span>
+                            <span className="rounded-full border border-neutral-600 bg-[#111]/30 px-3 py-1 font-medium text-white">{scopeLabel}</span>
                           </div>
                           <div className="flex items-start justify-between gap-2">
-                            <span className="rounded-md border border-[#333] bg-black/40 px-2 py-1 text-xs text-[#AAA]">Tools</span>
+                            <span className="rounded-md border border-[#333] bg-[#111]/40 px-2 py-1 text-xs text-[#AAA]">Tools</span>
                             <div className="flex flex-wrap justify-end gap-1.5">
                               {tools.map((t, ti) => {
                                 const nm = String(t.name ?? '?');
@@ -3494,13 +3494,13 @@ export const XyberahReconView: React.FC = () => {
                                     src={src}
                                     alt=""
                                     title={nm}
-                                    className="h-8 w-8 rounded-full border border-[#333] bg-black object-contain p-0.5"
+                                    className="h-8 w-8 rounded-full border border-[#333] bg-[#111] object-contain p-0.5"
                                   />
                                 ) : (
                                   <span
                                     key={`${id}-t-${ti}`}
                                     title={nm}
-                                    className="flex h-8 w-8 items-center justify-center rounded-full border border-[#333] bg-black text-xs font-bold text-white"
+                                    className="flex h-8 w-8 items-center justify-center rounded-full border border-[#333] bg-[#111] text-xs font-bold text-white"
                                   >
                                     {letter}
                                   </span>
@@ -3516,18 +3516,18 @@ export const XyberahReconView: React.FC = () => {
                                 Running
                               </span>
                             ) : (
-                              <span className="rounded-full border border-[#333] bg-black/40 px-3 py-1.5 text-xs text-[#888]">Idle</span>
+                              <span className="rounded-full border border-[#333] bg-[#111]/40 px-3 py-1.5 text-xs text-[#888]">Idle</span>
                             )}
                           </div>
                           <div className="flex items-center justify-between text-xs">
-                            <span className="rounded-md border border-[#333] bg-black/40 px-2 py-1 text-[#AAA]">Status</span>
+                            <span className="rounded-md border border-[#333] bg-[#111]/40 px-2 py-1 text-[#AAA]">Status</span>
                             <span className={online ? 'inline-flex items-center gap-1.5 text-emerald-400' : 'text-[#888]'}>
                               <span className={`inline-block h-2 w-2 rounded-full ${online ? 'bg-emerald-400' : 'bg-neutral-600'}`} />
                               {online ? 'Online' : 'Offline'}
                             </span>
                           </div>
                           <div className="flex items-center justify-between text-xs">
-                            <span className="rounded-md border border-[#333] bg-black/40 px-2 py-1 text-[#AAA]">Created at</span>
+                            <span className="rounded-md border border-[#333] bg-[#111]/40 px-2 py-1 text-[#AAA]">Created at</span>
                             <span className="text-[#888]">{formatRelativeAgo(typeof w.createdAt === 'string' ? w.createdAt : undefined)}</span>
                           </div>
                         </div>
@@ -3557,14 +3557,14 @@ export const XyberahReconView: React.FC = () => {
                     value={workspaceName}
                     onChange={(e) => setWorkspaceName(e.target.value)}
                     placeholder="Workspace name"
-                    className="flex-1 min-w-[200px] px-3 py-2 rounded-lg bg-black/40 border border-[#333] text-white text-sm font-mono focus:border-neutral-500/50 focus:outline-none"
+                    className="flex-1 min-w-[200px] px-3 py-2 rounded-lg bg-[#111]/40 border border-[#333] text-white text-sm font-mono focus:border-neutral-500/50 focus:outline-none"
                   />
                   <input
                     type="text"
                     value={workspaceDescription}
                     onChange={(e) => setWorkspaceDescription(e.target.value)}
                     placeholder="Description (optional)"
-                    className="flex-1 min-w-[260px] px-3 py-2 rounded-lg bg-black/40 border border-[#333] text-white text-sm font-mono focus:border-neutral-500/50 focus:outline-none"
+                    className="flex-1 min-w-[260px] px-3 py-2 rounded-lg bg-[#111]/40 border border-[#333] text-white text-sm font-mono focus:border-neutral-500/50 focus:outline-none"
                   />
                   <button
                     type="submit"
@@ -3612,11 +3612,11 @@ export const XyberahReconView: React.FC = () => {
         />
         {screenshotModalUrl && (
           <div
-            className="fixed inset-0 z-[80] bg-black/80 flex items-center justify-center p-4"
+            className="fixed inset-0 z-[80] bg-[#111]/80 flex items-center justify-center p-4"
             onClick={() => setScreenshotModalUrl(null)}
           >
             <div
-              className="relative max-w-[95vw] max-h-[95vh] rounded-lg border border-[#333] bg-black/40 p-2"
+              className="relative max-w-[95vw] max-h-[95vh] rounded-lg border border-[#333] bg-[#111]/40 p-2"
               onClick={(e) => e.stopPropagation()}
             >
               <button
@@ -3638,3 +3638,4 @@ export const XyberahReconView: React.FC = () => {
     </div>
   );
 };
+

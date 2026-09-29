@@ -34,7 +34,7 @@ const KeyShortcut = ({ keys, desc }: { keys: string[], desc: string }) => (
 export const HelpView: React.FC = () => {
     return (
         <div className="h-[calc(100vh-70px)] bg-cyber-grid flex flex-col">
-            <div className="bg-black/40 border-b border-[#222] p-6 flex items-center gap-4 shrink-0">
+            <div className="bg-[#111]/40 border-b border-[#222] p-6 flex items-center gap-4 shrink-0">
                 <div className="p-3 bg-[#111] rounded-lg border border-neutral-500/30 text-red-400">
                     <HelpCircle size={28}/>
                 </div>
@@ -186,7 +186,7 @@ export const HelpView: React.FC = () => {
 
                         <HelpSection title="Technical JSON Format" icon={FileJson}>
                             <p className="mb-2">For custom log ingestion, ensure your JSON follows this schema:</p>
-                            <pre className="bg-black border border-[#333] p-3 rounded text-xs font-mono text-white overflow-x-auto">
+                            <pre className="bg-[#111] border border-[#333] p-3 rounded text-xs font-mono text-white overflow-x-auto">
 {`[
   {
     "timestamp": "2023-10-27T10:00:00Z",
@@ -216,3 +216,4 @@ export const HelpView: React.FC = () => {
         </div>
     );
 };
+

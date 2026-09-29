@@ -158,7 +158,7 @@ const NetworkNode = ({
 
 const BoundaryNode = (props: any) => (
     <div className={`p-10 rounded-xl border-2 border-dashed transition-all duration-300 min-w-[400px] min-h-[300px] relative ${props.selected ? 'border-red-500 bg-red-900/5' : 'border-[#222] bg-[#111]'} cursor-grab active:cursor-grabbing`}>
-        <div className="absolute -top-3 left-4 px-3 py-1 bg-[#0A0A0A] border border-[#333] rounded text-[10px] font-bold text-[#888] uppercase flex items-center gap-2 z-10 shadow-lg">
+        <div className="absolute -top-3 left-4 px-3 py-1 bg-[#111] border border-[#333] rounded text-[10px] font-bold text-[#888] uppercase flex items-center gap-2 z-10 shadow-lg">
             <BoxSelect size={12}/> {props.data.label}
         </div>
         <div className="flex items-center justify-center h-full opacity-5 pointer-events-none absolute inset-0">
@@ -952,7 +952,7 @@ export const NetworkTopologyView: React.FC = () => {
                                 </button>
                                 
                                 {showLayoutMenu && (
-                                    <div className="absolute top-full right-0 mt-2 w-48 bg-[#0A0A0A] border border-[#333] rounded-lg shadow-xl overflow-hidden z-[100] animate-fade-in">
+                                    <div className="absolute top-full right-0 mt-2 w-48 bg-[#111] border border-[#333] rounded-lg shadow-xl overflow-hidden z-[100] animate-fade-in">
                                         <div className="p-2 text-[10px] font-bold text-[#888] uppercase border-b border-[#222]">Select Algorithm</div>
                                         <button onClick={() => applyAutomaticLayout('force')} className="w-full text-left px-4 py-2.5 text-xs text-neutral-300 hover:bg-white/5 flex items-center gap-3 transition-colors">
                                             <Move size={14} className="text-red-400"/> Force-Directed
@@ -977,7 +977,7 @@ export const NetworkTopologyView: React.FC = () => {
                                 </button>
                                 
                                 {showExportMenu && (
-                                    <div className="absolute top-full right-0 mt-2 w-56 bg-[#0A0A0A] border border-[#333] rounded-lg shadow-xl overflow-hidden z-[100] animate-fade-in">
+                                    <div className="absolute top-full right-0 mt-2 w-56 bg-[#111] border border-[#333] rounded-lg shadow-xl overflow-hidden z-[100] animate-fade-in">
                                         <div className="p-2 text-[10px] font-bold text-[#888] uppercase border-b border-[#222]">Choose Format</div>
                                         <button onClick={() => { setShowExportMenu(false); exportTopologyImage('png'); }} className="w-full text-left px-4 py-2 text-xs text-neutral-300 hover:bg-white/5 flex items-center gap-3 transition-colors">
                                             <ImageIcon size={14} className="text-red-400"/> High-Res PNG
@@ -1025,11 +1025,11 @@ export const NetworkTopologyView: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2 text-[10px]">
-                                        <div className="p-2 bg-[#0A0A0A] rounded border border-[#222]">
+                                        <div className="p-2 bg-[#111] rounded border border-[#222]">
                                             <div className="text-[#888] uppercase">Reached</div>
                                             <div className="text-white font-bold">{simulation.reachableNodes.length} Units</div>
                                         </div>
-                                        <div className="p-2 bg-[#0A0A0A] rounded border border-[#222]">
+                                        <div className="p-2 bg-[#111] rounded border border-[#222]">
                                             <div className="text-[#888] uppercase">Crit Paths</div>
                                             <div className="text-white font-bold">{simulation.criticalPaths.length} Active</div>
                                         </div>
@@ -1086,7 +1086,7 @@ export const NetworkTopologyView: React.FC = () => {
                                 
                                 <div className="space-y-3">
                                     <div className="grid grid-cols-2 gap-3">
-                                        <div className="p-2 bg-[#0a0a0a] border border-[#222328] rounded">
+                                        <div className="p-2 bg-[#111] border border-[#222328] rounded">
                                             <label className="text-[8px] font-bold text-[#666] uppercase block mb-1">Interface</label>
                                             <input 
                                                 className="bg-transparent w-full text-xs font-mono text-[#ececec] focus:outline-none"
@@ -1095,7 +1095,7 @@ export const NetworkTopologyView: React.FC = () => {
                                                 placeholder="eth0, vlan10..."
                                             />
                                         </div>
-                                        <div className="p-2 bg-[#0a0a0a] border border-[#222328] rounded">
+                                        <div className="p-2 bg-[#111] border border-[#222328] rounded">
                                             <label className="text-[8px] font-bold text-[#666] uppercase block mb-1">VLAN Tag</label>
                                             <input 
                                                 className="bg-transparent w-full text-xs font-mono text-[#ececec] focus:outline-none"
@@ -1105,7 +1105,7 @@ export const NetworkTopologyView: React.FC = () => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="p-2 bg-[#0a0a0a] border border-[#222328] rounded">
+                                    <div className="p-2 bg-[#111] border border-[#222328] rounded">
                                         <label className="text-[8px] font-bold text-[#666] uppercase block mb-1">IP Connectivity</label>
                                         <input 
                                             className="bg-transparent w-full text-xs font-mono text-[#ececec] focus:outline-none"
@@ -1127,7 +1127,7 @@ export const NetworkTopologyView: React.FC = () => {
                                         <div>
                                             <label className="text-[9px] font-bold text-[#666] uppercase block mb-1">Criticality</label>
                                             <select 
-                                                className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-xs text-[#ececec] outline-none"
+                                                className="w-full bg-[#111] border border-[#333] rounded p-2 text-xs text-[#ececec] outline-none"
                                                 value={selectedNode.data.criticality}
                                                 onChange={(e) => handleNodePropertyChange(selectedNode.id, 'criticality', e.target.value)}
                                             >
@@ -1137,7 +1137,7 @@ export const NetworkTopologyView: React.FC = () => {
                                         <div>
                                             <label className="text-[9px] font-bold text-[#666] uppercase block mb-1">Sensitivity</label>
                                             <select 
-                                                className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-xs text-[#888] outline-none font-bold"
+                                                className="w-full bg-[#111] border border-[#333] rounded p-2 text-xs text-[#888] outline-none font-bold"
                                                 value={selectedNode.data.sensitivity}
                                                 onChange={(e) => handleNodePropertyChange(selectedNode.id, 'sensitivity', e.target.value)}
                                             >
@@ -1162,7 +1162,7 @@ export const NetworkTopologyView: React.FC = () => {
                                         <div className="flex gap-2 mb-2">
                                             <input 
                                                 type="text" 
-                                                className="flex-1 bg-[#0a0a0a] border border-[#333] rounded p-1.5 text-[10px] text-[#ececec] font-mono focus:border-[#555] outline-none"
+                                                className="flex-1 bg-[#111] border border-[#333] rounded p-1.5 text-[10px] text-[#ececec] font-mono focus:border-[#555] outline-none"
                                                 placeholder="CVE-2024-..."
                                                 value={newCve}
                                                 onChange={e => setNewCve(e.target.value)}
@@ -1184,7 +1184,7 @@ export const NetworkTopologyView: React.FC = () => {
                                         <div className="flex gap-2 mb-2">
                                             <input 
                                                 type="text" 
-                                                className="flex-1 bg-[#0a0a0a] border border-[#333] rounded p-1.5 text-[10px] text-[#ececec] font-mono focus:border-[#555] outline-none"
+                                                className="flex-1 bg-[#111] border border-[#333] rounded p-1.5 text-[10px] text-[#ececec] font-mono focus:border-[#555] outline-none"
                                                 placeholder="1.2.3.4, malware.com..."
                                                 value={newIoc}
                                                 onChange={e => setNewIoc(e.target.value)}
@@ -1228,7 +1228,7 @@ export const NetworkTopologyView: React.FC = () => {
                             </div>
 
                             {(isIntelLoading || nodeIntel) && (
-                                <div className="bg-[#0a0a0a] border border-[#222328] rounded-lg p-4 shadow-inner relative overflow-hidden">
+                                <div className="bg-[#111] border border-[#222328] rounded-lg p-4 shadow-inner relative overflow-hidden">
                                     <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[#555] to-transparent animate-scan"></div>
                                     
                                     <div className="flex justify-between items-center mb-3">
@@ -1275,13 +1275,13 @@ export const NetworkTopologyView: React.FC = () => {
                             <div className="space-y-4">
                                 <div>
                                     <label className="text-[9px] font-bold text-[#666] uppercase block mb-1">Traffic Identity</label>
-                                    <input className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-sm text-[#ececec] focus:border-[#555] outline-none font-mono" value={selectedEdge.label as string} onChange={e => handleNodePropertyChange(selectedEdge.id, 'label', e.target.value)} />
+                                    <input className="w-full bg-[#111] border border-[#333] rounded p-2 text-sm text-[#ececec] focus:border-[#555] outline-none font-mono" value={selectedEdge.label as string} onChange={e => handleNodePropertyChange(selectedEdge.id, 'label', e.target.value)} />
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
                                         <label className="text-[9px] font-bold text-[#666] uppercase block mb-1">Protocol</label>
                                         <select 
-                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none font-mono"
+                                            className="w-full bg-[#111] border border-[#333] rounded p-2 text-[10px] text-[#ececec] outline-none font-mono"
                                             value={selectedEdge.data?.protocol}
                                             onChange={e => handleNodePropertyChange(selectedEdge.id, 'protocol', e.target.value)}
                                         >
@@ -1292,7 +1292,7 @@ export const NetworkTopologyView: React.FC = () => {
                                         <label className="text-[9px] font-bold text-[#666] uppercase block mb-1">Port Range</label>
                                         <input 
                                             type="text" 
-                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-[10px] text-[#ececec] font-mono outline-none"
+                                            className="w-full bg-[#111] border border-[#333] rounded p-2 text-[10px] text-[#ececec] font-mono outline-none"
                                             value={selectedEdge.data?.portRange}
                                             onChange={(e) => handleNodePropertyChange(selectedEdge.id, 'portRange', e.target.value)}
                                         />
@@ -1318,7 +1318,7 @@ export const NetworkTopologyView: React.FC = () => {
                                 <div>
                                     <label className="text-[9px] font-bold text-[#666] uppercase block mb-1">Encryption</label>
                                     <select 
-                                        className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2 text-xs text-[#ececec] outline-none"
+                                        className="w-full bg-[#111] border border-[#333] rounded p-2 text-xs text-[#ececec] outline-none"
                                         value={selectedEdge.data?.encryption || 'TLS 1.3'}
                                         onChange={(e) => {
                                             const val = e.target.value;
@@ -1362,7 +1362,7 @@ export const NetworkTopologyView: React.FC = () => {
 
             {/* Modal: Stencil Creator */}
             {showStencilCreator && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in" onClick={() => setShowStencilCreator(false)}>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#111]/80 backdrop-blur-md animate-fade-in" onClick={() => setShowStencilCreator(false)}>
                     <div className="bg-[#111216] border border-[#222328] rounded-xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
                         <div className="p-4 border-b border-[#222328] flex justify-between items-center bg-[#0a0b0d]">
                             <h3 className="text-lg font-bold text-[#ececec] flex items-center gap-2 uppercase tracking-tight"><Palette size={20} className="text-[#888]"/> DEFINE CUSTOM ASSET</h3>
@@ -1374,7 +1374,7 @@ export const NetworkTopologyView: React.FC = () => {
                                     <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Asset Label</label>
                                     <input 
                                         type="text" 
-                                        className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-sm text-[#ececec] font-mono focus:border-[#555] outline-none" 
+                                        className="w-full bg-[#111] border border-[#333] rounded p-2.5 text-sm text-[#ececec] font-mono focus:border-[#555] outline-none" 
                                         placeholder="e.g. Core Auth Server" 
                                         value={newStencil.label} 
                                         onChange={e => setNewStencil({...newStencil, label: e.target.value})}
@@ -1384,7 +1384,7 @@ export const NetworkTopologyView: React.FC = () => {
                                     <div>
                                         <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Node Type</label>
                                         <select 
-                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] outline-none focus:border-[#555]" 
+                                            className="w-full bg-[#111] border border-[#333] rounded p-2.5 text-xs text-[#ececec] outline-none focus:border-[#555]" 
                                             value={newStencil.type} 
                                             onChange={e => setNewStencil({...newStencil, type: e.target.value as any})}
                                         >
@@ -1398,7 +1398,7 @@ export const NetworkTopologyView: React.FC = () => {
                                     <div>
                                         <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Icon Representation</label>
                                         <select 
-                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] outline-none focus:border-[#555]" 
+                                            className="w-full bg-[#111] border border-[#333] rounded p-2.5 text-xs text-[#ececec] outline-none focus:border-[#555]" 
                                             value={newStencil.iconName} 
                                             onChange={e => setNewStencil({...newStencil, iconName: e.target.value})}
                                         >
@@ -1411,7 +1411,7 @@ export const NetworkTopologyView: React.FC = () => {
                                         <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">IP Address</label>
                                         <input 
                                             type="text" 
-                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-sm text-[#ececec] font-mono focus:border-[#555] outline-none" 
+                                            className="w-full bg-[#111] border border-[#333] rounded p-2.5 text-sm text-[#ececec] font-mono focus:border-[#555] outline-none" 
                                             placeholder="e.g. 10.0.0.1" 
                                             value={newStencil.ipAddress} 
                                             onChange={e => setNewStencil({...newStencil, ipAddress: e.target.value})}
@@ -1421,7 +1421,7 @@ export const NetworkTopologyView: React.FC = () => {
                                         <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">VLAN Tag</label>
                                         <input 
                                             type="text" 
-                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] font-mono focus:border-[#555] outline-none" 
+                                            className="w-full bg-[#111] border border-[#333] rounded p-2.5 text-xs text-[#ececec] font-mono focus:border-[#555] outline-none" 
                                             placeholder="e.g. 10" 
                                             value={newStencil.vlan} 
                                             onChange={e => setNewStencil({...newStencil, vlan: e.target.value})}
@@ -1432,7 +1432,7 @@ export const NetworkTopologyView: React.FC = () => {
                                     <div>
                                         <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Default Criticality</label>
                                         <select 
-                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] outline-none focus:border-[#555]" 
+                                            className="w-full bg-[#111] border border-[#333] rounded p-2.5 text-xs text-[#ececec] outline-none focus:border-[#555]" 
                                             value={newStencil.criticality} 
                                             onChange={e => setNewStencil({...newStencil, criticality: e.target.value})}
                                         >
@@ -1442,7 +1442,7 @@ export const NetworkTopologyView: React.FC = () => {
                                     <div>
                                         <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Theme Color</label>
                                         <select 
-                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] outline-none focus:border-[#555]" 
+                                            className="w-full bg-[#111] border border-[#333] rounded p-2.5 text-xs text-[#ececec] outline-none focus:border-[#555]" 
                                             value={newStencil.color} 
                                             onChange={e => setNewStencil({...newStencil, color: e.target.value})}
                                         >
@@ -1456,7 +1456,7 @@ export const NetworkTopologyView: React.FC = () => {
                                     <div>
                                         <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Data Sensitivity</label>
                                         <select 
-                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] outline-none focus:border-[#555]" 
+                                            className="w-full bg-[#111] border border-[#333] rounded p-2.5 text-xs text-[#ececec] outline-none focus:border-[#555]" 
                                             value={newStencil.sensitivity} 
                                             onChange={e => setNewStencil({...newStencil, sensitivity: e.target.value})}
                                         >
@@ -1467,7 +1467,7 @@ export const NetworkTopologyView: React.FC = () => {
                                         <label className="text-[10px] font-bold text-[#666] uppercase block mb-1">Interface</label>
                                         <input 
                                             type="text" 
-                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-2.5 text-xs text-[#ececec] font-mono focus:border-[#555] outline-none" 
+                                            className="w-full bg-[#111] border border-[#333] rounded p-2.5 text-xs text-[#ececec] font-mono focus:border-[#555] outline-none" 
                                             placeholder="e.g. eth0" 
                                             value={newStencil.interface} 
                                             onChange={e => setNewStencil({...newStencil, interface: e.target.value})}
@@ -1500,7 +1500,7 @@ export const NetworkTopologyView: React.FC = () => {
 
             {/* Modal: AI Clarification */}
             {showClarificationModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#111]/80 backdrop-blur-md animate-fade-in">
                     <div className="bg-[#111216] border border-[#222328] rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
                         <div className="p-4 border-b border-[#222328] flex justify-between items-center bg-[#0a0b0d]">
                             <h3 className="text-lg font-bold text-[#ececec] flex items-center gap-2 uppercase tracking-tight">
@@ -1521,7 +1521,7 @@ export const NetworkTopologyView: React.FC = () => {
                                             {q}
                                         </div>
                                         <textarea 
-                                            className="w-full bg-[#0a0a0a] border border-[#333] rounded p-3 text-xs text-[#ececec] font-mono focus:border-[#555] outline-none resize-none"
+                                            className="w-full bg-[#111] border border-[#333] rounded p-3 text-xs text-[#ececec] font-mono focus:border-[#555] outline-none resize-none"
                                             rows={2}
                                             placeholder="Provide technical detail..."
                                             value={userAnswers[idx] || ''}
