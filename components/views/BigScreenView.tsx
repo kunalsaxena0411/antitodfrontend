@@ -423,7 +423,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
         
         const cwes: Record<string, number> = {};
         cveData.forEach(c => {
-            c.weaknesses.forEach(w => {
+            (c.weaknesses || []).forEach(w => {
                 cwes[w] = (cwes[w] || 0) + 1;
             });
         });
@@ -432,7 +432,7 @@ export const BigScreenView: React.FC<BigScreenViewProps> = ({
         // Vector Stats for Donut
         const vectors: Record<string, number> = { 'NETWORK': 0, 'ADJACENT': 0, 'LOCAL': 0, 'PHYSICAL': 0 };
         cveData.forEach(c => {
-            const av = c.vector.AV?.toUpperCase();
+            const av = c.vector?.AV?.toUpperCase();
             if (av && vectors[av] !== undefined) vectors[av]++;
             else if (av) vectors['NETWORK']++; 
         });

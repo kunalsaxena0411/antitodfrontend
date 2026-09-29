@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ViewRouter from './components/ViewRouter';
-import { DEMO_HOSTS, DEMO_ACTORS, DEMO_CVES, DEMO_CVE_FEEDS, DEMO_NEWS, DEMO_EXPLOITS } from './data/demo';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { DEMO_HOSTS, DEMO_ACTORS, DEMO_CVES, DEMO_CVE_FEEDS, DEMO_NEWS, DEMO_EXPLOITS, DEMO_URLHAUS, DEMO_FEODO, DEMO_THREATFOX, DEMO_MALWAREBAZAAR, DEMO_SSLBL, DEMO_JA3 } from './data/demo';
 import { DEMO_MODE } from './services/dataProvider';
 import { SettingsModal } from '../components/SettingsModal';
 import {
@@ -2010,8 +2011,9 @@ export const App: React.FC = () => {
                             </p>
                         </div>
                     ) : (
-                        <ViewRouter
-                            activeView={
+                        <ErrorBoundary>
+                            <ViewRouter
+                                activeView={
                                 activeView
                             }
                             onNavigate={
@@ -2035,24 +2037,12 @@ export const App: React.FC = () => {
                             onRefreshAll={
                                 handleRefreshAll
                             }
-                            urlHausItems={
-                                urlHausItems
-                            }
-                            malwareBazaarItems={
-                                malwareBazaarItems
-                            }
-                            feodoItems={
-                                feodoItems
-                            }
-                            sslBlItems={
-                                sslBlItems
-                            }
-                            ja3Items={
-                                ja3Items
-                            }
-                            threatFoxItems={
-                                threatFoxItems
-                            }
+                            urlHausItems={urlHausItems.length > 0 ? urlHausItems : DEMO_URLHAUS}
+                            malwareBazaarItems={malwareBazaarItems.length > 0 ? malwareBazaarItems : DEMO_MALWAREBAZAAR}
+                            feodoItems={feodoItems.length > 0 ? feodoItems : DEMO_FEODO}
+                            sslBlItems={sslBlItems.length > 0 ? sslBlItems : DEMO_SSLBL}
+                            ja3Items={ja3Items.length > 0 ? ja3Items : DEMO_JA3}
+                            threatFoxItems={threatFoxItems.length > 0 ? threatFoxItems : DEMO_THREATFOX}
                             ipsumItems={
                                 ipsumItems
                             }
@@ -2096,6 +2086,7 @@ export const App: React.FC = () => {
                                 setEmailAnalysis
                             }
                         />
+                        </ErrorBoundary>
                     )}
                 </main>
             </div>
@@ -2178,3 +2169,4 @@ export const App: React.FC = () => {
         </div>
     );
 };
+

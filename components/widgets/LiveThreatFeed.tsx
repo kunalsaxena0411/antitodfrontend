@@ -83,7 +83,7 @@ export const LiveThreatFeed: React.FC<LiveThreatFeedProps> = ({
                 streamKey: feedRowKey(),
                 type: 'CVE',
                 title: c.title,
-                subtitle: c.cveIds[0] || 'Vulnerability',
+                subtitle: c.cveIds?.[0] || 'Vulnerability',
                 timestamp: new Date(c.pubDate).getTime(),
                 severity: c.category === 'High Sev' ? 'HIGH' : 'MEDIUM',
                 source: c.source,

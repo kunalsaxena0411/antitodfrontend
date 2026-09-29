@@ -94,7 +94,7 @@ export const useAnalysisData = (
             asnCluster.riskScore += host.totalScore;
             asnCluster.items.push(host);
   
-            const tactics = new Set<string>(host.signatures.map(s => s.mitreTactic));
+            const tactics = new Set<string>((host.signatures || []).map(s => s.mitreTactic));
             if (tactics.size === 0) {
                 const label = "Clean";
                  if (!tacticMap.has(label)) tacticMap.set(label, { id: label, label, count: 0, riskScore: 0, items: [] });
@@ -124,7 +124,7 @@ export const useAnalysisData = (
             riskCluster.riskScore += host.totalScore;
             riskCluster.items.push(host);
   
-            host.signatures.forEach(sig => {
+            (host.signatures || []).forEach(sig => {
                if (!sigMap.has(sig.name)) sigMap.set(sig.name, { id: sig.name, label: sig.name, count: 0, riskScore: 0, items: [] });
                const sigCluster = sigMap.get(sig.name)!;
                sigCluster.count++;
@@ -204,7 +204,7 @@ export const useAnalysisData = (
         const malpediaCount = malpediaActors.filter(a => !a.source || a.source === 'Malpedia').length;
   
         malpediaActors.forEach(actor => {
-            if (actor.meta.country && actor.meta.country !== 'Unknown') {
+            if (actor.meta?.country && actor.meta.country !== 'Unknown') {
                 const c = actor.meta.country;
                 countryCounts.set(c, (countryCounts.get(c) || 0) + 1);
             }

@@ -2,6 +2,8 @@
 import { RansomWatchPost, RansomWatchGroup } from '../types';
 import { RANSOMWARE_LIVE_API_KEY } from '../config/config';
 import { fetchJsonWithCors } from './http';
+import { DEMO_MODE } from '../src/services/dataProvider';
+import { DEMO_RANSOMWARE_POSTS, DEMO_RANSOMWARE_GROUPS } from '../src/data/demo/ransomware';
 
 const POSTS_URL = 'https://raw.githubusercontent.com/joshhighet/ransomwatch/main/posts.json';
 const GROUPS_URL = 'https://raw.githubusercontent.com/joshhighet/ransomwatch/main/groups.json';
@@ -71,6 +73,7 @@ const fetchRansomwareLive = async (): Promise<RansomWatchPost[]> => {
 };
 
 export const fetchRansomwarePosts = async (): Promise<RansomWatchPost[]> => {
+    if (DEMO_MODE) return DEMO_RANSOMWARE_POSTS;
     try {
         const [rwData, liveData] = await Promise.all([
             fetchJsonWithCors<RansomWatchPost[]>(POSTS_URL).catch((e) => {
@@ -106,23 +109,25 @@ export const fetchRansomwarePosts = async (): Promise<RansomWatchPost[]> => {
         });
 
         // Sort by date descending
-        return Array.from(unique.values()).sort((a, b) => new Date(b.discovered).getTime() - new Date(a.discovered).getTime());
+        const results = Array.from(unique.values()).sort((a, b) => new Date(b.discovered).getTime() - new Date(a.discovered).getTime());
+        return results.length > 0 ? results : DEMO_RANSOMWARE_POSTS;
     } catch (e) {
         console.error("Failed to fetch Ransomware posts", e);
-        return [];
+        return DEMO_RANSOMWARE_POSTS;
     }
 };
 
 export const fetchRansomwareGroups = async (): Promise<RansomWatchGroup[]> => {
+    if (DEMO_MODE) return DEMO_RANSOMWARE_GROUPS;
     try {
         const data = await fetchJsonWithCors<RansomWatchGroup[]>(GROUPS_URL);
-        if (Array.isArray(data)) {
+        if (Array.isArray(data) && data.length > 0) {
             return data;
         }
-        return [];
+        return DEMO_RANSOMWARE_GROUPS;
     } catch (e) {
         console.warn("Failed to fetch RansomWatch groups:", e);
-        return [];
+        return DEMO_RANSOMWARE_GROUPS;
     }
 };
 

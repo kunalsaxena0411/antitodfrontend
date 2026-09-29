@@ -64,7 +64,7 @@ export const LoginView: React.FC = () => {
       <div className="relative z-10 w-full max-w-md px-6">
         {/* Logo and branding */}
         <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 mb-4 bg-gradient-to-br from-red-500 to-purple-600 rounded-2xl shadow-lg shadow-red-500/20">
+          <div className="inline-flex items-center justify-center w-20 h-20 mb-4 bg-red-600 rounded-2xl shadow-lg shadow-red-500/20">
             <ShieldCheck className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-4xl font-cyber font-bold text-white mb-2">
@@ -146,7 +146,7 @@ export const LoginView: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading || !email || !password}
-              className="w-full bg-gradient-to-r from-red-500 to-purple-600 hover:from-red-500/90 hover:to-purple-600/90 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-red-500/20 hover:shadow-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-red-500/20"
+              className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-red-500/20 hover:shadow-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-red-500/20"
             >
               {isLoading ? (
                 <>

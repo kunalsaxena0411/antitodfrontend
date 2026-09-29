@@ -1,7 +1,7 @@
 import { SHARED_ENTITIES } from './entities';
 import type { CveEntry } from '../../../types';
 
-export const DEMO_CVES: CveEntry[] = [
+const rawDemoCves = [
   { id: 'CVE-2020-1000', published: '2023-11-24T23:56:21.593Z', modified: '2023-06-02T13:47:25.795Z', status: 'Active', description: 'Vulnerability in component X allows attackers to perform action Y.', cvss: 5.0, cwe: ['CWE-10'], references: [{ url: 'https://nvd.nist.gov/vuln/detail/CVE-2020-1000', tags: [] }] },
   { id: 'CVE-2021-1017', published: '2020-05-05T01:18:57.619Z', modified: '2025-12-13T15:09:17.709Z', status: 'Resolved', description: 'Vulnerability in component X allows attackers to perform action Y.', cvss: 6.0, cwe: ['CWE-11'], references: [{ url: 'https://nvd.nist.gov/vuln/detail/CVE-2021-1017', tags: [] }] },
   { id: 'CVE-2022-1034', published: '2026-06-08T22:48:19.375Z', modified: '2023-02-16T16:23:30.267Z', status: 'In Progress', description: 'Vulnerability in component X allows attackers to perform action Y.', cvss: 7.0, cwe: ['CWE-12'], references: [{ url: 'https://nvd.nist.gov/vuln/detail/CVE-2022-1034', tags: [] }] },
@@ -33,3 +33,25 @@ export const DEMO_CVES: CveEntry[] = [
   { id: 'CVE-2023-1476', published: '2021-10-21T00:19:22.306Z', modified: '2025-01-06T15:58:23.298Z', status: 'Resolved', description: 'Vulnerability in component X allows attackers to perform action Y.', cvss: 8.0, cwe: ['CWE-38'], references: [{ url: 'https://nvd.nist.gov/vuln/detail/CVE-2023-1476', tags: [] }] },
   { id: 'CVE-2024-1493', published: '2022-10-21T03:58:44.498Z', modified: '2023-01-30T00:48:46.264Z', status: 'In Progress', description: 'Vulnerability in component X allows attackers to perform action Y.', cvss: 9.0, cwe: ['CWE-39'], references: [{ url: 'https://nvd.nist.gov/vuln/detail/CVE-2024-1493', tags: [] }] },
 ];
+
+export const DEMO_CVES: CveEntry[] = rawDemoCves.map((c: any) => ({
+    id: c.id,
+    sourceIdentifier: 'NVD',
+    published: c.published,
+    lastModified: c.modified,
+    status: c.status,
+    description: c.description,
+    cvssScore: c.cvss,
+    severity: c.cvss >= 9 ? 'CRITICAL' : c.cvss >= 7 ? 'HIGH' : c.cvss >= 4 ? 'MEDIUM' : 'LOW',
+    vectorString: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H',
+    weaknesses: c.cwe,
+    references: c.references,
+    configurations: ['cpe:2.3:a:demo:product:1.0:*:*:*:*:*:*:*'],
+    vendor: 'DemoVendor',
+    product: 'DemoProduct',
+    cweCategory: 'Unknown',
+    hasExploit: c.cvss >= 7,
+    isKev: c.cvss >= 8,
+    tags: c.cvss >= 8 ? ['KEV'] : [],
+    vector: { AV: 'N', AC: 'L', PR: 'N', UI: 'N', S: 'U', C: 'H', I: 'H', A: 'H' }
+}));

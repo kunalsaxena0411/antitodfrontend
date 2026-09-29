@@ -13,3 +13,4 @@ export * from './hosts';
 export * from './cveFeeds';
 export * from './intel';
 export * from './exploits';
+export * from './iocFeeds';
