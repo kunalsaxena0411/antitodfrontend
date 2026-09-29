@@ -481,6 +481,7 @@ note:
           <button
             type="button"
             className="at-btn at-btn-primary at-btn-sm"
+            onClick={() => alert("Rule authoring is currently disabled in Demo Mode. Connect a persistence backend to enable this feature.")}
             title="Rule authoring requires a connected persistence workflow."
           >
             <Plus size={13} />

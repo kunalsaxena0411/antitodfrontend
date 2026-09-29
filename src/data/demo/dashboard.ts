@@ -1,10 +1,13 @@
 import { SHARED_ENTITIES } from './entities';
+import { DEMO_INVESTIGATIONS } from './investigations';
+import { DEMO_HOSTS } from './hosts';
+import { DEMO_EVENTS } from './attackMap';
 
 export const DEMO_DASHBOARD = {
   metrics: {
-    activeIncidents: 12,
-    criticalAlerts: 3,
-    monitoredAssets: 1450,
+    activeIncidents: DEMO_INVESTIGATIONS.length,
+    criticalAlerts: DEMO_EVENTS.filter(e => e.severity === 'critical').length,
+    monitoredAssets: DEMO_HOSTS.length,
     threatLevel: 'Elevated'
   },
   recentActivity: [

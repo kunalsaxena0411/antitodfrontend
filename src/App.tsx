@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ViewRouter from './components/ViewRouter';
 import { DEMO_HOSTS, DEMO_ACTORS, DEMO_CVES, DEMO_CVE_FEEDS, DEMO_NEWS } from './data/demo';
+import { DEMO_MODE } from './services/dataProvider';
 import { SettingsModal } from '../components/SettingsModal';
 import {
     AppState,
@@ -1411,6 +1412,11 @@ export const App: React.FC = () => {
 
     const handleRefreshAll = async () => {
         if (isFeedLoading) {
+            return;
+        }
+
+        if (DEMO_MODE) {
+            setNewsLastUpdated(new Date());
             return;
         }
 

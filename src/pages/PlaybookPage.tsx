@@ -24,35 +24,20 @@ interface MockPlaybook {
   lastUpdated: string;
 }
 
-const MOCK_PLAYBOOKS: MockPlaybook[] = [
-  {
-    id: 'PB-1042',
-    name: 'Ransomware Containment',
-    incident: 'INC-9921',
-    status: 'active',
-    owner: 'Analyst-1',
-    progress: 40,
-    lastUpdated: '10 mins ago',
-  },
-  {
-    id: 'PB-1041',
-    name: 'Phishing Email Triage',
-    incident: 'INC-9920',
-    status: 'completed',
-    owner: 'Analyst-2',
-    progress: 100,
-    lastUpdated: '2 hours ago',
-  },
-  {
-    id: 'PB-1040',
-    name: 'Unauthorized Access Investigation',
-    incident: 'INC-9919',
-    status: 'active',
-    owner: 'Analyst-1',
-    progress: 80,
-    lastUpdated: '5 hours ago',
-  },
-];
+import { dataProvider } from '../services/dataProvider';
+
+const generateMockExecutions = async (): Promise<MockPlaybook[]> => {
+  const templates = await dataProvider.getPlaybooks();
+  return templates.map((template, i) => ({
+    id: `EXEC-${2000 + i}`,
+    name: template.name,
+    incident: `INC-${9000 + i}`,
+    status: i % 3 === 0 ? 'completed' : i % 2 === 0 ? 'active' : 'pending',
+    owner: `Analyst-${(i % 3) + 1}`,
+    progress: i % 3 === 0 ? 100 : i % 2 === 0 ? 60 : 0,
+    lastUpdated: `${(i * 15) + 5} mins ago`,
+  }));
+};
 
 const statusMeta = (status: MockPlaybook['status']) => {
   switch (status) {
@@ -92,11 +77,16 @@ export default function PlaybookPage() {
     'all' | MockPlaybook['status']
   >('all');
   const [selectedPbId, setSelectedPbId] = useState<string | null>(null);
+  const [mockPlaybooks, setMockPlaybooks] = useState<MockPlaybook[]>([]);
+
+  useEffect(() => {
+    generateMockExecutions().then(setMockPlaybooks);
+  }, []);
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    return MOCK_PLAYBOOKS.filter((playbook) => {
+    return mockPlaybooks.filter((playbook) => {
       const matchesSearch =
         !query ||
         playbook.name.toLowerCase().includes(query) ||
@@ -109,10 +99,10 @@ export default function PlaybookPage() {
 
       return matchesSearch && matchesStatus;
     });
-  }, [search, statusFilter]);
+  }, [search, statusFilter, mockPlaybooks]);
 
   const selectedPb =
-    MOCK_PLAYBOOKS.find((playbook) => playbook.id === selectedPbId) ?? null;
+    mockPlaybooks.find((playbook) => playbook.id === selectedPbId) ?? null;
 
   const exportPlaybooks = () => {
     const header = [
@@ -453,6 +443,7 @@ export default function PlaybookPage() {
           <button
             type="button"
             className="at-btn at-btn-primary at-btn-sm"
+            onClick={() => alert("Playbook authoring is currently disabled in Demo Mode. Connect a persistence backend to enable this feature.")}
             title="Playbook authoring requires a connected persistence workflow."
           >
             <Plus size={13} />

@@ -1,40 +1,34 @@
 import { SHARED_ENTITIES } from './entities';
 
 export const DEMO_INVESTIGATIONS = [
-  {
-    id: SHARED_ENTITIES.incident,
-    title: 'Lateral Movement via RDP',
-    status: 'In Progress',
-    severity: 'High',
-    assignedTo: 'Analyst-1',
-    createdAt: new Date().toISOString(),
-    relatedEntities: [SHARED_ENTITIES.ip, SHARED_ENTITIES.actor]
-  },
-  {
-    id: 'INV-8821',
-    title: 'Suspicious PowerShell Execution',
-    status: 'Open',
-    severity: 'Medium',
-    assignedTo: 'Analyst-2',
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    relatedEntities: ['wkst-marketing-04', 'Lazarus Group']
-  },
-  {
-    id: 'INV-8834',
-    title: 'Data Exfiltration to Pastebin',
-    status: 'In Progress',
-    severity: 'Critical',
-    assignedTo: 'Analyst-3',
-    createdAt: new Date(Date.now() - 43200000).toISOString(),
-    relatedEntities: ['193.187.112.44', 'Turla']
-  },
-  {
-    id: 'INV-8850',
-    title: 'Multiple Failed SSH Logins',
-    status: 'Closed',
-    severity: 'Low',
-    assignedTo: 'Analyst-1',
-    createdAt: new Date(Date.now() - 172800000).toISOString(),
-    relatedEntities: ['45.33.32.156']
-  }
+  { id: 'INV-8811', title: 'Suspicious Activity 0', status: 'Open', severity: 'Critical', assignedTo: 'Analyst-1', createdAt: '2025-03-04T08:32:34.361Z', relatedEntities: ['192.168.100.10', 'malicious-node-1.net', 'APT28'] },
+  { id: 'INV-8812', title: 'Suspicious Activity 1', status: 'In Progress', severity: 'High', assignedTo: 'Analyst-2', createdAt: '2025-01-15T08:39:23.742Z', relatedEntities: ['192.168.100.10'] },
+  { id: 'INV-8813', title: 'Suspicious Activity 2', status: 'Closed', severity: 'Medium', assignedTo: 'Analyst-3', createdAt: '2024-07-31T21:15:05.606Z', relatedEntities: ['192.168.100.12'] },
+  { id: 'INV-8814', title: 'Suspicious Activity 3', status: 'On Hold', severity: 'Low', assignedTo: 'Analyst-4', createdAt: '2025-06-17T16:21:02.593Z', relatedEntities: ['malicious-node-4.net'] },
+  { id: 'INV-8815', title: 'Suspicious Activity 4', status: 'Open', severity: 'Critical', assignedTo: 'Analyst-5', createdAt: '2025-11-01T16:08:20.126Z', relatedEntities: ['192.168.100.14', 'Sandworm Team'] },
+  { id: 'INV-8816', title: 'Suspicious Activity 5', status: 'In Progress', severity: 'High', assignedTo: 'Analyst-1', createdAt: '2025-07-23T16:40:58.697Z', relatedEntities: ['192.168.100.10'] },
+  { id: 'INV-8817', title: 'Suspicious Activity 6', status: 'Closed', severity: 'Medium', assignedTo: 'Analyst-2', createdAt: '2024-12-25T11:58:53.352Z', relatedEntities: ['192.168.100.16', 'malicious-node-7.net'] },
+  { id: 'INV-8818', title: 'Suspicious Activity 7', status: 'On Hold', severity: 'Low', assignedTo: 'Analyst-3', createdAt: '2025-12-09T02:37:37.826Z', relatedEntities: ['192.168.100.10'] },
+  { id: 'INV-8819', title: 'Suspicious Activity 8', status: 'Open', severity: 'Critical', assignedTo: 'Analyst-4', createdAt: '2025-11-15T01:18:48.470Z', relatedEntities: ['192.168.100.18', 'DarkSide'] },
+  { id: 'INV-8820', title: 'Suspicious Activity 9', status: 'In Progress', severity: 'High', assignedTo: 'Analyst-5', createdAt: '2025-12-20T08:58:06.277Z', relatedEntities: ['malicious-node-10.net'] },
+  { id: 'INV-8821', title: 'Suspicious Activity 10', status: 'Closed', severity: 'Medium', assignedTo: 'Analyst-1', createdAt: '2025-12-31T01:27:20.153Z', relatedEntities: ['192.168.100.20'] },
+  { id: 'INV-8822', title: 'Suspicious Activity 11', status: 'On Hold', severity: 'Low', assignedTo: 'Analyst-2', createdAt: '2026-06-18T09:48:47.066Z', relatedEntities: ['192.168.100.10'] },
+  { id: 'INV-8823', title: 'Suspicious Activity 12', status: 'Open', severity: 'Critical', assignedTo: 'Analyst-3', createdAt: '2025-08-14T16:13:42.870Z', relatedEntities: ['192.168.100.22', 'malicious-node-13.net', 'Kimsuky'] },
+  { id: 'INV-8824', title: 'Suspicious Activity 13', status: 'In Progress', severity: 'High', assignedTo: 'Analyst-4', createdAt: '2024-05-16T22:36:15.733Z', relatedEntities: ['192.168.100.10'] },
+  { id: 'INV-8825', title: 'Suspicious Activity 14', status: 'Closed', severity: 'Medium', assignedTo: 'Analyst-5', createdAt: '2026-04-18T16:56:17.131Z', relatedEntities: ['192.168.100.24'] },
+  { id: 'INV-8826', title: 'Suspicious Activity 15', status: 'On Hold', severity: 'Low', assignedTo: 'Analyst-1', createdAt: '2024-08-03T00:57:57.465Z', relatedEntities: ['malicious-node-16.net'] },
+  { id: 'INV-8827', title: 'Suspicious Activity 16', status: 'Open', severity: 'Critical', assignedTo: 'Analyst-2', createdAt: '2025-12-21T17:10:41.754Z', relatedEntities: ['192.168.100.26', 'Lazarus Group'] },
+  { id: 'INV-8828', title: 'Suspicious Activity 17', status: 'In Progress', severity: 'High', assignedTo: 'Analyst-3', createdAt: '2025-05-02T07:09:21.561Z', relatedEntities: ['192.168.100.10'] },
+  { id: 'INV-8829', title: 'Suspicious Activity 18', status: 'Closed', severity: 'Medium', assignedTo: 'Analyst-4', createdAt: '2025-10-10T21:21:08.014Z', relatedEntities: ['192.168.100.28', 'malicious-node-19.net'] },
+  { id: 'INV-8830', title: 'Suspicious Activity 19', status: 'On Hold', severity: 'Low', assignedTo: 'Analyst-5', createdAt: '2024-07-29T02:22:44.840Z', relatedEntities: ['192.168.100.10'] },
+  { id: 'INV-8831', title: 'Suspicious Activity 20', status: 'Open', severity: 'Critical', assignedTo: 'Analyst-1', createdAt: '2025-05-04T23:04:11.165Z', relatedEntities: ['192.168.100.30', 'APT29'] },
+  { id: 'INV-8832', title: 'Suspicious Activity 21', status: 'In Progress', severity: 'High', assignedTo: 'Analyst-2', createdAt: '2024-12-08T09:34:16.442Z', relatedEntities: ['malicious-node-22.net'] },
+  { id: 'INV-8833', title: 'Suspicious Activity 22', status: 'Closed', severity: 'Medium', assignedTo: 'Analyst-3', createdAt: '2025-06-16T08:40:12.309Z', relatedEntities: ['192.168.100.32'] },
+  { id: 'INV-8834', title: 'Suspicious Activity 23', status: 'On Hold', severity: 'Low', assignedTo: 'Analyst-4', createdAt: '2026-08-16T21:12:16.699Z', relatedEntities: ['192.168.100.10'] },
+  { id: 'INV-8835', title: 'Suspicious Activity 24', status: 'Open', severity: 'Critical', assignedTo: 'Analyst-5', createdAt: '2024-09-09T18:58:09.590Z', relatedEntities: ['192.168.100.34', 'malicious-node-25.net', 'REvil'] },
+  { id: 'INV-8836', title: 'Suspicious Activity 25', status: 'In Progress', severity: 'High', assignedTo: 'Analyst-1', createdAt: '2024-09-21T05:52:35.336Z', relatedEntities: ['192.168.100.10'] },
+  { id: 'INV-8837', title: 'Suspicious Activity 26', status: 'Closed', severity: 'Medium', assignedTo: 'Analyst-2', createdAt: '2025-12-19T04:13:23.443Z', relatedEntities: ['192.168.100.11'] },
+  { id: 'INV-8838', title: 'Suspicious Activity 27', status: 'On Hold', severity: 'Low', assignedTo: 'Analyst-3', createdAt: '2024-12-27T19:16:10.793Z', relatedEntities: ['malicious-node-3.net'] },
+  { id: 'INV-8839', title: 'Suspicious Activity 28', status: 'Open', severity: 'Critical', assignedTo: 'Analyst-4', createdAt: '2024-06-17T06:54:33.367Z', relatedEntities: ['192.168.100.13', 'Hafnium'] },
+  { id: 'INV-8840', title: 'Suspicious Activity 29', status: 'In Progress', severity: 'High', assignedTo: 'Analyst-5', createdAt: '2025-07-09T23:35:25.175Z', relatedEntities: ['192.168.100.10'] },
 ];

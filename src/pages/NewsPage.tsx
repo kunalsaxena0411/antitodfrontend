@@ -131,7 +131,7 @@ export default function NewsPage() {
         );
       }
     );
-  }, [search, activeFilters]);
+  }, [search, activeFilters, MOCK_NEWS]);
 
   const sourceCount =
     new Set(

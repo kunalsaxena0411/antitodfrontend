@@ -17,7 +17,7 @@ import { fetchThreatNews } from '../../services/news';
 import { fetchCveUpdates } from '../../services/cve';
 import { fetchRemoteMalpedia } from '../../services/malpedia';
 
-const DEMO_MODE = true; // Temporary flag to indicate we are in design-review fallback mode
+export const DEMO_MODE = true; // Temporary flag to indicate we are in design-review fallback mode
 
 // We wrap real API calls with a try/catch. If API is missing or fails, we return the demo data.
 export const dataProvider = {
@@ -52,6 +52,7 @@ export const dataProvider = {
   },
 
   getNews: async () => {
+    if (DEMO_MODE) return DEMO_NEWS;
     try {
       const data = await fetchThreatNews();
       if (data && data.length > 0) return data;
@@ -62,6 +63,7 @@ export const dataProvider = {
   },
 
   getCves: async () => {
+    if (DEMO_MODE) return DEMO_CVES;
     try {
       const data = await fetchCveUpdates();
       if (data && data.length > 0) return data;
@@ -72,6 +74,7 @@ export const dataProvider = {
   },
 
   getActors: async () => {
+    if (DEMO_MODE) return DEMO_ACTORS;
     try {
       const data = await fetchRemoteMalpedia();
       if (data && data.length > 0) return data;
