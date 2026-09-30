@@ -666,7 +666,7 @@ export default function CvePage() {
   /* ------------------------------------------------------------------------ */
 
   return (
-    <div className="at-cve-page">
+    <div className="flex flex-col h-full overflow-hidden bg-[#0a0a0a]">
       {/* ================================================================== */
       /* HEADER                                                               */
       /* ================================================================== */}
@@ -695,11 +695,14 @@ export default function CvePage() {
         }
       />
 
+      <div className="flex-1 overflow-y-auto custom-scrollbar">
+        <div className="max-w-[1800px] mx-auto w-full flex flex-col h-full relative">
+
       {/* ================================================================== */
       /* SUMMARY                                                              */
       /* ================================================================== */}
 
-      <section className="flex flex-col gap-6 p-6 border-b border-[#333] bg-[#0a0a0a]">
+      <section className="flex flex-col gap-6 p-6 bg-[#0a0a0a] shrink-0">
         {/* SUMMARY HEADER */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex flex-col gap-2">
@@ -760,7 +763,7 @@ export default function CvePage() {
         </div>
 
         {/* QUERY & SEARCH BAR */}
-        <div className="flex flex-col gap-4 mt-2">
+        <div className="sticky top-0 z-20 flex flex-col gap-4 bg-[#0a0a0a] pb-4 pt-2 border-b border-[#333] px-6">
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative flex-1 min-w-[300px]">
               {advancedMode ? (
@@ -934,13 +937,13 @@ export default function CvePage() {
       /* WORKSPACE                                                            */
       /* ================================================================== */}
 
-      <div className="at-cve-workspace">
+      <div className="p-4 w-full flex-1">
         {/* ================================================================ */
         /* LIST                                                               */
         /* ================================================================ */}
 
-        <section className="at-cve-list">
-          <div className="at-cve-list-head">
+        <section className="flex flex-col border border-[#333] rounded-lg bg-[#111] overflow-hidden h-full">
+          <div className="flex items-center justify-between gap-2.5 px-3.5 min-h-[51px] border-b border-[#333] bg-[#131313]">
             <div>
               <span className="at-v2-kicker">
                 VULNERABILITY FEED
@@ -965,7 +968,7 @@ export default function CvePage() {
             </span>
           </div>
 
-          <div className="at-cve-table-wrap">
+          <div className="w-full">
             <table className="at-cve-table">
               <thead>
                 <tr>
@@ -1552,6 +1555,8 @@ export default function CvePage() {
             </div>
           </aside>
         )}
+      </div>
+        </div>
       </div>
     </div>
   );
