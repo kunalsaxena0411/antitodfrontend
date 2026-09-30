@@ -1092,117 +1092,80 @@ export default function IocPage() {
         </div>
       )}
 
-      {/* ================================================================== */
+            {/* ================================================================== */
       /* INTELLIGENCE SUMMARY                                                */
       /* ================================================================== */}
 
-      <section className="at-ioc-summary">
-        <div className="at-ioc-summary-intro">
-          <span className="at-v2-kicker">
+      <section className="flex flex-col md:flex-row bg-[#111] border border-[#222] rounded-lg mt-3 overflow-hidden shrink-0">
+        {/* Intro */}
+        <div className="flex-1 p-6 border-b md:border-b-0 md:border-r border-[#222] flex flex-col justify-center">
+          <span className="text-[10px] font-bold text-[#666] tracking-wider uppercase block mb-2">
             INDICATOR REPOSITORY
           </span>
-
-          <strong>
-            {iocs.length}
+          <strong className="text-3xl font-light text-white block mb-1">
+            {iocs.length.toLocaleString()}
           </strong>
-
-          <span>
+          <span className="text-xs text-[#888]">
             tracked indicators
           </span>
         </div>
 
-        <div className="at-ioc-summary-types">
-          <div className="at-ioc-type-stat">
-            <span className="at-ioc-type-icon ip">
+        {/* Types */}
+        <div className="flex-[1.5] p-6 border-b md:border-b-0 md:border-r border-[#222] grid grid-cols-2 gap-y-4 gap-x-6">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-md bg-blue-900/20 text-blue-400 border border-blue-900/50 flex items-center justify-center shrink-0">
               <Server size={14} />
-            </span>
-
-            <span>
-              <strong>
-                {typeCounts.ip}
-              </strong>
-
-              <small>
-                IP addresses
-              </small>
-            </span>
+            </div>
+            <div className="flex flex-col min-w-0">
+              <strong className="text-sm text-white truncate">{typeCounts.ip.toLocaleString()}</strong>
+              <span className="text-[10px] text-[#888] uppercase truncate">IP addresses</span>
+            </div>
           </div>
-
-          <div className="at-ioc-type-stat">
-            <span className="at-ioc-type-icon domain">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-md bg-purple-900/20 text-purple-400 border border-purple-900/50 flex items-center justify-center shrink-0">
               <Globe size={14} />
-            </span>
-
-            <span>
-              <strong>
-                {typeCounts.domain}
-              </strong>
-
-              <small>
-                Domains
-              </small>
-            </span>
+            </div>
+            <div className="flex flex-col min-w-0">
+              <strong className="text-sm text-white truncate">{typeCounts.domain.toLocaleString()}</strong>
+              <span className="text-[10px] text-[#888] uppercase truncate">Domains</span>
+            </div>
           </div>
-
-          <div className="at-ioc-type-stat">
-            <span className="at-ioc-type-icon hash">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-md bg-orange-900/20 text-orange-400 border border-orange-900/50 flex items-center justify-center shrink-0">
               <Hash size={14} />
-            </span>
-
-            <span>
-              <strong>
-                {typeCounts.hash}
-              </strong>
-
-              <small>
-                Hashes
-              </small>
-            </span>
+            </div>
+            <div className="flex flex-col min-w-0">
+              <strong className="text-sm text-white truncate">{typeCounts.hash.toLocaleString()}</strong>
+              <span className="text-[10px] text-[#888] uppercase truncate">Hashes</span>
+            </div>
           </div>
-
-          <div className="at-ioc-type-stat">
-            <span className="at-ioc-type-icon url">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-md bg-emerald-900/20 text-emerald-400 border border-emerald-900/50 flex items-center justify-center shrink-0">
               <Link2 size={14} />
-            </span>
-
-            <span>
-              <strong>
-                {typeCounts.url}
-              </strong>
-
-              <small>URLs</small>
-            </span>
+            </div>
+            <div className="flex flex-col min-w-0">
+              <strong className="text-sm text-white truncate">{typeCounts.url.toLocaleString()}</strong>
+              <span className="text-[10px] text-[#888] uppercase truncate">URLs</span>
+            </div>
           </div>
         </div>
 
-        <div className="at-ioc-summary-severity">
-          <div>
-            <i className="critical" />
-
-            <strong>
-              {criticalCount}
-            </strong>
-
-            <small>
-              critical
-            </small>
+        {/* Severity */}
+        <div className="flex-1 p-6 flex flex-col justify-center gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.6)] shrink-0"></div>
+            <strong className="text-sm text-white w-14 truncate">{criticalCount.toLocaleString()}</strong>
+            <span className="text-xs text-[#888] uppercase tracking-wider truncate">critical</span>
           </div>
-
-          <div>
-            <i className="high" />
-
-            <strong>
-              {highCount}
-            </strong>
-
-            <small>
-              high
-            </small>
+          <div className="flex items-center gap-4">
+            <div className="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.6)] shrink-0"></div>
+            <strong className="text-sm text-white w-14 truncate">{highCount.toLocaleString()}</strong>
+            <span className="text-xs text-[#888] uppercase tracking-wider truncate">high</span>
           </div>
         </div>
       </section>
 
-      {/* ================================================================== */
+{/* ================================================================== */
       /* QUERY BAR                                                          */
       /* ================================================================== */}
 
