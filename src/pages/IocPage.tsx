@@ -1205,30 +1205,20 @@ export default function IocPage() {
       /* QUERY BAR                                                          */
       /* ================================================================== */}
 
-      <section className="at-ioc-querybar">
-        <div className="at-ioc-query-row">
-          <div
-            className={`at-ioc-search ${advancedMode
-                ? 'advanced'
-                : ''
-              }`}
-          >
+      <section className="flex flex-col gap-4 mt-6 p-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[300px]">
             {advancedMode ? (
-              <TerminalSquare
-                size={15}
-              />
+              <TerminalSquare size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666]" />
             ) : (
-              <Search size={15} />
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666]" />
             )}
 
             <input
               type="search"
+              className="w-full bg-[#111] border border-[#333] rounded-lg py-2.5 pl-10 pr-10 text-sm text-white placeholder-[#555] focus:outline-none focus:border-red-500 transition-colors"
               value={search}
-              onChange={(event) =>
-                setSearch(
-                  event.target.value,
-                )
-              }
+              onChange={(event) => setSearch(event.target.value)}
               placeholder={
                 advancedMode
                   ? 'type:domain severity:critical source:ThreatFox tag:malware'
@@ -1241,256 +1231,151 @@ export default function IocPage() {
             {search && (
               <button
                 type="button"
-                onClick={() =>
-                  setSearch('')
-                }
+                onClick={() => setSearch('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#666] hover:text-white transition-colors"
                 aria-label="Clear IOC search"
               >
-                <X size={13} />
+                <X size={14} />
               </button>
             )}
           </div>
 
           <button
             type="button"
-            className={`at-ioc-advanced-toggle ${advancedMode
-                ? 'active'
-                : ''
-              }`}
-            onClick={() =>
-              setAdvancedMode(
-                (value) =>
-                  !value,
-              )
-            }
-            aria-pressed={
-              advancedMode
-            }
+            className={`flex items-center gap-2 px-4 py-2.5 border rounded-lg text-sm transition-colors ${
+              advancedMode ? 'bg-red-950/20 border-red-500 text-red-500' : 'bg-[#111] border-[#333] text-[#888] hover:text-white hover:border-[#444]'
+            }`}
+            onClick={() => setAdvancedMode((value) => !value)}
+            aria-pressed={advancedMode}
           >
-            <TerminalSquare
-              size={13}
-            />
+            <TerminalSquare size={14} />
             Advanced
           </button>
 
           <button
             type="button"
-            className={`at-ioc-filter-placeholder ${showFilters
-                ? 'active'
-                : ''
-              }`}
-            onClick={() =>
-              setShowFilters(
-                (value) =>
-                  !value,
-              )
-            }
-            aria-expanded={
-              showFilters
-            }
+            className={`flex items-center gap-2 px-4 py-2.5 border rounded-lg text-sm transition-colors ${
+              showFilters ? 'bg-red-950/20 border-red-500 text-red-500' : 'bg-[#111] border-[#333] text-[#888] hover:text-white hover:border-[#444]'
+            }`}
+            onClick={() => setShowFilters((value) => !value)}
+            aria-expanded={showFilters}
           >
-            <ChevronDown
-              size={13}
-            />
+            <SlidersHorizontal size={14} />
             Filters
+            <ChevronDown size={14} className={`transition-transform ${showFilters ? 'rotate-180' : ''}`} />
           </button>
 
-          <div className="at-ioc-query-divider" />
-
-          <span className="at-ioc-result-count">
-            {filtered.length.toLocaleString()}{' '}
-            {filtered.length === 1
-              ? 'result'
-              : 'results'}
-          </span>
+          <div className="ml-auto text-xs text-[#666] font-medium hidden md:block">
+            {filtered.length.toLocaleString()} {filtered.length === 1 ? 'result' : 'results'}
+          </div>
         </div>
 
         {showFilters && (
-          <div
-            className="at-ioc-filter-panel"
-            role="region"
-            aria-label="IOC filters"
-          >
-            <label className="at-ioc-filter-control">
-              <span>
-                TYPE
-              </span>
-
+          <div className="flex flex-wrap items-center gap-6 p-4 bg-[#111] border border-[#222] rounded-lg">
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-[#888]">Type</label>
               <select
                 value={typeFilter}
-                onChange={(event) =>
-                  setTypeFilter(
-                    event.target
-                      .value as
-                    | 'ALL'
-                    | IocType,
-                  )
-                }
+                onChange={(event) => setTypeFilter(event.target.value as 'ALL' | IocType)}
+                className="bg-black border border-[#333] text-white text-xs rounded px-2 py-1.5 focus:border-red-500 outline-none cursor-pointer"
               >
-                <option value="ALL">
-                  All types
-                </option>
-
-                <option value="ip">
-                  IP address
-                </option>
-
-                <option value="domain">
-                  Domain
-                </option>
-
-                <option value="hash">
-                  Hash
-                </option>
-
-                <option value="url">
-                  URL
-                </option>
+                <option value="ALL">All types</option>
+                <option value="ip">IP address</option>
+                <option value="domain">Domain</option>
+                <option value="hash">Hash</option>
+                <option value="url">URL</option>
               </select>
-            </label>
+            </div>
 
-            <label className="at-ioc-filter-control">
-              <span>
-                SEVERITY
-              </span>
-
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-[#888]">Severity</label>
               <select
-                value={
-                  severityFilter
-                }
-                onChange={(event) =>
-                  setSeverityFilter(
-                    event.target
-                      .value,
-                  )
-                }
+                value={severityFilter}
+                onChange={(event) => setSeverityFilter(event.target.value as IocSeverity)}
+                className="bg-black border border-[#333] text-white text-xs rounded px-2 py-1.5 focus:border-red-500 outline-none cursor-pointer"
               >
-                <option value="ALL">
-                  All severities
-                </option>
-
-                <option value="critical">
-                  Critical
-                </option>
-
-                <option value="high">
-                  High
-                </option>
-
-                <option value="medium">
-                  Medium
-                </option>
-
-                <option value="low">
-                  Low
-                </option>
+                <option value="ALL">All severities</option>
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
               </select>
-            </label>
+            </div>
 
-            <label className="at-ioc-filter-control">
-              <span>
-                SOURCE
-              </span>
-
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-[#888]">Source</label>
               <select
-                value={
-                  sourceFilter
-                }
-                onChange={(event) =>
-                  setSourceFilter(
-                    event.target.value,
-                  )
-                }
+                value={sourceFilter}
+                onChange={(event) => setSourceFilter(event.target.value)}
+                className="bg-black border border-[#333] text-white text-xs rounded px-2 py-1.5 focus:border-red-500 outline-none cursor-pointer max-w-[200px]"
               >
-                <option value="">
-                  All sources
-                </option>
-
-                {sourceOptions.map(
-                  (source) => (
-                    <option
-                      key={source}
-                      value={source}
-                    >
-                      {source}
-                    </option>
-                  ),
-                )}
+                <option value="">All sources</option>
+                {sourceOptions.map((source) => (
+                  <option key={source} value={source}>
+                    {source}
+                  </option>
+                ))}
               </select>
-            </label>
+            </div>
 
             <button
               type="button"
-              className="at-btn at-btn-ghost at-btn-sm"
-              onClick={
-                clearAllFilters
-              }
+              className="ml-auto text-xs text-red-500 hover:text-red-400 font-medium transition-colors"
+              onClick={clearAllFilters}
             >
-              Clear filters
+              Clear all filters
             </button>
           </div>
         )}
 
-        <div className="at-ioc-filter-row">
-          <span className="at-ioc-filter-label">
+        <div className="flex flex-wrap items-center gap-3 pt-2">
+          <span className="text-[10px] font-bold text-[#555] tracking-widest uppercase">
             ACTIVE FILTERS
           </span>
 
           {!hasFilters ? (
-            <span className="at-ioc-filter-empty">
+            <span className="text-xs text-[#444] italic">
               No filters applied
             </span>
           ) : (
             <>
-              {activeFilters.map(
-                (filter) => (
-                  <span
-                    key={filter}
-                    className="at-ioc-filter-chip"
+              {activeFilters.map((filter) => (
+                <span
+                  key={filter}
+                  className="flex items-center gap-1.5 bg-[#1a1a1a] border border-[#333] text-white text-[11px] px-2.5 py-1 rounded-full"
+                >
+                  {filter}
+                  <button
+                    type="button"
+                    onClick={() => removeFilter(filter)}
+                    aria-label={`Remove ${filter}`}
+                    className="text-[#666] hover:text-white transition-colors"
                   >
-                    {filter}
+                    <X size={12} />
+                  </button>
+                </span>
+              ))}
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        removeFilter(
-                          filter,
-                        )
-                      }
-                      aria-label={`Remove ${filter}`}
-                    >
-                      <X size={10} />
-                    </button>
-                  </span>
-                ),
+              {search.trim() && !advancedMode && (
+                <span className="flex items-center gap-1.5 bg-[#1a1a1a] border border-[#333] text-white text-[11px] px-2.5 py-1 rounded-full">
+                  query: {search.trim()}
+                  <button
+                    type="button"
+                    onClick={() => setSearch('')}
+                    aria-label="Remove search query"
+                    className="text-[#666] hover:text-white transition-colors"
+                  >
+                    <X size={12} />
+                  </button>
+                </span>
               )}
-
-              {search.trim() &&
-                !advancedMode && (
-                  <span className="at-ioc-filter-chip">
-                    query:
-                    {search.trim()}
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setSearch('')
-                      }
-                      aria-label="Remove search query"
-                    >
-                      <X size={10} />
-                    </button>
-                  </span>
-                )}
 
               <button
                 type="button"
-                className="at-ioc-clear-all"
-                onClick={
-                  clearAllFilters
-                }
+                className="flex items-center gap-1.5 text-xs text-[#666] hover:text-white transition-colors ml-2"
+                onClick={clearAllFilters}
               >
-                <CircleX size={12} />
+                <CircleX size={14} />
                 Clear all
               </button>
             </>
