@@ -1356,32 +1356,26 @@ export default function IocPage() {
               <tbody>
                 {filtered.length ===
                   0 ? (
-                  <tr>
-                    <td
-                      colSpan={7}
-                      className="at-ioc-empty"
-                    >
-                      <ShieldAlert
-                        size={21}
-                      />
-
-                      <strong>
-                        No indicators found
-                      </strong>
-
-                      <span>
-                        No IOC values match the
-                        current query and filters.
-                      </span>
-
-                      <button
-                        type="button"
-                        onClick={
-                          clearAllFilters
-                        }
-                      >
-                        Clear filters
-                      </button>
+                  <tr className="hover:bg-transparent">
+                    <td colSpan={7} className="p-0 border-b border-[#222] h-[400px]">
+                      <div className="flex flex-col items-center justify-center h-full text-center p-8 w-full">
+                        <div className="w-12 h-12 rounded-full bg-[#111] border border-[#333] flex items-center justify-center text-[#666] mb-4">
+                          <ShieldAlert size={20} />
+                        </div>
+                        <strong className="text-white text-sm block mb-1">
+                          No indicators found
+                        </strong>
+                        <span className="text-[#888] text-xs max-w-[300px] block mb-5">
+                          No IOC values match the current query and filters. Try adjusting your search criteria.
+                        </span>
+                        <button
+                          type="button"
+                          className="px-4 py-2 bg-[#111] border border-[#333] text-white rounded hover:bg-[#222] transition-colors text-xs"
+                          onClick={clearAllFilters}
+                        >
+                          Clear filters
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ) : (
