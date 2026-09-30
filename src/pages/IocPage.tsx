@@ -1092,95 +1092,95 @@ export default function IocPage() {
         </div>
       )}
 
-            {/* ================================================================== */
+                  {/* ================================================================== */
       /* INTELLIGENCE SUMMARY                                                */
       /* ================================================================== */}
 
-      <section className="flex flex-col md:flex-row bg-[#111] border border-[#222] rounded-lg mt-3 overflow-hidden shrink-0">
+      <section className="flex flex-col md:flex-row bg-[#111] border border-[#222] rounded-lg mt-2 overflow-hidden shrink-0">
         {/* Intro */}
-        <div className="flex-1 p-6 border-b md:border-b-0 md:border-r border-[#222] flex flex-col justify-center">
-          <span className="text-[10px] font-bold text-[#666] tracking-wider uppercase block mb-2">
+        <div className="flex-1 p-3 px-4 border-b md:border-b-0 md:border-r border-[#222] flex flex-col justify-center">
+          <span className="text-[9px] font-bold text-[#666] tracking-wider uppercase block mb-1">
             INDICATOR REPOSITORY
           </span>
-          <strong className="text-3xl font-light text-white block mb-1">
+          <strong className="text-2xl font-light text-white block">
             {iocs.length.toLocaleString()}
           </strong>
-          <span className="text-xs text-[#888]">
+          <span className="text-[10px] text-[#888]">
             tracked indicators
           </span>
         </div>
 
         {/* Types */}
-        <div className="flex-[1.5] p-6 border-b md:border-b-0 md:border-r border-[#222] grid grid-cols-2 gap-y-4 gap-x-6">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-md bg-blue-900/20 text-blue-400 border border-blue-900/50 flex items-center justify-center shrink-0">
-              <Server size={14} />
+        <div className="flex-[1.5] p-3 px-4 border-b md:border-b-0 md:border-r border-[#222] grid grid-cols-2 gap-y-2 gap-x-4">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded bg-blue-900/20 text-blue-400 border border-blue-900/50 flex items-center justify-center shrink-0">
+              <Server size={12} />
             </div>
             <div className="flex flex-col min-w-0">
-              <strong className="text-sm text-white truncate">{typeCounts.ip.toLocaleString()}</strong>
-              <span className="text-[10px] text-[#888] uppercase truncate">IP addresses</span>
+              <strong className="text-xs text-white truncate">{typeCounts.ip.toLocaleString()}</strong>
+              <span className="text-[9px] text-[#888] uppercase truncate leading-none mt-0.5">IP addresses</span>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-md bg-purple-900/20 text-purple-400 border border-purple-900/50 flex items-center justify-center shrink-0">
-              <Globe size={14} />
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded bg-purple-900/20 text-purple-400 border border-purple-900/50 flex items-center justify-center shrink-0">
+              <Globe size={12} />
             </div>
             <div className="flex flex-col min-w-0">
-              <strong className="text-sm text-white truncate">{typeCounts.domain.toLocaleString()}</strong>
-              <span className="text-[10px] text-[#888] uppercase truncate">Domains</span>
+              <strong className="text-xs text-white truncate">{typeCounts.domain.toLocaleString()}</strong>
+              <span className="text-[9px] text-[#888] uppercase truncate leading-none mt-0.5">Domains</span>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-md bg-orange-900/20 text-orange-400 border border-orange-900/50 flex items-center justify-center shrink-0">
-              <Hash size={14} />
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded bg-orange-900/20 text-orange-400 border border-orange-900/50 flex items-center justify-center shrink-0">
+              <Hash size={12} />
             </div>
             <div className="flex flex-col min-w-0">
-              <strong className="text-sm text-white truncate">{typeCounts.hash.toLocaleString()}</strong>
-              <span className="text-[10px] text-[#888] uppercase truncate">Hashes</span>
+              <strong className="text-xs text-white truncate">{typeCounts.hash.toLocaleString()}</strong>
+              <span className="text-[9px] text-[#888] uppercase truncate leading-none mt-0.5">Hashes</span>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-md bg-emerald-900/20 text-emerald-400 border border-emerald-900/50 flex items-center justify-center shrink-0">
-              <Link2 size={14} />
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded bg-emerald-900/20 text-emerald-400 border border-emerald-900/50 flex items-center justify-center shrink-0">
+              <Link2 size={12} />
             </div>
             <div className="flex flex-col min-w-0">
-              <strong className="text-sm text-white truncate">{typeCounts.url.toLocaleString()}</strong>
-              <span className="text-[10px] text-[#888] uppercase truncate">URLs</span>
+              <strong className="text-xs text-white truncate">{typeCounts.url.toLocaleString()}</strong>
+              <span className="text-[9px] text-[#888] uppercase truncate leading-none mt-0.5">URLs</span>
             </div>
           </div>
         </div>
 
         {/* Severity */}
-        <div className="flex-1 p-6 flex flex-col justify-center gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.6)] shrink-0"></div>
-            <strong className="text-sm text-white w-14 truncate">{criticalCount.toLocaleString()}</strong>
-            <span className="text-xs text-[#888] uppercase tracking-wider truncate">critical</span>
+        <div className="flex-1 p-3 px-4 flex flex-col justify-center gap-2">
+          <div className="flex items-center gap-2.5">
+            <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)] shrink-0"></div>
+            <strong className="text-xs text-white w-12 truncate">{criticalCount.toLocaleString()}</strong>
+            <span className="text-[10px] text-[#888] uppercase tracking-wider truncate">critical</span>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.6)] shrink-0"></div>
-            <strong className="text-sm text-white w-14 truncate">{highCount.toLocaleString()}</strong>
-            <span className="text-xs text-[#888] uppercase tracking-wider truncate">high</span>
+          <div className="flex items-center gap-2.5">
+            <div className="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)] shrink-0"></div>
+            <strong className="text-xs text-white w-12 truncate">{highCount.toLocaleString()}</strong>
+            <span className="text-[10px] text-[#888] uppercase tracking-wider truncate">high</span>
           </div>
         </div>
       </section>
 
-{/* ================================================================== */
+      {/* ================================================================== */
       /* QUERY BAR                                                          */
       /* ================================================================== */}
 
-      <section className="flex flex-col gap-4 mt-6 p-4">
-        <div className="flex flex-wrap items-center gap-3">
+      <section className="flex flex-col gap-2 mt-3 mb-1 shrink-0">
+        <div className="flex flex-wrap items-center gap-2">
           <div className="relative flex-1 min-w-[300px]">
             {advancedMode ? (
-              <TerminalSquare size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666]" />
+              <TerminalSquare size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#666]" />
             ) : (
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666]" />
+              <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#666]" />
             )}
 
             <input
               type="text"
-              className="w-full bg-[#111] border border-[#333] rounded-lg py-2.5 pl-10 pr-10 text-sm text-white placeholder-[#555] focus:outline-none focus:border-red-500 transition-colors"
+              className="w-full bg-[#111] border border-[#333] rounded-md py-1.5 pl-8 pr-8 text-xs text-white placeholder-[#555] focus:outline-none focus:border-red-500 transition-colors"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder={
@@ -1196,67 +1196,66 @@ export default function IocPage() {
               <button
                 type="button"
                 onClick={() => setSearch('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#666] hover:text-white transition-colors"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#666] hover:text-white transition-colors"
                 aria-label="Clear IOC search"
               >
-                <X size={14} />
+                <X size={12} />
               </button>
             )}
           </div>
 
           <button
             type="button"
-            className={`flex items-center gap-2 px-4 py-2.5 border rounded-lg text-sm transition-colors ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 border rounded-md text-xs transition-colors ${
               advancedMode ? 'bg-red-950/20 border-red-500 text-red-500' : 'bg-[#111] border-[#333] text-[#888] hover:text-white hover:border-[#444]'
             }`}
             onClick={() => setAdvancedMode((value) => !value)}
             aria-pressed={advancedMode}
           >
-            <TerminalSquare size={14} />
+            <TerminalSquare size={12} />
             Advanced
           </button>
 
           <button
             type="button"
-            className={`flex items-center gap-2 px-4 py-2.5 border rounded-lg text-sm transition-colors ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 border rounded-md text-xs transition-colors ${
               showFilters ? 'bg-red-950/20 border-red-500 text-red-500' : 'bg-[#111] border-[#333] text-[#888] hover:text-white hover:border-[#444]'
             }`}
             onClick={() => setShowFilters((value) => !value)}
             aria-expanded={showFilters}
           >
-            <SlidersHorizontal size={14} />
+            <SlidersHorizontal size={12} />
             Filters
-            <ChevronDown size={14} className={`transition-transform ${showFilters ? 'rotate-180' : ''}`} />
           </button>
 
-          <div className="ml-auto text-xs text-[#666] font-medium hidden md:block">
+          <div className="ml-auto text-[10px] text-[#666] font-medium hidden md:block">
             {filtered.length.toLocaleString()} {filtered.length === 1 ? 'result' : 'results'}
           </div>
         </div>
 
         {showFilters && (
-          <div className="flex flex-wrap items-center gap-6 p-4 bg-[#111] border border-[#222] rounded-lg">
+          <div className="flex flex-wrap items-center gap-4 p-2 bg-[#111] border border-[#222] rounded-md">
             <div className="flex items-center gap-2">
-              <label className="text-xs text-[#888]">Type</label>
+              <label className="text-[10px] text-[#888]">Type</label>
               <select
                 value={typeFilter}
                 onChange={(event) => setTypeFilter(event.target.value as 'ALL' | IocType)}
-                className="bg-black border border-[#333] text-white text-xs rounded px-2 py-1.5 focus:border-red-500 outline-none cursor-pointer"
+                className="bg-black border border-[#333] text-white text-[10px] rounded px-1.5 py-1 focus:border-red-500 outline-none cursor-pointer"
               >
                 <option value="ALL">All types</option>
-                <option value="ip">IP address</option>
+                <option value="ip">IP</option>
                 <option value="domain">Domain</option>
                 <option value="hash">Hash</option>
                 <option value="url">URL</option>
               </select>
             </div>
-
+            
             <div className="flex items-center gap-2">
-              <label className="text-xs text-[#888]">Severity</label>
+              <label className="text-[10px] text-[#888]">Severity</label>
               <select
                 value={severityFilter}
-                onChange={(event) => setSeverityFilter(event.target.value as IocSeverity)}
-                className="bg-black border border-[#333] text-white text-xs rounded px-2 py-1.5 focus:border-red-500 outline-none cursor-pointer"
+                onChange={(event) => setSeverityFilter(event.target.value as 'ALL' | 'critical' | 'high' | 'medium' | 'low')}
+                className="bg-black border border-[#333] text-white text-[10px] rounded px-1.5 py-1 focus:border-red-500 outline-none cursor-pointer"
               >
                 <option value="ALL">All severities</option>
                 <option value="critical">Critical</option>
@@ -1265,89 +1264,23 @@ export default function IocPage() {
                 <option value="low">Low</option>
               </select>
             </div>
-
-            <div className="flex items-center gap-2">
-              <label className="text-xs text-[#888]">Source</label>
-              <select
-                value={sourceFilter}
-                onChange={(event) => setSourceFilter(event.target.value)}
-                className="bg-black border border-[#333] text-white text-xs rounded px-2 py-1.5 focus:border-red-500 outline-none cursor-pointer max-w-[200px]"
-              >
-                <option value="">All sources</option>
-                {sourceOptions.map((source) => (
-                  <option key={source} value={source}>
-                    {source}
-                  </option>
-                ))}
-              </select>
-            </div>
-
+            
             <button
               type="button"
-              className="ml-auto text-xs text-red-500 hover:text-red-400 font-medium transition-colors"
-              onClick={clearAllFilters}
+              className="text-[10px] text-[#666] hover:text-white transition-colors flex items-center gap-1 ml-auto"
+              onClick={() => {
+                setTypeFilter('ALL');
+                setSeverityFilter('ALL');
+              }}
             >
-              Clear all filters
+              <CircleX size={10} />
+              Clear filters
             </button>
           </div>
         )}
-
-        <div className="flex flex-wrap items-center gap-3 pt-2">
-          <span className="text-[10px] font-bold text-[#555] tracking-widest uppercase">
-            ACTIVE FILTERS
-          </span>
-
-          {!hasFilters ? (
-            <span className="text-xs text-[#444] italic">
-              No filters applied
-            </span>
-          ) : (
-            <>
-              {activeFilters.map((filter) => (
-                <span
-                  key={filter}
-                  className="flex items-center gap-1.5 bg-[#1a1a1a] border border-[#333] text-white text-[11px] px-2.5 py-1 rounded-full"
-                >
-                  {filter}
-                  <button
-                    type="button"
-                    onClick={() => removeFilter(filter)}
-                    aria-label={`Remove ${filter}`}
-                    className="text-[#666] hover:text-white transition-colors"
-                  >
-                    <X size={12} />
-                  </button>
-                </span>
-              ))}
-
-              {search.trim() && !advancedMode && (
-                <span className="flex items-center gap-1.5 bg-[#1a1a1a] border border-[#333] text-white text-[11px] px-2.5 py-1 rounded-full">
-                  query: {search.trim()}
-                  <button
-                    type="button"
-                    onClick={() => setSearch('')}
-                    aria-label="Remove search query"
-                    className="text-[#666] hover:text-white transition-colors"
-                  >
-                    <X size={12} />
-                  </button>
-                </span>
-              )}
-
-              <button
-                type="button"
-                className="flex items-center gap-1.5 text-xs text-[#666] hover:text-white transition-colors ml-2"
-                onClick={clearAllFilters}
-              >
-                <CircleX size={14} />
-                Clear all
-              </button>
-            </>
-          )}
-        </div>
       </section>
 
-      {/* ================================================================== */
+{/* ================================================================== */
       /* WORKSPACE                                                           */
       /* ================================================================== */}
 
