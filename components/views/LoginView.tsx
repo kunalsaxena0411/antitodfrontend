@@ -77,7 +77,7 @@ export const LoginView: React.FC = () => {
             <ShieldCheck className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-4xl font-cyber font-bold text-white mb-2">
-            XYBERAH
+            ANTITODE
           </h1>
           <p className="text-neutral-400 font-mono text-sm">
             Honeypot Admin Dashboard
@@ -192,7 +192,7 @@ export const LoginView: React.FC = () => {
         {/* Footer */}
         <div className="mt-8 text-center">
           <p className="text-xs text-neutral-600 font-mono">
-            © 2026 Xyberah Security Platform • v2.0
+            © 2026 ANTITODE Security Platform • v2.0
           </p>
         </div>
       </div>
