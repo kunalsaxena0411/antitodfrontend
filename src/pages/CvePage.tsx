@@ -431,7 +431,7 @@ export default function CvePage() {
       })
       .sort((a, b) => {
         const scoreDifference =
-          b.cvss - a.cvss;
+          (b.cvssScore || 0) - (a.cvssScore || 0);
 
         if (scoreDifference !== 0) {
           return scoreDifference;
@@ -616,7 +616,7 @@ export default function CvePage() {
     const payload = filtered.map(
       (cve) => ({
         id: cve.id,
-          cvss: cve.cvss,
+          cvss: cve.cvssScore,
         severity: cve.severity,
         description: cve.description,
         vendor: cve.vendor,
@@ -1060,11 +1060,11 @@ export default function CvePage() {
                         <td>
                           <span
                             className={`at-cve-score ${cvssClass(
-                              cve.cvss,
+                              cve.cvssScore || 0,
                             )}`}
                           >
-                            {cve.cvss && !Number.isNaN(Number(cve.cvss)) ? Number(
-                              cve.cvss,
+                            {cve.cvssScore !== undefined && !Number.isNaN(Number(cve.cvssScore)) ? Number(
+                              cve.cvssScore,
                             ).toFixed(1) : 'N/A'}
                           </span>
                         </td>
@@ -1202,7 +1202,7 @@ export default function CvePage() {
               >
                 CVSS{' '}
                 {Number(
-                  selectedCve.cvss,
+                  selectedCve.cvssScore || 0,
                 ).toFixed(1)}
               </span>
 
@@ -1314,7 +1314,7 @@ export default function CvePage() {
 
                           <strong>
                             {Number(
-                              selectedCve.cvss,
+                              selectedCve.cvssScore || 0,
                             ).toFixed(1)}
                           </strong>
                         </div>
