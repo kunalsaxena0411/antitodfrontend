@@ -5223,13 +5223,14 @@
 
 .at-ioc-summary {
   display: grid;
-  grid-template-columns: 1.25fr repeat(3, minmax(120px, .75fr));
+  grid-template-columns: 1.25fr 1fr 1fr;
   gap: 1px;
   margin-top: 12px;
   overflow: hidden;
   border: 1px solid var(--at-border);
   border-radius: var(--at-radius-lg);
   background: var(--at-border);
+  flex-shrink: 0;
 }
 
 .at-ioc-summary>div {

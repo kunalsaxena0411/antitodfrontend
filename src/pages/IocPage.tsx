@@ -1216,7 +1216,7 @@ export default function IocPage() {
             )}
 
             <input
-              type="search"
+              type="text"
               className="w-full bg-[#111] border border-[#333] rounded-lg py-2.5 pl-10 pr-10 text-sm text-white placeholder-[#555] focus:outline-none focus:border-red-500 transition-colors"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
