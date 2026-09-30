@@ -12,9 +12,14 @@ The redesign changes the application shell and presentation while retaining the 
 - Original Xyberah module taxonomy restored in the sidebar.
 - Global module command palette with `Ctrl/Cmd + K`.
 - Sidebar toggle with `Ctrl/Cmd + B`.
-- All modules render inside the same application URL: `/`.
-- No module navigation pushes `/dashboard`, `/cve`, `/rules`, etc. into the browser URL.
 - Settings is an in-app modal rather than a separate route.
+
+### Routing & Navigation
+
+Unlike the original single-URL design, the application now utilizes a full client-side routing approach:
+- **Per-View Routes**: The application pushes real paths (`/dashboard`, `/cve`, `/rules`, `/investigate`, etc.) into the browser URL when navigating between modules.
+- **History API**: Navigation leverages `window.history.pushState` to dynamically update the URL and browser history without full page reloads (handled in `App.tsx`).
+- **Deep-Linkable**: Every module route is fully deep-linkable. This is enabled by a `vercel.json` rewrite rule that maps all incoming requests (`/(.*)`) back to `/index.html`, allowing the client-side router to correctly initialize the active view based on the URL.
 
 ### Functional source retained
 
