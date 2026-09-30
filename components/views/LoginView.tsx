@@ -1,13 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { authService } from '../../api/services';
-import { handleApiError } from '../../api/client';
-import { ShieldCheck, Lock, Mail, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import { authService } from "../../api/services";
+import { handleApiError } from "../../api/client";
+import {
+  ShieldCheck,
+  Lock,
+  Mail,
+  AlertCircle,
+  Loader2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 
 export const LoginView: React.FC = () => {
   const { saveToken, isAuthenticated } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -15,7 +23,7 @@ export const LoginView: React.FC = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      window.location.href = '/';
+      window.location.href = "/";
     }
   }, [isAuthenticated]);
 
@@ -29,18 +37,16 @@ export const LoginView: React.FC = () => {
         AdminEmail: email,
         AdminPassword: password,
       });
-
-      console.log('[Login] Success:', response.message);
       saveToken(response.token);
-      
+
       // Redirect to main app
       setTimeout(() => {
-        window.location.href = '/';
+        window.location.href = "/";
       }, 500);
     } catch (err) {
       const errorMessage = handleApiError(err);
       setError(errorMessage);
-      console.error('[Login] Error:', errorMessage);
+      console.error("[Login] Error:", errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -50,14 +56,17 @@ export const LoginView: React.FC = () => {
     <div className="min-h-screen bg-[#111] relative overflow-hidden flex items-center justify-center">
       {/* Cyber grid background */}
       <div className="cyber-grid-bg"></div>
-      
+
       {/* Scanlines effect */}
       <div className="scanlines pointer-events-none fixed inset-0 z-50 opacity-5 mix-blend-overlay"></div>
 
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-500/5 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-neutral-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-neutral-500/5 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "1s" }}
+        ></div>
       </div>
 
       {/* Login container */}
@@ -94,7 +103,10 @@ export const LoginView: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email field */}
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-bold text-neutral-300 uppercase tracking-wide">
+              <label
+                htmlFor="email"
+                className="block text-sm font-bold text-neutral-300 uppercase tracking-wide"
+              >
                 Email Address
               </label>
               <div className="relative group">
@@ -115,14 +127,17 @@ export const LoginView: React.FC = () => {
 
             {/* Password field */}
             <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-bold text-neutral-300 uppercase tracking-wide">
+              <label
+                htmlFor="password"
+                className="block text-sm font-bold text-neutral-300 uppercase tracking-wide"
+              >
                 Password
               </label>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500 group-focus-within:text-red-500 transition-colors" />
                 <input
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -137,7 +152,11 @@ export const LoginView: React.FC = () => {
                   disabled={isLoading}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition-colors disabled:opacity-50"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -180,4 +199,3 @@ export const LoginView: React.FC = () => {
     </div>
   );
 };
-
