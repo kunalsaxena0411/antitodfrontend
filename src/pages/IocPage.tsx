@@ -1037,7 +1037,7 @@ export default function IocPage() {
   /* ------------------------------------------------------------------------ */
 
   return (
-    <div className="at-ioc-page">
+    <div className="flex flex-col h-full overflow-hidden bg-[#0a0a0a]">
       {/* ================================================================== */
       /* PAGE HEADER                                                         */
       /* ================================================================== */}
@@ -1092,7 +1092,9 @@ export default function IocPage() {
         </div>
       )}
 
-                  {/* ================================================================== */
+                  <div className="flex-1 overflow-y-auto custom-scrollbar">
+        <div className="max-w-[1800px] mx-auto w-full flex flex-col min-h-full relative px-6">
+      {/* ================================================================== */
       /* INTELLIGENCE SUMMARY                                                */
       /* ================================================================== */}
 
@@ -1169,7 +1171,8 @@ export default function IocPage() {
       /* QUERY BAR                                                          */
       /* ================================================================== */}
 
-      <section className="flex flex-col gap-2 mt-3 mb-1 shrink-0">
+      <div className="sticky top-0 z-20 bg-[#0a0a0a] pt-3 pb-3 border-b border-[#222] mb-4">
+      <section className="flex flex-col gap-2 shrink-0">
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative flex-1 min-w-[300px]">
             {advancedMode ? (
@@ -1279,17 +1282,18 @@ export default function IocPage() {
           </div>
         )}
       </section>
+      </div>
 
 {/* ================================================================== */
       /* WORKSPACE                                                           */
       /* ================================================================== */}
 
-      <div className="at-ioc-workspace">
+      <div className="flex gap-4 flex-1 pb-10 min-h-[500px]">
         {/* ================================================================ */
         /* LIST                                                               */
         /* ================================================================ */}
 
-        <section className="at-ioc-list">
+        <section className="flex flex-col flex-1 border border-[#222] rounded-lg bg-[#111] overflow-visible h-auto">
           <div className="at-ioc-list-head">
             <div>
               <span className="at-v2-kicker">
@@ -1317,7 +1321,7 @@ export default function IocPage() {
             </span>
           </div>
 
-          <div className="at-ioc-table-wrap">
+          <div className="at-ioc-table-wrap !overflow-visible !min-h-0 !h-auto">
             <table className="at-ioc-table">
               <thead>
                 <tr>
@@ -1574,7 +1578,7 @@ export default function IocPage() {
         /* INSPECTOR                                                          */
         /* ================================================================ */}
 
-        <aside className="at-ioc-inspector">
+        <aside className="w-[400px] shrink-0 border border-[#222] rounded-lg bg-[#111] flex flex-col sticky top-[90px] h-[calc(100vh-140px)] overflow-hidden">
           {!selectedIoc ? (
             <div
               className="at-ioc-empty-state"
@@ -1711,7 +1715,7 @@ export default function IocPage() {
               /* Inspector content                                           */
               /* ---------------------------------------------------------- */}
 
-              <div className="at-ioc-inspector-scroll">
+              <div className="flex-1 overflow-y-auto custom-scrollbar p-0">
                 {inspectorTab ===
                   'Overview' && (
                     <div className="at-ioc-inspector-content">
@@ -2020,6 +2024,8 @@ export default function IocPage() {
             </>
           )}
         </aside>
+      </div>
+        </div>
       </div>
     </div>
   );
