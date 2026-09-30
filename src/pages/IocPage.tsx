@@ -21,6 +21,7 @@ import {
   Search,
   Server,
   ShieldAlert,
+  SlidersHorizontal,
   Target,
   TerminalSquare,
   X,
