@@ -7,6 +7,7 @@ import {
   type ElementType,
 } from 'react';
 
+import { exportAsCsv } from '../utils/exportHelpers';
 import {
   Activity,
   AlertTriangle,
@@ -783,6 +784,22 @@ export default function InvestigationPage() {
     }
   };
 
+  const exportGraphCsv = () => {
+    const rows = visibleNodes.map((n) => [
+      n.id,
+      n.type,
+      n.label,
+      n.severity ?? 'none',
+      n.x,
+      n.y,
+    ]);
+    exportAsCsv(
+      'antitode-investigation-nodes',
+      ['Node ID', 'Entity Type', 'Label', 'Severity', 'X', 'Y'],
+      rows,
+    );
+  };
+
   const exportGraph = () => {
     const payload = {
       exportedAt:
@@ -982,13 +999,27 @@ export default function InvestigationPage() {
           <button
             type="button"
             className="at-investigation-tool-button"
+            onClick={exportGraphCsv}
+            disabled={
+              visibleNodes.length === 0
+            }
+            title="Export investigation nodes as CSV"
+          >
+            <Download size={13} />
+            Export CSV
+          </button>
+
+          <button
+            type="button"
+            className="at-investigation-tool-button"
             onClick={exportGraph}
             disabled={
               visibleNodes.length === 0
             }
+            title="Export investigation graph as JSON"
           >
             <Download size={13} />
-            Export
+            Export JSON
           </button>
 
           <button

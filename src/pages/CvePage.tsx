@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 
 import { dataProvider } from '../services/dataProvider';
+import { exportAsCsv } from '../utils/exportHelpers';
 import { useAppData } from '../contexts/AppDataContext';
 import PageHeader from '../components/layout/PageHeader';
 
@@ -636,6 +637,24 @@ export default function CvePage() {
     );
   };
 
+  const handleExportCsv = () => {
+    const rows = filtered.map((cve) => [
+      cve.id,
+      cve.cvssScore,
+      cve.severity,
+      cve.vendor,
+      cve.product,
+      cve.exploitAvailable ? 'Yes' : 'No',
+      cve.published,
+      cve.description,
+    ]);
+    exportAsCsv(
+      'antitode-cve-export',
+      ['CVE ID', 'CVSS', 'Severity', 'Vendor', 'Product', 'Exploit Available', 'Published', 'Description'],
+      rows,
+    );
+  };
+
   const openNvdRecord = (
     cveId: string,
   ) => {
@@ -683,15 +702,26 @@ export default function CvePage() {
         title="CVE Database"
         description="Track and analyze Common Vulnerabilities and Exposures."
         actions={
-          <button
-            type="button"
-            className="at-btn at-btn-secondary at-btn-sm"
-            onClick={handleExport}
-            title={`Export ${filtered.length} visible CVEs`}
-          >
-            <Download size={13} />
-            Export JSON
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="at-btn at-btn-secondary at-btn-sm"
+              onClick={handleExportCsv}
+              title={`Export ${filtered.length} visible CVEs as CSV`}
+            >
+              <Download size={13} />
+              Export CSV
+            </button>
+            <button
+              type="button"
+              className="at-btn at-btn-secondary at-btn-sm"
+              onClick={handleExport}
+              title={`Export ${filtered.length} visible CVEs as JSON`}
+            >
+              <Download size={13} />
+              Export JSON
+            </button>
+          </div>
         }
       />
 

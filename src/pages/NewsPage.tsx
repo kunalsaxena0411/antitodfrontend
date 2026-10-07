@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 
 import { dataProvider } from '../services/dataProvider';
+import { exportAsJson } from '../utils/exportHelpers';
 import { useAppData } from '../contexts/AppDataContext';
 
 import PageHeader from '../components/layout/PageHeader';
@@ -187,6 +188,15 @@ export default function NewsPage() {
     );
   };
 
+  const handleExportJson = () => {
+    exportAsJson(
+      'antitode-news-report',
+      'Threat Intelligence News',
+      filtered,
+      { search, selectedCategory },
+    );
+  };
+
   const handleExportReport = () => {
     const header = [
       'Published',
@@ -259,14 +269,26 @@ export default function NewsPage() {
         title="Threat Intelligence Feed"
         description="Aggregated and normalized security news, advisories, and research."
         actions={
-          <button
-            type="button"
-            className="at-btn at-btn-secondary at-btn-sm"
-            onClick={handleExportReport}
-          >
-            <Download size={13} />
-            Export Report
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="at-btn at-btn-secondary at-btn-sm"
+              onClick={handleExportReport}
+              title="Export visible news as CSV"
+            >
+              <Download size={13} />
+              Export CSV
+            </button>
+            <button
+              type="button"
+              className="at-btn at-btn-secondary at-btn-sm"
+              onClick={handleExportJson}
+              title="Export visible news as JSON"
+            >
+              <Download size={13} />
+              Export JSON
+            </button>
+          </div>
         }
       />
 

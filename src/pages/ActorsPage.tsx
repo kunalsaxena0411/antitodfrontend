@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 
 import { dataProvider } from '../services/dataProvider';
+import { exportAsJson } from '../utils/exportHelpers';
 import { useAppData } from '../contexts/AppDataContext';
 import PageHeader from '../components/layout/PageHeader';
 
@@ -387,6 +388,15 @@ export default function ActorsPage() {
     );
   };
 
+  const handleExportJson = () => {
+    exportAsJson(
+      'antitode-threat-actors',
+      'Threat Actors',
+      filtered,
+      { query },
+    );
+  };
+
   /* ------------------------------------------------------------------------ */
   /*                           Search handler                                 */
   /* ------------------------------------------------------------------------ */
@@ -419,15 +429,26 @@ export default function ActorsPage() {
         title="Threat Actors"
         description="Dossiers and profiles on state-sponsored, financial, and hacktivist groups."
         actions={
-          <button
-            type="button"
-            className="at-btn at-btn-secondary at-btn-sm"
-            onClick={handleExport}
-            title={`Export ${filtered.length} visible actor profiles`}
-          >
-            <Download size={13} />
-            Export
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="at-btn at-btn-secondary at-btn-sm"
+              onClick={handleExport}
+              title={`Export ${filtered.length} visible actor profiles as CSV`}
+            >
+              <Download size={13} />
+              Export CSV
+            </button>
+            <button
+              type="button"
+              className="at-btn at-btn-secondary at-btn-sm"
+              onClick={handleExportJson}
+              title={`Export ${filtered.length} visible actor profiles as JSON`}
+            >
+              <Download size={13} />
+              Export JSON
+            </button>
+          </div>
         }
       />
 

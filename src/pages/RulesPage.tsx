@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { exportAsJson } from '../utils/exportHelpers';
 import {
   Download,
   Plus,
@@ -139,6 +140,15 @@ export default function RulesPage() {
 
   const selectedRule =
     rules.find((rule) => rule.id === selectedRuleId) ?? null;
+
+  const exportRulesJson = () => {
+    exportAsJson(
+      'antitode-detection-rules',
+      'Detection Rules',
+      filtered,
+      { search, severityFilter, statusFilter, formatFilter },
+    );
+  };
 
   const exportRules = () => {
     const header = [
@@ -473,9 +483,20 @@ note:
             type="button"
             onClick={exportRules}
             className="at-btn at-btn-secondary at-btn-sm"
+            title="Export detection rules as CSV"
           >
             <Download size={13} />
-            Export
+            Export CSV
+          </button>
+
+          <button
+            type="button"
+            onClick={exportRulesJson}
+            className="at-btn at-btn-secondary at-btn-sm"
+            title="Export detection rules as JSON"
+          >
+            <Download size={13} />
+            Export JSON
           </button>
 
           <button

@@ -25,6 +25,7 @@ import {
 
 import type { LogEventV2 } from '../../api/services';
 import { dataProvider } from '../services/dataProvider';
+import { exportAsJson } from '../utils/exportHelpers';
 import PageHeader from '../components/layout/PageHeader';
 
 interface HoneypotLogsProps {
@@ -153,6 +154,14 @@ function downloadFile(
   document.body.removeChild(anchor);
 
   URL.revokeObjectURL(url);
+}
+
+function exportEventsToJson(events: LogEventV2[]): void {
+  exportAsJson(
+    'antitode-honeypot-events',
+    'Honeypot Logs',
+    events,
+  );
 }
 
 function exportEventsToCsv(
@@ -511,6 +520,19 @@ export default function HoneypotLogsPage({
             >
               <Download size={13} />
               Export CSV
+            </button>
+            <button
+              type="button"
+              className="at-btn at-btn-secondary at-btn-sm"
+              disabled={
+                filtered.length === 0
+              }
+              onClick={() =>
+                exportEventsToJson(filtered)
+              }
+            >
+              <Download size={13} />
+              Export JSON
             </button>
           </>
         }

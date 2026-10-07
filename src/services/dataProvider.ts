@@ -17,7 +17,7 @@ import { fetchThreatNews } from '../../services/news';
 import { fetchCveUpdates } from '../../services/cve';
 import { fetchRemoteMalpedia } from '../../services/malpedia';
 
-export const DEMO_MODE = true; // Temporary flag to indicate we are in design-review fallback mode
+export const DEMO_MODE = false; // Live mode — fetches real data from public sources (news, CVE, actors)
 
 // We wrap real API calls with a try/catch. If API is missing or fails, we return the demo data.
 export const dataProvider = {

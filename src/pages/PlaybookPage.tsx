@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { exportAsJson } from '../utils/exportHelpers';
 import {
   Download,
   Plus,
@@ -103,6 +104,15 @@ export default function PlaybookPage() {
 
   const selectedPb =
     mockPlaybooks.find((playbook) => playbook.id === selectedPbId) ?? null;
+
+  const exportPlaybooksJson = () => {
+    exportAsJson(
+      'antitode-playbooks',
+      'Playbooks',
+      filtered,
+      { search, statusFilter },
+    );
+  };
 
   const exportPlaybooks = () => {
     const header = [
@@ -435,9 +445,20 @@ export default function PlaybookPage() {
             type="button"
             onClick={exportPlaybooks}
             className="at-btn at-btn-secondary at-btn-sm"
+            title="Export playbooks as CSV"
           >
             <Download size={13} />
-            Export
+            Export CSV
+          </button>
+
+          <button
+            type="button"
+            onClick={exportPlaybooksJson}
+            className="at-btn at-btn-secondary at-btn-sm"
+            title="Export playbooks as JSON"
+          >
+            <Download size={13} />
+            Export JSON
           </button>
 
           <button
