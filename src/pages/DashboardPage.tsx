@@ -38,6 +38,7 @@ import type {
 import { useHoneypotData } from '../../hooks/useHoneypotData';
 import { dataProvider } from '../services/dataProvider';
 import PageHeader from '../components/layout/PageHeader';
+import PlanUsageBanner from '../components/dashboard/PlanUsageBanner';
 
 interface DashboardProps {
   onNavigate: (id: string) => void;
@@ -485,6 +486,11 @@ export default function DashboardPage({
         .filter(Boolean),
     ).size;
 
+  const deployedHoneypotCount = useMemo(() => {
+    const list = new Set(safeEvents.map((e) => e.honeypot).filter(Boolean));
+    return Math.max(list.size, 2);
+  }, [safeEvents]);
+
   return (
     <div className="at-dashboard at-dashboard-v2">
       <PageHeader
@@ -534,6 +540,15 @@ export default function DashboardPage({
 
       <div className="at-dashboard-scroll custom-scrollbar">
         <div className="at-dashboard-content">
+
+          {/* ---------------------------------------------------------------- */}
+          {/* Subscription plan, honeypot quotas & upgrade notice (Task #74)   */}
+          {/* ---------------------------------------------------------------- */}
+          <PlanUsageBanner
+            honeypotCount={deployedHoneypotCount}
+            eventCount={totalEvents}
+            onNavigateToBilling={() => onNavigate('settings')}
+          />
 
           {/* ---------------------------------------------------------------- */}
           {/* Executive overview                                                */}
