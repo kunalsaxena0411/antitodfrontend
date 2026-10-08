@@ -48,6 +48,7 @@ import { useAnalysisData } from '../../hooks/useAnalysisData';
 import { PLAYBOOKS } from '../../services/playbooks';
 
 import { AppDataProvider } from '../contexts/AppDataContext';
+import { findNavItem, isPreview as isNavPreview, canonicalViewId } from '../data/navigation';
 
 /* -------------------------------------------------------------------------- */
 /*                                New Pages                                   */
@@ -176,6 +177,38 @@ function LegacyWrapper({ children }: { children: ReactNode }) {
     >
       {children}
     </section>
+  );
+}
+
+/**
+ * Renders a dismissable preview banner above a module's content
+ * when the active view is marked as `status: 'preview'`.
+ */
+function PreviewBanner({ viewId, children }: { viewId: string; children: ReactNode }) {
+  const [dismissed, setDismissed] = useState<string | null>(null);
+  const navItem = findNavItem(canonicalViewId(viewId));
+  const showBanner = navItem && isNavPreview(navItem) && dismissed !== viewId;
+
+  return (
+    <>
+      {showBanner && (
+        <div className="at-preview-banner" role="status">
+          <span className="at-preview-banner-badge">Preview</span>
+          <span className="at-preview-banner-text">
+            This module is under active development and may use sample data.
+          </span>
+          <button
+            type="button"
+            className="at-preview-banner-dismiss"
+            onClick={() => setDismissed(viewId)}
+            aria-label="Dismiss preview notice"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+      {children}
+    </>
   );
 }
 
@@ -654,7 +687,9 @@ export default function ViewRouter({
         onNavigate,
       }}
     >
-      {renderedView}
+      <PreviewBanner viewId={activeView}>
+        {renderedView}
+      </PreviewBanner>
     </AppDataProvider>
   );
 }

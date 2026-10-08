@@ -9,7 +9,7 @@ import {
   Star,
   X,
 } from 'lucide-react';
-import { BOTTOM_ITEMS, NAV_GROUPS, canonicalViewId, type NavGroup, type NavItem } from '../../data/navigation';
+import { BOTTOM_ITEMS, NAV_GROUPS, VISIBLE_NAV_GROUPS, canonicalViewId, isPreview, isVisible, type NavGroup, type NavItem } from '../../data/navigation';
 import { routeForView } from '../../data/routes';
 
 interface SidebarProps {
@@ -43,20 +43,24 @@ function readStored<T>(key: string, fallback: T): T {
 
 function SidebarItem({ item, active, collapsed, favorite, onNavigate, onToggleFavorite }: SidebarItemProps) {
   const Icon = item.icon;
-
-
+  const preview = isPreview(item);
 
   return (
-    <div className={`at-sidebar-item-wrap ${active ? 'is-active' : ''}`}>
+    <div className={`at-sidebar-item-wrap ${active ? 'is-active' : ''} ${preview ? 'is-preview' : ''}`}>
       <button
         type="button"
         className={`at-sidebar-item ${active ? 'is-active' : ''}`}
         onClick={() => onNavigate(item.id)}
-        title={collapsed ? `${item.label} • ${routeForView(item.id)}` : item.label}
+        title={collapsed ? `${item.label}${preview ? ' (Preview)' : ''} • ${routeForView(item.id)}` : item.label}
         aria-current={active ? 'page' : undefined}
       >
         <span className="at-sidebar-item-icon"><Icon size={16} strokeWidth={active ? 2.1 : 1.8} /></span>
-        {!collapsed && <span className="at-sidebar-item-label">{item.label}</span>}
+        {!collapsed && (
+          <>
+            <span className="at-sidebar-item-label">{item.label}</span>
+            {preview && <span className="at-sidebar-preview-badge">Preview</span>}
+          </>
+        )}
       </button>
 
       {!collapsed && (
@@ -167,9 +171,9 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
 
   const filteredGroups = useMemo(() => {
     const value = menuSearch.trim().toLowerCase();
-    if (!value) return NAV_GROUPS;
+    if (!value) return VISIBLE_NAV_GROUPS;
 
-    return NAV_GROUPS
+    return VISIBLE_NAV_GROUPS
       .map((group) => ({
         ...group,
         items: group.items.filter((item) => `${item.label} ${item.desc}`.toLowerCase().includes(value)),
@@ -178,7 +182,7 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
   }, [menuSearch]);
 
   const favoriteItems = useMemo(() => {
-    const all = NAV_GROUPS.flatMap((group) => group.items);
+    const all = NAV_GROUPS.flatMap((group) => group.items).filter(isVisible);
     return favorites.map((id) => all.find((item) => item.id === id)).filter(Boolean) as NavItem[];
   }, [favorites]);
 
@@ -406,7 +410,7 @@ export default function Sidebar({ activeView, collapsed, onToggle, onNavigate, o
           </section>
         )}
 
-        {(menuSearch ? filteredGroups : NAV_GROUPS).map((group) => (
+        {(menuSearch ? filteredGroups : VISIBLE_NAV_GROUPS).map((group) => (
           <SidebarGroup
             key={group.title}
             group={group}
