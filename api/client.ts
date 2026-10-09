@@ -67,6 +67,7 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       console.warn("[API] Unauthorized access - clearing token");
       localStorage.removeItem(AUTH_CONFIG.TOKEN_KEY);
+      localStorage.removeItem(AUTH_CONFIG.TOKEN_EXPIRES_KEY);
       window.dispatchEvent(new Event("auth-changed"));
 
       // Only redirect if not already on login page

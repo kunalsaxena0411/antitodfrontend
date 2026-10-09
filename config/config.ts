@@ -13,7 +13,9 @@ export const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY ?? '';
 export const API_ENDPOINTS = {
     // Admin endpoints
     ADMIN_LOGIN: '/AdminRoutes/adminLogin',
+    ADMIN_VERIFY_OTP: '/AdminRoutes/adminVerifyOtp',
     VERIFY_ADMIN_TOKEN: '/AdminRoutes/verifyAdminAuthToken',
+    ADMIN_ME: '/AdminRoutes/me',
     REGISTER_SERVER: '/AdminRoutes/registerServer',
     REGISTER_SHIPPER: '/AdminRoutes/registerShipper',
     LIST_SERVERS: '/AdminRoutes/listServers',
@@ -22,6 +24,17 @@ export const API_ENDPOINTS = {
     REACTIVATE_SHIPPER: '/AdminRoutes/reactivateShipper',
     DELETE_SERVER: '/AdminRoutes/servers/:serverId',
     DELETE_SHIPPER: '/AdminRoutes/shippers/:shipperId',
+
+    // RBAC
+    RBAC_PERMISSIONS: '/AdminRoutes/rbac/permissions',
+    RBAC_GROUPS: '/AdminRoutes/rbac/groups',
+    RBAC_GROUP: '/AdminRoutes/rbac/groups/:groupId',
+    RBAC_USERS: '/AdminRoutes/rbac/users',
+    RBAC_USER: '/AdminRoutes/rbac/users/:adminId',
+    RBAC_AUDIT: '/AdminRoutes/rbac/audit',
+
+    // Billing & Plan
+    BILLING_USAGE: '/AdminRoutes/billing/usage',
 
     // V1 HoneyPot endpoints (legacy)
     INGEST_LOGS_V1: '/HoneyPotRoutes/ingestHoneyPotLogs',
@@ -48,6 +61,14 @@ export const API_ENDPOINTS = {
     GET_HOST_TIMELINE_V3: '/HoneyPotRoutes/v3/hosts/:ip/timeline',
     GET_ACTIVITY_TIMELINE_V3: '/HoneyPotRoutes/v3/activity/timeline',
     GET_THREAT_MAP_V3: '/HoneyPotRoutes/v3/threat-map',
+
+    // Exports
+    EXPORT_CSV: '/HoneyPotRoutes/export/csv',
+    EXPORT_JSON: '/HoneyPotRoutes/export/json',
+    EXPORT_STIX: '/HoneyPotRoutes/export/stix',
+    EXPORT_PDF: '/HoneyPotRoutes/export/pdf',
+    EXPORT_TAXII_PUSH: '/HoneyPotRoutes/export/taxii/push',
+    TAXII_DISCOVERY: '/taxii2/',
 
     // IOC Routes
     IOC_STATS: '/IocRoutes/stats',
@@ -100,5 +121,6 @@ export const API_ENDPOINTS = {
 
 export const AUTH_CONFIG = {
     TOKEN_KEY: 'admin-auth-token',
+    TOKEN_EXPIRES_KEY: 'admin-auth-token-expires',
     TOKEN_HEADER: 'authtoken',
 } as const;

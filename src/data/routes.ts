@@ -37,6 +37,7 @@ const ROUTE_SLUGS: Record<string, string> = {
   recon: 'recon',
   chat: 'ai-assistant',
   help: 'system-guide',
+  access_control: 'access-control',
 };
 
 const PATH_TO_VIEW = Object.fromEntries(
