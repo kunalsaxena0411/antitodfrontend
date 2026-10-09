@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, Command, Search } from 'lucide-react';
-import { NAV_GROUPS, canonicalViewId, findNavGroup, type NavItem } from '../../data/navigation';
+import { NAV_GROUPS, VISIBLE_NAV_ITEMS, canonicalViewId, findNavGroup, isPreview, type NavItem } from '../../data/navigation';
 import { routeForView } from '../../data/routes';
 
 interface CommandPaletteProps {
@@ -14,12 +14,11 @@ export default function CommandPalette({ isOpen, onClose, onNavigate }: CommandP
   const [cursor, setCursor] = useState(0);
 
   const items = useMemo<NavItem[]>(() => {
-    const all = NAV_GROUPS.flatMap((group) => group.items);
     const value = query.trim().toLowerCase();
 
-    if (!value) return all.slice(0, 12);
+    if (!value) return VISIBLE_NAV_ITEMS.slice(0, 12);
 
-    return all.filter((item) => `${item.label} ${item.desc} ${routeForView(item.id)}`.toLowerCase().includes(value)).slice(0, 30);
+    return VISIBLE_NAV_ITEMS.filter((item) => `${item.label} ${item.desc} ${routeForView(item.id)}`.toLowerCase().includes(value)).slice(0, 30);
   }, [query]);
 
   useEffect(() => {
@@ -105,7 +104,10 @@ export default function CommandPalette({ isOpen, onClose, onNavigate }: CommandP
                 >
                   <span className="at-command-result-icon"><Icon size={15} /></span>
                   <span className="at-command-result-copy">
-                    <strong>{item.label}</strong>
+                    <strong>
+                      {item.label}
+                      {isPreview(item) && <span className="at-command-preview-badge">Preview</span>}
+                    </strong>
                     <small>{item.desc}</small>
                   </span>
                   {index === cursor && <ArrowRight size={14} />}
