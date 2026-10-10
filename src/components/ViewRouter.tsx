@@ -92,6 +92,7 @@ import { NetworkTopologyView } from '../../components/views/NetworkTopologyView'
 import { InfrastructureView } from '../../components/views/InfrastructureView';
 import { XyberahReconView } from '../../components/views/XyberahReconView';
 import { ExploitView } from '../../components/views/ExploitView';
+import { AccessControlView } from '../../components/views/AccessControlView';
 
 /* -------------------------------------------------------------------------- */
 /*                                  Types                                     */
@@ -639,6 +640,14 @@ export default function ViewRouter({
       renderedView = (
         <LegacyWrapper>
           <InfrastructureView />
+        </LegacyWrapper>
+      );
+      break;
+
+    case 'access_control':
+      renderedView = (
+        <LegacyWrapper>
+          <AccessControlView />
         </LegacyWrapper>
       );
       break;

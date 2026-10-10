@@ -145,6 +145,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     title: 'System',
     items: [
+      { id: 'access_control', icon: Users, label: 'Access Control', desc: 'Manage users, RBAC groups, and inspect the security audit trail.' },
       { id: 'chat', icon: MessageSquare, label: 'AI Assistant', desc: 'Interact with the integrated AI security analyst.', status: 'hidden' },
       { id: 'help', icon: HelpCircle, label: 'System Guide', desc: 'Documentation, shortcuts, and help topics.' },
     ],

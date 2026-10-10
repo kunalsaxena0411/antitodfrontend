@@ -5,3 +5,4 @@ export * from './adminService';
 export * from './iocService';
 export * from './agentService';
 export * from './openasmClient';
+export * from './rbacService';
