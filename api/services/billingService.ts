@@ -40,8 +40,9 @@ export interface BillingUsage {
   };
   plan?: BillingPlanInfo;
   usage?: {
-    servers: BillingResourceUsage;
-    users: BillingResourceUsage;
+    servers?: BillingResourceUsage;
+    honeypots?: BillingResourceUsage;
+    users?: BillingResourceUsage;
   };
   retentionDays?: number;
   exportFormats?: string[];

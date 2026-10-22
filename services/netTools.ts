@@ -94,7 +94,7 @@ export const resolveIpToAsn = async (ip: string): Promise<string | null> => {
 
     // Strategy 2: IPAPI.is (Rich data, but sometimes rate limited)
     try {
-        const data = await fetchJsonWithCors<IpApiIsResult>(`https://api.ipapi.is/?q=${ip}`);
+        const data = normalizeIpApi(await fetchJsonWithCors<any>(`https://api.ipapi.is/?q=${ip}`));
         if (data.asn && data.asn.asn) return `AS${data.asn.asn}`;
     } catch (e) {
         // Continue
@@ -103,10 +103,28 @@ export const resolveIpToAsn = async (ip: string): Promise<string | null> => {
     return null;
 };
 
+// ipapi.is now returns a flat, reduced payload on the free tier. Map either shape to IpApiIsResult.
+const normalizeIpApi = (d: any): IpApiIsResult => {
+    if (d && typeof d.asn === 'object' && d.location) return d as IpApiIsResult;
+    const asnStr = String(d?.asn ?? '');
+    const m = asnStr.match(/^AS?(\d+)\s*(.*)$/i);
+    return {
+        ...d,
+        ip: d?.ip ?? '',
+        asn: { asn: m ? Number(m[1]) : 0, org: m?.[2] || d?.company || '', domain: '', route: '', descr: m?.[2] || '', country: d?.country ?? '', active: true, type: '' },
+        company: d?.company ? { name: typeof d.company === 'string' ? d.company : d.company.name, domain: '', type: '' } : undefined,
+        location: {
+            city: d?.city ?? '', zip: '', country: d?.country ?? '', country_code: d?.country_code ?? '', state: d?.region ?? d?.state ?? '',
+            latitude: Number(d?.lat ?? 0), longitude: Number(d?.lon ?? 0), timezone: d?.timezone ?? '', local_time: '',
+        },
+        whois: d?.whois ?? { desc: '', text: '', source: '' },
+    } as IpApiIsResult;
+};
+
 export const fetchIpApiData = async (ip: string): Promise<IpApiIsResult> => {
     try {
         // Use fetchJsonWithCors for robust proxying
-        return await fetchJsonWithCors<IpApiIsResult>(`https://api.ipapi.is/?q=${ip}`);
+        return normalizeIpApi(await fetchJsonWithCors<any>(`https://api.ipapi.is/?q=${ip}`));
     } catch (e) {
         throw new Error("IP API lookup failed");
     }

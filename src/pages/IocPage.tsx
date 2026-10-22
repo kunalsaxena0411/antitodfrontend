@@ -780,7 +780,7 @@ export default function IocPage() {
             'domain',
         ).length,
 
-        hash: iocs.filter(
+        hash: iocStats.file_hashes || iocs.filter(
           (ioc) =>
             ioc.type === 'hash',
         ).length,
@@ -790,20 +790,20 @@ export default function IocPage() {
             ioc.type === 'url',
         ).length,
       }),
-      [iocs],
+      [iocs, iocStats],
     );
 
   const criticalCount =
     iocs.filter(
       (ioc) =>
-        ioc.severity ===
+        String(ioc.severity).toLowerCase() ===
         'critical',
     ).length;
 
   const highCount =
     iocs.filter(
       (ioc) =>
-        ioc.severity === 'high',
+        String(ioc.severity).toLowerCase() === 'high',
     ).length;
 
   /* ------------------------------------------------------------------------ */
@@ -1135,7 +1135,7 @@ export default function IocPage() {
             INDICATOR REPOSITORY
           </span>
           <strong className="text-2xl font-light text-white block">
-            {iocs.length.toLocaleString()}
+            {(iocStats?.total_indicators || total || iocs.length).toLocaleString()}
           </strong>
           <span className="text-[10px] text-[#888]">
             tracked indicators

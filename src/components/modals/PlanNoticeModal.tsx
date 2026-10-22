@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   AlertTriangle,
   Check,
+  Loader2,
+  Mail,
   X,
+  Zap,
 } from 'lucide-react';
 import {
   PLAN_TIERS,
   getStoredPlan,
-  setStoredPlan,
   type PlanTier,
 } from '../../data/planTiering';
+import { billingService } from '../../../api/services/billingService';
+import { isPublicDemo } from '../../utils/demoMode';
 
 export interface PlanNoticeEventDetail {
   status?: number;
@@ -28,12 +32,37 @@ export const PlanNoticeModal: React.FC = () => {
   const [type, setType] = useState<
     'INACTIVE' | 'LIMIT_REACHED' | 'FEATURE_UNAVAILABLE' | 'GENERAL'
   >('GENERAL');
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const isDemo = isPublicDemo();
+
+  const loadActivePlan = useCallback(async () => {
+    if (isDemo) return;
+    try {
+      const usage = await billingService.getUsage();
+      if (!usage.platform && usage.plan?.id) {
+        const pid = usage.plan.id.toLowerCase();
+        if (pid === 'basic' || pid === 'pro' || pid === 'enterprise') {
+          setCurrentPlan(pid as PlanTier);
+        }
+      }
+    } catch {
+      // Fallback to stored plan
+    }
+  }, [isDemo]);
+
+  useEffect(() => {
+    void loadActivePlan();
+  }, [loadActivePlan]);
 
   useEffect(() => {
     const handleInactive = (e: Event) => {
       const custom = e as CustomEvent<PlanNoticeEventDetail>;
       setDetail(custom.detail || {});
       setType('INACTIVE');
+      setErrorMessage(null);
+      void loadActivePlan();
       setIsOpen(true);
     };
 
@@ -41,6 +70,8 @@ export const PlanNoticeModal: React.FC = () => {
       const custom = e as CustomEvent<PlanNoticeEventDetail>;
       setDetail(custom.detail || {});
       setType('LIMIT_REACHED');
+      setErrorMessage(null);
+      void loadActivePlan();
       setIsOpen(true);
     };
 
@@ -48,6 +79,8 @@ export const PlanNoticeModal: React.FC = () => {
       const custom = e as CustomEvent<PlanNoticeEventDetail>;
       setDetail(custom.detail || {});
       setType('FEATURE_UNAVAILABLE');
+      setErrorMessage(null);
+      void loadActivePlan();
       setIsOpen(true);
     };
 
@@ -55,6 +88,8 @@ export const PlanNoticeModal: React.FC = () => {
       const custom = e as CustomEvent<PlanNoticeEventDetail>;
       setDetail(custom.detail || {});
       setType('GENERAL');
+      setErrorMessage(null);
+      void loadActivePlan();
       setIsOpen(true);
     };
 
@@ -78,21 +113,51 @@ export const PlanNoticeModal: React.FC = () => {
       window.removeEventListener('open-plan-upgrade', handleOpenModal);
       window.removeEventListener('plan-changed', handlePlanChanged);
     };
-  }, []);
+  }, [loadActivePlan]);
 
   if (!isOpen) return null;
 
   const plan = PLAN_TIERS[currentPlan] || PLAN_TIERS.basic;
 
-  const handleSelectPlan = (tierKey: PlanTier) => {
-    setCurrentPlan(tierKey);
-    setStoredPlan(tierKey);
-    window.dispatchEvent(
-      new CustomEvent('plan-changed', {
-        detail: { plan: tierKey, tierConfig: PLAN_TIERS[tierKey] },
-      })
-    );
-    setIsOpen(false);
+  const handleUpgradeToPro = async () => {
+    if (isDemo) return;
+    setErrorMessage(null);
+    setIsSubscribing(true);
+
+    try {
+      const res = await billingService.subscribe('pro');
+      if (res?.shortUrl) {
+        window.location.href = res.shortUrl;
+        return;
+      }
+      if (res?.checkout) {
+        await billingService.openCheckout(res.checkout);
+        // After checkout completes, reload billing usage
+        await loadActivePlan();
+        setIsOpen(false);
+        return;
+      }
+      setErrorMessage('Online payments are not enabled yet');
+    } catch (err: any) {
+      const code = err?.response?.data?.code;
+      const status = err?.response?.status;
+      if (code === 'RAZORPAY_NOT_CONFIGURED' || status === 503 || status === 502) {
+        setErrorMessage('Online payments are not enabled yet');
+      } else {
+        const msg = err?.response?.data?.message || err?.message || 'Online payments are not enabled yet';
+        setErrorMessage(
+          msg.toLowerCase().includes('configured') || msg.toLowerCase().includes('payment')
+            ? 'Online payments are not enabled yet'
+            : msg
+        );
+      }
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
+
+  const handleContactSales = () => {
+    window.location.href = 'mailto:sales@antitode.ai?subject=ANTITODE%20Enterprise%20Plan%20Inquiry';
   };
 
   return (
@@ -128,8 +193,34 @@ export const PlanNoticeModal: React.FC = () => {
           </button>
         </div>
 
-        {/* Optional context banner if opened via limit or inactive event */}
-        {detail.message && type !== 'GENERAL' && (
+        {/* Demo Mode Read-Only Notice */}
+        {isDemo && (
+          <div className="mb-4 p-3 rounded-lg bg-amber-950/30 border border-amber-500/30 text-xs font-mono text-amber-200 flex items-center gap-2">
+            <AlertTriangle size={14} className="text-amber-400 shrink-0" />
+            <span>Demo Mode: Plan upgrades and payment processing are read-only for public evaluation accounts.</span>
+          </div>
+        )}
+
+        {/* Error / Gateway Unconfigured Notice */}
+        {errorMessage && (
+          <div className="mb-4 p-3 rounded-lg bg-red-950/40 border border-[#d62828]/40 text-xs font-mono text-red-200 flex items-center justify-between gap-2 animate-fade-in">
+            <div className="flex items-center gap-2">
+              <AlertTriangle size={14} className="text-[#ef4444] shrink-0" />
+              <span>{errorMessage}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setErrorMessage(null)}
+              className="text-neutral-400 hover:text-white p-1"
+              aria-label="Dismiss error"
+            >
+              <X size={12} />
+            </button>
+          </div>
+        )}
+
+        {/* Context banner if opened via limit or inactive event */}
+        {detail.message && type !== 'GENERAL' && !errorMessage && (
           <div className="mb-4 p-3 rounded-lg bg-red-950/40 border border-[#d62828]/40 text-xs font-mono text-neutral-300 flex items-center gap-2">
             <AlertTriangle size={14} className="text-[#ef4444] shrink-0" />
             <span>{detail.message}</span>
@@ -163,8 +254,8 @@ export const PlanNoticeModal: React.FC = () => {
                     {tier.name.toUpperCase()}
                   </span>
                   <div className="at-tier-price my-2 flex items-baseline gap-1">
-                    {tier.priceMonthly === 0 ? (
-                      <strong className="text-2xl font-bold text-white">Free</strong>
+                    {tier.id === 'enterprise' || tier.priceMonthly === 0 ? (
+                      <strong className="text-2xl font-bold text-white">Contact Sales</strong>
                     ) : (
                       <>
                         <strong className="text-2xl font-bold text-white">${tier.priceMonthly}</strong>
@@ -185,12 +276,18 @@ export const PlanNoticeModal: React.FC = () => {
                     </strong>
                   </div>
                   <div className="at-tier-quota-item flex items-center justify-between">
+                    <span className="text-neutral-400">Team Seats:</span>
+                    <strong className="text-neutral-200 font-bold">
+                      {tier.maxUsers >= 9999 ? 'Unlimited' : `${tier.maxUsers} ${tier.maxUsers === 1 ? 'Seat' : 'Seats'}`}
+                    </strong>
+                  </div>
+                  <div className="at-tier-quota-item flex items-center justify-between">
                     <span className="text-neutral-400">Monthly Events:</span>
                     <strong className="text-neutral-200 font-bold">
                       {tier.maxEventsPerMonth >= 1000000
                         ? 'Unlimited'
                         : tier.id === 'pro'
-                        ? '1,00,000'
+                        ? '100,000'
                         : tier.maxEventsPerMonth.toLocaleString()}
                     </strong>
                   </div>
@@ -223,18 +320,47 @@ export const PlanNoticeModal: React.FC = () => {
                       <Check size={13} />
                       Active Plan
                     </button>
+                  ) : tier.id === 'enterprise' ? (
+                    <button
+                      type="button"
+                      className="at-btn at-btn-secondary at-btn-full w-full py-2.5 px-3 rounded-lg bg-neutral-800 hover:bg-neutral-700 active:bg-neutral-600 text-white border border-white/10 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                      onClick={handleContactSales}
+                    >
+                      <Mail size={13} />
+                      Contact Sales
+                    </button>
+                  ) : tier.id === 'pro' ? (
+                    <button
+                      type="button"
+                      disabled={isDemo || isSubscribing}
+                      className={`at-btn at-btn-full w-full py-2.5 px-3 rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-md ${
+                        isDemo
+                          ? 'bg-neutral-800 text-neutral-500 border border-neutral-700 cursor-not-allowed opacity-60'
+                          : 'at-btn-primary bg-[#d62828] hover:bg-[#b91c1c] active:bg-[#991b1b] text-white border border-[#d62828] shadow-[#d62828]/25 hover:shadow-[#d62828]/40 cursor-pointer'
+                      }`}
+                      onClick={handleUpgradeToPro}
+                    >
+                      {isSubscribing ? (
+                        <>
+                          <Loader2 size={13} className="animate-spin" />
+                          Processing...
+                        </>
+                      ) : isDemo ? (
+                        'Read Only in Demo'
+                      ) : (
+                        <>
+                          <Zap size={13} />
+                          Upgrade to Pro
+                        </>
+                      )}
+                    </button>
                   ) : (
                     <button
                       type="button"
-                      className={`at-btn at-btn-full w-full py-2.5 px-3 rounded-lg font-bold text-xs flex items-center justify-center transition-all cursor-pointer shadow-md ${
-                        tier.popular
-                          ? 'at-btn-primary bg-[#d62828] hover:bg-[#b91c1c] active:bg-[#991b1b] text-white border border-[#d62828] shadow-[#d62828]/25 hover:shadow-[#d62828]/40'
-                          : 'at-btn-secondary bg-neutral-800 hover:bg-neutral-700 active:bg-neutral-600 text-white border border-white/10'
-                      }`}
-                      onClick={() => handleSelectPlan(tier.id)}
+                      className="at-btn at-btn-secondary at-btn-full w-full py-2.5 px-3 rounded-lg bg-neutral-800 text-neutral-500 border border-neutral-700 font-bold text-xs flex items-center justify-center cursor-default opacity-60"
+                      disabled
                     >
-                      {tier.priceMonthly > plan.priceMonthly ? 'Upgrade to ' : 'Switch to '}
-                      {tier.name}
+                      Basic Plan
                     </button>
                   )}
                 </div>

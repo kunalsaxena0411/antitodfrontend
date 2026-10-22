@@ -19,6 +19,8 @@ import {
   setStoredPlan,
   type PlanTier,
 } from '../../data/planTiering';
+import { billingService } from '../../../api/services/billingService';
+import { isPublicDemo } from '../../utils/demoMode';
 
 interface PlanUsageBannerProps {
   /** Count of active honeypots deployed */
@@ -34,15 +36,40 @@ export default function PlanUsageBanner({
   eventCount,
   onNavigateToBilling,
 }: PlanUsageBannerProps) {
-  const [currentPlan, setCurrentPlan] = useState<PlanTier>(getStoredPlan);
+  const [currentPlan, setCurrentPlan] = useState<PlanTier>(() => (isPublicDemo() ? 'pro' : getStoredPlan()));
   const [isBannerDismissed, setIsBannerDismissed] = useState(false);
+  // Server-side plan and server usage (the source of truth, same as the header). Falls back to local values.
+  const [serverUsage, setServerUsage] = useState<{ used: number; limit: number } | null>(null);
+
+  useEffect(() => {
+    if (isPublicDemo()) return;
+    let mounted = true;
+    billingService
+      .getUsage()
+      .then((d) => {
+        if (!mounted || !d || d.platform) return;
+        const id = d.plan?.id;
+        if (id === 'basic' || id === 'pro' || id === 'enterprise') setCurrentPlan(id as PlanTier);
+        const s = d.usage?.honeypots || d.usage?.servers;
+        if (s && typeof s.used === 'number' && typeof s.limit === 'number') {
+          setServerUsage({ used: s.used, limit: s.limit });
+        }
+      })
+      .catch(() => {
+        /* keep local fallback */
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const plan = PLAN_TIERS[currentPlan];
-  const maxHoneypots = plan.maxHoneypots;
+  const maxHoneypots = serverUsage?.limit ?? plan.maxHoneypots;
   const maxEvents = plan.maxEventsPerMonth;
+  const honeypotUsed = serverUsage?.used ?? honeypotCount;
 
   // Usage ratios
-  const honeypotRatio = Math.min(100, Math.round((honeypotCount / maxHoneypots) * 100));
+  const honeypotRatio = Math.min(100, Math.round((honeypotUsed / maxHoneypots) * 100));
   const eventRatio = Math.min(100, Math.round((eventCount / maxEvents) * 100));
 
   const isNearLimit = honeypotRatio >= 75 || eventRatio >= 75;
@@ -74,10 +101,10 @@ export default function PlanUsageBanner({
               <Sparkles size={16} />
             </span>
             <div className="at-plan-upgrade-copy">
-              <strong>Unlock Pro Capabilities: JSON Exports &amp; 10 Honeypots</strong>
+              <strong>Unlock Pro Capabilities: JSON Exports &amp; 35 Honeypots</strong>
               <p>
                 Your Basic plan includes CSV export only. Upgrade to Pro to enable automated JSON threat feeds,
-                deploy up to 10 honeypots, and access automated MITRE ATT&amp;CK scoring.
+                deploy up to 35 honeypots, and access automated MITRE ATT&amp;CK scoring.
               </p>
             </div>
           </div>
@@ -89,7 +116,7 @@ export default function PlanUsageBanner({
               onClick={openUpgradeModal}
             >
               <Zap size={13} />
-              Upgrade to Pro — $49/mo
+              Upgrade to Pro — ${PLAN_TIERS.pro.priceMonthly}/mo
             </button>
             <button
               type="button"
@@ -151,7 +178,7 @@ export default function PlanUsageBanner({
                 Active Honeypots
               </span>
               <span className="at-plan-meter-val">
-                <strong>{honeypotCount}</strong> / {maxHoneypots >= 9999 ? '∞' : maxHoneypots}
+                <strong>{honeypotUsed}</strong> / {maxHoneypots >= 9999 ? '∞' : maxHoneypots}
               </span>
             </div>
             <div className="at-plan-progress-track">
@@ -165,12 +192,12 @@ export default function PlanUsageBanner({
             <div className="at-plan-meter-sub">
               {maxHoneypots >= 9999 ? (
                 <span>Unlimited deployments enabled</span>
-              ) : honeypotCount >= maxHoneypots ? (
+              ) : honeypotUsed >= maxHoneypots ? (
                 <span className="at-text-danger">
                   <AlertTriangle size={11} /> Quota reached — upgrade to add more
                 </span>
               ) : (
-                <span>{maxHoneypots - honeypotCount} slot{maxHoneypots - honeypotCount === 1 ? '' : 's'} available</span>
+                <span>{maxHoneypots - honeypotUsed} slot{maxHoneypots - honeypotUsed === 1 ? '' : 's'} available</span>
               )}
             </div>
           </div>

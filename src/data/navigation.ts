@@ -1,3 +1,4 @@
+import { isPublicDemo } from '../utils/demoMode';
 import {
   Bug,
   Cable,
@@ -53,6 +54,9 @@ export interface NavGroup {
 
 /** Resolve the effective status of a nav item (defaults to 'live'). */
 export function viewStatus(item: NavItem): ViewStatus {
+  // Threat Actors is empty for real accounts (the Malpedia feed has names only), so hide it
+  // outside the public demo until profiles are enriched with MITRE ATT&CK group data.
+  if (item.id === 'actors') return isPublicDemo() ? 'live' : 'hidden';
   return item.status ?? 'live';
 }
 

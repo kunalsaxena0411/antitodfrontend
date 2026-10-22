@@ -15,13 +15,13 @@ export const DEMO_URLHAUS: UrlHausEntry[] = [
 
 export const DEMO_FEODO: FeodoTrackerEntry[] = [
     { ip_address: '185.112.5.3', port: 443, status: 'online', hostname: 'unknown', as_number: 12345, as_name: 'MAL-AS', country: 'RU', first_seen: '2026-09-20T10:00:00Z', last_online: '2026-09-29T11:00:00Z', malware: 'QakBot' },
-    { ip_address: '192.168.100.11', port: 8080, status: 'online', hostname: 'host-11.net', as_number: 1011, as_name: 'HOST11-AS', country: 'US', first_seen: '2026-09-25T10:00:00Z', last_online: '2026-09-29T10:30:00Z', malware: 'CobaltStrike' },
+    { ip_address: '203.0.113.11', port: 8080, status: 'online', hostname: 'host-11.net', as_number: 1011, as_name: 'HOST11-AS', country: 'US', first_seen: '2026-09-25T10:00:00Z', last_online: '2026-09-29T10:30:00Z', malware: 'CobaltStrike' },
     { ip_address: '45.33.32.156', port: 80, status: 'offline', hostname: 'linode.com', as_number: 63949, as_name: 'LINODE', country: 'US', first_seen: '2026-09-01T10:00:00Z', last_online: '2026-09-28T11:00:00Z', malware: 'TrickBot' }
 ];
 
 export const DEMO_THREATFOX: ThreatFoxEntry[] = [
     { id: '2001', ioc_value: 'malicious-node.xyz', ioc_type: 'domain', threat_type: 'botnet_cc', malware: 'qakbot', malware_printable: 'QakBot', first_seen_utc: '2026-09-20T10:00:00Z', last_seen_utc: '2026-09-29T11:00:00Z', confidence_level: 95, reference: null },
-    { id: '2002', ioc_value: '192.168.100.11:8080', ioc_type: 'ip:port', threat_type: 'botnet_cc', malware: 'cobaltstrike', malware_printable: 'Cobalt Strike', first_seen_utc: '2026-09-25T10:00:00Z', last_seen_utc: '2026-09-29T10:30:00Z', confidence_level: 100, reference: null },
+    { id: '2002', ioc_value: '203.0.113.11:8080', ioc_type: 'ip:port', threat_type: 'botnet_cc', malware: 'cobaltstrike', malware_printable: 'Cobalt Strike', first_seen_utc: '2026-09-25T10:00:00Z', last_seen_utc: '2026-09-29T10:30:00Z', confidence_level: 100, reference: null },
     { id: '2003', ioc_value: '8df726...hash...1', ioc_type: 'sha256_hash', threat_type: 'payload', malware: 'remcos', malware_printable: 'Remcos RAT', first_seen_utc: '2026-09-28T10:00:00Z', last_seen_utc: '2026-09-28T10:00:00Z', confidence_level: 85, reference: null }
 ];
 

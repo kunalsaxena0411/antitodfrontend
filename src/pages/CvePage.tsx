@@ -372,14 +372,14 @@ export default function CvePage() {
           return true;
         }
 
-        return cve.severity === severityFilter;
+        return String(cve.severity || '').toLowerCase() === String(severityFilter || '').toLowerCase();
       })
       .filter((cve) => {
         if (!exploitOnly) {
           return true;
         }
 
-        return cve.exploitAvailable;
+        return Boolean(cve.exploitAvailable || cve.hasExploit || cve.isKev);
       })
       .filter((cve) => {
         if (!vendorFilter) {
@@ -394,8 +394,8 @@ export default function CvePage() {
         }
 
         return (
-          cve.severity ===
-          parsedQuery.severity
+          String(cve.severity || '').toLowerCase() ===
+          String(parsedQuery.severity || '').toLowerCase()
         );
       })
       .filter((cve) => {
@@ -403,10 +403,8 @@ export default function CvePage() {
           return true;
         }
 
-        return (
-          cve.exploitAvailable ===
-          parsedQuery.exploit
-        );
+        const isExploit = Boolean(cve.exploitAvailable || cve.hasExploit || cve.isKev);
+        return isExploit === parsedQuery.exploit;
       })
       .filter((cve) => {
         if (!parsedQuery.vendor) {
@@ -459,7 +457,7 @@ export default function CvePage() {
     () =>
       MOCK_CVES.filter(
         (cve) =>
-          cve.severity === 'critical',
+          String(cve.severity || '').toLowerCase() === 'critical',
       ).length,
     [MOCK_CVES],
   );
@@ -468,7 +466,7 @@ export default function CvePage() {
     () =>
       MOCK_CVES.filter(
         (cve) =>
-          cve.severity === 'high',
+          String(cve.severity || '').toLowerCase() === 'high',
       ).length,
     [MOCK_CVES],
   );
@@ -476,7 +474,7 @@ export default function CvePage() {
   const exploitCount = useMemo(
     () =>
       MOCK_CVES.filter(
-        (cve) => cve.exploitAvailable,
+        (cve) => Boolean(cve.exploitAvailable || cve.hasExploit || cve.isKev),
       ).length,
     [MOCK_CVES],
   );
@@ -776,7 +774,7 @@ export default function CvePage() {
               </div>
               <div className="flex flex-col">
                 <strong className="text-sm text-white leading-none">{exploitCount}</strong>
-                <small className="text-[10px] text-[#888] uppercase tracking-wider">Exploits</small>
+                <small className="text-[10px] text-[#888] uppercase tracking-wider">Exploited in the Wild</small>
               </div>
             </div>
 
@@ -1078,10 +1076,9 @@ export default function CvePage() {
                                 {cve.id}
                               </button>
 
-                              {cve.exploitAvailable && (
+                              {(cve.exploitAvailable || cve.hasExploit || cve.isKev) && (
                                 <span className="at-cve-id-meta">
-                                  EXPLOIT
-                                  AVAILABLE
+                                  EXPLOITED IN THE WILD
                                 </span>
                               )}
                             </div>
@@ -1092,13 +1089,15 @@ export default function CvePage() {
 
                         <td>
                           <span
-                            className={`at-cve-score ${cvssClass(
-                              cve.cvssScore || 0,
-                            )}`}
+                            className={`at-cve-score ${
+                              cve.cvssScore && Number(cve.cvssScore) > 0
+                                ? cvssClass(Number(cve.cvssScore))
+                                : 'none'
+                            }`}
                           >
-                            {cve.cvssScore !== undefined && !Number.isNaN(Number(cve.cvssScore)) ? Number(
-                              cve.cvssScore,
-                            ).toFixed(1) : 'N/A'}
+                            {cve.cvssScore && !Number.isNaN(Number(cve.cvssScore)) && Number(cve.cvssScore) > 0
+                              ? Number(cve.cvssScore).toFixed(1)
+                              : 'N/A'}
                           </span>
                         </td>
 
@@ -1231,25 +1230,29 @@ export default function CvePage() {
 
             <div className="at-cve-inspector-meta">
               <span
-                className={`at-cve-inspector-score ${selectedCve.severity}`}
+                className={`at-cve-inspector-score ${
+                  selectedCve.cvssScore && Number(selectedCve.cvssScore) > 0
+                    ? cvssClass(Number(selectedCve.cvssScore))
+                    : 'none'
+                }`}
               >
                 CVSS{' '}
-                {Number(
-                  selectedCve.cvssScore || 0,
-                ).toFixed(1)}
+                {selectedCve.cvssScore && Number(selectedCve.cvssScore) > 0
+                  ? Number(selectedCve.cvssScore).toFixed(1)
+                  : 'N/A'}
               </span>
 
               <span
-                className={`at-cve-inspector-severity ${selectedCve.severity}`}
+                className={`at-cve-inspector-severity ${severityClass(selectedCve.severity)}`}
               >
                 <i />
-                {selectedCve.severity}
+                {severityLabel(selectedCve.severity)}
               </span>
 
-              {selectedCve.exploitAvailable && (
+              {(selectedCve.exploitAvailable || selectedCve.hasExploit || selectedCve.isKev) && (
                 <span className="at-cve-exploit-badge">
                   <Target size={10} />
-                  EXPLOIT AVAILABLE
+                  EXPLOITED IN THE WILD
                 </span>
               )}
             </div>
@@ -1346,11 +1349,33 @@ export default function CvePage() {
                           <span>CVSS</span>
 
                           <strong>
-                            {Number(
-                              selectedCve.cvssScore || 0,
-                            ).toFixed(1)}
+                            {selectedCve.cvssScore && Number(selectedCve.cvssScore) > 0
+                              ? Number(selectedCve.cvssScore).toFixed(1)
+                              : 'N/A'}
                           </strong>
                         </div>
+
+                        {selectedCve.epss && (
+                          <div>
+                            <span>EPSS</span>
+                            <strong>
+                              {(selectedCve.epss.score * 100).toFixed(2)}% ({Math.round(selectedCve.epss.percentile * 100)}th percentile)
+                            </strong>
+                          </div>
+                        )}
+
+                        {selectedCve.weaknesses && selectedCve.weaknesses.length > 0 && (
+                          <div className="col-span-2">
+                            <span>CWE / WEAKNESSES</span>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {selectedCve.weaknesses.map((cwe: string, i: number) => (
+                                <span key={i} className="text-xs px-2 py-0.5 rounded bg-[#1c1c1c] text-[#aaa] font-mono">
+                                  {cwe}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
 
                         <div>
                           <span>
@@ -1501,8 +1526,41 @@ export default function CvePage() {
               /* References                                                    */
               /* ------------------------------------------------------------ */}
 
-              {inspectorTab ===
-                'References' && (
+              {inspectorTab === 'References' && (
+                selectedCve.references && selectedCve.references.length > 0 ? (
+                  <div className="flex flex-col gap-3 p-4">
+                    <span className="text-[10px] font-bold text-[#888] tracking-widest uppercase">
+                      Reference Links ({selectedCve.references.length})
+                    </span>
+                    <div className="flex flex-col gap-2">
+                      {selectedCve.references.map((ref: any, idx: number) => {
+                        const url = typeof ref === 'string' ? ref : ref.url;
+                        const tags = typeof ref === 'object' && Array.isArray(ref.tags) ? ref.tags : [];
+                        return (
+                          <a
+                            key={idx}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-between p-2.5 rounded bg-[#111] hover:bg-[#1a1a1a] border border-[#222] transition-colors group"
+                          >
+                            <span className="text-xs text-blue-400 group-hover:underline truncate max-w-[400px]">
+                              {url}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              {tags.map((tag: string, tIdx: number) => (
+                                <span key={tIdx} className="text-[10px] px-1.5 py-0.5 rounded bg-[#222] text-[#888]">
+                                  {tag}
+                                </span>
+                              ))}
+                              <ExternalLink size={12} className="text-[#666] group-hover:text-white" />
+                            </div>
+                          </a>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
                   <div className="at-cve-empty-state">
                     <ExternalLink
                       size={22}
@@ -1533,7 +1591,8 @@ export default function CvePage() {
                       />
                     </button>
                   </div>
-                )}
+                )
+              )}
             </div>
 
             {/* -------------------------------------------------------------- */

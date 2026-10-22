@@ -281,13 +281,14 @@
   flex: 0 0 30px;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(214, 40, 40, 0.35);
+  border: 1px solid var(--theme-accent-glow, rgba(214, 40, 40, 0.35));
   border-radius: 7px;
   background: #131313;
-  color: #ef4b4b;
+  color: var(--theme-accent, #ef4b4b);
   font:
     700 14px/1 Inter,
     sans-serif;
+  transition: border-color 150ms ease, color 150ms ease;
 }
 
 .at-sidebar-brand-copy {
@@ -632,8 +633,8 @@
 }
 
 .at-sidebar-item.is-active {
-  border-color: rgba(229, 72, 77, 0.14);
-  background: rgba(229, 72, 77, 0.085);
+  border-color: var(--theme-accent-glow, rgba(229, 72, 77, 0.14));
+  background: var(--theme-accent-muted, rgba(229, 72, 77, 0.085));
   color: #f4f4f4;
 }
 
@@ -644,8 +645,10 @@
   left: -8px;
   width: 2px;
   border-radius: 0 2px 2px 0;
-  background: #d62828;
+  background: var(--theme-accent, #d62828);
+  box-shadow: 0 0 8px var(--theme-accent-glow, rgba(214, 40, 40, 0.4));
   content: "";
+  transition: background 150ms ease, box-shadow 150ms ease;
 }
 
 .at-sidebar-item-icon {
@@ -16819,3 +16822,88 @@
   color: #64748b;
   font-size: 11px;
 }
+
+/* ========================================================================
+   Dynamic Theme Palettes & Accent Styling
+   ======================================================================== */
+:root {
+  --theme-accent: #ef4444;
+  --theme-accent-hover: #dc2626;
+  --theme-accent-muted: rgba(239, 68, 68, 0.12);
+  --theme-accent-glow: rgba(239, 68, 68, 0.35);
+}
+
+body.theme-cyber {
+  --theme-accent: #f72585;
+  --theme-accent-hover: #b5179e;
+  --theme-accent-muted: rgba(247, 37, 133, 0.14);
+  --theme-accent-glow: rgba(247, 37, 133, 0.4);
+}
+
+body.theme-nordic {
+  --theme-accent: #38bdf8;
+  --theme-accent-hover: #0ea5e9;
+  --theme-accent-muted: rgba(56, 189, 248, 0.14);
+  --theme-accent-glow: rgba(56, 189, 248, 0.4);
+}
+
+body.theme-ember {
+  --theme-accent: #f97316;
+  --theme-accent-hover: #ea580c;
+  --theme-accent-muted: rgba(249, 115, 22, 0.14);
+  --theme-accent-glow: rgba(249, 115, 22, 0.4);
+}
+
+body.theme-sentinel {
+  --theme-accent: #00f5d4;
+  --theme-accent-hover: #00bbf9;
+  --theme-accent-muted: rgba(0, 245, 212, 0.14);
+  --theme-accent-glow: rgba(0, 245, 212, 0.4);
+}
+
+body.theme-fortress {
+  --theme-accent: #a855f7;
+  --theme-accent-hover: #9333ea;
+  --theme-accent-muted: rgba(168, 85, 247, 0.14);
+  --theme-accent-glow: rgba(168, 85, 247, 0.4);
+}
+
+body.theme-dark {
+  --theme-accent: #ef4444;
+  --theme-accent-hover: #dc2626;
+  --theme-accent-muted: rgba(239, 68, 68, 0.14);
+  --theme-accent-glow: rgba(239, 68, 68, 0.4);
+}
+
+body.theme-light {
+  --theme-accent: #2563eb;
+  --theme-accent-hover: #1d4ed8;
+  --theme-accent-muted: rgba(37, 99, 235, 0.14);
+  --theme-accent-glow: rgba(37, 99, 235, 0.35);
+}
+
+body.theme-terminal {
+  --theme-accent: #22c55e;
+  --theme-accent-hover: #16a34a;
+  --theme-accent-muted: rgba(34, 197, 94, 0.14);
+  --theme-accent-glow: rgba(34, 197, 94, 0.4);
+}
+
+.at-sidebar-group-title.has-active {
+  color: var(--theme-accent, #ef4444);
+}
+
+.at-btn-primary {
+  border-color: var(--theme-accent, #d62828) !important;
+  background: var(--theme-accent, #d62828) !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 12px var(--theme-accent-glow, rgba(214, 40, 40, 0.2)) !important;
+  transition: all 180ms ease !important;
+}
+
+.at-btn-primary:hover {
+  border-color: var(--theme-accent-hover, #ef4444) !important;
+  background: var(--theme-accent-hover, #ef4444) !important;
+  box-shadow: 0 5px 20px var(--theme-accent-glow, rgba(214, 40, 40, 0.35)) !important;
+}
+

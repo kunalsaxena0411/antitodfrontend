@@ -26,7 +26,7 @@ const generateMockEvents = (): LogEventV2[] => {
       event_id: `EVT-${10000 + i}`,
       timestamp,
       honeypot: 'cowrie',
-      src_ip: rand > 0.8 ? '185.15.20.10' : `192.168.1.${Math.floor(Math.random() * 255)}`,
+      src_ip: rand > 0.8 ? '185.15.20.10' : `203.0.113.${Math.floor(Math.random() * 255)}`,
       src_port: Math.floor(Math.random() * 65535),
       dst_ip: '10.0.0.5',
       dst_port: rand > 0.7 ? 3389 : 22,

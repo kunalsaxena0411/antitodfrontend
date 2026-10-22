@@ -457,11 +457,9 @@ export default function Header({
                       }}
                       className="w-full py-2.5 px-3 rounded-lg bg-[#d62828] hover:bg-[#b91c1c] active:bg-[#991b1b] text-white font-bold text-center border border-[#d62828] transition-all shadow-md shadow-[#d62828]/25 hover:shadow-[#d62828]/40 cursor-pointer"
                     >
-                      {usage.plan.id === 'pro'
-                        ? 'Upgrade to Enterprise ($199/mo)'
-                        : usage.plan.id === 'enterprise'
-                        ? 'Manage Subscription Tiers'
-                        : 'Upgrade to Pro ($49/mo)'}
+                      {usage.plan.id === 'basic'
+                        ? `Upgrade to Pro ($${usage.upgrade?.priceUsdPerMonth ?? 155}/mo)`
+                        : 'Manage Subscription'}
                     </button>
                   </div>
                 )}

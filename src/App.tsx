@@ -3,8 +3,15 @@ import ViewRouter from './components/ViewRouter';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { DEMO_HOSTS, DEMO_ACTORS, DEMO_CVES, DEMO_CVE_FEEDS, DEMO_NEWS, DEMO_EXPLOITS, DEMO_URLHAUS, DEMO_FEODO, DEMO_THREATFOX, DEMO_MALWAREBAZAAR, DEMO_SSLBL, DEMO_JA3, DEMO_RANSOMWARE_POSTS, DEMO_RANSOMWARE_GROUPS } from './data/demo';
 import { DEMO_MODE, dataProvider } from './services/dataProvider';
-import { isPublicDemo } from './utils/demoMode';
-import { SettingsModal } from '../components/SettingsModal';
+import { isPublicDemo, enterDemoMode, DEMO_GUEST_TOKEN } from './utils/demoMode';
+import { AUTH_CONFIG } from '../config/config';
+
+// A visitor arriving with ?demo=true must see the pure demo, never a mix with a real session.
+try {
+  if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('demo') === 'true' && localStorage.getItem(AUTH_CONFIG.TOKEN_KEY) !== DEMO_GUEST_TOKEN) {
+    enterDemoMode();
+  }
+} catch { /* storage blocked */ }
 import { PlanNoticeModal } from './components/modals/PlanNoticeModal';
 import { ApiEventToast } from './components/common/ApiEventToast';
 import {
@@ -18,6 +25,7 @@ import {
     ThreatNewsItem,
     ExploitEntry,
     AppSettings,
+    AppTheme,
     UrlHausEntry,
     MalwareBazaarEntry,
     FeodoTrackerEntry,
@@ -162,8 +170,6 @@ export const App: React.FC = () => {
     const [settings, setSettings] = useState<AppSettings>(
         safeParseSettings,
     );
-
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     const [analysisResults, setAnalysisResults] = useState<
         AnalyzedHost[]
@@ -1092,7 +1098,12 @@ export const App: React.FC = () => {
                         '/data/malpedia.bib',
                     );
 
-                    if (response.ok) {
+                    if (
+                        response.ok &&
+                        !response.headers
+                            .get('content-type')
+                            ?.includes('text/html')
+                    ) {
                         const blob = await response.blob();
 
                         const file = new File(
@@ -1289,6 +1300,65 @@ export const App: React.FC = () => {
         }
     }, [whitelist, isStorageLoaded]);
 
+const THEME_PALETTES: Record<
+    AppTheme,
+    {
+        accent: string;
+        accentHover: string;
+        accentMuted: string;
+        accentGlow: string;
+    }
+> = {
+    CYBER: {
+        accent: '#f72585',
+        accentHover: '#b5179e',
+        accentMuted: 'rgba(247, 37, 133, 0.15)',
+        accentGlow: 'rgba(247, 37, 133, 0.4)',
+    },
+    NORDIC: {
+        accent: '#38bdf8',
+        accentHover: '#0ea5e9',
+        accentMuted: 'rgba(56, 189, 248, 0.15)',
+        accentGlow: 'rgba(56, 189, 248, 0.4)',
+    },
+    EMBER: {
+        accent: '#f97316',
+        accentHover: '#ea580c',
+        accentMuted: 'rgba(249, 115, 22, 0.15)',
+        accentGlow: 'rgba(249, 115, 22, 0.4)',
+    },
+    SENTINEL: {
+        accent: '#00f5d4',
+        accentHover: '#00bbf9',
+        accentMuted: 'rgba(0, 245, 212, 0.15)',
+        accentGlow: 'rgba(0, 245, 212, 0.4)',
+    },
+    FORTRESS: {
+        accent: '#a855f7',
+        accentHover: '#9333ea',
+        accentMuted: 'rgba(168, 85, 247, 0.15)',
+        accentGlow: 'rgba(168, 85, 247, 0.4)',
+    },
+    DARK: {
+        accent: '#ef4444',
+        accentHover: '#dc2626',
+        accentMuted: 'rgba(239, 68, 68, 0.15)',
+        accentGlow: 'rgba(239, 68, 68, 0.4)',
+    },
+    LIGHT: {
+        accent: '#2563eb',
+        accentHover: '#1d4ed8',
+        accentMuted: 'rgba(37, 99, 235, 0.15)',
+        accentGlow: 'rgba(37, 99, 235, 0.4)',
+    },
+    TERMINAL: {
+        accent: '#22c55e',
+        accentHover: '#16a34a',
+        accentMuted: 'rgba(34, 197, 94, 0.15)',
+        accentGlow: 'rgba(34, 197, 94, 0.4)',
+    },
+};
+
     useEffect(() => {
         const root = document.documentElement;
         const body = document.body;
@@ -1308,69 +1378,53 @@ export const App: React.FC = () => {
             `theme-${settings.theme.toLowerCase()}`,
         );
 
-        const isLight = settings.theme === 'LIGHT';
+        const palette =
+            THEME_PALETTES[settings.theme] ||
+            THEME_PALETTES.DARK;
 
-        if (isLight) {
-            root.style.setProperty(
-                '--color-bg-primary',
-                '#f6f7f9',
-            );
+        root.style.setProperty('--theme-accent', palette.accent);
+        root.style.setProperty(
+            '--theme-accent-hover',
+            palette.accentHover,
+        );
+        root.style.setProperty(
+            '--theme-accent-muted',
+            palette.accentMuted,
+        );
+        root.style.setProperty(
+            '--theme-accent-glow',
+            palette.accentGlow,
+        );
 
-            root.style.setProperty(
-                '--color-bg-secondary',
-                '#ffffff',
-            );
+        root.style.setProperty(
+            '--color-bg-primary',
+            '#090a0c',
+        );
 
-            root.style.setProperty(
-                '--color-bg-glass',
-                'rgba(255,255,255,0.92)',
-            );
+        root.style.setProperty(
+            '--color-bg-secondary',
+            '#101216',
+        );
 
-            root.style.setProperty(
-                '--color-accent-primary',
-                '#b4232b',
-            );
+        root.style.setProperty(
+            '--color-bg-glass',
+            'rgba(16,18,22,0.92)',
+        );
 
-            root.style.setProperty(
-                '--color-accent-secondary',
-                '#667085',
-            );
+        root.style.setProperty(
+            '--color-accent-primary',
+            palette.accent,
+        );
 
-            root.style.setProperty(
-                '--color-bg-grid',
-                'transparent',
-            );
-        } else {
-            root.style.setProperty(
-                '--color-bg-primary',
-                '#090a0c',
-            );
+        root.style.setProperty(
+            '--color-accent-secondary',
+            '#98a2b3',
+        );
 
-            root.style.setProperty(
-                '--color-bg-secondary',
-                '#101216',
-            );
-
-            root.style.setProperty(
-                '--color-bg-glass',
-                'rgba(16,18,22,0.92)',
-            );
-
-            root.style.setProperty(
-                '--color-accent-primary',
-                '#c93a3f',
-            );
-
-            root.style.setProperty(
-                '--color-accent-secondary',
-                '#98a2b3',
-            );
-
-            root.style.setProperty(
-                '--color-bg-grid',
-                'transparent',
-            );
-        }
+        root.style.setProperty(
+            '--color-bg-grid',
+            'transparent',
+        );
     }, [settings.theme]);
 
     useEffect(() => {
@@ -1416,6 +1470,7 @@ export const App: React.FC = () => {
                 fetchRansomwareGroups(),
                 fetchThreatNews(),
                 fetchCveUpdates(),
+                fetchExploits(),
             ]);
 
             const [
@@ -1426,6 +1481,7 @@ export const App: React.FC = () => {
                 ransomwareGroupsResult,
                 newsResult,
                 cveResult,
+                exploitResult,
             ] = results;
 
             if (hostsResult.status === 'fulfilled' && hostsResult.value.length > 0) {
@@ -1447,6 +1503,10 @@ export const App: React.FC = () => {
 
             if (cveResult.status === 'fulfilled') {
                 setCveData(cveResult.value);
+            }
+
+            if (exploitResult.status === 'fulfilled' && exploitResult.value.length > 0) {
+                setExploitData(exploitResult.value);
             }
 
             addSystemLog(
@@ -1546,11 +1606,6 @@ export const App: React.FC = () => {
 
     const navigate = (viewId: string) => {
         const next = canonicalViewId(viewId);
-
-        if (next === 'settings') {
-            setIsSettingsOpen(true);
-            return;
-        }
 
         const currentPath =
             window.location.pathname;
@@ -1801,7 +1856,7 @@ export const App: React.FC = () => {
                         setSearchOpen(true)
                     }
                     onOpenSettings={() =>
-                        setIsSettingsOpen(true)
+                        navigate('settings')
                     }
                     onNavigate={(viewId) => {
                         navigate(viewId);
@@ -1909,6 +1964,8 @@ export const App: React.FC = () => {
                             logoUrl={
                                 settings.logoUrl
                             }
+                            settings={settings}
+                            onUpdateSettings={setSettings}
                             onEnrichHost={
                                 handleEnrichHost
                             }
@@ -1918,36 +1975,7 @@ export const App: React.FC = () => {
                 </main>
             </div>
 
-            <SettingsModal
-                isOpen={isSettingsOpen}
-                onClose={() =>
-                    setIsSettingsOpen(false)
-                }
-                settings={settings}
-                onUpdateSettings={
-                    setSettings
-                }
-                onClearData={
-                    handleClearData
-                }
-                onDataLoaded={
-                    handleDataLoaded
-                }
-                onMmdbLoaded={
-                    handleMmdbLoaded
-                }
-                onMalpediaLoaded={
-                    handleMalpediaLoaded
-                }
-                onMalpediaActorsLoaded={
-                    handleMalpediaActorsLoaded
-                }
-                onCveLoaded={
-                    handleCveLoaded
-                }
-                onNotify={addToast}
-                systemLogs={systemLogs}
-            />
+
 
             {toasts.length > 0 && (
                 <div className="at-toast-stack">

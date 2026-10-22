@@ -189,7 +189,11 @@ export const fetchCveUpdates = async (lastUpdate?: Date): Promise<CveEntry[]> =>
             params.append('pubEndDate', end);
         }
 
-        const nvdData = await fetchJsonWithProxy(`${NVD_API_URL}?${params.toString()}`);
+        // NVD is slow and often 502s. Do not hold the whole CVE page hostage for it: give up after 12s and keep the CISA KEV data.
+        const nvdData = await Promise.race([
+            fetchJsonWithProxy(`${NVD_API_URL}?${params.toString()}`),
+            new Promise<never>((_, reject) => setTimeout(() => reject(new Error('NVD timeout')), 12000)),
+        ]);
 
         if (nvdData && nvdData.vulnerabilities) {
             for (const item of nvdData.vulnerabilities) {

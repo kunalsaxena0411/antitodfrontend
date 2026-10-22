@@ -349,12 +349,21 @@ export default function DashboardPage({
         return accumulator;
       }, {});
 
+    // Older events were stored without geo; fall back to the analysed hosts, which are enriched.
+    if (Object.keys(counts).length === 0) {
+      for (const h of results) {
+        if (h.country) {
+          counts[h.country] = (counts[h.country] ?? 0) + 1;
+        }
+      }
+    }
+
     return Object.entries(counts)
       .sort(
         (a, b) => b[1] - a[1],
       )
       .slice(0, 6);
-  }, [safeEvents]);
+  }, [safeEvents, results]);
 
   const topAsns = useMemo(() => {
     const counts =

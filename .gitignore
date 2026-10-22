@@ -35,3 +35,5 @@ bun.lockb
 !.env.example
 razorpay*_api_keys*.csv
 *razorpay*keys*.csv
+*.patch
+

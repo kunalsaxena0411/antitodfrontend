@@ -357,10 +357,10 @@ export const SignupView: React.FC<SignupViewProps> = ({ onNavigateToLogin }) => 
                   >
                     <div className="text-xs font-bold text-white flex items-center justify-between">
                       <span>Basic Plan</span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold uppercase">Free</span>
+                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">$69/mo</span>
                     </div>
                     <div className="text-[10px] text-neutral-400 mt-1 leading-snug">
-                      2 Honeypots • 3 Team seats • 10K events
+                      15 Honeypots • 1 seat • CSV export
                     </div>
                   </button>
 
@@ -377,10 +377,10 @@ export const SignupView: React.FC<SignupViewProps> = ({ onNavigateToLogin }) => 
                       <span className="flex items-center gap-1 text-amber-400">
                         <Sparkles size={12} /> Pro Tier
                       </span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold">$49/mo</span>
+                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold">$155/mo</span>
                     </div>
                     <div className="text-[10px] text-neutral-400 mt-1 leading-snug">
-                      10 Honeypots • Unlimited users • JSON export
+                      35 Honeypots • 3 Team seats • JSON export
                     </div>
                   </button>
                 </div>

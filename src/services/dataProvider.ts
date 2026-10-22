@@ -446,6 +446,16 @@ export const dataProvider = {
    * Available IOC source/type/location filter options.
    */
   getIocFilters: async (): Promise<IocFiltersResponse> => {
+    if (isPublicDemo()) {
+      return {
+        success: true,
+        data: {
+          sources: ['AlienVault OTX', 'URLhaus', 'ThreatFox', 'Feodo Tracker'],
+          threats: ['Malware', 'Botnet', 'Phishing'],
+          locs: ['US', 'DE', 'CN', 'RU'],
+        },
+      };
+    }
     return iocService.getFilters();
   },
 

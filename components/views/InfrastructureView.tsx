@@ -22,6 +22,8 @@ import {
     AgentInstallScriptResponse, DeleteAgentHardResponse,
 } from '../../api/services/agentService';
 import { handleApiError } from '../../api/client';
+import { useAuth } from '../../contexts/AuthContext';
+import { isPublicDemo } from '../../src/utils/demoMode';
 
 // ── Utility helpers ────────────────────────────────────────────────────────
 
@@ -1565,8 +1567,12 @@ export const InfrastructureView: React.FC = () => {
     const [registerLoading, setRegisterLoading] = useState(false);
     const [registerError, setRegisterError] = useState('');
     const [showRegisterServer, setShowRegisterServer] = useState(false);
+    // Portainer health is a platform-staff endpoint (403 for customer accounts), so only query it for staff.
+    const { admin, permissionsLoaded } = useAuth();
+    const isPlatformUser = !admin?.CustomerID;
 
     const loadShippers = useCallback(async () => {
+        if (isPublicDemo()) return;
         setLoadingShippers(true);
         try {
             const res = await adminService.listShippers();
@@ -1576,6 +1582,7 @@ export const InfrastructureView: React.FC = () => {
     }, []);
 
     const loadOverview = useCallback(async () => {
+        if (isPublicDemo()) return;
         setLoadingOverview(true); setOverviewError('');
         try {
             const d = await agentService.getServersOverview();
@@ -1591,6 +1598,7 @@ export const InfrastructureView: React.FC = () => {
     }, [selectedServer]);
 
     const loadTemplates = useCallback(async () => {
+        if (isPublicDemo()) return;
         setLoadingTemplates(true);
         try {
             const t = await agentService.listTemplates();
@@ -1599,18 +1607,22 @@ export const InfrastructureView: React.FC = () => {
     }, []);
 
     const checkPortainerHealth = useCallback(async () => {
+        if (!permissionsLoaded || !isPlatformUser) return;
         try {
             const h = await agentService.getPortainerHealth();
             setPortainerHealth(h.status);
         } catch { setPortainerHealth('unhealthy'); }
-    }, []);
+    }, [permissionsLoaded, isPlatformUser]);
 
     useEffect(() => {
         loadOverview();
         loadTemplates();
         loadShippers();
-        checkPortainerHealth();
     }, []);
+
+    useEffect(() => {
+        checkPortainerHealth();
+    }, [checkPortainerHealth]);
 
     const handleRegisterAgent = async (serverId: string) => {
         setRegisterLoading(true); setRegisterError('');
@@ -1650,14 +1662,16 @@ export const InfrastructureView: React.FC = () => {
                         {offlineCount > 0 && <span className="text-red-400">{offlineCount} offline</span>}
                     </div>
                     {/* Portainer Health */}
-                    <div className={`flex items-center gap-1.5 px-2 py-1 rounded border text-[10px] font-mono ${
-                        portainerHealth === 'healthy' ? 'text-white bg-neutral-500/10 border-neutral-500/30' :
-                        portainerHealth === 'unhealthy' ? 'text-red-400 bg-red-500/10 border-red-500/30' :
-                        'text-[#888] bg-[#151515] border-[#333]'
-                    }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${portainerHealth === 'healthy' ? 'bg-neutral-500 animate-pulse' : portainerHealth === 'unhealthy' ? 'bg-red-500' : 'bg-neutral-600'}`}/>
-                        PORTAINER {portainerHealth.toUpperCase()}
-                    </div>
+                    {isPlatformUser && (
+                        <div className={`flex items-center gap-1.5 px-2 py-1 rounded border text-[10px] font-mono ${
+                            portainerHealth === 'healthy' ? 'text-white bg-neutral-500/10 border-neutral-500/30' :
+                            portainerHealth === 'unhealthy' ? 'text-red-400 bg-red-500/10 border-red-500/30' :
+                            'text-[#888] bg-[#151515] border-[#333]'
+                        }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${portainerHealth === 'healthy' ? 'bg-neutral-500 animate-pulse' : portainerHealth === 'unhealthy' ? 'bg-red-500' : 'bg-neutral-600'}`}/>
+                            PORTAINER {portainerHealth.toUpperCase()}
+                        </div>
+                    )}
                     <button onClick={() => { loadOverview(); loadTemplates(); checkPortainerHealth(); }} disabled={loadingOverview} className="p-1.5 rounded hover:bg-[#151515] text-[#AAA] hover:text-white transition-colors" title="Refresh">
                         <RefreshCw size={15} className={loadingOverview ? 'animate-spin' : ''}/>
                     </button>

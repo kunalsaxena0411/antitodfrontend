@@ -39,6 +39,7 @@ const ROUTE_SLUGS: Record<string, string> = {
   help: 'system-guide',
   access_control: 'access-control',
   billing: 'billing',
+  settings: 'settings',
 };
 
 const PATH_TO_VIEW = Object.fromEntries(

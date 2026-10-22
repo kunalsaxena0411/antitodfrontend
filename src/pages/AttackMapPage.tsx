@@ -29,7 +29,14 @@ import { isPublicDemo } from '../utils/demoMode';
 import { DEFAULT_HQ, COUNTRY_COORDS } from '../../components/views/AttackMapView';
 import type { ThreeGlobeArc, ThreeGlobeRing, ThreeGlobePoint, ThreeGlobeLabel } from '../../components/views/ThreeGlobeView';
 
-const ThreeGlobeView = React.lazy(() => import('../../components/views/ThreeGlobeView'));
+const ThreeGlobeView = React.lazy(() =>
+    import('../../components/views/ThreeGlobeView').catch((error) => {
+        // Retry dynamically imported module if first attempt fails during a server restart or deployment
+        return new Promise((resolve) => setTimeout(resolve, 800)).then(() =>
+            import('../../components/views/ThreeGlobeView')
+        );
+    })
+);
 import EmptyState from '../components/common/EmptyState';
 import PageHeader from '../components/layout/PageHeader';
 
@@ -155,7 +162,23 @@ export default function AttackMapPage({
                 dataProvider.getAttackEvents(),
                 dataProvider.getThreatMap(),
             ]);
-            set_MOCK_EVENTS(evts || []);
+            // Raw events use geo_country / threat score. Normalise them to what this page reads,
+            // and fall back to the host-level geo for older events that were stored without it.
+            const byIp = new Map<string, any>();
+            (tMap?.points || []).forEach((p: any) => { if (p?.src_ip) byIp.set(p.src_ip, p); });
+            let names: Intl.DisplayNames | null = null;
+            try { names = new Intl.DisplayNames(['en'], { type: 'region' }); } catch { /* unsupported */ }
+            const sev = (n: number) => (n >= 80 ? 'critical' : n >= 60 ? 'high' : n >= 40 ? 'medium' : 'low');
+            const filled = (evts || []).map((e: any) => {
+                const hp = byIp.get(e?.src_ip);
+                const rawCode = e?.geo_country || hp?.geo_country;
+                const code = rawCode ? String(rawCode).toUpperCase() : undefined;
+                let nm = code;
+                try { nm = code ? (names?.of(code) || code) : undefined; } catch { /* keep code */ }
+                const score = e?.threat_score ?? e?.threat?.threat_score ?? hp?.threat_score ?? 0;
+                return { ...e, country: e?.country || nm, countryCode: e?.countryCode || code, severity: e?.severity || sev(score) };
+            });
+            set_MOCK_EVENTS(filled);
             setThreatMapData(tMap || null);
         } catch (err) {
             console.error('Failed to load attack map events:', err);

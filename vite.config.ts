@@ -82,7 +82,6 @@ function cspPlugin(backendUrl?: string) {
         'https://api.razorpay.com',
         'https://lumberjack.razorpay.com',
         'https://lumberjack-cx.razorpay.com',
-        'https://api.rss2json.com',
         'https://dns.google',
         'https://cloudflare-dns.com',
         'https://otx.alienvault.com',
@@ -101,6 +100,9 @@ function cspPlugin(backendUrl?: string) {
         'https://malpedia.caad.fkie.fraunhofer.de',
         'https://api.ipapi.is',
         'https://www.peeringdb.com',
+        'https://stat.ripe.net',
+        'https://dns.quad9.net',
+        'https://security.cloudflare-dns.com',
         'https://internetdb.shodan.io',
       ].filter(Boolean);
 

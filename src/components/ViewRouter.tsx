@@ -77,6 +77,7 @@ import { IntegrationsView } from '../../components/views/IntegrationsView';
 import { ExploitView } from '../../components/views/ExploitView';
 import { AccessControlView } from '../../components/views/AccessControlView';
 import { BillingView } from '../../components/views/BillingView';
+import { SettingsView } from '../../components/views/SettingsView';
 import { useAuth } from '../../contexts/AuthContext';
 
 /* -------------------------------------------------------------------------- */
@@ -134,6 +135,8 @@ export interface ViewRouterProps {
 
   productName: string;
   logoUrl: string;
+  settings?: import('../../types').AppSettings;
+  onUpdateSettings?: (s: import('../../types').AppSettings) => void;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -209,6 +212,8 @@ export default function ViewRouter({
 
   productName,
   logoUrl,
+  settings,
+  onUpdateSettings,
 
   onEnrichHost,
 }: ViewRouterProps) {
@@ -368,6 +373,14 @@ export default function ViewRouter({
       renderedView = (
         <LegacyWrapper>
           <InfrastructureView />
+        </LegacyWrapper>
+      );
+      break;
+
+    case 'settings':
+      renderedView = (
+        <LegacyWrapper>
+          <SettingsView settings={settings} onUpdateSettings={onUpdateSettings} />
         </LegacyWrapper>
       );
       break;
